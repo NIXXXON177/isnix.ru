@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ISTHISNIXXXON — Ванильный Minecraft сервер</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Raleway:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0c0a;
+    --surface: #111811;
+    --green: #4ade80;
+    --green-dim: #22c55e;
+    --green-dark: #166534;
+    --gold: #fbbf24;
+    --text: #e2f0e2;
+    --muted: #6b7c6b;
+    --border: #1e2e1e;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Raleway', sans-serif;
+    font-weight: 300;
+    overflow-x: hidden;
+  }
+
+  /* NOISE TEXTURE */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1000;
+    opacity: 0.4;
+  }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    text-align: center;
+    padding: 2rem;
+    background: radial-gradient(ellipse 80% 60% at 50% 40%, #0d1f0d 0%, #0a0c0a 70%);
+  }
+
+  .hero::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: 
+      radial-gradient(circle at 20% 80%, rgba(74,222,128,0.04) 0%, transparent 50%),
+      radial-gradient(circle at 80% 20%, rgba(74,222,128,0.03) 0%, transparent 50%);
+    pointer-events: none;
+  }
+
+  .hero-badge {
+    display: inline-block;
+    border: 1px solid var(--green-dark);
+    color: var(--green);
+    font-family: 'Raleway', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    padding: 0.4rem 1.2rem;
+    margin-bottom: 2rem;
+    animation: fadeIn 1s ease both;
+  }
+
+  .hero-title {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(2.5rem, 8vw, 7rem);
+    font-weight: 900;
+    line-height: 0.9;
+    letter-spacing: -0.02em;
+    color: #fff;
+    animation: fadeUp 1s ease 0.2s both;
+  }
+
+  .hero-title span {
+    color: var(--green);
+    display: block;
+  }
+
+  .hero-sub {
+    margin-top: 1.5rem;
+    font-size: 1rem;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    animation: fadeUp 1s ease 0.4s both;
+  }
+
+  .hero-ip {
+    margin-top: 3rem;
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    animation: fadeUp 1s ease 0.6s both;
+  }
+
+  .ip-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 1rem 2rem;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    transition: border-color 0.3s;
+  }
+
+  .ip-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--green), transparent);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .ip-card:hover { border-color: var(--green-dark); }
+  .ip-card:hover::before { opacity: 1; }
+
+  .ip-label {
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 0.3rem;
+  }
+
+  .ip-value {
+    font-family: 'Cinzel', serif;
+    font-size: 1.1rem;
+    color: var(--green);
+    font-weight: 700;
+  }
+
+  .hero-scroll {
+    position: absolute;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--muted);
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    animation: fadeIn 2s ease 1s both;
+  }
+
+  .scroll-line {
+    width: 1px;
+    height: 3rem;
+    background: linear-gradient(to bottom, var(--green), transparent);
+    animation: scrollPulse 2s ease-in-out infinite;
+  }
+
+  /* SECTIONS */
+  section {
+    padding: 6rem 2rem;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .section-label {
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--green);
+    margin-bottom: 1rem;
+  }
+
+  .section-title {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(2rem, 4vw, 3.5rem);
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.1;
+    margin-bottom: 1.5rem;
+  }
+
+  .section-text {
+    color: var(--muted);
+    line-height: 1.8;
+    max-width: 600px;
+    font-size: 0.95rem;
+  }
+
+  /* DIVIDER */
+  .divider {
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border), transparent);
+    margin: 0 auto;
+  }
+
+  /* FEATURES */
+  .features {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    margin-top: 4rem;
+  }
+
+  .feature {
+    background: var(--bg);
+    padding: 2.5rem;
+    position: relative;
+    overflow: hidden;
+    transition: background 0.3s;
+  }
+
+  .feature:hover { background: var(--surface); }
+
+  .feature-icon {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+  }
+
+  .feature-title {
+    font-family: 'Cinzel', serif;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 0.7rem;
+    letter-spacing: 0.05em;
+  }
+
+  .feature-text {
+    font-size: 0.85rem;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+
+  /* ECONOMY */
+  .economy-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-top: 3rem;
+  }
+
+  .economy-item {
+    border: 1px solid var(--border);
+    padding: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: border-color 0.3s;
+  }
+
+  .economy-item:hover { border-color: var(--green-dark); }
+
+  .economy-name {
+    font-size: 0.85rem;
+    color: var(--text);
+  }
+
+  .economy-value {
+    font-family: 'Cinzel', serif;
+    font-size: 0.9rem;
+    color: var(--gold);
+    font-weight: 700;
+  }
+
+  /* RULES */
+  .rules-list {
+    margin-top: 3rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+  }
+
+  .rule-item {
+    background: var(--bg);
+    padding: 1.5rem 2rem;
+    display: flex;
+    gap: 1.5rem;
+    align-items: flex-start;
+    transition: background 0.3s;
+  }
+
+  .rule-item:hover { background: var(--surface); }
+
+  .rule-num {
+    font-family: 'Cinzel', serif;
+    font-size: 0.75rem;
+    color: var(--green);
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    flex-shrink: 0;
+    padding-top: 0.1rem;
+  }
+
+  .rule-text {
+    font-size: 0.9rem;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  /* LINKS */
+  .links-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+    margin-top: 3rem;
+  }
+
+  .link-card {
+    border: 1px solid var(--border);
+    padding: 1.5rem 2rem;
+    text-decoration: none;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    transition: border-color 0.3s, color 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .link-card::after {
+    content: '→';
+    position: absolute;
+    right: 1.5rem;
+    color: var(--green);
+    opacity: 0;
+    transform: translateX(-10px);
+    transition: opacity 0.3s, transform 0.3s;
+  }
+
+  .link-card:hover {
+    border-color: var(--green-dark);
+    color: var(--green);
+  }
+
+  .link-card:hover::after {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  .link-icon { font-size: 1.5rem; }
+
+  .link-label {
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 0.2rem;
+  }
+
+  .link-name {
+    font-family: 'Cinzel', serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+  }
+
+  /* FOOTER */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 3rem 2rem;
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+  }
+
+  footer strong {
+    font-family: 'Cinzel', serif;
+    color: var(--green);
+  }
+
+  /* ANIMATIONS */
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes scrollPulse {
+    0%, 100% { opacity: 0.3; transform: scaleY(1); }
+    50% { opacity: 1; transform: scaleY(1.2); }
+  }
+
+  /* OBSERVE ANIMATIONS */
+  .reveal {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+  }
+
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-badge">Minecraft Java 1.21.11 · Fabric</div>
+  <h1 class="hero-title">
+    ISTHIS
+    <span>NIXXXON</span>
+  </h1>
+  <p class="hero-sub">Ванильный сервер с душой · Без доната · Без pay-to-win</p>
+
+  <div class="hero-ip">
+    <div class="ip-card" onclick="navigator.clipboard.writeText('isnix.ru')">
+      <div class="ip-label">Java Edition</div>
+      <div class="ip-value">isnix.ru</div>
+    </div>
+  </div>
+
+  <div class="hero-scroll">
+    <div class="scroll-line"></div>
+    Листай вниз
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- О СЕРВЕРЕ -->
+<section class="reveal">
+  <div class="section-label">О проекте</div>
+  <h2 class="section-title">Minecraft такой,<br>каким он должен быть</h2>
+  <p class="section-text">ISTHISNIXXXON — это уютный ванильный сервер где ценится честная игра, творчество и живое комьюнити. Здесь нет гонки за привилегиями — только ты, твой мир и люди рядом. Строй, исследуй, общайся.</p>
+
+  <div class="features">
+    <div class="feature">
+      <div class="feature-icon">🌿</div>
+      <div class="feature-title">Vanilla+</div>
+      <div class="feature-text">Чистая ваниль с небольшими улучшениями качества жизни. Никаких новых биомов или предметов — только Minecraft таким, каким вы его знаете.</div>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">🚫</div>
+      <div class="feature-title">Без доната</div>
+      <div class="feature-text">Никакого pay-to-win. Хочешь быть богатым — иди копай, торгуй, договаривайся. Все в равных условиях.</div>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">🎤</div>
+      <div class="feature-title">Голосовой чат</div>
+      <div class="feature-text">Simple Voice Chat — общайся с игроками рядом голосом прямо в игре. Устанавливается на клиент.</div>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">🔒</div>
+      <div class="feature-title">Вайтлист</div>
+      <div class="feature-text">Закрытый сервер для своих. Небольшое уютное комьюнити где тебя знают по имени, а не по рангу.</div>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">🏦</div>
+      <div class="feature-title">Экономика</div>
+      <div class="feature-text">Собственная валюта — Икси-Коин. Центробанк, курс обмена, кредиты. Настоящая ванильная экономика.</div>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">⚔️</div>
+      <div class="feature-title">Кланы</div>
+      <div class="feature-text">Создавай кланы с друзьями, захватывай территории и строй историю своего объединения.</div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ЭКОНОМИКА -->
+<section class="reveal">
+  <div class="section-label">Центробанк</div>
+  <h2 class="section-title">Курс Икси-Коина</h2>
+  <p class="section-text">Официальная валюта сервера. Все операции через руки в Центробанке. Приходи: <strong style="color:var(--green)">/warp tp BANK</strong></p>
+
+  <div class="economy-grid">
+    <div class="economy-item">
+      <span class="economy-name">💎 1 алмаз</span>
+      <span class="economy-value">5 ИК</span>
+    </div>
+    <div class="economy-item">
+      <span class="economy-name">🟢 1 изумруд</span>
+      <span class="economy-value">8 ИК</span>
+    </div>
+    <div class="economy-item">
+      <span class="economy-name">⚫ 1 незерит слиток</span>
+      <span class="economy-value">50 ИК</span>
+    </div>
+    <div class="economy-item">
+      <span class="economy-name">🔶 1 незерит скрап</span>
+      <span class="economy-value">15 ИК</span>
+    </div>
+    <div class="economy-item">
+      <span class="economy-name">🔱 1 древний обломок</span>
+      <span class="economy-value">20 ИК</span>
+    </div>
+    <div class="economy-item">
+      <span class="economy-name">⚙️ 64 железа</span>
+      <span class="economy-value">3 ИК</span>
+    </div>
+    <div class="economy-item">
+      <span class="economy-name">🥇 64 золота</span>
+      <span class="economy-value">5 ИК</span>
+    </div>
+    <div class="economy-item">
+      <span class="economy-name">💀 Голова моба</span>
+      <span class="economy-value">10–30 ИК</span>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ПРАВИЛА -->
+<section class="reveal">
+  <div class="section-label">Правила</div>
+  <h2 class="section-title">Играем честно</h2>
+  <p class="section-text">Простые правила для уютной атмосферы. Нарушение — бан.</p>
+
+  <div class="rules-list">
+    <div class="rule-item">
+      <span class="rule-num">01</span>
+      <span class="rule-text">Уважай всех игроков. Никаких оскорблений, буллинга и токсичности.</span>
+    </div>
+    <div class="rule-item">
+      <span class="rule-num">02</span>
+      <span class="rule-text">Читы, X-Ray, автокликеры и любые моды дающие преимущество — бан.</span>
+    </div>
+    <div class="rule-item">
+      <span class="rule-num">03</span>
+      <span class="rule-text">Гриферство, воровство и разрушение чужих построек строго запрещены.</span>
+    </div>
+    <div class="rule-item">
+      <span class="rule-num">04</span>
+      <span class="rule-text">Строй аккуратно — никаких летающих деревьев, ям до бедрока и мусора.</span>
+    </div>
+    <div class="rule-item">
+      <span class="rule-num">05</span>
+      <span class="rule-text">Казино разрешено только на Икси-Коины. Наркотики — бан без предупреждения.</span>
+    </div>
+    <div class="rule-item">
+      <span class="rule-num">06</span>
+      <span class="rule-text">Обман при торговле наказуемо. Все сделки добровольны и через руки.</span>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ССЫЛКИ -->
+<section class="reveal">
+  <div class="section-label">Связь</div>
+  <h2 class="section-title">Найди нас</h2>
+  <p class="section-text">Подавай заявку в вайтлист через ВКонтакте. Жалобы и вопросы — в Telegram.</p>
+
+  <div class="links-grid">
+    <a href="https://vk.com/isthisnixxxon" target="_blank" class="link-card">
+      <span class="link-icon">💬</span>
+      <div>
+        <div class="link-label">Вайтлист и новости</div>
+        <div class="link-name">ВКонтакте</div>
+      </div>
+    </a>
+    <a href="https://t.me/isthisnixxxon" target="_blank" class="link-card">
+      <span class="link-icon">📢</span>
+      <div>
+        <div class="link-label">Администрация</div>
+        <div class="link-name">Telegram</div>
+      </div>
+    </a>
+    <a href="https://www.tiktok.com/@isthisnixxxon" target="_blank" class="link-card">
+      <span class="link-icon">🎵</span>
+      <div>
+        <div class="link-label">Видео и клипы</div>
+        <div class="link-name">TikTok</div>
+      </div>
+    </a>
+    <a href="https://www.donationalerts.com/r/isthisnixxxon" target="_blank" class="link-card">
+      <span class="link-icon">❤️</span>
+      <div>
+        <div class="link-label">Поддержать проект</div>
+        <div class="link-name">DonationAlerts</div>
+      </div>
+    </a>
+    <a href="https://www.twitch.tv/isthisnixxxon" target="_blank" class="link-card">
+      <span class="link-icon">🎮</span>
+      <div>
+        <div class="link-label">Стримы</div>
+        <div class="link-name">Twitch</div>
+      </div>
+    </a>
+    <a href="https://minecraftrating.ru/server/397835/" target="_blank" class="link-card">
+      <span class="link-icon">🗳️</span>
+      <div>
+        <div class="link-label">Проголосуй за нас</div>
+        <div class="link-name">MCRating</div>
+      </div>
+    </a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <strong>ISTHISNIXXXON</strong> · Ванильный сервер с душой · Java 1.21.11 · isnix.ru
+</footer>
+
+<script>
+  // Reveal on scroll
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  // Copy IP on click
+  document.querySelectorAll('.ip-card').forEach(card => {
+    card.addEventListener('click', () => {
+      const val = card.querySelector('.ip-value').textContent;
+      navigator.clipboard.writeText(val).then(() => {
+        const orig = card.querySelector('.ip-label').textContent;
+        card.querySelector('.ip-label').textContent = 'Скопировано!';
+        setTimeout(() => card.querySelector('.ip-label').textContent = orig, 2000);
+      });
+    });
+  });
+</script>
+
+</body>
+</html>
