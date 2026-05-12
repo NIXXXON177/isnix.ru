@@ -64,6 +64,9 @@
 				scroll-behavior: smooth;
 				scroll-padding-top: 86px;
 			}
+			html.manual-scroll-active {
+				scroll-behavior: auto;
+			}
 
 			body {
 				font-family: 'Raleway', sans-serif;
@@ -1675,7 +1678,7 @@
 						</div>
 					</div>
 					<div class="shop-card-bot">
-						<div class="shop-price">399 ₽</div>
+						<div class="shop-price">299 ₽</div>
 						<a
 							href="https://www.donationalerts.com/r/isthisnixxxon"
 							target="_blank"
@@ -2009,6 +2012,7 @@
 			}
 
 			const sectionLinks = document.querySelectorAll('a[href^="#"]')
+			let sectionScrollRaf = null
 			const prefersReducedMotion = window.matchMedia(
 				'(prefers-reduced-motion: reduce)',
 			).matches
@@ -2033,14 +2037,26 @@
 					const distance = targetY - startY
 					const motionScale =
 						parseFloat(
-							getComputedStyle(document.body).getPropertyValue('--motion-scale'),
+							getComputedStyle(document.body).getPropertyValue(
+								'--motion-scale',
+							),
 						) || 1
 					const duration = prefersReducedMotion
 						? 0
-						: Math.min(1200, Math.max(560, Math.abs(distance) * (0.55 * motionScale)))
+						: Math.min(
+								1200,
+								Math.max(560, Math.abs(distance) * (0.55 * motionScale)),
+							)
+
+					if (sectionScrollRaf) {
+						cancelAnimationFrame(sectionScrollRaf)
+						sectionScrollRaf = null
+					}
+					document.documentElement.classList.add('manual-scroll-active')
 
 					if (duration === 0) {
 						window.scrollTo(0, targetY)
+						document.documentElement.classList.remove('manual-scroll-active')
 					} else {
 						let startTime = null
 						const step = timestamp => {
@@ -2049,9 +2065,16 @@
 							const progress = Math.min(1, elapsed / duration)
 							const eased = easeInOutCubic(progress)
 							window.scrollTo(0, startY + distance * eased)
-							if (progress < 1) requestAnimationFrame(step)
+							if (progress < 1) {
+								sectionScrollRaf = requestAnimationFrame(step)
+							} else {
+								sectionScrollRaf = null
+								document.documentElement.classList.remove(
+									'manual-scroll-active',
+								)
+							}
 						}
-						requestAnimationFrame(step)
+						sectionScrollRaf = requestAnimationFrame(step)
 					}
 
 					history.replaceState(null, '', targetId)
