@@ -32,27 +32,27 @@
 				--card-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
 				--ease-smooth: cubic-bezier(0.22, 1, 0.36, 1);
 				--ease-soft: cubic-bezier(0.25, 0.46, 0.45, 0.94);
-				--dur-fast: 0.28s;
-				--dur-mid: 0.5s;
-				--dur-slow: 0.85s;
+				--dur-fast: 0.32s;
+				--dur-mid: 0.56s;
+				--dur-slow: 0.95s;
 				--motion-scale: 1;
-				--reveal-time: calc(0.9s * var(--motion-scale));
-				--reveal-item-time: calc(0.78s * var(--motion-scale));
+				--reveal-time: calc(1.02s * var(--motion-scale));
+				--reveal-item-time: calc(0.9s * var(--motion-scale));
 				--float-time: calc(8.2s * var(--motion-scale));
 				--aura-time: calc(10.5s * var(--motion-scale));
 				--pulse-time: calc(2.6s * var(--motion-scale));
 			}
 			body.speed-relaxed {
-				--dur-fast: 0.34s;
-				--dur-mid: 0.62s;
-				--dur-slow: 1.05s;
-				--motion-scale: 1.15;
+				--dur-fast: 0.38s;
+				--dur-mid: 0.68s;
+				--dur-slow: 1.12s;
+				--motion-scale: 1.2;
 			}
 			body.speed-dynamic {
-				--dur-fast: 0.18s;
-				--dur-mid: 0.34s;
-				--dur-slow: 0.62s;
-				--motion-scale: 0.85;
+				--dur-fast: 0.24s;
+				--dur-mid: 0.42s;
+				--dur-slow: 0.74s;
+				--motion-scale: 0.95;
 			}
 
 			* {
@@ -933,7 +933,7 @@
 			.reveal {
 				opacity: 0;
 				filter: blur(4px);
-				transform: translateY(18px) scale(0.995);
+				transform: translateY(14px) scale(0.998);
 				transition:
 					opacity var(--reveal-time) var(--ease-smooth),
 					transform var(--reveal-time) var(--ease-smooth),
@@ -1125,7 +1125,7 @@
 			.reveal-item {
 				opacity: 0;
 				filter: blur(3px);
-				transform: translateY(14px) scale(0.995);
+				transform: translateY(10px) scale(0.998);
 				transition:
 					opacity var(--reveal-item-time) var(--ease-smooth),
 					transform var(--reveal-item-time) var(--ease-smooth),
@@ -1350,6 +1350,19 @@
 							деньги или ресурсы запрещена.
 						</div>
 					</div>
+					<div class="info-card">
+						<div class="info-title">💱 Актуальные курсы</div>
+						<div class="info-text">
+							Полный список курсов валют смотри в теме VK:
+							<a
+								href="https://vk.ru/topic-238411808_61242156"
+								target="_blank"
+								rel="noopener noreferrer"
+								style="color: var(--green)"
+								>курсы валют</a
+							>.
+						</div>
+					</div>
 				</div>
 			</div>
 		</section>
@@ -1409,6 +1422,42 @@
 						через руки.</span
 					>
 				</div>
+			</div>
+			<p class="s-desc" style="margin-top: 1.2rem">
+				Полный список правил сервера:
+				<a
+					href="https://vk.ru/topic-238411808_60503921"
+					target="_blank"
+					rel="noopener noreferrer"
+					style="color: var(--green)"
+					>тема VK с правилами</a
+				>.
+			</p>
+		</section>
+
+		<div class="divider"></div>
+
+		<!-- ИДЕИ И ПРЕДЛОЖЕНИЯ -->
+		<section id="ideas" class="section reveal">
+			<div class="s-header">
+				<div class="s-eyebrow">Комьюнити</div>
+				<h2 class="s-title">Идеи и предложения</h2>
+				<p class="s-desc">
+					Есть мысли как сделать сервер лучше? Пиши в отдельную тему VK.
+				</p>
+			</div>
+			<div class="links-grid">
+				<a
+					href="https://vk.ru/topic-238411808_60503921"
+					target="_blank"
+					rel="noopener noreferrer"
+					class="lnk"
+					><span class="lnk-icon">💡</span>
+					<div>
+						<div class="lnk-lbl">Идеи и предложения игроков</div>
+						<div class="lnk-name">VK Тема</div>
+					</div></a
+				>
 			</div>
 		</section>
 
@@ -1690,6 +1739,9 @@
 			</div>
 
 			<div class="shop-note">
+				🎬 Если хочешь получить префикс <strong>YouTube</strong>, снимай ролики
+				на свой канал, играя на нашем сервере.
+				<br />
 				⚠️ Префиксы — косметика и не дают игровых преимуществ. После оплаты
 				напиши в
 				<a
@@ -1954,7 +2006,7 @@
 						if (e.isIntersecting) e.target.classList.add('visible')
 					})
 				},
-				{ threshold: 0.06, rootMargin: '0px 0px -8% 0px' },
+				{ threshold: 0.03, rootMargin: '0px 0px 12% 0px' },
 			)
 			document.querySelectorAll('.reveal').forEach(el => observer.observe(el))
 			document.querySelectorAll('.reveal').forEach((el, index) => {
