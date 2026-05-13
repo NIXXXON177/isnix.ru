@@ -1299,7 +1299,7 @@
 					</div>
 					<div class="econ-row">
 						<span class="econ-name">🟢 1 изумруд</span
-						><span class="econ-val">8 ИК</span>
+						><span class="econ-val">1 ИК</span>
 					</div>
 					<div class="econ-row">
 						<span class="econ-name">⚫ 1 незерит слиток</span
@@ -1469,8 +1469,8 @@
 				<div class="s-eyebrow">Связь</div>
 				<h2 class="s-title">Найди нас</h2>
 				<p class="s-desc">
-					Подавай заявку в вайтлист через ВКонтакте. Жалобы и вопросы — в
-					Telegram.
+					Подавай заявку в вайтлист через ВКонтакте. Жалобы, вопросы и поддержка
+					— только в VK.
 				</p>
 			</div>
 			<div class="links-grid">
@@ -1486,14 +1486,14 @@
 					</div></a
 				>
 				<a
-					href="https://t.me/isthisnixxxon"
+					href="https://vk.com/isthisnixxxon"
 					target="_blank"
 					rel="noopener noreferrer"
 					class="lnk"
 					><span class="lnk-icon">📢</span>
 					<div>
-						<div class="lnk-lbl">Администрация</div>
-						<div class="lnk-name">Telegram</div>
+						<div class="lnk-lbl">Поддержка и вопросы</div>
+						<div class="lnk-name">VK</div>
 					</div></a
 				>
 				<a
@@ -1572,17 +1572,48 @@
 					<div class="shop-step">
 						<div class="step-num">02</div>
 						<div class="step-text">
-							Откроется DonationAlerts — введи
-							<strong>свой ник в Minecraft</strong> в комментарий
+							Введи <strong>свой префикс</strong> — мы добавим его в форму
+							DonationAlerts автоматически
 						</div>
 					</div>
 					<div class="shop-step">
 						<div class="step-num">03</div>
 						<div class="step-text">
-							После оплаты напиши в <strong>Telegram</strong> — выдадим префикс
-							в течение 24 часов
+							После оплаты напиши в <strong>VK</strong> — выдадим префикс в
+							течение 24 часов
 						</div>
 					</div>
+				</div>
+			</div>
+
+			<div class="shop-nick-box">
+				<div class="shop-nick-field">
+					<label for="playerNick" class="shop-nick-label">Твой ник</label>
+					<input
+						id="playerNick"
+						class="shop-nick-input"
+						type="text"
+						inputmode="text"
+						placeholder="Введи ник в Minecraft"
+						maxlength="16"
+						autocomplete="off"
+					/>
+				</div>
+				<div class="shop-nick-field">
+					<label for="playerPrefix" class="shop-nick-label">Твой префикс</label>
+					<input
+						id="playerPrefix"
+						class="shop-nick-input"
+						type="text"
+						inputmode="text"
+						placeholder="Придумай и введи свой префикс"
+						maxlength="24"
+						autocomplete="off"
+					/>
+				</div>
+				<div class="shop-nick-hint" id="donationPrefillHint">
+					Ник и префикс передадутся в DonationAlerts, а также скопируются в
+					буфер обмена для быстрой вставки в поле комментария.
 				</div>
 			</div>
 
@@ -1745,12 +1776,12 @@
 				⚠️ Префиксы — косметика и не дают игровых преимуществ. После оплаты
 				напиши в
 				<a
-					href="https://t.me/isthisnixxxon"
+					href="https://vk.com/isthisnixxxon"
 					target="_blank"
 					style="color: var(--green)"
-					>Telegram</a
+					>VK</a
 				>
-				с чеком об оплате и своим ником.
+				с чеком об оплате и своим префиксом.
 			</div>
 		</section>
 
@@ -1921,6 +1952,44 @@
 				padding: 1rem 1.5rem;
 				background: var(--surface);
 				border: 1px solid var(--border);
+			}
+			.shop-nick-box {
+				margin-bottom: 1.4rem;
+				padding: 1rem 1.2rem;
+				background: var(--surface);
+				border: 1px solid var(--border2);
+			}
+			.shop-nick-field + .shop-nick-field {
+				margin-top: 0.8rem;
+			}
+			.shop-nick-label {
+				display: block;
+				margin-bottom: 0.5rem;
+				font-size: 0.74rem;
+				letter-spacing: 0.08em;
+				text-transform: uppercase;
+				color: var(--text);
+				font-weight: 700;
+			}
+			.shop-nick-input {
+				width: 100%;
+				background: var(--surface2);
+				border: 1px solid var(--border2);
+				color: var(--text);
+				padding: 0.62rem 0.74rem;
+				font-family: 'Raleway', sans-serif;
+				font-size: 0.85rem;
+				outline: none;
+				transition: border-color var(--dur-fast) var(--ease-soft);
+			}
+			.shop-nick-input:focus {
+				border-color: var(--green-dark);
+			}
+			.shop-nick-hint {
+				margin-top: 0.45rem;
+				font-size: 0.72rem;
+				line-height: 1.5;
+				color: var(--muted);
 			}
 
 			.speed-switch {
@@ -2143,6 +2212,91 @@
 				? speedSwitch.querySelectorAll('.speed-option')
 				: []
 			const speedStorageKey = 'isnix-animation-speed'
+			const nickStorageKey = 'isnix-player-nick'
+			const prefixStorageKey = 'isnix-player-prefix'
+			const playerNickInput = document.getElementById('playerNick')
+			const playerPrefixInput = document.getElementById('playerPrefix')
+			const donationPrefillHint = document.getElementById('donationPrefillHint')
+			const normalizeNick = value =>
+				(value || '')
+					.trim()
+					.replace(/\s+/g, '')
+					.replace(/[^A-Za-z0-9_]/g, '')
+					.slice(0, 16)
+			const normalizePrefix = value =>
+				(value || '')
+					.trim()
+					.replace(/\s+/g, ' ')
+					.replace(/[^\p{L}\p{N}_-]/gu, '')
+					.slice(0, 24)
+
+			if (playerNickInput) {
+				const savedNick = localStorage.getItem(nickStorageKey) || ''
+				playerNickInput.value = savedNick
+				playerNickInput.addEventListener('input', () => {
+					const normalizedNick = normalizeNick(playerNickInput.value)
+					if (playerNickInput.value !== normalizedNick) {
+						playerNickInput.value = normalizedNick
+					}
+					localStorage.setItem(nickStorageKey, normalizedNick)
+				})
+			}
+
+			if (playerPrefixInput) {
+				const savedPrefix = localStorage.getItem(prefixStorageKey) || ''
+				playerPrefixInput.value = savedPrefix
+				playerPrefixInput.addEventListener('input', () => {
+					const normalizedPrefix = normalizePrefix(playerPrefixInput.value)
+					if (playerPrefixInput.value !== normalizedPrefix) {
+						playerPrefixInput.value = normalizedPrefix
+					}
+					localStorage.setItem(prefixStorageKey, normalizedPrefix)
+				})
+			}
+
+			document.querySelectorAll('.shop-btn').forEach(button => {
+				button.addEventListener('click', async event => {
+					if (!playerPrefixInput || !playerNickInput) return
+					const nick = normalizeNick(playerNickInput.value)
+					const prefix = normalizePrefix(playerPrefixInput.value)
+					if (!nick) {
+						event.preventDefault()
+						playerNickInput.focus()
+						alert('Сначала введи ник в Minecraft.')
+						return
+					}
+					if (!prefix) {
+						event.preventDefault()
+						playerPrefixInput.focus()
+						alert('Сначала придумай и введи свой префикс.')
+						return
+					}
+
+					event.preventDefault()
+					localStorage.setItem(nickStorageKey, nick)
+					localStorage.setItem(prefixStorageKey, prefix)
+					const donationUrl = new URL(button.href)
+					const donationMessage = `Ник: ${nick} | Префикс: ${prefix}`
+					donationUrl.searchParams.set('comment', donationMessage)
+					donationUrl.searchParams.set('message', donationMessage)
+
+					try {
+						await navigator.clipboard.writeText(donationMessage)
+						if (donationPrefillHint) {
+							donationPrefillHint.textContent =
+								'Скопировано: вставь текст в поле комментария DonationAlerts.'
+						}
+					} catch (error) {
+						if (donationPrefillHint) {
+							donationPrefillHint.textContent =
+								'Не удалось скопировать автоматически. Скопируй вручную: ' +
+								donationMessage
+						}
+					}
+
+					window.open(donationUrl.toString(), '_blank', 'noopener,noreferrer')
+				})
+			})
 
 			const applySpeedPreset = preset => {
 				document.body.classList.remove('speed-relaxed', 'speed-dynamic')
