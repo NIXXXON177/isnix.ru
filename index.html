@@ -78,6 +78,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(10,15,10,.96
 .feat-icon{font-size:1.6rem;margin-bottom:.8rem}
 .feat-title{font-family:"Cinzel",serif;font-size:.9rem;font-weight:700;color:#fff;margin-bottom:.5rem}
 .feat-text{font-size:.8rem;color:var(--muted);line-height:1.6}
+.features-marquee-viewport{width:100%}
 
 .economy-layout{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:start}
 .economy-grid{display:flex;flex-direction:column;gap:1px;background:var(--border);border:1px solid var(--border)}
@@ -91,6 +92,8 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(10,15,10,.96
 .info-title{font-family:"Cinzel",serif;font-size:.85rem;font-weight:700;color:#fff;margin-bottom:.5rem}
 .info-text{font-size:.8rem;color:var(--muted);line-height:1.6}
 
+.rules-slider-viewport{display:block;width:100%;outline:none}
+.rules-slider-viewport:focus-visible{box-shadow:0 0 0 2px rgba(74,222,128,.35);border-radius:4px}
 .rules-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--border);border:1px solid var(--border)}
 .rule{background:var(--surface);padding:1.8rem 2rem;display:flex;gap:1.2rem;transition:background .2s}
 .rule:hover{background:var(--surface2)}
@@ -190,14 +193,15 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(10,15,10,.96
 .page-preloader-inner{display:flex;flex-direction:column;align-items:center;gap:1.65rem;text-align:center;padding:2rem}
 .page-preloader-mark{font-family:"Cinzel",serif;font-size:clamp(1.35rem,4.2vw,2rem);font-weight:900;letter-spacing:.14em;color:var(--text);animation:preloaderFade .9s ease both}
 .page-preloader-mark span{color:var(--green);text-shadow:0 0 28px rgba(74,222,128,.35)}
-.page-preloader-ring{width:54px;height:54px;border-radius:50%;border:3px solid var(--border2);border-top-color:var(--green);border-right-color:rgba(74,222,128,.35);animation:preloaderSpin .95s linear infinite}
+.page-preloader-ring{width:54px;height:54px;border-radius:50%;border:3px solid var(--border2);border-top-color:var(--green);border-right-color:rgba(74,222,128,.35);transform-origin:50% 50%;will-change:transform;animation:preloaderSpin .95s linear infinite}
 .page-preloader-hint{font-size:.65rem;letter-spacing:.28em;text-transform:uppercase;color:var(--muted);font-weight:700;margin-top:.25rem;min-height:1.35em;max-width:min(380px,92vw);line-height:1.45;transition:opacity .22s ease;animation:preloaderFade .65s ease .18s both}
-@keyframes preloaderSpin{to{transform:rotate(360deg)}}
+@keyframes preloaderSpin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
 @keyframes preloaderFade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes preloaderRingPulse{0%,100%{opacity:.42}50%{opacity:1}}
 @media(prefers-reduced-motion:reduce){
-  .page-preloader-ring{animation:none;border-color:var(--green-dark);border-top-color:var(--green);opacity:.85}
+  .page-preloader-ring{animation:preloaderRingPulse 1.15s ease-in-out infinite;border-color:var(--green-dark);border-top-color:var(--green)}
   .page-preloader-mark{animation:none;opacity:1;transform:none}
-  .page-preloader-hint{animation:none;opacity:1;transform:none;transition:none}
+  .page-preloader-hint{animation:none;opacity:1;transform:none;transition:opacity .22s ease}
 }
 
 .links-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
@@ -212,6 +216,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(10,15,10,.96
 footer{border-top:1px solid var(--border);padding:2.5rem 6rem;display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:.75rem}
 .footer-logo{font-family:"Cinzel",serif;font-size:.9rem;font-weight:900;color:var(--green)}
 
+@keyframes featSlide{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 @keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
 @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.85)}}
@@ -224,17 +229,40 @@ footer{border-top:1px solid var(--border);padding:2.5rem 6rem;display:flex;justi
 @media(max-width:900px){
   .hero{grid-template-columns:1fr;padding:6rem 2rem 4rem;gap:3rem}.hero-visual{order:-1}.avatar-wrap{width:240px;height:240px}
   .section{padding:4rem 2rem}.divider{margin:0 2rem}
-  .features-grid{grid-template-columns:1fr}.economy-layout{grid-template-columns:1fr;gap:2rem}
-  .rules-grid{grid-template-columns:1fr}.links-grid{grid-template-columns:1fr 1fr}
+  #about .features-marquee-viewport{overflow:hidden;margin:0 -2rem;width:calc(100% + 4rem)}
+  #about .features-grid.is-marquee{display:flex;flex-direction:row;flex-wrap:nowrap;gap:1rem;width:max-content;max-width:none;background:transparent;border:none;padding-bottom:.35rem;animation:featSlide 42s linear infinite;will-change:transform}
+  #about .features-grid.is-marquee .feat{flex:0 0 min(calc(100vw - 4.5rem),300px);width:min(calc(100vw - 4.5rem),300px);max-width:300px;border:1px solid var(--border);background:var(--surface);box-sizing:border-box}
+  #about .features-grid.is-marquee .feat:hover{transform:none}
+  #about .features-marquee-viewport:hover .features-grid.is-marquee{animation-play-state:paused}
+  .features-grid:not(.is-marquee){grid-template-columns:1fr}
+  .economy-layout{grid-template-columns:1fr;gap:2rem}
+  #rules .rules-slider-viewport{margin-left:-2rem;margin-right:-2rem;width:calc(100% + 4rem);max-width:none;box-sizing:border-box;padding-left:max(1.25rem,env(safe-area-inset-left));padding-right:max(1.25rem,env(safe-area-inset-right));overflow-x:auto;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch;scroll-snap-type:x mandatory;touch-action:pan-x;scrollbar-width:none;-ms-overflow-style:none}
+  #rules .rules-slider-viewport::-webkit-scrollbar{display:none;width:0;height:0}
+  #rules .rules-grid{display:flex;flex-direction:row;flex-wrap:nowrap;gap:.85rem;width:max-content;max-width:none;background:transparent;border:none;padding:.35rem 0;padding-inline-end:min(14vw,3.25rem)}
+  #rules .rules-grid .rule{flex:0 0 min(86vw,400px);width:min(86vw,400px);max-width:400px;scroll-snap-align:center;scroll-margin-inline:.6rem;border:1px solid var(--border);box-sizing:border-box;touch-action:manipulation}
+  #rules .rules-grid .rule:hover{background:var(--surface)}
+  .links-grid{grid-template-columns:1fr 1fr}
   .shop-nick-bar{grid-template-columns:1fr 1fr}
   .custom-grid{grid-template-columns:1fr 1fr}
   nav{padding:0 1.5rem}.nav-links{display:none}
   footer{flex-direction:column;gap:1rem;padding:2rem;text-align:center}
   .shop-how{flex-direction:column}
+  #shopSliderRoot.shop-slider{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:auto auto;gap:.85rem 1rem;align-items:center;width:100%}
+  #shopSliderViewport{grid-column:1/-1;grid-row:1;scroll-snap-type:x mandatory;margin-left:-2rem;margin-right:-2rem;padding-left:max(1.25rem,env(safe-area-inset-left));padding-right:max(1.25rem,env(safe-area-inset-right));width:calc(100% + 4rem);max-width:none;box-sizing:border-box}
+  #shopSliderPrev{grid-column:1;grid-row:2;justify-self:end;margin-right:.35rem}
+  #shopSliderNext{grid-column:2;grid-row:2;justify-self:start;margin-left:.35rem}
+  #shop .shop-card{flex:0 0 min(82vw,300px);width:min(82vw,300px);max-width:300px;scroll-snap-align:center;scroll-margin-inline:.75rem}
+  #shop .shop-card:hover{transform:translateY(-3px)}
+  #shop .shop-buy-btn{min-height:44px;touch-action:manipulation}
+}
+@media(max-width:900px) and (prefers-reduced-motion:reduce){
+  #about .features-grid.is-marquee{animation:none;flex-wrap:wrap;width:100%;justify-content:center}
+  #about .features-grid.is-marquee .feat{flex:1 1 100%;width:100%;max-width:420px}
 }
 @media(max-width:500px){
-  .shop-card{flex-basis:min(280px,calc(100vw - 5.5rem))!important;width:min(280px,calc(100vw - 5.5rem))!important}
-  .shop-slider-arrow{width:38px;height:38px;font-size:1.45rem}
+  #shop .shop-card{flex-basis:min(300px,calc(100vw - 3.25rem))!important;width:min(300px,calc(100vw - 3.25rem))!important}
+  .shop-slider-arrow{width:42px;height:42px;font-size:1.45rem}
+  #rules .rules-grid .rule{flex-basis:min(92vw,360px)!important;width:min(92vw,360px)!important}
   .links-grid{grid-template-columns:1fr}
   .shop-nick-bar{grid-template-columns:1fr}.custom-grid{grid-template-columns:1fr}
 }
@@ -301,6 +329,7 @@ footer{border-top:1px solid var(--border);padding:2.5rem 6rem;display:flex;justi
     <h2 class="s-title">Minecraft такой,<br>каким он должен быть</h2>
     <p class="s-desc">Здесь нет гонки за привилегиями. Строй, исследуй, торгуй и общайся.</p>
   </div>
+  <div class="features-marquee-viewport" aria-label="Особенности сервера">
   <div class="features-grid">
     <div class="feat"><div class="feat-icon">🌿</div><div class="feat-title">Vanilla+</div><div class="feat-text">Чистая ваниль с небольшими улучшениями. FallingTree, Vanilla Tweaks — ничего лишнего.</div></div>
     <div class="feat"><div class="feat-icon">🚫</div><div class="feat-title">Без pay-to-win</div><div class="feat-text">Никаких игровых преимуществ за деньги. Все в равных условиях.</div></div>
@@ -308,6 +337,7 @@ footer{border-top:1px solid var(--border);padding:2.5rem 6rem;display:flex;justi
     <div class="feat"><div class="feat-icon">🔒</div><div class="feat-title">Вайтлист</div><div class="feat-text">Закрытый сервер. Уютное комьюнити где тебя знают по имени.</div></div>
     <div class="feat"><div class="feat-icon">🏦</div><div class="feat-title">Центробанк</div><div class="feat-text">Собственная валюта Икси-Коин. Торгуй, копи, бери кредиты у администрации.</div></div>
     <div class="feat"><div class="feat-icon">🔄</div><div class="feat-title">Стабильность</div><div class="feat-text">Автоперезапуск в 00:00 МСК и ежедневные бэкапы. Сервер всегда надёжен.</div></div>
+  </div>
   </div>
 </section>
 
@@ -636,13 +666,15 @@ footer{border-top:1px solid var(--border);padding:2.5rem 6rem;display:flex;justi
     <h2 class="s-title">Играем честно</h2>
     <p class="s-desc">Простые правила для уютной атмосферы. Нарушение — предупреждение или бан.</p>
   </div>
-  <div class="rules-grid">
-    <div class="rule"><span class="rule-n">01</span><span class="rule-t">Уважай всех игроков. Никаких оскорблений, дискриминации, буллинга и токсичности в чате или голосе.</span></div>
-    <div class="rule"><span class="rule-n">02</span><span class="rule-t">Читы, X-Ray, автокликеры и любые моды дающие преимущество — бан без предупреждения.</span></div>
-    <div class="rule"><span class="rule-n">03</span><span class="rule-t">Гриферство, воровство и разрушение чужих построек строго запрещены.</span></div>
-    <div class="rule"><span class="rule-n">04</span><span class="rule-t">Строй аккуратно — никаких летающих деревьев, ям до бедрока и мусора у спавна.</span></div>
-    <div class="rule"><span class="rule-n">05</span><span class="rule-t">Казино разрешено только на Икси-Коины. Пропаганда наркотиков — бан.</span></div>
-    <div class="rule"><span class="rule-n">06</span><span class="rule-t">Обман при торговле наказуемо. Все сделки совершаются добровольно и через руки.</span></div>
+  <div class="rules-slider-viewport" id="rulesSliderViewport" tabindex="0" role="region" aria-roledescription="карусель" aria-label="Правила сервера — листайте горизонтально или свайпом">
+    <div class="rules-grid">
+      <div class="rule"><span class="rule-n">01</span><span class="rule-t">Уважай всех игроков. Никаких оскорблений, дискриминации, буллинга и токсичности в чате или голосе.</span></div>
+      <div class="rule"><span class="rule-n">02</span><span class="rule-t">Читы, X-Ray, автокликеры и любые моды дающие преимущество — бан без предупреждения.</span></div>
+      <div class="rule"><span class="rule-n">03</span><span class="rule-t">Гриферство, воровство и разрушение чужих построек строго запрещены.</span></div>
+      <div class="rule"><span class="rule-n">04</span><span class="rule-t">Строй аккуратно — никаких летающих деревьев, ям до бедрока и мусора у спавна.</span></div>
+      <div class="rule"><span class="rule-n">05</span><span class="rule-t">Казино разрешено только на Икси-Коины. Пропаганда наркотиков — бан.</span></div>
+      <div class="rule"><span class="rule-n">06</span><span class="rule-t">Обман при торговле наказуемо. Все сделки совершаются добровольно и через руки.</span></div>
+    </div>
   </div>
 </section>
 
@@ -1006,6 +1038,90 @@ const shopSliderPrev = document.getElementById('shopSliderPrev');
 const shopSliderNext = document.getElementById('shopSliderNext');
 let shopSliderAnimId = null;
 
+const mqShopAuto = window.matchMedia('(max-width: 900px)');
+const mqReducedMotionShop = window.matchMedia('(prefers-reduced-motion: reduce)');
+let shopAutoDir = 1;
+let shopAutoRaf = null;
+let shopAutoResumeTimer = null;
+let shopAutoUserPauseUntil = 0;
+let shopAutoSectionVisible = typeof IntersectionObserver === 'undefined';
+
+function shopAutoShouldRun() {
+  return mqShopAuto.matches && !mqReducedMotionShop.matches && !!shopSliderViewport && shopAutoSectionVisible;
+}
+
+function shopAutoPause(ms) {
+  shopAutoUserPauseUntil = Math.max(shopAutoUserPauseUntil, performance.now() + ms);
+}
+
+function shopAutoStopLoop() {
+  if (shopAutoRaf !== null) {
+    cancelAnimationFrame(shopAutoRaf);
+    shopAutoRaf = null;
+  }
+  if (shopAutoResumeTimer !== null) {
+    clearTimeout(shopAutoResumeTimer);
+    shopAutoResumeTimer = null;
+  }
+}
+
+function shopAutoScheduleResume(delayMs) {
+  shopAutoStopLoop();
+  if (!shopAutoShouldRun()) return;
+  shopAutoResumeTimer = setTimeout(() => {
+    shopAutoResumeTimer = null;
+    if (!shopAutoShouldRun()) return;
+    shopAutoRaf = requestAnimationFrame(shopAutoTick);
+  }, delayMs);
+}
+
+function shopAutoTick() {
+  shopAutoRaf = null;
+  if (!shopAutoShouldRun()) return;
+
+  const vp = shopSliderViewport;
+  const maxScroll = Math.max(0, vp.scrollWidth - vp.clientWidth);
+
+  if (maxScroll < 8) {
+    shopAutoScheduleResume(600);
+    return;
+  }
+
+  const now = performance.now();
+  if (now < shopAutoUserPauseUntil) {
+    shopAutoScheduleResume(Math.min(400, shopAutoUserPauseUntil - now + 24));
+    return;
+  }
+
+  if (shopSliderAnimId !== null) {
+    shopAutoRaf = requestAnimationFrame(shopAutoTick);
+    return;
+  }
+
+  const speed = Math.max(0.38, Math.min(1.05, vp.clientWidth * 0.00014));
+  let next = vp.scrollLeft + shopAutoDir * speed;
+
+  if (next <= 0.5) {
+    next = 0;
+    shopAutoDir = 1;
+    shopAutoPause(820);
+  } else if (next >= maxScroll - 0.5) {
+    next = maxScroll;
+    shopAutoDir = -1;
+    shopAutoPause(820);
+  }
+
+  vp.scrollLeft = next;
+  updateShopSliderArrows();
+  shopAutoRaf = requestAnimationFrame(shopAutoTick);
+}
+
+function shopAutoStartLoop() {
+  shopAutoStopLoop();
+  if (!shopAutoShouldRun()) return;
+  shopAutoRaf = requestAnimationFrame(shopAutoTick);
+}
+
 function shopSliderScrollAmount() {
   if (!shopSliderViewport) return 280;
   return Math.max(200, Math.round(shopSliderViewport.clientWidth * 0.78));
@@ -1030,6 +1146,7 @@ function shopSliderStopAnim() {
 function shopSliderAnimateTo(targetLeft) {
   const vp = shopSliderViewport;
   if (!vp) return;
+  shopAutoPause(2200);
   const maxScroll = Math.max(0, vp.scrollWidth - vp.clientWidth);
   const clamped = Math.max(0, Math.min(targetLeft, maxScroll));
 
@@ -1068,6 +1185,7 @@ function shopSliderAnimateTo(targetLeft) {
 
 function resetShopSlider() {
   if (!shopSliderViewport) return;
+  shopAutoDir = 1;
   shopSliderStopAnim();
   shopSliderAnimateTo(0);
 }
@@ -1080,10 +1198,15 @@ if (shopSliderViewport && shopSliderPrev && shopSliderNext) {
     shopSliderAnimateTo(shopSliderViewport.scrollLeft + shopSliderScrollAmount());
   });
   shopSliderViewport.addEventListener('scroll', updateShopSliderArrows, { passive: true });
-  shopSliderViewport.addEventListener('pointerdown', () => shopSliderStopAnim());
+  shopSliderViewport.addEventListener('pointerdown', () => {
+    shopSliderStopAnim();
+    shopAutoPause(4200);
+  });
   window.addEventListener('resize', () => {
     shopSliderStopAnim();
+    shopAutoStopLoop();
     updateShopSliderArrows();
+    shopAutoStartLoop();
   });
   shopSliderViewport.addEventListener('keydown', e => {
     if (e.key === 'ArrowLeft') {
@@ -1096,11 +1219,39 @@ if (shopSliderViewport && shopSliderPrev && shopSliderNext) {
     }
   });
   updateShopSliderArrows();
+  mqShopAuto.addEventListener('change', () => {
+    shopAutoStopLoop();
+    shopAutoDir = 1;
+    shopAutoStartLoop();
+  });
+  mqReducedMotionShop.addEventListener('change', () => {
+    shopAutoStopLoop();
+    shopAutoStartLoop();
+  });
+  const shopSectionEl = document.getElementById('shop');
+  if (shopSectionEl && typeof IntersectionObserver !== 'undefined') {
+    const ioShop = new IntersectionObserver(
+      entries => {
+        for (const e of entries) {
+          shopAutoSectionVisible = e.isIntersecting;
+          if (shopAutoSectionVisible) shopAutoStartLoop();
+          else shopAutoStopLoop();
+        }
+      },
+      { root: null, rootMargin: '80px 0px', threshold: 0.06 }
+    );
+    ioShop.observe(shopSectionEl);
+  } else {
+    shopAutoSectionVisible = true;
+  }
+  shopAutoStartLoop();
 }
 
 // Tabs
 document.querySelectorAll('.shop-tab').forEach(tab => {
   tab.addEventListener('click', function() {
+    shopAutoDir = 1;
+    shopAutoPause(1600);
     document.querySelectorAll('.shop-tab').forEach(t=>t.classList.remove('active'));
     this.classList.add('active');
     const cat = this.dataset.cat;
@@ -1116,6 +1267,21 @@ document.querySelectorAll('.shop-tab').forEach(tab => {
     });
   });
 });
+
+(function rulesSliderA11y(){
+  const vp = document.getElementById('rulesSliderViewport');
+  if (!vp) return;
+  const mqReduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+  vp.addEventListener('keydown', e => {
+    if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+    const step = Math.max(240, Math.round(vp.clientWidth * 0.82));
+    vp.scrollBy({
+      left: e.key === 'ArrowLeft' ? -step : step,
+      behavior: mqReduce.matches ? 'auto' : 'smooth'
+    });
+    e.preventDefault();
+  });
+})();
 
 const navBarEl = document.querySelector('nav');
 let anchorScrollAnimId = null;
@@ -1248,16 +1414,22 @@ document.getElementById('copyIp').addEventListener('click', function() {
     if(!hintEl||hintTimer)return;
     hintTimer=setInterval(swapHint,2200);
   }
+  function bootHints(){
+    if(!hintEl||hintTimer)return;
+    if(!reduceMotion){
+      hintEl.style.animation='none';
+    }
+    startHintCycle();
+  }
   if(hintEl){
     hintEl.textContent=hintMsgs[0];
-    if(reduceMotion)startHintCycle();
-    else{
-      hintEl.addEventListener('animationend',function onHintIn(){
-        hintEl.removeEventListener('animationend',onHintIn);
-        hintEl.style.animation='none';
-        startHintCycle();
-      });
-      setTimeout(function(){if(!hintTimer)startHintCycle();},3000);
+    var hintBootMs=reduceMotion?120:880;
+    setTimeout(bootHints,hintBootMs);
+    if(!reduceMotion){
+      hintEl.addEventListener('animationend',function(e){
+        if(e.target!==hintEl)return;
+        bootHints();
+      },{once:true});
     }
   }
   var loadDone=false;
@@ -1287,6 +1459,31 @@ document.getElementById('copyIp').addEventListener('click', function() {
     fontsDone=true;
     tryUnlock();
   },14000);
+})();
+
+(function(){
+  var grid=document.querySelector('#about .features-grid');
+  var mq=window.matchMedia('(max-width:900px)');
+  var reduce=window.matchMedia('(prefers-reduced-motion:reduce)');
+  if(!grid)return;
+  function clearClones(){
+    grid.querySelectorAll('.feat--marquee-clone').forEach(function(n){n.remove();});
+  }
+  function apply(){
+    clearClones();
+    grid.classList.remove('is-marquee');
+    if(!mq.matches||reduce.matches)return;
+    grid.classList.add('is-marquee');
+    grid.querySelectorAll('.feat:not(.feat--marquee-clone)').forEach(function(node){
+      var c=node.cloneNode(true);
+      c.classList.add('feat--marquee-clone');
+      c.setAttribute('aria-hidden','true');
+      grid.appendChild(c);
+    });
+  }
+  apply();
+  mq.addEventListener('change',apply);
+  reduce.addEventListener('change',apply);
 })();
 
 // Reveal
