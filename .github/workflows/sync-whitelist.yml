@@ -1,5 +1,10 @@
 # Скачивает whitelist.json с сервера Play2GO по SFTP и коммитит в репозиторий — сайт на Pages получает актуальный список.
 #
+# Ошибка «Permission denied (password,publickey)» — неверный логин/пароль для SFTP или лишний пробел в секрете.
+# Логин возьми из панели целиком (иногда с полным UUID после точки). Проверь вход WinSCP/FileZilla на тот же хост:порт.
+#
+# На главной сервера указан Address вида host:20122 — это порт Minecraft, не SFTP. SFTP всегда из Settings → SFTP (часто порт 2022).
+#
 # GitHub → Settings → Secrets and variables → Actions → New repository secret:
 #   PLAY2GO_SFTP_HOST       например  c11.play2go.cloud
 #   PLAY2GO_SFTP_USER       как в панели Settings → SFTP (например ...753fd3fb)
@@ -50,14 +55,19 @@ jobs:
           sudo apt-get install -y -qq sshpass openssh-client
           printf '%s\n' "get ${RPATH} whitelist.json" bye > sftp-batch.txt
           echo "SFTP: ${SFTP_USER}@${SFTP_HOST}:${PORT} remote=${RPATH}"
-          SSHPASS="$SFTP_PASSWORD" sshpass -e sftp \
+          umask 077
+          printf '%s' "$SFTP_PASSWORD" > .sftp_pass
+          trap 'rm -f .sftp_pass' EXIT
+          sshpass -f .sftp_pass sftp \
             -oStrictHostKeyChecking=no \
             -oUserKnownHostsFile=/dev/null \
-            -oPreferredAuthentications=password \
+            -oPreferredAuthentications=keyboard-interactive,password \
             -oPubkeyAuthentication=no \
+            -oNumberOfPasswordPrompts=1 \
             -P "$PORT" \
             -b sftp-batch.txt \
             "${SFTP_USER}@${SFTP_HOST}"
+          rm -f .sftp_pass
 
       - name: Commit if changed
         uses: stefanzweifel/git-auto-commit-action@v5
