@@ -36,6 +36,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Paramiko
+        run: pip install --quiet paramiko
+
       - name: Download whitelist.json (SFTP)
         env:
           SFTP_HOST: ${{ secrets.PLAY2GO_SFTP_HOST }}
@@ -49,25 +56,11 @@ jobs:
             echo "Задай секреты PLAY2GO_SFTP_HOST, PLAY2GO_SFTP_USER, PLAY2GO_SFTP_PASSWORD"
             exit 1
           fi
-          PORT="${SFTP_PORT:-2022}"
-          RPATH="${REMOTE_PATH:-whitelist.json}"
-          sudo apt-get update -qq
-          sudo apt-get install -y -qq sshpass openssh-client
-          printf '%s\n' "get ${RPATH} whitelist.json" bye > sftp-batch.txt
-          echo "SFTP: ${SFTP_USER}@${SFTP_HOST}:${PORT} remote=${RPATH}"
-          umask 077
-          printf '%s' "$SFTP_PASSWORD" > .sftp_pass
-          trap 'rm -f .sftp_pass' EXIT
-          sshpass -f .sftp_pass sftp \
-            -oStrictHostKeyChecking=no \
-            -oUserKnownHostsFile=/dev/null \
-            -oPreferredAuthentications=keyboard-interactive,password \
-            -oPubkeyAuthentication=no \
-            -oNumberOfPasswordPrompts=1 \
-            -P "$PORT" \
-            -b sftp-batch.txt \
-            "${SFTP_USER}@${SFTP_HOST}"
-          rm -f .sftp_pass
+          export SFTP_HOST SFTP_USER SFTP_PASSWORD
+          export SFTP_PORT="${SFTP_PORT:-2022}"
+          export REMOTE_PATH="${REMOTE_PATH:-whitelist.json}"
+          echo "SFTP: ${SFTP_USER}@${SFTP_HOST}:${SFTP_PORT} remote=${REMOTE_PATH}"
+          python3 .github/scripts/fetch_whitelist_sftp.py
 
       - name: Commit if changed
         uses: stefanzweifel/git-auto-commit-action@v5
