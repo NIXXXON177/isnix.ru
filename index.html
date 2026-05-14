@@ -112,7 +112,6 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(10,15,10,.96
 .nick-status.empty{background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.25);color:#fbbf24}
 .nick-status.checking{background:rgba(122,154,122,.1);border:1px solid var(--border2);color:var(--muted)}
 .nick-status.invalid{background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.35);color:#f87171}
-.nick-verify-hint{font-size:.65rem;color:var(--muted);line-height:1.45;margin-top:.55rem;font-weight:400;letter-spacing:.02em;white-space:normal;text-align:left;max-width:280px}
 
 /* Shop how */
 .shop-how{display:flex;gap:0;margin-bottom:2.5rem;background:var(--surface);border:1px solid var(--border)}
@@ -354,7 +353,6 @@ footer{border-top:1px solid var(--border);padding:2.5rem 6rem;display:flex;justi
     <div>
       <label>Статус</label>
       <div class="nick-status empty" id="nickStatus">⚠️ Введи ник перед покупкой</div>
-      <p class="nick-verify-hint">Сайт читает JSON по адресу <strong style="color:var(--green);font-weight:700">WHITELIST_JSON_URL</strong> в коде страницы (по умолчанию файл <strong style="color:#fff">whitelist.json</strong> на этом же домене). Форматы: массив <strong style="color:#fff">players</strong> или vanilla whitelist с uuid/name. Панель Play2GO (<a href="https://control.play2go.cloud/" target="_blank" rel="noopener noreferrer" style="color:var(--green)">control.play2go.cloud</a>) из браузера игрока недоступна — нужен свой скрипт/cron или прокси с CORS; иначе обновляй <strong style="color:#fff">whitelist.json</strong> в репозитории вручную при смене вайтлиста.</p>
     </div>
     <div style="padding-bottom:.05rem;font-size:.75rem;color:var(--muted);line-height:1.5;max-width:220px">Ник автоматически подставится в комментарий к донату на DonationAlerts</div>
   </div>
