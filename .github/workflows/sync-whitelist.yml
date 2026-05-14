@@ -1,0 +1,62 @@
+# Скачивает whitelist.json с сервера Play2GO по SFTP и коммитит в репозиторий — сайт на Pages получает актуальный список.
+#
+# GitHub → Settings → Secrets and variables → Actions → New repository secret:
+#   PLAY2GO_SFTP_HOST       например  c11.play2go.cloud
+#   PLAY2GO_SFTP_USER       как в панели Settings → SFTP (например ...753fd3fb)
+#   PLAY2GO_SFTP_PASSWORD   тот же пароль, что от входа в панель Play2GO
+# Опционально:
+#   PLAY2GO_SFTP_PORT       по умолчанию в скрипте 2022
+#   PLAY2GO_WHITELIST_PATH  по умолчанию /home/container/whitelist.json
+#
+# Путь к файлу на сервере смотри в панели Files (обычно корень контейнера).
+
+name: Sync whitelist from Play2GO
+
+on:
+  schedule:
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sync-whitelist
+  cancel-in-progress: true
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download whitelist.json (SFTP)
+        env:
+          SFTP_HOST: ${{ secrets.PLAY2GO_SFTP_HOST }}
+          SFTP_PORT: ${{ secrets.PLAY2GO_SFTP_PORT }}
+          SFTP_USER: ${{ secrets.PLAY2GO_SFTP_USER }}
+          SFTP_PASSWORD: ${{ secrets.PLAY2GO_SFTP_PASSWORD }}
+          REMOTE_PATH: ${{ secrets.PLAY2GO_WHITELIST_PATH }}
+        run: |
+          set -euo pipefail
+          if [ -z "${SFTP_HOST:-}" ] || [ -z "${SFTP_USER:-}" ] || [ -z "${SFTP_PASSWORD:-}" ]; then
+            echo "Задай секреты PLAY2GO_SFTP_HOST, PLAY2GO_SFTP_USER, PLAY2GO_SFTP_PASSWORD"
+            exit 1
+          fi
+          PORT="${SFTP_PORT:-2022}"
+          RPATH="${REMOTE_PATH:-/home/container/whitelist.json}"
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq sshpass openssh-client
+          printf '%s\n' "get ${RPATH} whitelist.json" bye > sftp-batch.txt
+          SSHPASS="$SFTP_PASSWORD" sshpass -e sftp \
+            -oBatchMode=yes \
+            -oStrictHostKeyChecking=accept-new \
+            -P "$PORT" \
+            -b sftp-batch.txt \
+            "${SFTP_USER}@${SFTP_HOST}"
+
+      - name: Commit if changed
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: 'chore: sync whitelist.json from Play2GO'
+          file_pattern: whitelist.json
