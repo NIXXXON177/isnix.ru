@@ -6,9 +6,10 @@
 #   PLAY2GO_SFTP_PASSWORD   тот же пароль, что от входа в панель Play2GO
 # Опционально:
 #   PLAY2GO_SFTP_PORT       по умолчанию в скрипте 2022
-#   PLAY2GO_WHITELIST_PATH  по умолчанию /home/container/whitelist.json
+#   PLAY2GO_WHITELIST_PATH  по умолчанию whitelist.json (относительно корня SFTP — как в FileZilla)
+#                            если не качается, попробуй секрет: /home/container/whitelist.json
 #
-# Путь к файлу на сервере смотри в панели Files (обычно корень контейнера).
+# Путь смотри во вкладке Files: часто достаточно имени файла whitelist.json в корне сервера.
 
 name: Sync whitelist from Play2GO
 
@@ -44,13 +45,16 @@ jobs:
             exit 1
           fi
           PORT="${SFTP_PORT:-2022}"
-          RPATH="${REMOTE_PATH:-/home/container/whitelist.json}"
+          RPATH="${REMOTE_PATH:-whitelist.json}"
           sudo apt-get update -qq
           sudo apt-get install -y -qq sshpass openssh-client
           printf '%s\n' "get ${RPATH} whitelist.json" bye > sftp-batch.txt
+          echo "SFTP: ${SFTP_USER}@${SFTP_HOST}:${PORT} remote=${RPATH}"
           SSHPASS="$SFTP_PASSWORD" sshpass -e sftp \
-            -oBatchMode=yes \
-            -oStrictHostKeyChecking=accept-new \
+            -oStrictHostKeyChecking=no \
+            -oUserKnownHostsFile=/dev/null \
+            -oPreferredAuthentications=password \
+            -oPubkeyAuthentication=no \
             -P "$PORT" \
             -b sftp-batch.txt \
             "${SFTP_USER}@${SFTP_HOST}"
