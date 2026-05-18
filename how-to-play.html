@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Как начать играть — ISTHISNIXXXON</title>
+<meta name="description" content="Пошаговая инструкция: Fabric, моды и подключение к серверу ISTHISNIXXXON.">
+<meta name="theme-color" content="#0a0f0a">
+<link rel="canonical" href="https://isnix.ru/how-to-play.html">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Raleway:wght@400;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config={corePlugins:{preflight:false}};
+</script>
+<style>
+:root{
+  --bg:#0a0f0a;--surface:#0f160f;--green:#4ade80;--green-dark:#166534;
+  --muted:#7a9a7a;--border:#1a2e1a;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{font-size:100%}
+@media(min-width:901px){html{font-size:107%}}
+body{
+  font-family:"Raleway",sans-serif;
+  background:
+    radial-gradient(circle at 12% -5%,rgba(34,197,94,.12) 0%,transparent 32%),
+    radial-gradient(circle at 90% 8%,rgba(74,222,128,.08) 0%,transparent 26%),var(--bg);
+  color:#e8f5e8;
+  overflow-x:hidden;
+  min-height:100vh;
+}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--green-dark)}
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  background:rgba(10,15,10,.96);backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border);padding:0 3rem;height:64px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.nav-logo{font-family:"Cinzel",serif;font-size:1rem;font-weight:900;color:#e8f5e8;letter-spacing:.08em;text-decoration:none}
+.nav-logo span{color:var(--green)}
+.nav-links{display:flex;gap:2rem;list-style:none}
+.nav-links a{text-decoration:none;color:var(--muted);font-size:.72rem;font-weight:600;letter-spacing:.15em;text-transform:uppercase;transition:color .2s}
+.nav-links a:hover,.nav-links a.active{color:var(--green)}
+.nav-btn{
+  background:var(--green-dark);color:var(--green);border:1px solid var(--green-dark);
+  padding:.5rem 1.2rem;font-family:"Raleway",sans-serif;font-size:.72rem;font-weight:700;
+  letter-spacing:.1em;text-transform:uppercase;text-decoration:none;transition:all .2s;
+}
+.nav-btn:hover{background:var(--green);color:var(--bg)}
+footer{
+  border-top:1px solid var(--border);padding:2.5rem 6rem;
+  display:flex;justify-content:space-between;align-items:center;
+  color:var(--muted);font-size:.75rem;
+}
+.footer-logo{font-family:"Cinzel",serif;font-size:.9rem;font-weight:900;color:var(--green)}
+@media(max-width:900px){
+  nav{padding:0 1.5rem}
+  .nav-links{display:none}
+  footer{flex-direction:column;gap:1rem;padding:2rem;text-align:center}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">ISTHIS<span>NIXXXON</span></a>
+  <ul class="nav-links">
+    <li><a href="index.html#about">О сервере</a></li>
+    <li><a href="index.html#barter">Бартер</a></li>
+    <li><a href="index.html#shop">Магазин</a></li>
+    <li><a href="index.html#rules">Правила</a></li>
+    <li><a href="index.html#join-server">На сервер</a></li>
+    <li><a href="index.html#links">Контакты</a></li>
+    <li><a href="how-to-play.html" class="active">Как играть</a></li>
+  </ul>
+  <a href="https://vk.com/isthisnixxxon" target="_blank" rel="noopener noreferrer" class="nav-btn">Вайтлист</a>
+</nav>
+
+<main class="mx-auto max-w-[52rem] px-4 pb-20 pt-[5.85rem] sm:px-6 lg:max-w-[56rem] lg:pb-28">
+  <header class="text-center lg:text-left">
+    <p class="mb-2 text-[0.62rem] font-bold uppercase tracking-[0.35em] text-emerald-400/90">Инструкция</p>
+    <h1 class="font-['Cinzel',serif] text-balance text-[clamp(1.6rem,4.8vw,2.65rem)] font-bold leading-[1.12] text-white">Как начать играть на ISTHISNIXXXON</h1>
+    <p class="mx-auto mt-4 max-w-xl text-[0.9rem] leading-relaxed text-neutral-400 lg:mx-0">Три простых шага: клиент Fabric, обязательный мод Simple Voice Chat и заход на сервер после одобрения вайтлиста.</p>
+  </header>
+
+  <div class="mt-12 flex flex-col gap-8 lg:gap-10">
+
+    <article class="group relative overflow-hidden rounded-[1.5rem] border border-emerald-900/50 bg-gradient-to-br from-neutral-950/95 via-[#0f1710]/95 to-[#080a08]/98 p-6 shadow-[0_28px_64px_-20px_rgba(34,197,94,0.12)] sm:p-8">
+      <div class="absolute right-6 top-6 flex h-12 w-12 items-center justify-center rounded-xl border border-emerald-500/30 bg-emerald-500/10 text-emerald-400">
+        <svg class="h-7 w-7 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2"/><path d="M7 9l5-5 5 5"/><path d="M12 4v12"/></svg>
+      </div>
+      <div class="pr-14 sm:pr-16">
+        <div class="mb-4 inline-flex items-center gap-2 rounded-full border border-emerald-600/40 bg-emerald-500/12 px-3 py-1">
+          <span class="font-['Cinzel',serif] text-[0.7rem] font-bold text-emerald-300">Шаг 1</span>
+        </div>
+        <h2 class="font-['Cinzel',serif] text-xl font-bold text-white md:text-[1.35rem]">Установи Fabric</h2>
+        <ul class="mt-5 space-y-3 text-[0.9rem] leading-relaxed text-neutral-300 [&_a]:text-emerald-400 [&_a]:underline-offset-2 hover:[&_a]:text-emerald-300">
+          <li class="flex gap-3">
+            <span class="mt-[0.35rem] shrink-0 text-emerald-500/85">●</span>
+            <span>Скачай <strong class="font-semibold text-white">Fabric Installer</strong> с официального сайта —
+              <a href="https://fabricmc.net/use/installer/" target="_blank" rel="noopener noreferrer" class="underline">fabricmc.net</a>.</span>
+          </li>
+          <li class="flex gap-3">
+            <span class="mt-[0.35rem] shrink-0 text-emerald-500/85">●</span>
+            <span>Выбери версию <strong class="font-semibold text-emerald-200/95">Minecraft 1.21.11</strong>, укажи путь к игре и нажми «Установить» (Install).</span>
+          </li>
+          <li class="flex gap-3">
+            <span class="mt-[0.35rem] shrink-0 text-emerald-500/85">●</span>
+            <span>В лаунчере появится новый профиль <strong class="font-semibold text-white">Fabric</strong> — запускай игру через него.</span>
+          </li>
+        </ul>
+      </div>
+    </article>
+
+    <article class="relative overflow-hidden rounded-[1.5rem] border border-emerald-900/55 bg-gradient-to-br from-[#0f1710]/95 via-neutral-950/95 to-[#0a1210]/98 p-6 shadow-[0_28px_60px_-18px_rgba(34,197,94,0.22)] sm:p-8">
+      <div class="absolute right-6 top-6 flex h-12 w-12 items-center justify-center rounded-xl border border-emerald-500/40 bg-emerald-500/14 text-emerald-400">
+        <svg class="h-7 w-7 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 11a2 2 0 10-4 0v5a4 4 0 008 0v-9a6 6 0 10-12 0v9"/><path d="M10 6V4"/><path d="M14 6V4"/></svg>
+      </div>
+      <div class="pr-14 sm:pr-16">
+        <div class="mb-4 inline-flex items-center gap-2 rounded-full border border-emerald-700/38 bg-green-950/55 px-3 py-1">
+          <span class="font-['Cinzel',serif] text-[0.7rem] font-bold text-emerald-200">Шаг 2</span>
+        </div>
+        <h2 class="font-['Cinzel',serif] text-xl font-bold text-white md:text-[1.35rem]">Установи Simple Voice Chat</h2>
+        <p class="mt-4 text-[0.9rem] leading-relaxed text-neutral-400">Под версию <strong class="font-semibold text-emerald-200/90">1.21.11</strong> (Fabric) нужен мод голосового чата, совместимый с сервером:</p>
+        <div class="mt-4 flex flex-wrap">
+          <a href="https://modrinth.com/mod/simple-voice-chat" target="_blank" rel="noopener noreferrer"
+             class="inline-flex w-full max-w-md items-center gap-3 rounded-xl border border-emerald-800/42 bg-black/35 px-4 py-3 text-[0.85rem] font-semibold text-emerald-100 transition hover:border-emerald-500/65 hover:bg-emerald-950/55">
+            <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-emerald-500/15 text-lg" aria-hidden="true">🔊</span>
+            Simple Voice Chat на Modrinth
+          </a>
+        </div>
+        <div class="mt-5 rounded-xl border border-dashed border-emerald-800/42 bg-black/25 px-4 py-3 text-[0.82rem] leading-relaxed text-neutral-400">
+          <span class="text-emerald-200/95">📁 Куда положить:</span>
+          скачанный jar-файл мода перенеси в папку
+          <code class="rounded bg-neutral-950/85 px-1.5 py-0.5 font-mono text-[0.78rem] text-emerald-400/95">.minecraft/mods</code>
+          — там же находятся остальные моды профиля Fabric.
+        </div>
+      </div>
+    </article>
+
+    <article class="relative overflow-hidden rounded-[1.5rem] border border-emerald-800/45 bg-gradient-to-br from-neutral-950/95 via-[#0d1712]/92 to-[#0f1412]/96 p-6 shadow-[0_28px_64px_-20px_rgba(74,222,128,0.1)] sm:p-8">
+      <div class="absolute right-6 top-6 flex h-12 w-12 items-center justify-center rounded-xl border border-green-600/35 bg-green-600/15 text-green-400">
+        <svg class="h-7 w-7 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M21 15a4 4 0 01-4 4H7l-4 4V7a4 4 0 014-4h10a4 4 0 014 4v8z"/><path stroke-linecap="round" d="M8 12h8M12 16V8"/></svg>
+      </div>
+      <div class="pr-14 sm:pr-16">
+        <div class="mb-4 inline-flex items-center gap-2 rounded-full border border-green-600/35 bg-green-600/10 px-3 py-1">
+          <span class="font-['Cinzel',serif] text-[0.7rem] font-bold text-green-300">Шаг 3</span>
+        </div>
+        <h2 class="font-['Cinzel',serif] text-xl font-bold text-white md:text-[1.35rem]">Заходи на сервер</h2>
+        <ul class="mt-5 space-y-4 text-[0.9rem] leading-relaxed text-neutral-300">
+          <li class="flex flex-wrap items-center gap-x-2 gap-y-1">
+            <span class="shrink-0 text-emerald-500/85">●</span>
+            <span><strong class="font-semibold text-white">IP:</strong>
+              <span class="font-mono font-bold tracking-wide text-emerald-400">mc.isnix.ru</span></span>
+          </li>
+          <li class="flex gap-3">
+            <span class="mt-[0.35rem] shrink-0 text-emerald-500/85">●</span>
+            <span>Подай заявку в вайтлист в <a href="https://vk.com/isthisnixxxon" target="_blank" rel="noopener noreferrer" class="font-semibold text-emerald-400 underline underline-offset-2 hover:text-emerald-300">сообществе ВКонтакте</a> (кратко: ник, как обращаться, зачем хочешь на сервер) или перейди с главной к разделу
+              <a href="index.html#join-server" class="font-semibold text-emerald-400 underline underline-offset-2 hover:text-emerald-300">«На сервер»</a>.</span>
+          </li>
+        </ul>
+      </div>
+    </article>
+  </div>
+
+  <p class="mt-12 flex flex-wrap items-center justify-center gap-3 rounded-2xl border border-neutral-700/55 bg-neutral-950/40 px-4 py-4 text-center text-[0.8rem] text-neutral-400 lg:text-left">
+    <a href="index.html" class="inline-flex rounded-lg border border-emerald-900/55 bg-emerald-950/30 px-4 py-2 text-[0.72rem] font-bold uppercase tracking-wider text-emerald-400 transition hover:border-emerald-600/65 hover:bg-emerald-950/50">На главную</a>
+    <span class="hidden sm:inline">·</span>
+    Запускай профиль Fabric с установленным <strong class="font-semibold text-neutral-300">Simple Voice Chat</strong>.
+  </p>
+</main>
+
+<footer>
+  <div class="footer-logo">ISTHISNIXXXON</div>
+  <div>Ванильный сервер с душой · Java 1.21.11 · mc.isnix.ru</div>
+  <div>© 2026 · <a href="index.html" class="text-neutral-400 transition hover:text-[var(--green)]">На главную</a></div>
+</footer>
+
+</body>
+</html>
