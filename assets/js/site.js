@@ -22,7 +22,7 @@
 	var nickWhitelistAbort = null
 	var nickDebounceTimer = null
 	var MC_NICK_RE = /^[a-zA-Z0-9_]{3,16}$/
-	/** ╨Ю╤В╨╜╨╛╤Б╨╕╤В╨╡╨╗╤М╨╜╤Л╨╣ ╨┐╤Г╤В╤М ╤Б isnix.ru ╨╕╨╗╨╕ ╨┐╨╛╨╗╨╜╤Л╨╣ URL ╨┐╤А╨╛╨║╤Б╨╕ (╤Б╨╝. ╨┐╨╛╨┤╤Б╨║╨░╨╖╨║╤Г ╨┐╨╛╨┤ ╨┐╨╛╨╗╨╡╨╝ ╨╜╨╕╨║╨░). ╨Я╤А╤П╨╝╨░╤П ╤Б╤Б╤Л╨╗╨║╨░ ╨╜╨░ ╨┐╨░╨╜╨╡╨╗╤М ╤Е╨╛╤Б╤В╨╕╨╜╨│╨░ ╨╕╨╖ ╨▒╤А╨░╤Г╨╖╨╡╤А╨░ ╨╜╨╡ ╤А╨░╨▒╨╛╤В╨░╨╡╤В. */
+	/** Относительный путь с isnix.ru или полный URL прокси (см. подсказку под полем ника). Прямая ссылка на панель хостинга из браузера не работает. */
 	var WHITELIST_JSON_URL = 'whitelist.json'
 	var whitelistPlayers = null
 	var whitelistFetchedAt = 0
@@ -70,7 +70,7 @@
 		nickWhitelistAbort = new AbortController()
 		var ac = nickWhitelistAbort
 		nickApprovedKey = null
-		st.textContent = 'тП│ ╨Я╤А╨╛╨▓╨╡╤А╤П╨╡╨╝ ╨▓╨░╨╣╤В╨╗╨╕╤Б╤ВтАж'
+		st.textContent = '⏳ Проверяем вайтлист…'
 		st.className = 'nick-status checking'
 		updateCustomPreview()
 
@@ -87,11 +87,11 @@
 			}
 			if (canon) {
 				nickApprovedKey = lv
-				st.textContent = 'тЬЕ ╨Т ╨▓╨░╨╣╤В╨╗╨╕╤Б╤В╨╡: ' + canon
+				st.textContent = '✅ В вайтлисте: ' + canon
 				st.className = 'nick-status ok'
 			} else {
 				nickApprovedKey = null
-				st.textContent = 'тЭМ ╨Э╨╡╤В ╨▓ ╨▓╨░╨╣╤В╨╗╨╕╤Б╤В╨╡'
+				st.textContent = '❌ Нет в вайтлисте'
 				st.className = 'nick-status invalid'
 			}
 			updateCustomPreview()
@@ -123,7 +123,7 @@
 				nickApprovedKey = null
 				whitelistPlayers = null
 				whitelistFetchedAt = 0
-				st.textContent = 'тЪая╕П ╨Э╨╡╤В whitelist.json ╨╕╨╗╨╕ ╨╛╤И╨╕╨▒╨║╨░ ╨╖╨░╨│╤А╤Г╨╖╨║╨╕'
+				st.textContent = '⚠️ Нет whitelist.json или ошибка загрузки'
 				st.className = 'nick-status empty'
 				updateCustomPreview()
 			})
@@ -139,7 +139,7 @@
 
 	function buildDonationUrl(prefix, amount) {
 		const nick = canonicalNickFromWhitelist(getNick())
-		const comment = `╨Э╨╕╨║: ${nick} | ╨Я╤А╨╡╤Д╨╕╨║╤Б: [${prefix}]`
+		const comment = `Ник: ${nick} | Префикс: [${prefix}]`
 		const url = new URL(DA_URL)
 		url.searchParams.set('comment', comment)
 		if (amount) url.searchParams.set('amount', amount)
@@ -149,12 +149,12 @@
 	function openDonation(btn) {
 		const nick = getNick()
 		if (!nick) {
-			showToast('тЪая╕П ╨б╨╜╨░╤З╨░╨╗╨░ ╨▓╨▓╨╡╨┤╨╕ ╨╜╨╕╨║ ╨▓ Minecraft!', false)
+			showToast('⚠️ Сначала введи ник в Minecraft!', false)
 			document.getElementById('playerNick').focus()
 			return
 		}
 		if (!isNickVerifiedForPurchase()) {
-			showToast('тЪая╕П ╨Э╨╕╨║ ╨┤╨╛╨╗╨╢╨╡╨╜ ╨▒╤Л╤В╤М ╨▓ ╨▓╨░╨╣╤В╨╗╨╕╤Б╤В╨╡ (╨╖╨╡╨╗╤С╨╜╤Л╨╣ ╤Б╤В╨░╤В╤Г╤Б)', false)
+			showToast('⚠️ Ник должен быть в вайтлисте (зелёный статус)', false)
 			document.getElementById('playerNick').focus()
 			return
 		}
@@ -165,7 +165,7 @@
 	}
 
 	function buildBoldNickDonationUrl(nickCanon) {
-		const comment = `╨Э╨╕╨║: ${nickCanon} | ╨г╤Б╨╗╤Г╨│╨░: ╨Ц╨╕╤А╨╜╤Л╨╣ ╨╜╨╕╨║`
+		const comment = `Ник: ${nickCanon} | Услуга: Жирный ник`
 		const url = new URL(DA_URL)
 		url.searchParams.set('comment', comment)
 		url.searchParams.set('amount', '150')
@@ -200,12 +200,12 @@
 			document.getElementById('boldNickModalNick').value || ''
 		).trim()
 		if (!raw) {
-			showToast('тЪая╕П ╨Т╨▓╨╡╨┤╨╕╤В╨╡ ╨╜╨╕╨║ ╨▓ Minecraft!', false)
+			showToast('⚠️ Введите ник в Minecraft!', false)
 			document.getElementById('boldNickModalNick').focus()
 			return
 		}
 		if (!MC_NICK_RE.test(raw)) {
-			showToast('тЪая╕П ╨Э╨╕╨║: 3тАУ16 ╤Б╨╕╨╝╨▓╨╛╨╗╨╛╨▓, ╨╗╨░╤В╨╕╨╜╨╕╤Ж╨░, ╤Ж╨╕╤Д╤А╤Л ╨╕ _', false)
+			showToast('⚠️ Ник: 3–16 символов, латиница, цифры и _', false)
 			document.getElementById('boldNickModalNick').focus()
 			return
 		}
@@ -225,14 +225,14 @@
 			const st = document.getElementById('nickStatus')
 			if (!canon) {
 				nickApprovedKey = null
-				st.textContent = 'тЭМ ╨Э╨╡╤В ╨▓ ╨▓╨░╨╣╤В╨╗╨╕╤Б╤В╨╡'
+				st.textContent = '❌ Нет в вайтлисте'
 				st.className = 'nick-status invalid'
 				updateCustomPreview()
-				showToast('тЪая╕П ╨Э╨╕╨║ ╨┤╨╛╨╗╨╢╨╡╨╜ ╨▒╤Л╤В╤М ╨▓ ╨▓╨░╨╣╤В╨╗╨╕╤Б╤В╨╡ (╨╖╨╡╨╗╤С╨╜╤Л╨╣ ╤Б╤В╨░╤В╤Г╤Б)', false)
+				showToast('⚠️ Ник должен быть в вайтлисте (зелёный статус)', false)
 				return
 			}
 			nickApprovedKey = lv
-			st.textContent = 'тЬЕ ╨Т ╨▓╨░╨╣╤В╨╗╨╕╤Б╤В╨╡: ' + canon
+			st.textContent = '✅ В вайтлисте: ' + canon
 			st.className = 'nick-status ok'
 			updateCustomPreview()
 			const nickCanon = canonicalNickFromWhitelist(raw)
@@ -243,7 +243,7 @@
 		nickApprovedKey = null
 		fetchWhitelistCheck(raw)
 		showToast(
-			'тП│ ╨Ч╨░╨│╤А╤Г╨╢╨░╨╡╨╝ ╨▓╨░╨╣╤В╨╗╨╕╤Б╤ВтАж ╨Ъ╨╛╨│╨┤╨░ ╤Б╤В╨░╤В╤Г╤Б ╤Б╨▓╨╡╤А╤Е╤Г ╤Б╤В╨░╨╜╨╡╤В ╨╖╨╡╨╗╤С╨╜╤Л╨╝, ╨╜╨░╨╢╨╝╨╕╤В╨╡ ┬л╨Я╨╡╤А╨╡╨╣╤В╨╕ ╨║ ╨╛╨┐╨╗╨░╤В╨╡┬╗ ╨╡╤Й╤С ╤А╨░╨╖',
+			'⏳ Загружаем вайтлист… Когда статус сверху станет зелёным, нажмите «Перейти к оплате» ещё раз',
 			true,
 		)
 	}
@@ -266,29 +266,29 @@
 			document.getElementById('customPrefix').value || ''
 		).trim()
 		if (!nick) {
-			showToast('тЪая╕П ╨Т╨▓╨╡╨┤╨╕ ╨╜╨╕╨║!', false)
+			showToast('⚠️ Введи ник!', false)
 			document.getElementById('customNick').focus()
 			return
 		}
 		if (!isNickVerifiedForPurchase()) {
-			showToast('тЪая╕П ╨б╨╜╨░╤З╨░╨╗╨░ ╨┐╤А╨╛╨▓╨╡╤А╤М ╨╜╨╕╨║ ╨┐╨╛ ╨▓╨░╨╣╤В╨╗╨╕╤Б╤В╤Г', false)
+			showToast('⚠️ Сначала проверь ник по вайтлисту', false)
 			document.getElementById('playerNick').focus()
 			return
 		}
 		if (!prefix) {
-			showToast('тЪая╕П ╨Я╤А╨╕╨┤╤Г╨╝╨░╨╣ ╨┐╤А╨╡╤Д╨╕╨║╤Б!', false)
+			showToast('⚠️ Придумай префикс!', false)
 			document.getElementById('customPrefix').focus()
 			return
 		}
 		const color = document.getElementById('customColor').value
-		const comment = `╨Э╨╕╨║: ${canonicalNickFromWhitelist(nick)} | ╨Ъ╨░╤Б╤В╨╛╨╝╨╜╤Л╨╣ ╨┐╤А╨╡╤Д╨╕╨║╤Б: [${prefix}] | ╨ж╨▓╨╡╤В: ${color}`
+		const comment = `Ник: ${canonicalNickFromWhitelist(nick)} | Кастомный префикс: [${prefix}] | Цвет: ${color}`
 		const url = new URL(DA_URL)
 		url.searchParams.set('comment', comment)
 		url.searchParams.set('amount', '299')
 		window.open(url.toString(), '_blank', 'noopener')
 	}
 
-	// Sync nick + ╨┐╤А╨╛╨▓╨╡╤А╨║╨░ ╨┐╨╛ whitelist.json (debounced)
+	// Sync nick + проверка по whitelist.json (debounced)
 	document
 		.getElementById('playerNick')
 		.addEventListener('input', function () {
@@ -302,21 +302,21 @@
 			}
 			var st = document.getElementById('nickStatus')
 			if (!v) {
-				st.textContent = 'тЪая╕П ╨Т╨▓╨╡╨┤╨╕ ╨╜╨╕╨║ ╨┐╨╡╤А╨╡╨┤ ╨┐╨╛╨║╤Г╨┐╨║╨╛╨╣'
+				st.textContent = '⚠️ Введи ник перед покупкой'
 				st.className = 'nick-status empty'
 				nickApprovedKey = null
 				updateCustomPreview()
 				return
 			}
 			if (!MC_NICK_RE.test(v)) {
-				st.textContent = 'тЪая╕П ╨Э╨╕╨║: 3тАУ16 ╤Б╨╕╨╝╨▓╨╛╨╗╨╛╨▓, ╨╗╨░╤В╨╕╨╜╨╕╤Ж╨░, ╤Ж╨╕╤Д╤А╤Л ╨╕ _'
+				st.textContent = '⚠️ Ник: 3–16 символов, латиница, цифры и _'
 				st.className = 'nick-status invalid'
 				nickApprovedKey = null
 				updateCustomPreview()
 				return
 			}
 			nickApprovedKey = null
-			st.textContent = 'тП│ ╨Я╤А╨╛╨▓╨╡╤А╤П╨╡╨╝ ╨▓╨░╨╣╤В╨╗╨╕╤Б╤ВтАж'
+			st.textContent = '⏳ Проверяем вайтлист…'
 			st.className = 'nick-status checking'
 			updateCustomPreview()
 			nickDebounceTimer = setTimeout(function () {
@@ -341,10 +341,10 @@
 		const tag = document.getElementById('customPreviewTag')
 		const name = document.getElementById('customPreviewName')
 		const btn = document.getElementById('customBuyBtn')
-		tag.textContent = prefix ? `[${prefix}]` : '[╨Я╤А╨╡╤Д╨╕╨║╤Б]'
+		tag.textContent = prefix ? `[${prefix}]` : '[Префикс]'
 		tag.style.color = hex
 		tag.style.textShadow = `0 0 14px ${hex}`
-		name.textContent = nick || '╨Э╨╕╨║'
+		name.textContent = nick || 'Ник'
 		btn.disabled = !prefix || !nick || !isNickVerifiedForPurchase()
 	}
 
@@ -364,7 +364,9 @@
 	})()
 
 	const navBarEl =
-		document.getElementById('siteNav') || document.querySelector('.site-top')
+		document.querySelector('.site-header') ||
+		document.getElementById('siteNav') ||
+		document.querySelector('.site-top')
 	let anchorScrollAnimId = null
 
 	function anchorHeaderPad() {
@@ -784,9 +786,12 @@
 			setMenuOpen(!menu.classList.contains('is-open'))
 		}
 
-		if (nav) {
+		var siteHeader = document.querySelector('.site-header')
+		if (nav || siteHeader) {
 			function onNavScroll() {
-				nav.classList.toggle('is-scrolled', window.scrollY > 12)
+				var scrolled = window.scrollY > 12
+				if (nav) nav.classList.toggle('is-scrolled', scrolled)
+				if (siteHeader) siteHeader.classList.toggle('is-scrolled', scrolled)
 			}
 			onNavScroll()
 			window.addEventListener('scroll', onNavScroll, { passive: true })
