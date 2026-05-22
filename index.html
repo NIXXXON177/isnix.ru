@@ -41,7 +41,23 @@
 		>
 			<div class="page-preloader-inner">
 				<div class="page-preloader-mark">ISTHIS<span>NIXXXON</span></div>
-				<div class="page-preloader-ring" aria-hidden="true"></div>
+				<div class="page-preloader-spinner" aria-hidden="true">
+					<div class="page-preloader-ring"></div>
+				</div>
+				<div
+					class="page-preloader-progress"
+					role="progressbar"
+					aria-valuemin="0"
+					aria-valuemax="100"
+					aria-valuenow="0"
+					aria-label="Загрузка"
+					id="pagePreloaderProgressWrap"
+				>
+					<div
+						class="page-preloader-progress-fill"
+						id="pagePreloaderProgress"
+					></div>
+				</div>
 				<p
 					class="page-preloader-hint"
 					id="pagePreloaderHint"

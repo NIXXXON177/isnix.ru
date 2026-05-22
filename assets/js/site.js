@@ -516,27 +516,52 @@
 		refresh()
 		setInterval(refresh, 60000)
 	})()
-	;(function () {
+	;(function initPagePreloader() {
 		var el = document.getElementById('pagePreloader')
 		if (!el) return
+
 		var hintEl = document.getElementById('pagePreloaderHint')
+		var progressEl = document.getElementById('pagePreloaderProgress')
+		var progressWrap = document.getElementById('pagePreloaderProgressWrap')
 		var hintMsgs = [
-			'╨Я╨╛╨┤╨║╨╗╤О╤З╨╡╨╜╨╕╨╡ ╨║ ╨╝╨╕╤А╤ГтАж',
-			'╨Ч╨░╨│╤А╤Г╨╖╨║╨░ ╤А╨╡╤Б╤Г╤А╤Б╨╛╨▓тАж',
-			'╨Я╨╛╤Б╤В╤А╨╛╨╣╨║╨░ ╤З╨░╨╜╨║╨╛╨▓тАж',
-			'╨Ч╨░╨│╤А╤Г╨╖╨║╨░ ╤В╨╡╨║╤Б╤В╤Г╤АтАж',
-			'╨Я╨╛╨┤╨│╨╛╤В╨╛╨▓╨║╨░ ╨╗╨░╨╜╨┤╤И╨░╤Д╤В╨░тАж',
-			'╨Ч╨░╨│╤А╤Г╨╖╨║╨░ ╨┤╨░╨╜╨╜╤Л╤Е ╨╕╨│╤А╨╛╨║╨░тАж',
-			'╨б╨╕╨╜╤Е╤А╨╛╨╜╨╕╨╖╨░╤Ж╨╕╤П ╤Б ╤Б╨╡╤А╨▓╨╡╤А╨╛╨╝тАж',
-			'╨Ш╨╜╨╕╤Ж╨╕╨░╨╗╨╕╨╖╨░╤Ж╨╕╤П ╨╖╨▓╤Г╨║╨░тАж',
-			'╨Ю╨▒╨╜╨╛╨▓╨╗╨╡╨╜╨╕╨╡ ╤Б╨▓╨╡╤В╨░тАж',
-			'╨Я╨╛╤З╤В╨╕ ╨│╨╛╤В╨╛╨▓╨╛тАж',
+			'Подключение к миру…',
+			'Загрузка ресурсов…',
+			'Постройка чанков…',
+			'Загрузка текстур…',
+			'Подготовка ландшафта…',
+			'Синхронизация с сервером…',
+			'Почти готово…',
 		]
+		var MIN_SHOW_MS = 750
+		var MAX_SHOW_MS = 5500
+		var startedAt = performance.now()
 		var hintIdx = 0
 		var hintTimer = null
+		var progressTimer = null
+		var progressVal = 0
+		var pageReady = false
+		var fontsReady = !(document.fonts && document.fonts.ready)
+		var finished = false
 		var reduceMotion =
 			typeof matchMedia !== 'undefined' &&
-			matchMedia('(prefers-reduced-motion:reduce)').matches
+			matchMedia('(prefers-reduced-motion: reduce)').matches
+
+		function setProgress(pct) {
+			if (!progressEl) return
+			var v = Math.max(0, Math.min(100, Math.round(pct)))
+			progressEl.style.width = v + '%'
+			if (progressWrap) progressWrap.setAttribute('aria-valuenow', String(v))
+		}
+
+		function tickProgress() {
+			if (finished) return
+			var cap = pageReady && fontsReady ? 94 : 82
+			if (progressVal < cap) {
+				progressVal += (cap - progressVal) * 0.14 + 2
+				setProgress(progressVal)
+			}
+		}
+
 		function swapHint() {
 			if (!hintEl) return
 			hintIdx = (hintIdx + 1) % hintMsgs.length
@@ -549,77 +574,85 @@
 			setTimeout(function () {
 				hintEl.textContent = next
 				hintEl.style.opacity = '1'
-			}, 220)
+			}, 200)
 		}
-		function startHintCycle() {
-			if (!hintEl || hintTimer) return
-			hintTimer = setInterval(swapHint, 2200)
-		}
-		function bootHints() {
-			if (!hintEl || hintTimer) return
-			if (!reduceMotion) {
-				hintEl.style.animation = 'none'
-			}
-			startHintCycle()
-		}
-		if (hintEl) {
-			hintEl.textContent = hintMsgs[0]
-			var hintBootMs = reduceMotion ? 120 : 880
-			setTimeout(bootHints, hintBootMs)
-			if (!reduceMotion) {
-				hintEl.addEventListener(
-					'animationend',
-					function (e) {
-						if (e.target !== hintEl) return
-						bootHints()
-					},
-					{ once: true },
-				)
-			}
-		}
-		var loadDone = false
-		var fontsDone = !(document.fonts && document.fonts.ready)
-		var finished = false
-		function runHide() {
+
+		function stopTimers() {
 			if (hintTimer) {
 				clearInterval(hintTimer)
 				hintTimer = null
 			}
-			el.classList.add('is-done')
+			if (progressTimer) {
+				clearInterval(progressTimer)
+				progressTimer = null
+			}
+		}
+
+		function runHide() {
+			stopTimers()
+			setProgress(100)
+			if (hintEl) hintEl.textContent = 'Добро пожаловать'
+			el.classList.add('is-leaving')
 			el.setAttribute('aria-busy', 'false')
 			document.body.classList.remove('preloader-lock')
 			setTimeout(function () {
+				el.classList.add('is-done')
+			}, 420)
+			setTimeout(function () {
 				if (el.parentNode) el.parentNode.removeChild(el)
-			}, 620)
+			}, 920)
 		}
-		function tryUnlock() {
+
+		function tryFinish() {
 			if (finished) return
-			if (!loadDone || !fontsDone) return
+			if (!pageReady || !fontsReady) return
+			var elapsed = performance.now() - startedAt
+			if (elapsed < MIN_SHOW_MS) {
+				setTimeout(tryFinish, MIN_SHOW_MS - elapsed)
+				return
+			}
 			finished = true
 			requestAnimationFrame(function () {
 				requestAnimationFrame(runHide)
 			})
 		}
+
+		if (hintEl) {
+			hintEl.textContent = hintMsgs[0]
+			hintTimer = setInterval(swapHint, 2000)
+		}
+		setProgress(8)
+		progressTimer = setInterval(tickProgress, 120)
+
+		function markPageReady() {
+			pageReady = true
+			tryFinish()
+		}
+
+		if (document.readyState === 'complete') {
+			markPageReady()
+		} else {
+			document.addEventListener('DOMContentLoaded', markPageReady, { once: true })
+			window.addEventListener('load', markPageReady, { once: true })
+		}
+
 		if (document.fonts && document.fonts.ready) {
 			document.fonts.ready
 				.then(function () {
-					fontsDone = true
-					tryUnlock()
+					fontsReady = true
+					tryFinish()
 				})
 				.catch(function () {
-					fontsDone = true
-					tryUnlock()
+					fontsReady = true
+					tryFinish()
 				})
 		}
-		window.addEventListener('load', function () {
-			loadDone = true
-			tryUnlock()
-		})
+
 		setTimeout(function () {
-			loadDone = true
-			fontsDone = true
-			tryUnlock()
-		}, 14000)
+			pageReady = true
+			fontsReady = true
+			tryFinish()
+		}, MAX_SHOW_MS)
 	})()
 	;(function () {
 		var grid = document.querySelector('#about .features-grid')
