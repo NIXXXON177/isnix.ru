@@ -17,7 +17,8 @@ tailwind.config={corePlugins:{preflight:false}};
 <style>
 :root{
   --bg:#0a0f0a;--surface:#0f160f;--green:#4ade80;--green-dark:#166534;
-  --muted:#7a9a7a;--border:#1a2e1a;
+  --muted:#7a9a7a;--text-soft:#9ab89a;--border:#1a2e1a;
+  --radius-md:12px;--radius-lg:18px;--shadow-card:0 12px 40px rgba(0,0,0,.35);
 }
 *{margin:0;padding:0;box-sizing:border-box}
 html{font-size:100%}
@@ -48,9 +49,11 @@ nav{
 .nav-btn{
   background:var(--green-dark);color:var(--green);border:1px solid var(--green-dark);
   padding:.5rem 1.2rem;font-family:"Raleway",sans-serif;font-size:.72rem;font-weight:700;
-  letter-spacing:.1em;text-transform:uppercase;text-decoration:none;transition:all .2s;
+  letter-spacing:.08em;text-transform:uppercase;text-decoration:none;border-radius:8px;
+  transition:background .2s,color .2s,box-shadow .2s,transform .2s;
 }
-.nav-btn:hover{background:var(--green);color:var(--bg)}
+.nav-btn:hover{background:var(--green);color:var(--bg);transform:translateY(-1px);box-shadow:0 0 24px rgba(74,222,128,.12)}
+a:focus-visible,button:focus-visible{outline:2px solid var(--green);outline-offset:3px}
 footer{
   border-top:1px solid var(--border);padding:2.5rem 6rem;
   display:flex;justify-content:space-between;align-items:center;
