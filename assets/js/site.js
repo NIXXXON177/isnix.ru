@@ -426,36 +426,62 @@
 		})
 	})
 
-	// ╨б╤В╨░╤В╤Г╤Б ╤Б╨╡╤А╨▓╨╡╤А╨░ (╤В╨░╨╣╨╝╨░╤Г╤В + ╨╖╨░╨┐╨░╤Б╨╜╨╛╨╣ API тАФ ╨╜╨░ ╤В╨╡╨╗╨╡╤Д╨╛╨╜╨░╤Е mcstatus ╨╕╨╜╨╛╨│╨┤╨░ ╨▒╨╗╨╛╨║╨╕╤А╤Г╤О╤В ╨╕╨╗╨╕ ╨┤╨╛╨╗╨│╨╛ ╨╛╤В╨▓╨╡╤З╨░╨╡╤В)
-	;(function () {
-		var PRIMARY = 'https://api.mcstatus.io/v2/status/java/mc.isnix.ru'
-		var FALLBACK = 'https://api.mcsrvstat.us/2/mc.isnix.ru'
-		var FETCH_MS = 10000
+	// Статус сервера — параллельные API, короткий таймаут, кэш
+	;(function initServerStatus() {
+		var HOST = 'mc.isnix.ru'
+		var SOURCES = [
+			'https://api.mcsrvstat.us/2/' + HOST,
+			'https://api.mcstatus.io/v2/status/java/' + HOST,
+		]
+		var FETCH_MS = 4000
+		var CACHE_KEY = 'isnix_server_status_v1'
+		var CACHE_TTL_MS = 90000
 		var countEl = document.getElementById('serverOnlineCount')
 		var dotEl = document.getElementById('serverOnlineDot')
 		var badgeEl = document.getElementById('serverBadgeText')
+		var hasShown = false
 
 		function parsePayload(d) {
 			if (!d || typeof d.online !== 'boolean') return null
-			var po =
-				d.players && typeof d.players.online === 'number'
-					? d.players.online
-					: 0
-			var pm =
-				d.players && typeof d.players.max === 'number'
-					? d.players.max
-					: null
+			var po = 0
+			var pm = null
+			if (d.players && typeof d.players === 'object') {
+				if (typeof d.players.online === 'number') po = d.players.online
+				if (typeof d.players.max === 'number') pm = d.players.max
+			}
 			return { online: d.online, onlinePlayers: po, maxPlayers: pm }
 		}
 
+		function readCache() {
+			try {
+				var raw = sessionStorage.getItem(CACHE_KEY)
+				if (!raw) return null
+				var box = JSON.parse(raw)
+				if (!box || Date.now() - box.t > CACHE_TTL_MS) return null
+				return box.data
+			} catch (e) {
+				return null
+			}
+		}
+
+		function writeCache(data) {
+			try {
+				sessionStorage.setItem(
+					CACHE_KEY,
+					JSON.stringify({ t: Date.now(), data: data }),
+				)
+			} catch (e) {}
+		}
+
 		function applyStatus(parsed) {
+			hasShown = true
 			if (!parsed) {
 				if (dotEl) {
 					dotEl.classList.remove('is-on')
 					dotEl.classList.add('is-off')
 				}
-				if (countEl) countEl.textContent = 'тАФ'
-				if (badgeEl) badgeEl.textContent = '╨б╤В╨░╤В╤Г╤Б ╨╜╨╡╨┤╨╛╤Б╤В╤Г╨┐╨╡╨╜'
+				if (countEl) countEl.textContent = '—'
+				if (badgeEl) badgeEl.textContent = 'Статус недоступен'
 				return
 			}
 			if (!parsed.online) {
@@ -463,17 +489,17 @@
 					dotEl.classList.remove('is-on')
 					dotEl.classList.add('is-off')
 				}
-				if (countEl) countEl.textContent = '╨╛╤Д╨╗╨░╨╣╨╜'
-				if (badgeEl) badgeEl.textContent = '╨б╨╡╤А╨▓╨╡╤А ╨╛╤Д╨╗╨░╨╣╨╜'
+				if (countEl) countEl.textContent = 'офлайн'
+				if (badgeEl) badgeEl.textContent = 'Сервер офлайн'
 				return
 			}
 			if (dotEl) {
 				dotEl.classList.add('is-on')
 				dotEl.classList.remove('is-off')
 			}
-			var pm = parsed.maxPlayers != null ? parsed.maxPlayers : 'тАФ'
+			var pm = parsed.maxPlayers != null ? parsed.maxPlayers : '—'
 			if (countEl) countEl.textContent = parsed.onlinePlayers + ' / ' + pm
-			if (badgeEl) badgeEl.textContent = '╨б╨╡╤А╨▓╨╡╤А ╨╛╨╜╨╗╨░╨╣╨╜'
+			if (badgeEl) badgeEl.textContent = 'Сервер онлайн'
 		}
 
 		function fetchJson(url) {
@@ -481,7 +507,11 @@
 			var tid = setTimeout(function () {
 				ctrl.abort()
 			}, FETCH_MS)
-			return fetch(url, { signal: ctrl.signal, cache: 'no-store' })
+			return fetch(url, {
+				signal: ctrl.signal,
+				cache: 'default',
+				headers: { Accept: 'application/json' },
+			})
 				.then(function (r) {
 					clearTimeout(tid)
 					if (!r.ok) throw new Error('http')
@@ -493,25 +523,41 @@
 				})
 		}
 
+		function fetchFirstOk() {
+			return new Promise(function (resolve, reject) {
+				var left = SOURCES.length
+				var settled = false
+				SOURCES.forEach(function (url) {
+					fetchJson(url)
+						.then(function (d) {
+							var p = parsePayload(d)
+							if (!p) throw new Error('bad')
+							if (!settled) {
+								settled = true
+								resolve(p)
+							}
+						})
+						.catch(function () {
+							left--
+							if (!settled && left <= 0) reject(new Error('all'))
+						})
+				})
+			})
+		}
+
 		function refresh() {
-			fetchJson(PRIMARY)
-				.then(function (d) {
-					var p = parsePayload(d)
-					if (!p) throw new Error('bad')
-					return p
+			fetchFirstOk()
+				.then(function (p) {
+					writeCache(p)
+					applyStatus(p)
 				})
 				.catch(function () {
-					return fetchJson(FALLBACK).then(function (d) {
-						var p = parsePayload(d)
-						if (!p) throw new Error('bad')
-						return p
-					})
-				})
-				.then(applyStatus)
-				.catch(function () {
-					applyStatus(null)
+					if (!hasShown) applyStatus(null)
 				})
 		}
+
+		var cached = readCache()
+		if (cached) applyStatus(cached)
 
 		refresh()
 		setInterval(refresh, 60000)
@@ -684,10 +730,19 @@
 	})()
 
 	;(function initSiteNav() {
+		var nav = document.querySelector('nav')
 		var toggle = document.getElementById('navToggle')
 		var menu = document.getElementById('navMenu')
 		var logo = document.getElementById('navLogo')
 		if (!toggle || !menu) return
+
+		if (nav) {
+			function onNavScroll() {
+				nav.classList.toggle('is-scrolled', window.scrollY > 12)
+			}
+			onNavScroll()
+			window.addEventListener('scroll', onNavScroll, { passive: true })
+		}
 		function closeMenu() {
 			menu.classList.remove('is-open')
 			toggle.setAttribute('aria-expanded', 'false')
