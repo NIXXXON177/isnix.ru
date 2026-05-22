@@ -363,7 +363,8 @@
 		})
 	})()
 
-	const navBarEl = document.querySelector('nav')
+	const navBarEl =
+		document.getElementById('siteNav') || document.querySelector('.site-top')
 	let anchorScrollAnimId = null
 
 	function anchorHeaderPad() {
@@ -744,7 +745,9 @@
 
 		function setMenuOpen(open) {
 			var mobile = isMobileNav()
-			menu.classList.toggle('is-open', open && mobile)
+			var show = open && mobile
+			menu.classList.toggle('is-open', show)
+			if (show) menu.scrollTop = 0
 			if (backdrop) backdrop.classList.toggle('is-visible', open && mobile)
 			toggle.setAttribute('aria-expanded', open && mobile ? 'true' : 'false')
 			toggle.setAttribute(

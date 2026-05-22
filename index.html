@@ -68,46 +68,44 @@
 			</div>
 		</div>
 
-		<nav id="siteNav">
-			<div class="nav-bar">
-				<a href="#" class="nav-logo" id="navLogo">ISTHIS<span>NIXXXON</span></a>
-				<div class="nav-menu" id="navMenu">
-					<ul class="nav-links">
-						<li><a href="#about" data-nav="about">О сервере</a></li>
-						<li><a href="#download" data-nav="download">Скачать</a></li>
-						<li><a href="#barter" data-nav="barter">Бартер</a></li>
-						<li><a href="#shop" data-nav="shop">Магазин</a></li>
-						<li><a href="#rules" data-nav="rules">Правила</a></li>
-						<li><a href="#join-server" data-nav="join-server">На сервер</a></li>
-						<li><a href="how-to-play.html">Как играть</a></li>
-						<li><a href="#links" data-nav="links">Контакты</a></li>
-					</ul>
-					<a
-						href="https://vk.com/isthisnixxxon"
-						target="_blank"
-						rel="noopener noreferrer"
-						class="nav-btn nav-btn-menu"
-						>Вайтлист</a
-					>
-				</div>
-				<button
-					type="button"
-					class="nav-toggle"
-					id="navToggle"
-					aria-expanded="false"
-					aria-controls="navMenu"
-					aria-label="Открыть меню"
-				>
-					<span></span><span></span><span></span>
-				</button>
-			</div>
+		<header class="site-top" id="siteNav">
+			<a href="#" class="nav-logo" id="navLogo">ISTHIS<span>NIXXXON</span></a>
 			<button
 				type="button"
-				class="nav-backdrop"
-				id="navBackdrop"
-				aria-hidden="true"
-				tabindex="-1"
-			></button>
+				class="nav-toggle"
+				id="navToggle"
+				aria-expanded="false"
+				aria-controls="navMenu"
+				aria-label="Открыть меню"
+			>
+				<span></span><span></span><span></span>
+			</button>
+		</header>
+		<button
+			type="button"
+			class="nav-backdrop"
+			id="navBackdrop"
+			aria-hidden="true"
+			tabindex="-1"
+		></button>
+		<nav class="nav-drawer" id="navMenu" aria-label="Навигация по сайту">
+			<ul class="nav-links">
+				<li><a href="#about" data-nav="about">О сервере</a></li>
+				<li><a href="#download" data-nav="download">Скачать</a></li>
+				<li><a href="#barter" data-nav="barter">Бартер</a></li>
+				<li><a href="#shop" data-nav="shop">Магазин</a></li>
+				<li><a href="#rules" data-nav="rules">Правила</a></li>
+				<li><a href="#join-server" data-nav="join-server">На сервер</a></li>
+				<li><a href="how-to-play.html">Как играть</a></li>
+				<li><a href="#links" data-nav="links">Контакты</a></li>
+			</ul>
+			<a
+				href="https://vk.com/isthisnixxxon"
+				target="_blank"
+				rel="noopener noreferrer"
+				class="nav-btn nav-btn-menu"
+				>Вайтлист</a
+			>
 		</nav>
 
 		<div class="hero">
