@@ -43,7 +43,7 @@
 		rgba(15, 26, 19, 0.96) 50%,
 		rgba(12, 18, 15, 0.98) 100%
 	);
-	box-shadow: 0 28px 64px -12px rgba(34, 197, 94, 0.2);
+	box-shadow: 0 12px 40px -18px rgba(34, 197, 94, 0.14);
 }
 @media (min-width: 640px) {
 	.join-card {
