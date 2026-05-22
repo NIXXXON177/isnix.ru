@@ -476,6 +476,88 @@
 				flex-direction: column;
 				gap: 1.5rem;
 			}
+
+			.download-grid {
+				display: grid;
+				grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+				gap: 1.25rem;
+				max-width: 56rem;
+				margin: 0 auto;
+			}
+			.download-card {
+				background: var(--surface);
+				border: 1px solid var(--border2);
+				padding: 1.75rem;
+				display: flex;
+				flex-direction: column;
+				gap: 0.85rem;
+			}
+			.download-card-featured {
+				border-left: 3px solid var(--green);
+				background: linear-gradient(
+					145deg,
+					var(--surface) 0%,
+					var(--surface2) 100%
+				);
+			}
+			.download-card h3 {
+				font-family: 'Cinzel', serif;
+				font-size: 1rem;
+				font-weight: 700;
+				color: #fff;
+			}
+			.download-card p {
+				font-size: 0.82rem;
+				color: var(--muted);
+				line-height: 1.65;
+				flex: 1;
+			}
+			.download-actions {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 0.65rem;
+				margin-top: 0.25rem;
+			}
+			.btn-dl {
+				display: inline-flex;
+				align-items: center;
+				justify-content: center;
+				gap: 0.4rem;
+				padding: 0.65rem 1.15rem;
+				font-size: 0.72rem;
+				font-weight: 700;
+				letter-spacing: 0.08em;
+				text-transform: uppercase;
+				text-decoration: none;
+				border: 1px solid var(--green-dark);
+				transition:
+					background 0.2s,
+					color 0.2s,
+					border-color 0.2s,
+					transform 0.2s;
+			}
+			.btn-dl-primary {
+				background: var(--green-dark);
+				color: var(--green);
+			}
+			.btn-dl-primary:hover {
+				background: var(--green);
+				color: var(--bg);
+				transform: translateY(-1px);
+			}
+			.btn-dl-secondary {
+				background: transparent;
+				color: var(--muted);
+			}
+			.btn-dl-secondary:hover {
+				border-color: var(--green);
+				color: var(--green);
+			}
+			.download-meta {
+				font-size: 0.7rem;
+				color: var(--muted);
+				letter-spacing: 0.04em;
+			}
 			.info-card {
 				background: var(--surface);
 				border: 1px solid var(--border2);
@@ -734,12 +816,13 @@
 			}
 			.shop-slider-viewport {
 				overflow-x: auto;
-				scroll-snap-type: x proximity;
+				scroll-snap-type: x mandatory;
 				scroll-behavior: auto;
 				-webkit-overflow-scrolling: touch;
 				scrollbar-width: none;
 				-ms-overflow-style: none;
 				overscroll-behavior-x: contain;
+				touch-action: pan-x;
 				padding: 0.35rem 0;
 				margin: 0 -0.1rem;
 				outline: none;
@@ -777,7 +860,8 @@
 				cursor: pointer;
 				flex: 0 0 clamp(220px, 38vw, 280px);
 				width: clamp(220px, 38vw, 280px);
-				scroll-snap-align: center;
+				scroll-snap-align: start;
+				scroll-snap-stop: always;
 				scroll-margin-inline: 0.35rem;
 			}
 			.shop-card:hover {
@@ -1555,6 +1639,7 @@
 			<div class="nav-logo">ISTHIS<span>NIXXXON</span></div>
 			<ul class="nav-links">
 				<li><a href="#about">О сервере</a></li>
+				<li><a href="#download">Скачать</a></li>
 				<li><a href="#barter">Бартер</a></li>
 				<li><a href="#shop">Магазин</a></li>
 				<li><a href="#rules">Правила</a></li>
@@ -1572,7 +1657,7 @@
 				<div class="hero-eyebrow">
 					<div class="hero-dot"></div>
 					<span class="hero-tag"
-						>Minecraft Java 1.21.11 · Fabric · Vanilla+</span
+						>Minecraft Java 1.21.1 · Fabric · Vanilla+</span
 					>
 				</div>
 				<h1 class="hero-title">ISTHIS<span class="line2">NIXXXON</span></h1>
@@ -1587,7 +1672,8 @@
 						class="btn btn-g"
 						>Подать заявку</a
 					>
-					<a href="#shop" class="btn btn-o">Магазин</a>
+					<a href="#download" class="btn btn-o">Скачать сборку</a>
+					<a href="how-to-play.html" class="btn btn-o">Как играть</a>
 				</div>
 				<div class="hero-ip">
 					<div class="ip-box" id="copyIp">
@@ -1686,6 +1772,67 @@
 						</div>
 					</div>
 				</div>
+			</div>
+		</section>
+
+		<div class="divider"></div>
+
+		<section id="download" class="section reveal">
+			<div class="s-header">
+				<div class="s-eyebrow">Подключение</div>
+				<h2 class="s-title">Сборка и лаунчер</h2>
+				<p class="s-desc">
+					Сервер на <strong style="color: #fff">Fabric 1.21.1</strong>.
+					Рекомендуем <strong style="color: #fff">ElyPrismLauncher</strong> —
+					один лаунчер для версии, модов и входа в игру. Ниже — готовая сборка
+					сервера и ссылка на подробную инструкцию.
+				</p>
+			</div>
+			<div class="download-grid">
+				<article class="download-card download-card-featured">
+					<h3>📦 Сборка ISTHISNIXXXON</h3>
+					<p>
+						Архив с модами сервера (включая Simple Voice Chat). Скачай, распакуй
+						и импортируй в ElyPrismLauncher или скопируй содержимое в папку
+						инстанса Fabric 1.21.1.
+					</p>
+					<span class="download-meta">Fabric 1.21.1 · ~40 МБ</span>
+					<div class="download-actions">
+						<a
+							href="downloads/isthisnixxxon-fabric-1.21.1.zip"
+							download="isthisnixxxon-fabric-1.21.1.zip"
+							class="btn-dl btn-dl-primary"
+							>Скачать ZIP</a
+						>
+						<a href="how-to-play.html" class="btn-dl btn-dl-secondary"
+							>Инструкция →</a
+						>
+					</div>
+				</article>
+				<article class="download-card">
+					<h3>🚀 ElyPrismLauncher</h3>
+					<p>
+						Официальный рекомендуемый лаунчер. Удобно ставить Fabric, моды с
+						Modrinth и запускать профиль сервера. На Windows — установщик
+						<strong style="color: #fff">MSVC Setup</strong> с GitHub Releases.
+					</p>
+					<div class="download-actions">
+						<a
+							href="https://github.com/ElyPrismLauncher/Launcher/releases"
+							target="_blank"
+							rel="noopener noreferrer"
+							class="btn-dl btn-dl-primary"
+							>Скачать лаунчер</a
+						>
+						<a
+							href="https://elyprismlauncher.github.io/"
+							target="_blank"
+							rel="noopener noreferrer"
+							class="btn-dl btn-dl-secondary"
+							>Сайт проекта</a
+						>
+					</div>
+				</article>
 			</div>
 		</section>
 
@@ -1811,8 +1958,6 @@
 						<strong style="color: #fff">24 часов</strong></span
 					>
 				</div>
-			</div>
-
 			<!-- Категории -->
 			<div class="shop-tabs">
 				<button class="shop-tab active" data-cat="all">Все префиксы</button>
@@ -2340,7 +2485,6 @@
 					›
 				</button>
 			</div>
-
 			<!-- КАСТОМНЫЙ ПРЕФИКС -->
 			<div class="custom-box">
 				<div class="custom-title">
@@ -2735,7 +2879,7 @@
 
 		<footer>
 			<div class="footer-logo">ISTHISNIXXXON</div>
-			<div>Ванильный сервер с душой · Java 1.21.11 · mc.isnix.ru</div>
+			<div>Ванильный сервер с душой · Java 1.21.1 · mc.isnix.ru</div>
 			<div>© 2026</div>
 		</footer>
 
@@ -3203,107 +3347,14 @@
 				btn.disabled = !prefix || !nick || !isNickVerifiedForPurchase()
 			}
 
-			// Shop prefix slider (easing, без видимого scrollbar)
+			// Shop prefix slider — только ручной скролл и стрелки (без автопрокрутки)
 			const shopSliderViewport = document.getElementById('shopSliderViewport')
 			const shopSliderPrev = document.getElementById('shopSliderPrev')
 			const shopSliderNext = document.getElementById('shopSliderNext')
 			let shopSliderAnimId = null
-
-			const mqShopAuto = window.matchMedia('(max-width: 900px)')
 			const mqReducedMotionShop = window.matchMedia(
 				'(prefers-reduced-motion: reduce)',
 			)
-			let shopAutoDir = 1
-			let shopAutoRaf = null
-			let shopAutoResumeTimer = null
-			let shopAutoUserPauseUntil = 0
-			let shopAutoSectionVisible = typeof IntersectionObserver === 'undefined'
-
-			function shopAutoShouldRun() {
-				return (
-					mqShopAuto.matches &&
-					!mqReducedMotionShop.matches &&
-					!!shopSliderViewport &&
-					shopAutoSectionVisible
-				)
-			}
-
-			function shopAutoPause(ms) {
-				shopAutoUserPauseUntil = Math.max(
-					shopAutoUserPauseUntil,
-					performance.now() + ms,
-				)
-			}
-
-			function shopAutoStopLoop() {
-				if (shopAutoRaf !== null) {
-					cancelAnimationFrame(shopAutoRaf)
-					shopAutoRaf = null
-				}
-				if (shopAutoResumeTimer !== null) {
-					clearTimeout(shopAutoResumeTimer)
-					shopAutoResumeTimer = null
-				}
-			}
-
-			function shopAutoScheduleResume(delayMs) {
-				shopAutoStopLoop()
-				if (!shopAutoShouldRun()) return
-				shopAutoResumeTimer = setTimeout(() => {
-					shopAutoResumeTimer = null
-					if (!shopAutoShouldRun()) return
-					shopAutoRaf = requestAnimationFrame(shopAutoTick)
-				}, delayMs)
-			}
-
-			function shopAutoTick() {
-				shopAutoRaf = null
-				if (!shopAutoShouldRun()) return
-
-				const vp = shopSliderViewport
-				const maxScroll = Math.max(0, vp.scrollWidth - vp.clientWidth)
-
-				if (maxScroll < 8) {
-					shopAutoScheduleResume(600)
-					return
-				}
-
-				const now = performance.now()
-				if (now < shopAutoUserPauseUntil) {
-					shopAutoScheduleResume(
-						Math.min(400, shopAutoUserPauseUntil - now + 24),
-					)
-					return
-				}
-
-				if (shopSliderAnimId !== null) {
-					shopAutoRaf = requestAnimationFrame(shopAutoTick)
-					return
-				}
-
-				const speed = Math.max(0.38, Math.min(1.05, vp.clientWidth * 0.00014))
-				let next = vp.scrollLeft + shopAutoDir * speed
-
-				if (next <= 0.5) {
-					next = 0
-					shopAutoDir = 1
-					shopAutoPause(820)
-				} else if (next >= maxScroll - 0.5) {
-					next = maxScroll
-					shopAutoDir = -1
-					shopAutoPause(820)
-				}
-
-				vp.scrollLeft = next
-				updateShopSliderArrows()
-				shopAutoRaf = requestAnimationFrame(shopAutoTick)
-			}
-
-			function shopAutoStartLoop() {
-				shopAutoStopLoop()
-				if (!shopAutoShouldRun()) return
-				shopAutoRaf = requestAnimationFrame(shopAutoTick)
-			}
 
 			function shopSliderScrollAmount() {
 				if (!shopSliderViewport) return 280
@@ -3330,7 +3381,6 @@
 			function shopSliderAnimateTo(targetLeft) {
 				const vp = shopSliderViewport
 				if (!vp) return
-				shopAutoPause(2200)
 				const maxScroll = Math.max(0, vp.scrollWidth - vp.clientWidth)
 				const clamped = Math.max(0, Math.min(targetLeft, maxScroll))
 
@@ -3339,6 +3389,13 @@
 				const start = vp.scrollLeft
 				const delta = clamped - start
 				if (Math.abs(delta) < 0.5) {
+					vp.classList.remove('is-scrolling-js')
+					updateShopSliderArrows()
+					return
+				}
+
+				if (mqReducedMotionShop.matches) {
+					vp.scrollLeft = clamped
 					vp.classList.remove('is-scrolling-js')
 					updateShopSliderArrows()
 					return
@@ -3369,9 +3426,9 @@
 
 			function resetShopSlider() {
 				if (!shopSliderViewport) return
-				shopAutoDir = 1
 				shopSliderStopAnim()
-				shopSliderAnimateTo(0)
+				shopSliderViewport.scrollTo({ left: 0, behavior: 'auto' })
+				requestAnimationFrame(updateShopSliderArrows)
 			}
 
 			if (shopSliderViewport && shopSliderPrev && shopSliderNext) {
@@ -3388,15 +3445,20 @@
 				shopSliderViewport.addEventListener('scroll', updateShopSliderArrows, {
 					passive: true,
 				})
-				shopSliderViewport.addEventListener('pointerdown', () => {
-					shopSliderStopAnim()
-					shopAutoPause(4200)
+				shopSliderViewport.addEventListener(
+					'wheel',
+					() => {
+						shopSliderStopAnim()
+					},
+					{ passive: true },
+				)
+				shopSliderViewport.addEventListener('touchstart', shopSliderStopAnim, {
+					passive: true,
 				})
+				shopSliderViewport.addEventListener('pointerdown', shopSliderStopAnim)
 				window.addEventListener('resize', () => {
 					shopSliderStopAnim()
-					shopAutoStopLoop()
 					updateShopSliderArrows()
-					shopAutoStartLoop()
 				})
 				shopSliderViewport.addEventListener('keydown', e => {
 					if (e.key === 'ArrowLeft') {
@@ -3413,39 +3475,11 @@
 					}
 				})
 				updateShopSliderArrows()
-				mqShopAuto.addEventListener('change', () => {
-					shopAutoStopLoop()
-					shopAutoDir = 1
-					shopAutoStartLoop()
-				})
-				mqReducedMotionShop.addEventListener('change', () => {
-					shopAutoStopLoop()
-					shopAutoStartLoop()
-				})
-				const shopSectionEl = document.getElementById('shop')
-				if (shopSectionEl && typeof IntersectionObserver !== 'undefined') {
-					const ioShop = new IntersectionObserver(
-						entries => {
-							for (const e of entries) {
-								shopAutoSectionVisible = e.isIntersecting
-								if (shopAutoSectionVisible) shopAutoStartLoop()
-								else shopAutoStopLoop()
-							}
-						},
-						{ root: null, rootMargin: '80px 0px', threshold: 0.06 },
-					)
-					ioShop.observe(shopSectionEl)
-				} else {
-					shopAutoSectionVisible = true
-				}
-				shopAutoStartLoop()
 			}
 
 			// Tabs
 			document.querySelectorAll('.shop-tab').forEach(tab => {
 				tab.addEventListener('click', function () {
-					shopAutoDir = 1
-					shopAutoPause(1600)
 					document
 						.querySelectorAll('.shop-tab')
 						.forEach(t => t.classList.remove('active'))

@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Как начать играть — ISTHISNIXXXON</title>
-<meta name="description" content="Пошаговая инструкция: Fabric, моды и подключение к серверу ISTHISNIXXXON.">
+<meta name="description" content="ElyPrismLauncher, сборка Fabric 1.21.1 и подключение к серверу ISTHISNIXXXON.">
 <meta name="theme-color" content="#0a0f0a">
 <link rel="canonical" href="https://isnix.ru/how-to-play.html">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
@@ -70,7 +70,7 @@ footer{
   <a href="index.html" class="nav-logo">ISTHIS<span>NIXXXON</span></a>
   <ul class="nav-links">
     <li><a href="index.html#about">О сервере</a></li>
-    <li><a href="index.html#barter">Бартер</a></li>
+    <li><a href="index.html#download">Скачать</a></li>
     <li><a href="index.html#shop">Магазин</a></li>
     <li><a href="index.html#rules">Правила</a></li>
     <li><a href="index.html#join-server">На сервер</a></li>
@@ -84,71 +84,107 @@ footer{
   <header class="text-center lg:text-left">
     <p class="mb-2 text-[0.62rem] font-bold uppercase tracking-[0.35em] text-emerald-400/90">Инструкция</p>
     <h1 class="font-['Cinzel',serif] text-balance text-[clamp(1.6rem,4.8vw,2.65rem)] font-bold leading-[1.12] text-white">Как начать играть на ISTHISNIXXXON</h1>
-    <p class="mx-auto mt-4 max-w-xl text-[0.9rem] leading-relaxed text-neutral-400 lg:mx-0">Три простых шага: клиент Fabric, обязательный мод Simple Voice Chat и заход на сервер после одобрения вайтлиста.</p>
+    <p class="mx-auto mt-4 max-w-xl text-[0.9rem] leading-relaxed text-neutral-400 lg:mx-0">
+      Сервер на <strong class="font-semibold text-emerald-200/95">Fabric 1.21.1</strong>.
+      Рекомендуем только <strong class="font-semibold text-white">ElyPrismLauncher</strong> и готовую сборку с сайта.
+    </p>
+    <div class="mt-6 flex flex-wrap justify-center gap-3 lg:justify-start">
+      <a href="downloads/isthisnixxxon-fabric-1.21.1.zip" download="isthisnixxxon-fabric-1.21.1.zip"
+         class="inline-flex min-h-[2.75rem] items-center rounded-xl bg-gradient-to-r from-emerald-500 via-green-600 to-green-800 px-5 text-[0.72rem] font-bold uppercase tracking-wider text-neutral-950 shadow-[0_8px_28px_-6px_rgba(34,197,94,0.4)] transition hover:brightness-105">
+        Скачать сборку (~40 МБ)
+      </a>
+      <a href="https://github.com/ElyPrismLauncher/Launcher/releases" target="_blank" rel="noopener noreferrer"
+         class="inline-flex min-h-[2.75rem] items-center rounded-xl border border-emerald-800/55 bg-emerald-950/25 px-5 text-[0.72rem] font-bold uppercase tracking-wider text-emerald-400 transition hover:border-emerald-500/65 hover:bg-emerald-950/45">
+        ElyPrismLauncher
+      </a>
+    </div>
   </header>
 
   <div class="mt-12 flex flex-col gap-8 lg:gap-10">
 
     <article class="group relative overflow-hidden rounded-[1.5rem] border border-emerald-900/50 bg-gradient-to-br from-neutral-950/95 via-[#0f1710]/95 to-[#080a08]/98 p-6 shadow-[0_28px_64px_-20px_rgba(34,197,94,0.12)] sm:p-8">
-      <div class="absolute right-6 top-6 flex h-12 w-12 items-center justify-center rounded-xl border border-emerald-500/30 bg-emerald-500/10 text-emerald-400">
-        <svg class="h-7 w-7 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2"/><path d="M7 9l5-5 5 5"/><path d="M12 4v12"/></svg>
-      </div>
+      <div class="absolute right-6 top-6 flex h-12 w-12 items-center justify-center rounded-xl border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 text-xl" aria-hidden="true">🚀</div>
       <div class="pr-14 sm:pr-16">
         <div class="mb-4 inline-flex items-center gap-2 rounded-full border border-emerald-600/40 bg-emerald-500/12 px-3 py-1">
           <span class="font-['Cinzel',serif] text-[0.7rem] font-bold text-emerald-300">Шаг 1</span>
         </div>
-        <h2 class="font-['Cinzel',serif] text-xl font-bold text-white md:text-[1.35rem]">Установи Fabric</h2>
+        <h2 class="font-['Cinzel',serif] text-xl font-bold text-white md:text-[1.35rem]">Установи ElyPrismLauncher</h2>
         <ul class="mt-5 space-y-3 text-[0.9rem] leading-relaxed text-neutral-300 [&_a]:text-emerald-400 [&_a]:underline-offset-2 hover:[&_a]:text-emerald-300">
           <li class="flex gap-3">
             <span class="mt-[0.35rem] shrink-0 text-emerald-500/85">●</span>
-            <span>Скачай <strong class="font-semibold text-white">Fabric Installer</strong> с официального сайта —
-              <a href="https://fabricmc.net/use/installer/" target="_blank" rel="noopener noreferrer" class="underline">fabricmc.net</a>.</span>
+            <span>Скачай лаунчер с
+              <a href="https://github.com/ElyPrismLauncher/Launcher/releases" target="_blank" rel="noopener noreferrer" class="underline">GitHub Releases</a>.
+              На Windows, если не уверен — бери <strong class="font-semibold text-white">ElyPrismLauncher-Windows-MSVC-Setup</strong> (последняя версия).</span>
           </li>
           <li class="flex gap-3">
             <span class="mt-[0.35rem] shrink-0 text-emerald-500/85">●</span>
-            <span>Выбери версию <strong class="font-semibold text-emerald-200/95">Minecraft 1.21.11</strong>, укажи путь к игре и нажми «Установить» (Install).</span>
+            <span>Установи и запусти. Войди через свой аккаунт Minecraft (Microsoft) или офлайн-ник — как настроишь в лаунчере.</span>
           </li>
           <li class="flex gap-3">
             <span class="mt-[0.35rem] shrink-0 text-emerald-500/85">●</span>
-            <span>В лаунчере появится новый профиль <strong class="font-semibold text-white">Fabric</strong> — запускай игру через него.</span>
+            <span>Другие лаунчеры мы не рекомендуем — на сервере тестируем только связку <strong class="font-semibold text-white">ElyPrismLauncher + Fabric 1.21.1</strong>.</span>
           </li>
         </ul>
       </div>
     </article>
 
     <article class="relative overflow-hidden rounded-[1.5rem] border border-emerald-900/55 bg-gradient-to-br from-[#0f1710]/95 via-neutral-950/95 to-[#0a1210]/98 p-6 shadow-[0_28px_60px_-18px_rgba(34,197,94,0.22)] sm:p-8">
-      <div class="absolute right-6 top-6 flex h-12 w-12 items-center justify-center rounded-xl border border-emerald-500/40 bg-emerald-500/14 text-emerald-400">
-        <svg class="h-7 w-7 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 11a2 2 0 10-4 0v5a4 4 0 008 0v-9a6 6 0 10-12 0v9"/><path d="M10 6V4"/><path d="M14 6V4"/></svg>
-      </div>
+      <div class="absolute right-6 top-6 flex h-12 w-12 items-center justify-center rounded-xl border border-emerald-500/40 bg-emerald-500/14 text-emerald-400 text-xl" aria-hidden="true">📦</div>
       <div class="pr-14 sm:pr-16">
         <div class="mb-4 inline-flex items-center gap-2 rounded-full border border-emerald-700/38 bg-green-950/55 px-3 py-1">
           <span class="font-['Cinzel',serif] text-[0.7rem] font-bold text-emerald-200">Шаг 2</span>
         </div>
-        <h2 class="font-['Cinzel',serif] text-xl font-bold text-white md:text-[1.35rem]">Установи Simple Voice Chat</h2>
-        <p class="mt-4 text-[0.9rem] leading-relaxed text-neutral-400">Под версию <strong class="font-semibold text-emerald-200/90">1.21.11</strong> (Fabric) нужен мод голосового чата, совместимый с сервером:</p>
-        <div class="mt-4 flex flex-wrap">
-          <a href="https://modrinth.com/mod/simple-voice-chat" target="_blank" rel="noopener noreferrer"
-             class="inline-flex w-full max-w-md items-center gap-3 rounded-xl border border-emerald-800/42 bg-black/35 px-4 py-3 text-[0.85rem] font-semibold text-emerald-100 transition hover:border-emerald-500/65 hover:bg-emerald-950/55">
-            <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-emerald-500/15 text-lg" aria-hidden="true">🔊</span>
-            Simple Voice Chat на Modrinth
-          </a>
-        </div>
+        <h2 class="font-['Cinzel',serif] text-xl font-bold text-white md:text-[1.35rem]">Скачай и установи сборку сервера</h2>
+        <p class="mt-4 text-[0.9rem] leading-relaxed text-neutral-400">
+          На главной в разделе <a href="index.html#download" class="font-semibold text-emerald-400 underline underline-offset-2 hover:text-emerald-300">«Скачать»</a>
+          или по кнопке выше — архив <strong class="font-semibold text-emerald-200/90">isthisnixxxon-fabric-1.21.1.zip</strong> с модами сервера.
+        </p>
+        <ul class="mt-5 space-y-3 text-[0.9rem] leading-relaxed text-neutral-300">
+          <li class="flex gap-3">
+            <span class="mt-[0.35rem] shrink-0 text-emerald-500/85">●</span>
+            <span><strong class="font-semibold text-white">Вариант А (проще):</strong> в ElyPrismLauncher нажми «Добавить» → «Импортировать из ZIP» и выбери скачанный архив. Лаунчер создаст инстанс с нужной версией и модами.</span>
+          </li>
+          <li class="flex gap-3">
+            <span class="mt-[0.35rem] shrink-0 text-emerald-500/85">●</span>
+            <span><strong class="font-semibold text-white">Вариант Б:</strong> создай инстанс вручную — Minecraft <strong class="font-semibold text-emerald-200/95">1.21.1</strong>, загрузчик <strong class="font-semibold text-white">Fabric</strong>. Распакуй ZIP и скопируй папку <code class="rounded bg-neutral-950/85 px-1.5 py-0.5 font-mono text-[0.78rem] text-emerald-400/95">mods</code> (и при необходимости другие файлы из архива) в папку этого инстанса.</span>
+          </li>
+        </ul>
         <div class="mt-5 rounded-xl border border-dashed border-emerald-800/42 bg-black/25 px-4 py-3 text-[0.82rem] leading-relaxed text-neutral-400">
-          <span class="text-emerald-200/95">📁 Куда положить:</span>
-          скачанный jar-файл мода перенеси в папку
-          <code class="rounded bg-neutral-950/85 px-1.5 py-0.5 font-mono text-[0.78rem] text-emerald-400/95">.minecraft/mods</code>
-          — там же находятся остальные моды профиля Fabric.
+          <span class="text-emerald-200/95">💡</span>
+          Путь к папке инстанса: правый клик по инстансу в лаунчере → «Папка инстанса» / «Открыть папку модов».
         </div>
       </div>
     </article>
 
     <article class="relative overflow-hidden rounded-[1.5rem] border border-emerald-800/45 bg-gradient-to-br from-neutral-950/95 via-[#0d1712]/92 to-[#0f1412]/96 p-6 shadow-[0_28px_64px_-20px_rgba(74,222,128,0.1)] sm:p-8">
-      <div class="absolute right-6 top-6 flex h-12 w-12 items-center justify-center rounded-xl border border-green-600/35 bg-green-600/15 text-green-400">
-        <svg class="h-7 w-7 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M21 15a4 4 0 01-4 4H7l-4 4V7a4 4 0 014-4h10a4 4 0 014 4v8z"/><path stroke-linecap="round" d="M8 12h8M12 16V8"/></svg>
-      </div>
+      <div class="absolute right-6 top-6 flex h-12 w-12 items-center justify-center rounded-xl border border-green-600/35 bg-green-600/15 text-green-400 text-xl" aria-hidden="true">🔊</div>
       <div class="pr-14 sm:pr-16">
         <div class="mb-4 inline-flex items-center gap-2 rounded-full border border-green-600/35 bg-green-600/10 px-3 py-1">
           <span class="font-['Cinzel',serif] text-[0.7rem] font-bold text-green-300">Шаг 3</span>
+        </div>
+        <h2 class="font-['Cinzel',serif] text-xl font-bold text-white md:text-[1.35rem]">Проверь моды и запусти игру</h2>
+        <p class="mt-4 text-[0.9rem] leading-relaxed text-neutral-400">
+          В сборке уже есть обязательный <strong class="font-semibold text-emerald-200/90">Simple Voice Chat</strong> и остальные моды сервера.
+          Если ставишь вручную — убедись, что в папке <code class="rounded bg-neutral-950/85 px-1.5 py-0.5 font-mono text-[0.78rem] text-emerald-400/95">mods</code> лежат jar-файлы для <strong class="font-semibold text-white">Fabric 1.21.1</strong>.
+        </p>
+        <ul class="mt-5 space-y-3 text-[0.9rem] leading-relaxed text-neutral-300">
+          <li class="flex gap-3">
+            <span class="mt-[0.35rem] shrink-0 text-emerald-500/85">●</span>
+            <span>В лаунчере выбери инстанс ISTHISNIXXXON / Fabric 1.21.1 и нажми <strong class="font-semibold text-white">«Играть»</strong>.</span>
+          </li>
+          <li class="flex gap-3">
+            <span class="mt-[0.35rem] shrink-0 text-emerald-500/85">●</span>
+            <span>Добавить мод отдельно: в ElyPrismLauncher открой инстанс → «Моды» → Modrinth / CurseForge, версия <strong class="font-semibold text-white">1.21.1</strong>, загрузчик <strong class="font-semibold text-white">Fabric</strong>.</span>
+          </li>
+        </ul>
+      </div>
+    </article>
+
+    <article class="relative overflow-hidden rounded-[1.5rem] border border-emerald-800/45 bg-gradient-to-br from-neutral-950/95 via-[#0d1712]/92 to-[#0f1412]/96 p-6 shadow-[0_28px_64px_-20px_rgba(74,222,128,0.1)] sm:p-8">
+      <div class="absolute right-6 top-6 flex h-12 w-12 items-center justify-center rounded-xl border border-green-600/35 bg-green-600/15 text-green-400 text-xl" aria-hidden="true">🎮</div>
+      <div class="pr-14 sm:pr-16">
+        <div class="mb-4 inline-flex items-center gap-2 rounded-full border border-green-600/35 bg-green-600/10 px-3 py-1">
+          <span class="font-['Cinzel',serif] text-[0.7rem] font-bold text-green-300">Шаг 4</span>
         </div>
         <h2 class="font-['Cinzel',serif] text-xl font-bold text-white md:text-[1.35rem]">Заходи на сервер</h2>
         <ul class="mt-5 space-y-4 text-[0.9rem] leading-relaxed text-neutral-300">
@@ -159,8 +195,12 @@ footer{
           </li>
           <li class="flex gap-3">
             <span class="mt-[0.35rem] shrink-0 text-emerald-500/85">●</span>
-            <span>Подай заявку в вайтлист в <a href="https://vk.com/isthisnixxxon" target="_blank" rel="noopener noreferrer" class="font-semibold text-emerald-400 underline underline-offset-2 hover:text-emerald-300">сообществе ВКонтакте</a> (кратко: ник, как обращаться, зачем хочешь на сервер) или перейди с главной к разделу
-              <a href="index.html#join-server" class="font-semibold text-emerald-400 underline underline-offset-2 hover:text-emerald-300">«На сервер»</a>.</span>
+            <span>Подай заявку в вайтлист в <a href="https://vk.com/isthisnixxxon" target="_blank" rel="noopener noreferrer" class="font-semibold text-emerald-400 underline underline-offset-2 hover:text-emerald-300">сообществе ВКонтакте</a> (ник, как обращаться, зачем хочешь на сервер) или через раздел
+              <a href="index.html#join-server" class="font-semibold text-emerald-400 underline underline-offset-2 hover:text-emerald-300">«На сервер»</a> на главной.</span>
+          </li>
+          <li class="flex gap-3">
+            <span class="mt-[0.35rem] shrink-0 text-emerald-500/85">●</span>
+            <span>Заходи только после одобрения вайтлиста — иначе сервер не пустит.</span>
           </li>
         </ul>
       </div>
@@ -170,13 +210,13 @@ footer{
   <p class="mt-12 flex flex-wrap items-center justify-center gap-3 rounded-2xl border border-neutral-700/55 bg-neutral-950/40 px-4 py-4 text-center text-[0.8rem] text-neutral-400 lg:text-left">
     <a href="index.html" class="inline-flex rounded-lg border border-emerald-900/55 bg-emerald-950/30 px-4 py-2 text-[0.72rem] font-bold uppercase tracking-wider text-emerald-400 transition hover:border-emerald-600/65 hover:bg-emerald-950/50">На главную</a>
     <span class="hidden sm:inline">·</span>
-    Запускай профиль Fabric с установленным <strong class="font-semibold text-neutral-300">Simple Voice Chat</strong>.
+    ElyPrismLauncher · Fabric 1.21.1 · сборка с сайта · mc.isnix.ru
   </p>
 </main>
 
 <footer>
   <div class="footer-logo">ISTHISNIXXXON</div>
-  <div>Ванильный сервер с душой · Java 1.21.11 · mc.isnix.ru</div>
+  <div>Ванильный сервер с душой · Java 1.21.1 · mc.isnix.ru</div>
   <div>© 2026 · <a href="index.html" class="text-neutral-400 transition hover:text-[var(--green)]">На главную</a></div>
 </footer>
 
