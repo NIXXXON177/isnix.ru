@@ -1,0 +1,37 @@
+# Проверка структуры сайта перед публикацией на GitHub Pages
+name: Site check
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'index.html'
+      - 'how-to-play.html'
+      - 'assets/**'
+      - 'robots.txt'
+      - 'sitemap.xml'
+  pull_request:
+    branches: [main]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Required files exist
+        run: |
+          test -f index.html
+          test -f assets/css/main.css
+          test -f assets/css/components.css
+          test -f assets/js/site.js
+          test -f assets/js/shop-slider.js
+          test -f whitelist.json
+          test -f downloads/isthisnixxxon-fabric-1.21.1.zip
+
+      - name: index.html links assets (no inline mega-styles)
+        run: |
+          grep -q 'assets/css/main.css' index.html
+          grep -q 'assets/js/site.js' index.html
+          grep -q 'assets/js/shop-slider.js' index.html
+          ! grep -q 'cdn.tailwindcss.com' index.html
