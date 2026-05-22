@@ -969,7 +969,7 @@
 				width: 0%;
 				background: linear-gradient(90deg, var(--green-dark), var(--green));
 				border-radius: 2px;
-				transition: width 0.12s ease-out;
+				transition: width 0.45s cubic-bezier(0.22, 1, 0.36, 1);
 			}
 
 			/* Cards + slider */
@@ -1034,36 +1034,35 @@
 			.shop-slider-viewport {
 				grid-column: 2;
 				grid-row: 1;
-				overflow-x: auto;
-				overflow-y: hidden;
-				scroll-snap-type: x proximity;
-				scroll-behavior: auto;
-				-webkit-overflow-scrolling: touch;
-				scrollbar-width: none;
-				-ms-overflow-style: none;
-				overscroll-behavior-x: contain;
-				touch-action: pan-x;
+				overflow: hidden;
+				touch-action: pan-y;
 				padding: 0.5rem 0;
-				scroll-padding-inline: 0.5rem;
 				outline: none;
 				min-width: 0;
+				cursor: grab;
+				user-select: none;
+				-webkit-user-select: none;
+			}
+			.shop-slider-viewport.is-dragging {
+				cursor: grabbing;
 			}
 			.shop-slider-viewport:focus-visible {
 				box-shadow: 0 0 0 2px rgba(74, 222, 128, 0.35);
 				border-radius: 8px;
-			}
-			.shop-slider-viewport::-webkit-scrollbar {
-				display: none;
-				width: 0;
-				height: 0;
 			}
 			.shop-slider-track {
 				display: flex;
 				flex-wrap: nowrap;
 				gap: 1rem;
 				width: max-content;
-				padding: 0.25rem 0.15rem;
+				padding: 0.25rem 0.5rem;
 				min-height: 1px;
+				transform: translate3d(0, 0, 0);
+				transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+				will-change: transform;
+			}
+			.shop-slider-track.shop-slider-track--instant {
+				transition: none !important;
 			}
 
 			.shop-card {
@@ -1080,8 +1079,6 @@
 				cursor: default;
 				flex: 0 0 auto;
 				width: clamp(220px, 38vw, 280px);
-				scroll-snap-align: start;
-				scroll-margin-inline: 0.5rem;
 			}
 			.shop-card.shop-card--hidden {
 				display: none !important;
@@ -1963,12 +1960,18 @@
 				}
 				#shop .shop-card {
 					width: min(82vw, 300px);
-					scroll-snap-align: start;
-					scroll-margin-inline: 0.5rem;
 				}
 				#shop .shop-buy-btn {
 					min-height: 44px;
 					touch-action: manipulation;
+				}
+			}
+			@media (prefers-reduced-motion: reduce) {
+				.shop-slider-track {
+					transition: none !important;
+				}
+				.shop-slider-progress-fill {
+					transition: none;
 				}
 			}
 			@media (max-width: 900px) and (prefers-reduced-motion: reduce) {
@@ -3820,7 +3823,7 @@
 				btn.disabled = !prefix || !nick || !isNickVerifiedForPurchase()
 			}
 
-			// Shop slider — нативный скролл + переход к следующей карточке
+			// Shop slider — transform + покадровая анимация
 			;(function initShopSlider() {
 				var vp = document.getElementById('shopSliderViewport')
 				var track = document.getElementById('shopGrid')
@@ -3828,9 +3831,20 @@
 				var next = document.getElementById('shopSliderNext')
 				if (!vp || !track) return
 
-				var mqReduce =
-					window.matchMedia &&
-					window.matchMedia('(prefers-reduced-motion: reduce)').matches
+				var mqReduce = window.matchMedia
+					? window.matchMedia('(prefers-reduced-motion: reduce)')
+					: null
+				var currentOffset = 0
+				var animFrameId = 0
+				var dragging = false
+				var dragStartX = 0
+				var dragStartOffset = 0
+				var TRACK_PAD = 8
+				var ANIM_MS = 720
+
+				function prefersReducedMotion() {
+					return mqReduce && mqReduce.matches
+				}
 
 				function visibleCards() {
 					return Array.prototype.filter.call(
@@ -3841,26 +3855,94 @@
 					)
 				}
 
+				function maxOffset() {
+					return Math.max(0, track.scrollWidth - vp.clientWidth)
+				}
+
+				function clampOffset(px) {
+					return Math.max(0, Math.min(px, maxOffset()))
+				}
+
+				function cardOffset(card) {
+					var left = card.offsetLeft - TRACK_PAD
+					return clampOffset(left)
+				}
+
+				function cancelAnim() {
+					if (animFrameId) {
+						cancelAnimationFrame(animFrameId)
+						animFrameId = 0
+					}
+				}
+
+				function paintOffset(px) {
+					track.classList.add('shop-slider-track--instant')
+					track.style.transform =
+						'translate3d(' + -px + 'px,0,0)'
+				}
+
+				function easeOutCubic(t) {
+					return 1 - Math.pow(1 - t, 3)
+				}
+
+				function animateTo(targetPx) {
+					cancelAnim()
+					var to = clampOffset(targetPx)
+					var from = currentOffset
+					if (prefersReducedMotion() || Math.abs(from - to) < 1) {
+						currentOffset = to
+						paintOffset(to)
+						updateShopSliderUi()
+						return
+					}
+					var t0 = performance.now()
+					function frame(now) {
+						var p = Math.min(1, (now - t0) / ANIM_MS)
+						var x = from + (to - from) * easeOutCubic(p)
+						currentOffset = x
+						paintOffset(x)
+						updateShopSliderUi()
+						if (p < 1) {
+							animFrameId = requestAnimationFrame(frame)
+						} else {
+							animFrameId = 0
+							currentOffset = to
+							paintOffset(to)
+							updateShopSliderUi()
+						}
+					}
+					animFrameId = requestAnimationFrame(frame)
+				}
+
+				function setOffset(px, animate) {
+					var target = clampOffset(px)
+					if (animate) {
+						animateTo(target)
+						return
+					}
+					cancelAnim()
+					currentOffset = target
+					paintOffset(target)
+					updateShopSliderUi()
+				}
+
 				function updateShopSliderUi() {
-					if (!prev || !next) return
-					var maxScroll = Math.max(0, vp.scrollWidth - vp.clientWidth)
-					prev.disabled = vp.scrollLeft <= 4
-					next.disabled = vp.scrollLeft >= maxScroll - 4
+					var max = maxOffset()
+					if (prev) prev.disabled = currentOffset <= 4
+					if (next) next.disabled = currentOffset >= max - 4
 					var fill = document.getElementById('shopSliderProgress')
 					if (fill) {
-						var pct =
-							maxScroll < 1 ? 100 : (vp.scrollLeft / maxScroll) * 100
-						fill.style.width = pct + '%'
+						fill.style.width =
+							(max < 1 ? 100 : (currentOffset / max) * 100) + '%'
 					}
 				}
 
 				function activeCardIndex(cards) {
 					if (!cards.length) return 0
-					var edge = vp.getBoundingClientRect().left + 12
 					var idx = 0
 					var best = Infinity
 					for (var i = 0; i < cards.length; i++) {
-						var d = Math.abs(cards[i].getBoundingClientRect().left - edge)
+						var d = Math.abs(cardOffset(cards[i]) - currentOffset)
 						if (d < best) {
 							best = d
 							idx = i
@@ -3869,31 +3951,75 @@
 					return idx
 				}
 
-				function scrollToCardIndex(cards, index) {
+				function goToCardIndex(index, animate) {
+					var cards = visibleCards()
 					if (!cards.length) return
 					var i = Math.max(0, Math.min(index, cards.length - 1))
-					cards[i].scrollIntoView({
-						behavior: mqReduce ? 'auto' : 'smooth',
-						inline: 'start',
-						block: 'nearest',
-					})
+					setOffset(cardOffset(cards[i]), animate)
 				}
 
 				function stepCards(dir) {
 					var cards = visibleCards()
 					if (!cards.length) return
-					scrollToCardIndex(cards, activeCardIndex(cards) + dir)
+					goToCardIndex(activeCardIndex(cards) + dir, true)
 				}
 
-				if (prev) prev.addEventListener('click', function () {
-					stepCards(-1)
-				})
-				if (next) next.addEventListener('click', function () {
-					stepCards(1)
+				function snapToNearest() {
+					goToCardIndex(activeCardIndex(visibleCards()), true)
+				}
+
+				function endDrag() {
+					if (!dragging) return
+					dragging = false
+					vp.classList.remove('is-dragging')
+					snapToNearest()
+				}
+
+				if (prev) {
+					prev.addEventListener('click', function () {
+						stepCards(-1)
+					})
+				}
+				if (next) {
+					next.addEventListener('click', function () {
+						stepCards(1)
+					})
+				}
+
+				vp.addEventListener('pointerdown', function (e) {
+					if (e.button !== 0) return
+					if (e.target.closest('.shop-buy-btn')) return
+					cancelAnim()
+					dragging = true
+					dragStartX = e.clientX
+					dragStartOffset = currentOffset
+					vp.classList.add('is-dragging')
+					track.classList.add('shop-slider-track--instant')
+					if (vp.setPointerCapture) {
+						try {
+							vp.setPointerCapture(e.pointerId)
+						} catch (err) {}
+					}
 				})
 
-				vp.addEventListener('scroll', updateShopSliderUi, { passive: true })
-				window.addEventListener('resize', updateShopSliderUi)
+				vp.addEventListener('pointermove', function (e) {
+					if (!dragging) return
+					var dx = dragStartX - e.clientX
+					currentOffset = clampOffset(dragStartOffset + dx)
+					paintOffset(currentOffset)
+					updateShopSliderUi()
+				})
+
+				vp.addEventListener('pointerup', endDrag)
+				vp.addEventListener('pointercancel', endDrag)
+
+				window.addEventListener('resize', function () {
+					setOffset(
+						Math.min(currentOffset, maxOffset()),
+						false,
+					)
+					requestAnimationFrame(snapToNearest)
+				})
 
 				vp.addEventListener('keydown', function (e) {
 					if (e.key === 'ArrowLeft') {
@@ -3919,12 +4045,15 @@
 							var show = cat === 'all' || card.dataset.cat === cat
 							card.classList.toggle('shop-card--hidden', !show)
 						})
-						vp.scrollLeft = 0
-						requestAnimationFrame(updateShopSliderUi)
+						dragging = false
+						vp.classList.remove('is-dragging')
+						requestAnimationFrame(function () {
+							setOffset(0, false)
+						})
 					})
 				})
 
-				updateShopSliderUi()
+				setOffset(0, false)
 			})()
 			;(function rulesSliderA11y() {
 				const vp = document.getElementById('rulesSliderViewport')
