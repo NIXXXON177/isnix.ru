@@ -289,9 +289,9 @@
 	}
 
 	// Sync nick + проверка по whitelist.json (debounced)
-	document
-		.getElementById('playerNick')
-		.addEventListener('input', function () {
+	var playerNickEl = document.getElementById('playerNick')
+	if (playerNickEl) {
+		playerNickEl.addEventListener('input', function () {
 			var v = this.value.trim()
 			document.getElementById('customNick').value = v
 			clearTimeout(nickDebounceTimer)
@@ -323,6 +323,7 @@
 				fetchWhitelistCheck(v)
 			}, 520)
 		})
+	}
 
 	function syncNick(el) {
 		document.getElementById('playerNick').value = el.value
@@ -820,6 +821,17 @@
 			})
 		}
 
+		var footerLogo = document.getElementById('footerLogo')
+		if (footerLogo) {
+			footerLogo.addEventListener('click', function (e) {
+				var href = footerLogo.getAttribute('href')
+				if (!href || href === '#') {
+					e.preventDefault()
+					window.scrollTo({ top: 0, behavior: 'smooth' })
+				}
+			})
+		}
+
 		document.addEventListener('keydown', function (e) {
 			if (e.key === 'Escape' && menu.classList.contains('is-open')) {
 				closeMenu()
@@ -896,7 +908,7 @@
 	)
 	document.querySelectorAll('.reveal').forEach(el => obs.observe(el))
 ;(function initIpCopy() {
-	document.querySelectorAll(".ip-box").forEach(function (box) {
+	document.querySelectorAll('.ip-box, .site-footer__ip').forEach(function (box) {
 		var valEl = box.querySelector(".ip-val")
 		var hintEl = box.querySelector(".ip-hint")
 		if (!valEl || !hintEl || !navigator.clipboard) return

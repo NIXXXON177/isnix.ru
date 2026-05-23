@@ -10,10 +10,11 @@
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Raleway:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/components.css">
 <style>
 :root{
-  --bg:#0a0f0a;--surface:#0f160f;--green:#4ade80;--green-dark:#166534;
-  --muted:#7a9a7a;--text-soft:#9ab89a;--border:#1a2e1a;
+  --bg:#0a0f0a;--surface:#0f160f;--surface2:#141c14;--green:#4ade80;--green-dark:#166534;
+  --muted:#7a9a7a;--text:#e8f5e8;--text-soft:#9ab89a;--border:#1a2e1a;--border2:#243824;
   --radius-md:12px;--radius-lg:18px;--shadow-card:0 12px 40px rgba(0,0,0,.35);
 }
 *{margin:0;padding:0;box-sizing:border-box}
@@ -50,16 +51,9 @@ nav{
 }
 .nav-btn:hover{background:var(--green);color:var(--bg);transform:translateY(-1px);box-shadow:0 0 24px rgba(74,222,128,.12)}
 a:focus-visible,button:focus-visible{outline:2px solid var(--green);outline-offset:3px}
-footer{
-  border-top:1px solid var(--border);padding:2.5rem 6rem;
-  display:flex;justify-content:space-between;align-items:center;
-  color:var(--muted);font-size:.75rem;
-}
-.footer-logo{font-family:"Cinzel",serif;font-size:.9rem;font-weight:900;color:var(--green)}
 @media(max-width:900px){
   nav{padding:0 1.5rem}
   .nav-links{display:none}
-  footer{flex-direction:column;gap:1rem;padding:2rem;text-align:center}
 }
 </style>
 </head>
@@ -213,11 +207,85 @@ footer{
   </p>
 </main>
 
-<footer>
-  <div class="footer-logo">ISTHISNIXXXON</div>
-  <div>Ванильный сервер с душой · Java 1.21.1 · mc.isnix.ru</div>
-  <div>© 2026 · <a href="index.html" class="text-neutral-400 transition hover:text-[var(--green)]">На главную</a></div>
+<footer class="site-footer">
+  <div class="site-footer__glow" aria-hidden="true"></div>
+  <div class="site-footer__inner">
+    <div class="site-footer__top">
+      <div class="site-footer__brand">
+        <a href="index.html" class="site-footer__logo" id="footerLogo">ISTHIS<span>NIXXXON</span></a>
+        <p class="site-footer__tagline">Уютный ванильный Minecraft-сервер без pay-to-win. Честная игра, живое комьюнити и настоящий Minecraft.</p>
+        <div class="site-footer__ip" tabindex="0" role="button" aria-label="Скопировать IP сервера">
+          <div>
+            <div class="ip-lbl">Java Edition</div>
+            <div class="ip-val">mc.isnix.ru</div>
+          </div>
+          <span class="ip-hint">Нажми, чтобы скопировать</span>
+        </div>
+        <p class="site-footer__meta">Fabric 1.21.1 · Vanilla+ · Whitelist</p>
+      </div>
+      <nav class="site-footer__col" aria-label="Разделы сайта">
+        <h3 class="site-footer__heading">Сайт</h3>
+        <ul class="site-footer__links">
+          <li><a href="index.html#about">О сервере</a></li>
+          <li><a href="index.html#download">Скачать сборку</a></li>
+          <li><a href="how-to-play.html">Как играть</a></li>
+          <li><a href="index.html#shop">Магазин</a></li>
+          <li><a href="index.html#rules">Правила</a></li>
+          <li><a href="index.html#join-server">Заявка в вайтлист</a></li>
+        </ul>
+      </nav>
+      <nav class="site-footer__col" aria-label="Социальные сети">
+        <h3 class="site-footer__heading">Сообщество</h3>
+        <div class="site-footer__vote">
+          <a href="https://vk.com/isthisnixxxon" target="_blank" rel="noopener noreferrer" class="site-footer__vote-link" aria-label="ВКонтакте — вайтлист">
+            <img src="assets/images/social/vk.png" alt="" width="44" height="44" loading="lazy" decoding="async" />
+            <span>ВКонтакте — вайтлист</span>
+          </a>
+          <a href="https://t.me/isthisnixxxon" target="_blank" rel="noopener noreferrer" class="site-footer__vote-link site-footer__vote-link--text"><span>Telegram-канал</span></a>
+          <a href="https://www.tiktok.com/@isthisnixxxon" target="_blank" rel="noopener noreferrer" class="site-footer__vote-link site-footer__vote-link--text"><span>TikTok</span></a>
+          <a href="https://www.twitch.tv/isthisnixxxon" target="_blank" rel="noopener noreferrer" class="site-footer__vote-link site-footer__vote-link--text"><span>Twitch</span></a>
+          <a href="https://www.donationalerts.com/r/isthisnixxxon" target="_blank" rel="noopener noreferrer" class="site-footer__vote-link" aria-label="DonationAlerts">
+            <img src="assets/images/social/donationalerts.png" alt="" width="44" height="44" loading="lazy" decoding="async" />
+            <span>DonationAlerts</span>
+          </a>
+        </div>
+      </nav>
+      <div class="site-footer__col">
+        <h3 class="site-footer__heading">Поддержка</h3>
+        <ul class="site-footer__links">
+          <li>
+            <a href="https://vk.com/isthisnixxxon" target="_blank" rel="noopener noreferrer" class="site-footer__vote-link">
+              <img src="assets/images/social/vk.png" alt="" width="44" height="44" loading="lazy" decoding="async" />
+              <span>Написать админам</span>
+            </a>
+          </li>
+          <li><a href="index.html#links">Все контакты</a></li>
+          <li><a href="index.html#shop">Косметика в магазине</a></li>
+        </ul>
+        <h3 class="site-footer__heading site-footer__heading--spaced">Голосование</h3>
+        <div class="site-footer__vote">
+          <a href="https://minecraftrating.ru/server/isthisnixxxon/" target="_blank" rel="noopener noreferrer" class="site-footer__vote-link" aria-label="Проголосовать на MinecraftRating">
+            <img src="assets/images/vote/minecraftrating.png" alt="" width="44" height="44" loading="lazy" decoding="async" />
+            <span>MinecraftRating</span>
+          </a>
+          <a href="https://top-minecrafter.com/wipes/isthisnixxxon/" target="_blank" rel="noopener noreferrer" class="site-footer__vote-link" aria-label="Проголосовать на Top Minecrafter">
+            <img src="assets/images/vote/top-minecrafter.png" alt="" width="44" height="44" loading="lazy" decoding="async" />
+            <span>Top Minecrafter</span>
+          </a>
+          <a href="https://hotmc.ru/minecraft-server-289396" target="_blank" rel="noopener noreferrer" class="site-footer__vote-link" aria-label="Проголосовать на HotMC">
+            <img src="assets/images/vote/hotmc.png" alt="" width="44" height="44" loading="lazy" decoding="async" />
+            <span>HotMC</span>
+          </a>
+        </div>
+      </div>
+    </div>
+    <div class="site-footer__bottom">
+      <p class="site-footer__copy">© 2026 ISTHISNIXXXON. Не аффилирован с Mojang или Microsoft.</p>
+      <p class="site-footer__note">Магазин — только косметика, без игровых преимуществ.</p>
+    </div>
+  </div>
 </footer>
 
+<script src="assets/js/site.js" defer></script>
 </body>
 </html>
