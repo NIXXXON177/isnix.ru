@@ -27,7 +27,7 @@ jobs:
           test -f assets/js/site.js
           test -f assets/js/shop-slider.js
           test -f whitelist.json
-          test -f downloads/isthisnixxxon-fabric-1.21.1.zip
+          test -f downloads/ISTHISNIXXXONmods.zip
 
       - name: index.html links assets (no inline mega-styles)
         run: |
