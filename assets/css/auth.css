@@ -433,3 +433,46 @@
 	color: #fca5a5;
 	border-color: rgba(248, 113, 113, 0.35);
 }
+
+.auth-whitelist-lead {
+	margin-bottom: 1rem;
+}
+
+.auth-form--modal {
+	margin-top: 0.5rem;
+}
+
+.auth-form--modal .auth-field {
+	margin-bottom: 0.85rem;
+}
+
+.auth-form--modal textarea {
+	min-height: 5rem;
+}
+
+.auth-wl-modal .bold-modal__panel {
+	border-color: rgba(74, 222, 128, 0.35);
+	box-shadow:
+		0 0 0 1px rgba(74, 222, 128, 0.12),
+		0 32px 64px rgba(0, 0, 0, 0.55);
+	background-image: linear-gradient(
+		165deg,
+		rgba(12, 24, 16, 0.97),
+		rgba(10, 15, 10, 0.98) 45%,
+		rgba(10, 12, 10, 1)
+	);
+}
+
+.auth-wl-modal .bold-modal__title {
+	color: var(--green);
+}
+
+.auth-wl-modal .bold-modal__btn--pay {
+	background: linear-gradient(90deg, var(--green-dark), var(--green));
+	color: var(--bg);
+	border: none;
+}
+
+.auth-wl-modal .bold-modal__btn--pay:hover {
+	filter: brightness(1.08);
+}

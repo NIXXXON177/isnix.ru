@@ -202,6 +202,7 @@
 								spellcheck="false"
 								placeholder="Steve123"
 							/>
+							<p id="profileNickHint" class="auth-hint"></p>
 						</div>
 						<div class="auth-field">
 							<label for="profileCallName">Как к тебе обращаться</label>
@@ -219,9 +220,9 @@
 					<div id="applicationsList"></div>
 
 					<h2 class="auth-section-title" id="whitelist">Заявка в вайтлист</h2>
-					<p class="auth-muted" style="margin-bottom: 1rem">
-						Укажи ник как в игре (латиница), как обращаться и зачем хочешь на
-						сервер.
+					<p class="auth-muted auth-whitelist-lead">
+						Если тебя ещё нет в вайтлисте — укажи ник в профиле и нажми
+						«Сохранить», откроется форма заявки. Или заполни её ниже.
 					</p>
 					<form id="whitelistForm" class="auth-form">
 						<div class="auth-field">
@@ -260,6 +261,75 @@
 				</div>
 			</div>
 		</main>
+
+		<div
+			id="whitelistModalRoot"
+			class="bold-modal auth-wl-modal"
+			aria-hidden="true"
+			role="presentation"
+		>
+			<div id="whitelistModalBackdrop" class="bold-modal__backdrop" tabindex="-1"></div>
+			<div
+				id="whitelistModalPanel"
+				class="bold-modal__panel"
+				role="dialog"
+				aria-modal="true"
+				aria-labelledby="whitelistModalTitle"
+			>
+				<h3 id="whitelistModalTitle" class="bold-modal__title">
+					Заявка в вайтлист
+				</h3>
+				<p class="bold-modal__desc">
+					Ника <strong id="whitelistModalNickLabel">—</strong> пока нет в
+					вайтлисте. Заполни заявку — обычно отвечаем в течение часа.
+				</p>
+				<form id="whitelistModalForm" class="auth-form auth-form--modal">
+					<div class="auth-field">
+						<label for="modalAppNick">Ник в Minecraft *</label>
+						<input
+							id="modalAppNick"
+							type="text"
+							maxlength="16"
+							required
+							autocomplete="off"
+							spellcheck="false"
+							readonly
+						/>
+					</div>
+					<div class="auth-field">
+						<label for="modalAppCallName">Как обращаться</label>
+						<input id="modalAppCallName" type="text" maxlength="64" />
+					</div>
+					<div class="auth-field">
+						<label for="modalAppAge">Возраст (необязательно)</label>
+						<input id="modalAppAge" type="text" maxlength="16" />
+					</div>
+					<div class="auth-field">
+						<label for="modalAppReason">Почему хочешь на сервер *</label>
+						<textarea
+							id="modalAppReason"
+							required
+							minlength="10"
+							maxlength="2000"
+							rows="4"
+							placeholder="Несколько предложений о себе и почему тебе интересен наш сервер…"
+						></textarea>
+					</div>
+					<div class="bold-modal__actions">
+						<button
+							type="button"
+							id="whitelistModalCancel"
+							class="bold-modal__btn bold-modal__btn--ghost"
+						>
+							Позже
+						</button>
+						<button type="submit" class="bold-modal__btn bold-modal__btn--pay">
+							Отправить заявку
+						</button>
+					</div>
+				</form>
+			</div>
+		</div>
 
 		<script>
 			window.ISNIX_AUTH = window.ISNIX_AUTH || {

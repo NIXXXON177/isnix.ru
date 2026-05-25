@@ -83,6 +83,114 @@
 		return whitelistPlayers.indexOf(nick.toLowerCase()) !== -1
 	}
 
+	function hasPendingApplication(apps) {
+		if (!apps || !apps.length) return false
+		return apps.some(function (a) {
+			return a.status === 'pending'
+		})
+	}
+
+	function updateNickHint(hintEl, nick) {
+		if (!hintEl) return
+		var v = (nick || '').trim()
+		if (!v) {
+			hintEl.textContent = ''
+			hintEl.className = 'auth-hint'
+			return
+		}
+		if (isOnWhitelist(v)) {
+			hintEl.textContent = '✅ Этот ник в вайтлисте — можно заходить на сервер'
+			hintEl.className = 'auth-hint auth-hint--ok'
+		} else if (IsnixAuth && IsnixAuth.MC_NICK_RE.test(v)) {
+			hintEl.textContent = 'Ника нет в вайтлисте — после сохранения откроется заявка'
+			hintEl.className = 'auth-hint auth-hint--warn'
+		} else {
+			hintEl.textContent = 'Ник: 3–16 символов, латиница, цифры и _'
+			hintEl.className = 'auth-hint auth-hint--warn'
+		}
+	}
+
+	function updateProfileNickHint() {
+		var nickEl = document.getElementById('profileNick')
+		updateNickHint(
+			document.getElementById('profileNickHint'),
+			nickEl ? nickEl.value : '',
+		)
+	}
+
+	function updateWhitelistHint() {
+		var nickEl = document.getElementById('appNick')
+		updateNickHint(document.getElementById('whitelistNickHint'), nickEl ? nickEl.value : '')
+	}
+
+	function openWhitelistModal(nick, callName) {
+		var root = document.getElementById('whitelistModalRoot')
+		if (!root) return
+		var label = document.getElementById('whitelistModalNickLabel')
+		var modalNick = document.getElementById('modalAppNick')
+		var modalCall = document.getElementById('modalAppCallName')
+		var modalReason = document.getElementById('modalAppReason')
+		if (label) label.textContent = nick
+		if (modalNick) modalNick.value = nick
+		if (modalCall) modalCall.value = callName || ''
+		root.classList.add('is-open')
+		root.setAttribute('aria-hidden', 'false')
+		document.body.style.overflow = 'hidden'
+		if (modalReason) {
+			setTimeout(function () {
+				modalReason.focus()
+			}, 100)
+		}
+	}
+
+	function closeWhitelistModal() {
+		var root = document.getElementById('whitelistModalRoot')
+		if (!root) return
+		root.classList.remove('is-open')
+		root.setAttribute('aria-hidden', 'true')
+		document.body.style.overflow = ''
+	}
+
+	async function maybeOpenWhitelistModal(userId, nick, callName, apps) {
+		if (!nick || !IsnixAuth.MC_NICK_RE.test(nick)) return false
+		if (IsnixAuth.isAdminProfile(currentProfile)) return false
+		await loadWhitelist()
+		if (isOnWhitelist(nick)) return false
+		var list = apps
+		if (!list) {
+			try {
+				list = await IsnixAuth.getApplications(userId)
+			} catch (_e) {
+				list = []
+			}
+		}
+		if (hasPendingApplication(list)) return false
+		openWhitelistModal(nick, callName)
+		return true
+	}
+
+	async function submitWhitelistApplication(session, data, formEl) {
+		var nick = (data.minecraft_nick || '').trim()
+		if (isOnWhitelist(nick)) {
+			showMsg('Этот ник уже в вайтлисте — можно заходить на сервер', true)
+			return false
+		}
+		if (formEl) setLoading(formEl, true)
+		try {
+			await IsnixAuth.submitApplication(session.user.id, data)
+			showMsg('Заявка отправлена. Обычно отвечаем в течение часа.', true)
+			await renderApplications(session.user.id)
+			updateWhitelistHint()
+			updateProfileNickHint()
+			return true
+		} catch (err) {
+			showMsg(IsnixAuth.formatAuthError(err), false)
+			return false
+		} finally {
+			if (formEl) setLoading(formEl, false)
+		}
+	}
+
 	function switchTab(tab) {
 		document.querySelectorAll('.auth-tab').forEach(function (btn) {
 			var active = btn.dataset.tab === tab
@@ -124,14 +232,14 @@
 
 	async function renderApplications(userId) {
 		var list = document.getElementById('applicationsList')
-		if (!list || !window.IsnixAuth) return
+		if (!list || !window.IsnixAuth) return []
 		list.innerHTML = '<p class="auth-muted">Загрузка…</p>'
 		try {
 			var apps = await IsnixAuth.getApplications(userId)
 			if (!apps.length) {
 				list.innerHTML =
 					'<p class="auth-muted">Заявок пока нет. Заполни форму ниже.</p>'
-				return
+				return apps
 			}
 			list.innerHTML = apps
 				.map(function (app) {
@@ -164,11 +272,13 @@
 					)
 				})
 				.join('')
+			return apps
 		} catch (err) {
 			list.innerHTML =
 				'<p class="auth-message auth-message--err">' +
 				escapeHtml(IsnixAuth.formatAuthError(err)) +
 				'</p>'
+			return []
 		}
 	}
 
@@ -184,6 +294,7 @@
 			if (appNick && profile.minecraft_nick && !appNick.value) {
 				appNick.value = profile.minecraft_nick
 			}
+			updateProfileNickHint()
 		} catch (_e) {
 			/* ignore */
 		}
@@ -324,29 +435,8 @@
 		if (IsnixAuth.isAdminProfile(profile)) {
 			await renderAdminApplications()
 		}
+		updateProfileNickHint()
 		updateWhitelistHint()
-	}
-
-	function updateWhitelistHint() {
-		var hint = document.getElementById('whitelistNickHint')
-		var nickEl = document.getElementById('appNick')
-		if (!hint || !nickEl) return
-		var v = nickEl.value.trim()
-		if (!v) {
-			hint.textContent = ''
-			hint.className = 'auth-hint'
-			return
-		}
-		if (isOnWhitelist(v)) {
-			hint.textContent = '✅ Этот ник уже в вайтлисте'
-			hint.className = 'auth-hint auth-hint--ok'
-		} else if (IsnixAuth && IsnixAuth.MC_NICK_RE.test(v)) {
-			hint.textContent = 'Ник свободен для заявки'
-			hint.className = 'auth-hint'
-		} else {
-			hint.textContent = 'Ник: 3–16 символов, латиница, цифры и _'
-			hint.className = 'auth-hint auth-hint--warn'
-		}
 	}
 
 	async function init() {
@@ -441,12 +531,17 @@
 		}
 
 		var profileForm = document.getElementById('profileForm')
+		var profileNick = document.getElementById('profileNick')
+		if (profileNick) {
+			profileNick.addEventListener('input', updateProfileNickHint)
+		}
 		if (profileForm) {
 			profileForm.addEventListener('submit', async function (e) {
 				e.preventDefault()
 				var session = await IsnixAuth.getSession()
 				if (!session) return
 				var nick = document.getElementById('profileNick').value.trim()
+				var callName = document.getElementById('profileCallName').value.trim()
 				if (nick && !IsnixAuth.MC_NICK_RE.test(nick)) {
 					showMsg('Ник Minecraft: 3–16 символов, латиница, цифры и _', false)
 					return
@@ -455,11 +550,39 @@
 				try {
 					await IsnixAuth.updateProfile(session.user.id, {
 						minecraft_nick: nick || null,
-						display_name: document
-							.getElementById('profileCallName')
-							.value.trim(),
+						display_name: callName,
 					})
-					showMsg('Профиль сохранён', true)
+					await loadWhitelist()
+					updateProfileNickHint()
+					var appNickEl = document.getElementById('appNick')
+					var appCallEl = document.getElementById('appCallName')
+					if (appNickEl && nick) appNickEl.value = nick
+					if (appCallEl && callName) appCallEl.value = callName
+					updateWhitelistHint()
+
+					if (nick && isOnWhitelist(nick)) {
+						showMsg(
+							'Профиль сохранён. Ты в вайтлисте — можно заходить на сервер!',
+							true,
+						)
+					} else if (nick) {
+						var apps = await IsnixAuth.getApplications(session.user.id)
+						var opened = await maybeOpenWhitelistModal(
+							session.user.id,
+							nick,
+							callName,
+							apps,
+						)
+						if (opened) {
+							showMsg('Профиль сохранён. Заполни заявку в вайтлист.', true)
+						} else if (hasPendingApplication(apps)) {
+							showMsg('Профиль сохранён. Заявка уже на рассмотрении.', true)
+						} else {
+							showMsg('Профиль сохранён', true)
+						}
+					} else {
+						showMsg('Профиль сохранён', true)
+					}
 				} catch (err) {
 					showMsg(IsnixAuth.formatAuthError(err), false)
 				} finally {
@@ -478,30 +601,54 @@
 				e.preventDefault()
 				var session = await IsnixAuth.getSession()
 				if (!session) return
-				var nick = document.getElementById('appNick').value.trim()
-				if (isOnWhitelist(nick)) {
-					showMsg('Этот ник уже в вайтлисте — можно заходить на сервер', true)
-					return
-				}
-				setLoading(appForm, true)
-				try {
-					await IsnixAuth.submitApplication(session.user.id, {
-						minecraft_nick: nick,
+				var ok = await submitWhitelistApplication(
+					session,
+					{
+						minecraft_nick: document.getElementById('appNick').value.trim(),
 						call_name: document.getElementById('appCallName').value.trim(),
 						age: document.getElementById('appAge').value.trim(),
 						reason: document.getElementById('appReason').value.trim(),
-					})
-					showMsg('Заявка отправлена. Обычно отвечаем в течение часа.', true)
-					appForm.reset()
-					await renderApplications(session.user.id)
-					updateWhitelistHint()
-				} catch (err) {
-					showMsg(IsnixAuth.formatAuthError(err), false)
-				} finally {
-					setLoading(appForm, false)
+					},
+					appForm,
+				)
+				if (ok) appForm.reset()
+			})
+		}
+
+		var modalForm = document.getElementById('whitelistModalForm')
+		if (modalForm) {
+			modalForm.addEventListener('submit', async function (e) {
+				e.preventDefault()
+				var session = await IsnixAuth.getSession()
+				if (!session) return
+				var ok = await submitWhitelistApplication(
+					session,
+					{
+						minecraft_nick: document.getElementById('modalAppNick').value.trim(),
+						call_name: document.getElementById('modalAppCallName').value.trim(),
+						age: document.getElementById('modalAppAge').value.trim(),
+						reason: document.getElementById('modalAppReason').value.trim(),
+					},
+					modalForm,
+				)
+				if (ok) {
+					modalForm.reset()
+					closeWhitelistModal()
 				}
 			})
 		}
+
+		var modalCancel = document.getElementById('whitelistModalCancel')
+		if (modalCancel) {
+			modalCancel.addEventListener('click', closeWhitelistModal)
+		}
+		var modalBackdrop = document.getElementById('whitelistModalBackdrop')
+		if (modalBackdrop) {
+			modalBackdrop.addEventListener('click', closeWhitelistModal)
+		}
+		document.addEventListener('keydown', function (e) {
+			if (e.key === 'Escape') closeWhitelistModal()
+		})
 
 		try {
 			var session = await IsnixAuth.getSession()
