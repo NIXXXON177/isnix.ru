@@ -11,6 +11,8 @@
 
 В **SQL Editor** выполни скрипт **[supabase-schema.sql](supabase-schema.sql)**.
 
+Если при создании проекта было **отключено** «Automatically expose new tables» и на сайте ошибка `permission denied for table profiles` — выполни **[supabase-grants-fix.sql](supabase-grants-fix.sql)**.
+
 ## 3. Auth (письма)
 
 Authentication → Providers → **Email** — включён.

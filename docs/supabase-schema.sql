@@ -164,3 +164,11 @@ create trigger profiles_protect_role
 create unique index if not exists whitelist_applications_one_pending
 	on public.whitelist_applications (user_id)
 	where (status = 'pending');
+
+-- Права для Supabase API (anon / authenticated)
+-- Нужно, если при создании проекта отключено «Automatically expose new tables»
+grant usage on schema public to anon, authenticated;
+
+grant select, update on table public.profiles to authenticated;
+
+grant select, insert, update on table public.whitelist_applications to authenticated;
