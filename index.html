@@ -90,15 +90,12 @@
 					<li><a href="#shop" data-nav="shop">Магазин</a></li>
 					<li><a href="#rules" data-nav="rules">Правила</a></li>
 					<li><a href="#join-server" data-nav="join-server">На сервер</a></li>
+					<li><a href="account.html">Аккаунт</a></li>
 					<li><a href="how-to-play.html">Как играть</a></li>
 					<li><a href="#links" data-nav="links">Контакты</a></li>
 				</ul>
-				<a
-					href="https://vk.com/isthisnixxxon"
-					target="_blank"
-					rel="noopener noreferrer"
-					class="nav-btn nav-btn-menu"
-					>Вайтлист</a
+				<a href="account.html" class="nav-btn nav-btn-menu" id="navAccountBtn"
+					>Аккаунт</a
 				>
 			</nav>
 		</div>
@@ -220,8 +217,8 @@
 						<div class="feat-icon">🤝</div>
 						<div class="feat-title">Бартер</div>
 						<div class="feat-text">
-							Игровой валюты нет — обмен ресурсами и предметами напрямую с
-							другими игроками.
+							Игровой валюты нет — торговля через
+							<code>/trade &lt;ник&gt;</code> с другими игроками.
 						</div>
 					</div>
 					<div class="feat">
@@ -304,9 +301,9 @@
 				<div class="s-eyebrow">Торговля</div>
 				<h2 class="s-title">Бартер</h2>
 				<p class="s-desc">
-					На сервере нет игровой валюты и Центробанка — только обмен ресурсами
-					и предметами между игроками напрямую. Условия сделки вы согласуете сами,
-					соблюдайте общие правила торговли.
+					На сервере нет игровой валюты и Центробанка — обмен между игроками
+					через команду <code>/trade &lt;ник_игрока&gt;</code> в чате. Условия
+					сделки вы согласуете сами, соблюдайте общие правила торговли.
 				</p>
 			</div>
 			<div class="barter-layout">
@@ -314,9 +311,10 @@
 					<div class="info-card">
 						<div class="info-title">🤝 Как торговать?</div>
 						<div class="info-text">
-							Договоритесь, что хотите получить и что отдаёте взамен. Обмен
-							<strong class="text-strong">вручную в игре</strong> между
-							участниками — предметами и блоками напрямую.
+							Введите в чат
+							<code>/trade &lt;ник_игрока&gt;</code> — откроется окно торговли с
+							выбранным игроком. Договоритесь, что отдаёте и что получаете, затем
+							подтвердите сделку в интерфейсе обмена.
 						</div>
 					</div>
 					<div class="info-card">
@@ -1024,21 +1022,24 @@
 									>В табе и чате</span
 								>
 								<div class="shop-desc-text">
-									Ваш ник в табе и чате станет жирным. Выделяйтесь среди
-									игроков!
+									Жирный ник в табе и чате. <strong class="text-strong"
+										>Сейчас выдаётся только администрации</strong> — покупка
+									временно недоступна.
 								</div>
 							</div>
 							<div class="shop-card-foot">
 								<div>
-									<div class="shop-price-tag" style="color: #fcd34d">150</div>
-									<div class="shop-price-sub">₽</div>
+									<div class="shop-price-tag shop-price-tag--free">—</div>
+									<div class="shop-price-sub">только админы</div>
 								</div>
 								<button
 									type="button"
-									class="shop-buy-btn gold"
-									onclick="openBoldNickModal()"
+									class="shop-buy-btn gold shop-buy-btn--disabled"
+									disabled
+									aria-disabled="true"
+									title="Пока выдаётся только администрации"
 								>
-									Купить
+									Скоро
 								</button>
 							</div>
 						</div>
@@ -1250,8 +1251,9 @@
 					<div class="rule">
 						<span class="rule-n">06</span
 						><span class="rule-t"
-							>Обман при торговле наказуемо. Все сделки совершаются добровольно
-							и через руки.</span
+							>Обман при торговле наказуем. Сделки — через
+							<code>/trade &lt;ник_игрока&gt;</code> и только по добровольному
+							согласию.</span
 						>
 					</div>
 				</div>
@@ -1468,24 +1470,27 @@
 						Как попасть на сервер
 					</h2>
 					<p class="join-lead">
-						Заявки в вайтлист принимаем
-						<strong>только в ВКонтакте</strong> — обычно отвечаем в течение
-						часа.
+						Зарегистрируйся на сайте и отправь заявку в личном кабинете — или
+						напиши в
+						<strong>ВКонтакте</strong>. Обычно отвечаем в течение часа.
 					</p>
 				</header>
 				<div class="panel-card join-card">
-					<p>Напиши в официальное сообщество сервера. В сообщении укажи:</p>
+					<p>На сайте — регистрация и форма заявки. В сообщении укажи:</p>
 					<ul class="join-list">
 						<li>ник в Minecraft (латиница, как в игре);</li>
 						<li>как к тебе обращаться и при желании возраст;</li>
 						<li>несколько слов, почему хочешь играть на сервере.</li>
 					</ul>
+					<a href="account.html#whitelist" class="join-vk-btn"
+						>Заявка на сайте — регистрация</a
+					>
 					<a
 						href="https://vk.com/isthisnixxxon"
 						target="_blank"
 						rel="noopener noreferrer"
-						class="join-vk-btn"
-						>Написать в ВК — заявка в вайтлист</a
+						class="join-vk-btn join-vk-btn--secondary"
+						>Или написать в ВКонтакте</a
 					>
 					<p class="join-footnote">
 						Если вкладка не открылась, найди сообщество
@@ -1532,7 +1537,8 @@
 							<li><a href="how-to-play.html">Как играть</a></li>
 							<li><a href="#shop">Магазин</a></li>
 							<li><a href="#rules">Правила</a></li>
-							<li><a href="#join-server">Заявка в вайтлист</a></li>
+							<li><a href="account.html">Аккаунт и вайтлист</a></li>
+							<li><a href="#join-server">Как попасть</a></li>
 						</ul>
 					</nav>
 
@@ -1758,5 +1764,15 @@
 
 		<div class="toast" id="toast"></div>
 
+		<script>
+			window.ISNIX_AUTH = window.ISNIX_AUTH || {
+				enabled: false,
+				supabaseUrl: '',
+				supabaseAnonKey: '',
+			}
+		</script>
+		<script src="assets/js/auth-config.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+		<script src="assets/js/auth.js"></script>
 		<script src="assets/js/shop-slider.js" defer></script>
 		<script src="assets/js/site.js" defer></script>

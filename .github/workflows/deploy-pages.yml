@@ -1,0 +1,50 @@
+# GitHub Pages: подставляет anon key из секрета и публикует сайт
+name: Deploy Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Write auth-config.js
+        env:
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: |
+          if [ -z "$SUPABASE_ANON_KEY" ]; then
+            echo "::warning::SUPABASE_ANON_KEY not set — auth-config.js left as in repo"
+            exit 0
+          fi
+          cat > assets/js/auth-config.js <<EOF
+          window.ISNIX_AUTH = {
+          	enabled: true,
+          	supabaseUrl: 'https://yfrlgeztbaebdapdnefy.supabase.co',
+          	supabaseAnonKey: '${SUPABASE_ANON_KEY}',
+          }
+          EOF
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+
+      - uses: actions/deploy-pages@v4
+        id: deployment

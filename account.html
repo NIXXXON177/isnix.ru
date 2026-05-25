@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="ru">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Аккаунт — ISTHISNIXXXON</title>
+		<meta
+			name="description"
+			content="Регистрация на isnix.ru и заявка в вайтлист Minecraft-сервера ISTHISNIXXXON."
+		/>
+		<meta name="theme-color" content="#0a0f0a" />
+		<link rel="canonical" href="https://isnix.ru/account.html" />
+		<link rel="icon" href="favicon.svg" type="image/svg+xml" />
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Raleway:wght@400;600;700&display=swap"
+			rel="stylesheet"
+		/>
+		<link rel="stylesheet" href="assets/css/main.css" />
+		<link rel="stylesheet" href="assets/css/components.css" />
+		<link rel="stylesheet" href="assets/css/auth.css" />
+	</head>
+	<body>
+		<main class="auth-page">
+			<div class="auth-wrap">
+				<div class="auth-top-nav">
+					<a href="index.html" class="auth-logo">ISTHIS<span>NIXXXON</span></a>
+					<a href="index.html" class="auth-back">← На главную</a>
+				</div>
+				<header class="auth-header">
+					<p class="auth-eyebrow">Личный кабинет</p>
+					<h1 class="auth-title">Аккаунт и вайтлист</h1>
+					<p class="auth-lead">
+						Зарегистрируйся, войди и отправь заявку на сервер. Статус заявки
+						виден здесь же.
+					</p>
+				</header>
+
+				<div id="authMessage" class="auth-message" hidden></div>
+
+				<div id="authSetupNotice" class="auth-card auth-setup" hidden>
+					<p class="auth-lead">
+						Аккаунты на сайте ещё не подключены к базе данных. Администратору:
+						настрой Supabase по инструкции
+						<code>docs/supabase-auth-setup.md</code> и создай
+						<code>assets/js/auth-config.js</code>.
+					</p>
+					<p class="auth-vk-fallback">
+						Пока можно подать заявку
+						<a
+							href="https://vk.com/isthisnixxxon"
+							target="_blank"
+							rel="noopener noreferrer"
+							>во ВКонтакте</a
+						>.
+					</p>
+				</div>
+
+				<div id="authPanels" class="auth-card" hidden>
+					<div class="auth-tabs" role="tablist">
+						<button
+							type="button"
+							class="auth-tab active"
+							data-tab="login"
+							role="tab"
+							aria-selected="true"
+						>
+							Вход
+						</button>
+						<button
+							type="button"
+							class="auth-tab"
+							data-tab="register"
+							role="tab"
+							aria-selected="false"
+						>
+							Регистрация
+						</button>
+					</div>
+
+					<div id="authTab-login" class="auth-tab-panel" role="tabpanel">
+						<form id="loginForm" class="auth-form">
+							<div class="auth-field">
+								<label for="loginEmail">Email</label>
+								<input
+									id="loginEmail"
+									type="email"
+									autocomplete="email"
+									required
+								/>
+							</div>
+							<div class="auth-field">
+								<label for="loginPassword">Пароль</label>
+								<input
+									id="loginPassword"
+									type="password"
+									autocomplete="current-password"
+									required
+								/>
+							</div>
+							<button type="submit" class="auth-submit">Войти</button>
+						</form>
+					</div>
+
+					<div id="authTab-register" class="auth-tab-panel" role="tabpanel" hidden>
+						<form id="registerForm" class="auth-form">
+							<div class="auth-field">
+								<label for="regEmail">Email</label>
+								<input
+									id="regEmail"
+									type="email"
+									autocomplete="email"
+									required
+								/>
+							</div>
+							<div class="auth-field">
+								<label for="regPassword">Пароль</label>
+								<input
+									id="regPassword"
+									type="password"
+									autocomplete="new-password"
+									minlength="6"
+									required
+								/>
+							</div>
+							<div class="auth-field">
+								<label for="regPassword2">Повтор пароля</label>
+								<input
+									id="regPassword2"
+									type="password"
+									autocomplete="new-password"
+									minlength="6"
+									required
+								/>
+							</div>
+							<button type="submit" class="auth-submit">Создать аккаунт</button>
+						</form>
+					</div>
+
+					<p class="auth-vk-fallback">
+						Или заявка через
+						<a
+							href="https://vk.com/isthisnixxxon"
+							target="_blank"
+							rel="noopener noreferrer"
+							>ВКонтакте</a
+						>.
+					</p>
+				</div>
+
+				<div id="authDashboard" class="auth-card" hidden>
+					<div class="auth-dash-head">
+						<div>
+							<p class="auth-dash-email">
+								Вы вошли как <strong id="dashEmail">—</strong>
+							</p>
+							<span id="adminRoleBadge" class="auth-admin-badge" hidden
+								>Администрация</span
+							>
+						</div>
+						<button type="button" id="logoutBtn" class="auth-submit auth-submit--ghost">
+							Выйти
+						</button>
+					</div>
+
+					<section id="adminPanel" class="auth-admin-panel" hidden>
+						<h2 class="auth-section-title" id="admin">Панель администрации</h2>
+						<p class="auth-muted auth-admin-lead">
+							Заявки в вайтлист с сайта. После одобрения добавь ник на сервер
+							вручную.
+						</p>
+						<div class="auth-admin-tabs" role="tablist">
+							<button
+								type="button"
+								class="auth-admin-tab active"
+								data-admin-filter="pending"
+							>
+								Ожидают
+							</button>
+							<button
+								type="button"
+								class="auth-admin-tab"
+								data-admin-filter="all"
+							>
+								Все
+							</button>
+						</div>
+						<div id="adminApplicationsList"></div>
+					</section>
+
+					<div id="playerSections">
+					<h2 class="auth-section-title">Профиль</h2>
+					<form id="profileForm" class="auth-form">
+						<div class="auth-field">
+							<label for="profileNick">Ник в Minecraft</label>
+							<input
+								id="profileNick"
+								type="text"
+								maxlength="16"
+								autocomplete="off"
+								spellcheck="false"
+								placeholder="Steve123"
+							/>
+						</div>
+						<div class="auth-field">
+							<label for="profileCallName">Как к тебе обращаться</label>
+							<input
+								id="profileCallName"
+								type="text"
+								maxlength="64"
+								autocomplete="nickname"
+							/>
+						</div>
+						<button type="submit" class="auth-submit">Сохранить профиль</button>
+					</form>
+
+					<h2 class="auth-section-title">Мои заявки</h2>
+					<div id="applicationsList"></div>
+
+					<h2 class="auth-section-title" id="whitelist">Заявка в вайтлист</h2>
+					<p class="auth-muted" style="margin-bottom: 1rem">
+						Укажи ник как в игре (латиница), как обращаться и зачем хочешь на
+						сервер.
+					</p>
+					<form id="whitelistForm" class="auth-form">
+						<div class="auth-field">
+							<label for="appNick">Ник в Minecraft *</label>
+							<input
+								id="appNick"
+								type="text"
+								maxlength="16"
+								required
+								autocomplete="off"
+								spellcheck="false"
+							/>
+							<p id="whitelistNickHint" class="auth-hint"></p>
+						</div>
+						<div class="auth-field">
+							<label for="appCallName">Как обращаться</label>
+							<input id="appCallName" type="text" maxlength="64" />
+						</div>
+						<div class="auth-field">
+							<label for="appAge">Возраст (необязательно)</label>
+							<input id="appAge" type="text" maxlength="16" />
+						</div>
+						<div class="auth-field">
+							<label for="appReason">Почему хочешь на сервер *</label>
+							<textarea
+								id="appReason"
+								required
+								minlength="10"
+								maxlength="2000"
+								placeholder="Несколько предложений о себе и почему тебе интересен наш сервер…"
+							></textarea>
+						</div>
+						<button type="submit" class="auth-submit">Отправить заявку</button>
+					</form>
+					</div>
+				</div>
+			</div>
+		</main>
+
+		<script>
+			window.ISNIX_AUTH = window.ISNIX_AUTH || {
+				enabled: false,
+				supabaseUrl: '',
+				supabaseAnonKey: '',
+			}
+		</script>
+		<script src="assets/js/auth-config.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+		<script src="assets/js/auth.js"></script>
+		<script src="assets/js/account.js"></script>
+	</body>
+</html>

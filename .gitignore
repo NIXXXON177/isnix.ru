@@ -5,3 +5,5 @@ ISTHISNIXXXON FABRIC 1.21.1.zip
 _index_head.html
 .DS_Store
 Thumbs.db
+
+# Supabase: anon key в auth-config.js (публичный ключ для фронта при RLS)

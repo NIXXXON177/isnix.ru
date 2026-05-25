@@ -7,6 +7,7 @@ on:
     paths:
       - 'index.html'
       - 'how-to-play.html'
+      - 'account.html'
       - 'assets/**'
       - 'robots.txt'
       - 'sitemap.xml'
@@ -22,9 +23,14 @@ jobs:
       - name: Required files exist
         run: |
           test -f index.html
+          test -f account.html
           test -f assets/css/main.css
           test -f assets/css/components.css
+          test -f assets/css/auth.css
           test -f assets/js/site.js
+          test -f assets/js/auth.js
+          test -f assets/js/account.js
+          test -f assets/js/auth-config.js
           test -f assets/js/shop-slider.js
           test -f whitelist.json
           test -f downloads/ISTHISNIXXXONmods.zip

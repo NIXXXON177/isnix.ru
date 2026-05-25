@@ -108,6 +108,17 @@
 	transform: translateY(-1px);
 	box-shadow: 0 14px 42px -6px rgba(74, 222, 128, 0.48);
 }
+.join-vk-btn--secondary {
+	margin-top: 0.75rem;
+	background: transparent;
+	color: var(--green);
+	border: 1px solid rgba(74, 222, 128, 0.45);
+	box-shadow: none;
+}
+.join-vk-btn--secondary:hover {
+	background: rgba(74, 222, 128, 0.08);
+	box-shadow: 0 8px 24px -8px rgba(74, 222, 128, 0.25);
+}
 .join-footnote {
 	margin-top: 1.25rem;
 	text-align: center;
