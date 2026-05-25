@@ -24,29 +24,19 @@ Authentication → Providers → **Email** — включён.
 
 Проект: **ISTHISNIXXXON** (`yfrlgeztbaebdapdnefy`)
 
-**Settings → API Keys** → скопируй **anon** / **publishable** key (`eyJ...`).
-
-Файл **`assets/js/auth-config.js`** (URL уже подставлен):
-
-```javascript
-window.ISNIX_AUTH = {
-	enabled: true,
-	supabaseUrl: 'https://yfrlgeztbaebdapdnefy.supabase.co',
-	supabaseAnonKey: 'eyJ...', // вставь anon key
-}
-```
-
-Anon key виден в браузере — это нормально при включённом RLS.
+**Settings → API Keys** → скопируй **publishable** key (`sb_publishable_...`).
 
 ### GitHub Pages (рекомендуется)
 
 1. Репозиторий **NIXXXON177/isnix.ru** → **Settings → Secrets and variables → Actions** → **New repository secret**:
    - Name: `SUPABASE_ANON_KEY`
-   - Value: anon key из Supabase
+   - Value: publishable key из Supabase
 2. **Settings → Pages** → **Build and deployment** → Source: **GitHub Actions**
-3. Push в `main` — workflow **Deploy Pages** подставит ключ и опубликует сайт.
+3. **Actions → Deploy Pages → Run workflow** (или push в `main`)
 
-Без секрета можно вручную вставить ключ в `auth-config.js` и пушнуть в `main`.
+Workflow подставит ключ в `auth-config.js` при деплое. В репозитории ключ не хранится.
+
+Файл **`assets/js/auth-config.js`** в git — заглушка для локальной разработки (вставь ключ вручную при тесте offline).
 
 ## 5. Проверка
 
