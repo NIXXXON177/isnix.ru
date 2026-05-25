@@ -107,8 +107,15 @@ security definer
 set search_path = public
 as $$
 	select exists (
-		select 1 from public.profiles
-		where id = auth.uid() and role = 'admin'
+		select 1
+		from public.profiles p
+		where p.id = auth.uid()
+			and p.role = 'admin'
+			and p.email in (
+				'kupryuhinsemen@gmail.com',
+				'kudrasovn824@gmail.com',
+				'1511vasilisa@gmail.com'
+			)
 	);
 $$;
 
@@ -148,6 +155,11 @@ security definer
 set search_path = public
 as $$
 begin
+	if TG_OP = 'INSERT' then
+		new.role := 'player';
+		return new;
+	end if;
+
 	if new.role is distinct from old.role and not public.is_admin() then
 		new.role := old.role;
 	end if;
@@ -157,7 +169,7 @@ $$;
 
 drop trigger if exists profiles_protect_role on public.profiles;
 create trigger profiles_protect_role
-	before update on public.profiles
+	before insert or update on public.profiles
 	for each row execute function public.protect_profile_role();
 
 -- Одна активная заявка (pending) на аккаунт

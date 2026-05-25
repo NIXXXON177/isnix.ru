@@ -4,6 +4,13 @@
 	var MC_NICK_RE = /^[a-zA-Z0-9_]{3,16}$/
 	var client = null
 
+	/** Только эти email могут быть админами сайта (дублирует проверку в Supabase) */
+	var SITE_ADMIN_EMAILS = [
+		'kupryuhinsemen@gmail.com',
+		'kudrasovn824@gmail.com',
+		'1511vasilisa@gmail.com',
+	]
+
 	function getConfig() {
 		var c = global.ISNIX_AUTH || {}
 		return {
@@ -92,7 +99,9 @@
 	}
 
 	function isAdminProfile(profile) {
-		return !!(profile && profile.role === 'admin')
+		if (!profile || profile.role !== 'admin') return false
+		var email = (profile.email || '').trim().toLowerCase()
+		return SITE_ADMIN_EMAILS.indexOf(email) !== -1
 	}
 
 	async function isCurrentUserAdmin() {
@@ -223,6 +232,9 @@
 		}
 		try {
 			var profile = await getProfile(session.user.id)
+			if (profile && session.user.email) {
+				profile.email = profile.email || session.user.email
+			}
 			updateNavAccountLink(session, profile)
 		} catch (_e) {
 			updateNavAccountLink(session, null)

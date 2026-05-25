@@ -315,6 +315,9 @@
 		} catch (_e) {
 			profile = null
 		}
+		if (profile && session.user.email) {
+			profile.email = profile.email || session.user.email
+		}
 		showDashboard(session.user, profile)
 		await fillProfileForm(session.user.id)
 		await renderApplications(session.user.id)
