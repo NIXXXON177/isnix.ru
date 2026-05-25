@@ -164,6 +164,39 @@
 		window.open(buildDonationUrl(prefix, amount), '_blank', 'noopener')
 	}
 
+	const VK_URL = 'https://vk.com/isthisnixxxon'
+
+	function openCreatorPrefix(btn) {
+		const nick = getNick()
+		if (!nick) {
+			showToast('⚠️ Сначала введи ник в Minecraft!', false)
+			document.getElementById('playerNick').focus()
+			return
+		}
+		if (!isNickVerifiedForPurchase()) {
+			showToast('⚠️ Ник должен быть в вайтлисте (зелёный статус)', false)
+			document.getElementById('playerNick').focus()
+			return
+		}
+		const card = btn.closest('.shop-card')
+		const prefix = card.dataset.prefix
+		const nickCanon = canonicalNickFromWhitelist(nick)
+		const contentHint =
+			prefix === 'YouTube'
+				? 'Ссылка на канал и видео о сервере'
+				: 'Ссылка на канал и стримы на сервере'
+		const text = `Заявка на префикс [${prefix}]\nНик: ${nickCanon}\n${contentHint}: `
+		if (navigator.clipboard && navigator.clipboard.writeText) {
+			navigator.clipboard.writeText(text).then(function () {
+				showToast(
+					'Текст заявки скопирован — вставь в сообщение ВКонтакте',
+					true,
+				)
+			})
+		}
+		window.open(VK_URL, '_blank', 'noopener')
+	}
+
 	function buildBoldNickDonationUrl(nickCanon) {
 		const comment = `Ник: ${nickCanon} | Услуга: Жирный ник`
 		const url = new URL(DA_URL)

@@ -350,8 +350,10 @@
 						>
 					</h2>
 					<p class="s-desc">
-						Только косметика — никаких игровых преимуществ. После покупки напиши
-						в
+						Только косметика — никаких игровых преимуществ. Префиксы
+						<strong class="text-strong">[YouTube]</strong> и
+						<strong class="text-strong">[Twitch]</strong> — бесплатно за контент
+						о сервере. После покупки напиши в
 						<a
 							href="https://vk.com/isthisnixxxon"
 							target="_blank"
@@ -429,6 +431,7 @@
 				<button class="shop-tab" data-cat="rare">⚡ Редкие</button>
 				<button class="shop-tab" data-cat="special">💛 Особые</button>
 				<button class="shop-tab" data-cat="cosmetic">✨ Косметика</button>
+				<button class="shop-tab" data-cat="creator">📺 Контент</button>
 			</div>
 
 			<div class="shop-slider" id="shopSliderRoot">
@@ -449,6 +452,107 @@
 					aria-label="Каталог префиксов — листай стрелками или свайпом"
 				>
 					<div class="shop-slider-track" id="shopGrid">
+						<!-- КОНТЕНТ (бесплатно) -->
+						<div
+							class="shop-card shop-card-creator"
+							data-cat="creator"
+							style="--c: #ff4444"
+							data-prefix="YouTube"
+							data-free="true"
+						>
+							<div class="shop-card-glow" style="background: #ff4444"></div>
+							<div
+								class="special-ribbon"
+								style="
+									background: rgba(255, 68, 68, 0.12);
+									border-color: rgba(255, 68, 68, 0.4);
+									color: #fca5a5;
+								"
+							>
+								📺 БЕСПЛАТНО
+							</div>
+							<div class="shop-card-body">
+								<div
+									class="shop-prefix"
+									style="color: #ff4444; text-shadow: 0 0 18px #ff4444"
+								>
+									[YouTube]
+								</div>
+								<span
+									class="shop-badge"
+									style="color: #ff4444; border-color: #ff4444"
+									>Контент</span
+								>
+								<div class="shop-desc-text">
+									Снимаешь видео о сервере — получи префикс бесплатно. В заявке
+									укажи ссылку на канал и ролик.
+								</div>
+							</div>
+							<div class="shop-card-foot">
+								<div>
+									<div class="shop-price-tag shop-price-tag--free">0</div>
+									<div class="shop-price-sub">бесплатно</div>
+								</div>
+								<button
+									type="button"
+									class="shop-buy-btn creator"
+									onclick="openCreatorPrefix(this)"
+								>
+									Получить
+								</button>
+							</div>
+						</div>
+
+						<div
+							class="shop-card shop-card-creator"
+							data-cat="creator"
+							style="--c: #9146ff"
+							data-prefix="Twitch"
+							data-free="true"
+						>
+							<div class="shop-card-glow" style="background: #9146ff"></div>
+							<div
+								class="special-ribbon"
+								style="
+									background: rgba(145, 70, 255, 0.12);
+									border-color: rgba(145, 70, 255, 0.4);
+									color: #c4b5fd;
+								"
+							>
+								📺 БЕСПЛАТНО
+							</div>
+							<div class="shop-card-body">
+								<div
+									class="shop-prefix"
+									style="color: #9146ff; text-shadow: 0 0 18px #9146ff"
+								>
+									[Twitch]
+								</div>
+								<span
+									class="shop-badge"
+									style="color: #9146ff; border-color: #9146ff"
+									>Контент</span
+								>
+								<div class="shop-desc-text">
+									Ведёшь стримы на сервере — префикс в подарок. Пришли ссылку
+									на канал и записи стримов.
+								</div>
+							</div>
+							<div class="shop-card-foot">
+								<div>
+									<div class="shop-price-tag shop-price-tag--free">0</div>
+									<div class="shop-price-sub">бесплатно</div>
+								</div>
+								<button
+									type="button"
+									class="shop-buy-btn creator"
+									onclick="openCreatorPrefix(this)"
+								>
+									Получить
+								</button>
+							</div>
+						</div>
+
 						<!-- РОЛЬ -->
 						<div
 							class="shop-card"

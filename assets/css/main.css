@@ -1174,6 +1174,34 @@
 				background: #f59e0b;
 				color: #000;
 			}
+			.shop-buy-btn.creator {
+				background: rgba(145, 70, 255, 0.12);
+				color: #c4b5fd;
+				border-color: rgba(145, 70, 255, 0.35);
+			}
+			.shop-buy-btn.creator:hover {
+				background: #9146ff;
+				color: #fff;
+				box-shadow: 0 0 24px rgba(145, 70, 255, 0.35);
+			}
+			.shop-card-creator {
+				background: linear-gradient(
+					135deg,
+					var(--surface),
+					rgba(145, 70, 255, 0.04)
+				);
+			}
+			.shop-card-creator[style*='#ff4444'] {
+				background: linear-gradient(
+					135deg,
+					var(--surface),
+					rgba(255, 68, 68, 0.05)
+				);
+			}
+			.shop-price-tag--free {
+				color: var(--green);
+				text-shadow: 0 0 12px rgba(74, 222, 128, 0.35);
+			}
 			.shop-card-special {
 				background: linear-gradient(
 					135deg,
