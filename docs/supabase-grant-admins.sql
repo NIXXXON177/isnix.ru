@@ -9,7 +9,7 @@ where email = 'kupryuhinsemen@gmail.com';
 
 update public.profiles
 set role = 'admin', minecraft_nick = 'ISTHISNIXXXON', display_name = 'ISTHISNIXXXON'
-where email = 'kudrasovn824@gmail.com';
+where email = 'kudrasovn024@gmail.com';
 
 update public.profiles
 set role = 'admin', minecraft_nick = 'VaSSiLIISa', display_name = 'Vasilisa'

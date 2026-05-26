@@ -7,7 +7,7 @@
 	/** Только эти email могут быть админами сайта (дублирует проверку в Supabase) */
 	var SITE_ADMIN_EMAILS = [
 		'kupryuhinsemen@gmail.com',
-		'kudrasovn824@gmail.com',
+		'kudrasovn024@gmail.com',
 		'1511vasilisa@gmail.com',
 	]
 

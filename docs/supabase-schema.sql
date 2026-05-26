@@ -113,7 +113,7 @@ as $$
 			and p.role = 'admin'
 			and p.email in (
 				'kupryuhinsemen@gmail.com',
-				'kudrasovn824@gmail.com',
+				'kudrasovn024@gmail.com',
 				'1511vasilisa@gmail.com'
 			)
 	);
