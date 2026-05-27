@@ -1,126 +1,7 @@
 /* Страница аккаунта и заявки в вайтлист */
-.account-page {
-	--account-header-h: 3.75rem;
-}
-
-.account-header {
-	position: sticky;
-	top: 0;
-	z-index: 200;
-	border-bottom: 1px solid var(--border);
-	background: rgba(10, 15, 10, 0.88);
-	backdrop-filter: blur(14px);
-	-webkit-backdrop-filter: blur(14px);
-}
-
-.account-header__bar {
-	max-width: 72rem;
-	margin: 0 auto;
-	padding: 0.65rem 1rem;
-	min-height: var(--account-header-h);
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	gap: 1rem;
-	flex-wrap: wrap;
-}
-
-.account-header__logo {
-	font-family: 'Cinzel', serif;
-	font-size: clamp(0.85rem, 2.5vw, 1rem);
-	font-weight: 900;
-	color: var(--text);
-	text-decoration: none;
-	letter-spacing: 0.08em;
-	flex-shrink: 0;
-}
-
-.account-header__logo span {
-	color: var(--green);
-}
-
-.account-header__nav {
-	display: flex;
-	align-items: center;
-	gap: clamp(0.75rem, 2vw, 1.75rem);
-	flex: 1;
-	justify-content: center;
-}
-
-.account-header__nav a {
-	font-size: 0.68rem;
-	font-weight: 600;
-	letter-spacing: 0.14em;
-	text-transform: uppercase;
-	text-decoration: none;
-	color: var(--muted);
-	transition: color 0.2s;
-}
-
-.account-header__nav a:hover,
-.account-header__nav a.is-active {
-	color: var(--green);
-}
-
-.account-header__nav a.is-active {
-	text-shadow: 0 0 18px rgba(74, 222, 128, 0.25);
-}
-
-.account-header__actions {
-	display: flex;
-	align-items: center;
-	gap: 0.5rem;
-	flex-shrink: 0;
-}
-
-.account-header__ip {
-	font-family: ui-monospace, 'Cascadia Code', monospace;
-	font-size: 0.68rem;
-	font-weight: 600;
-	letter-spacing: 0.06em;
-	color: var(--green);
-	background: rgba(74, 222, 128, 0.08);
-	border: 1px solid rgba(74, 222, 128, 0.28);
-	border-radius: var(--radius-sm);
-	padding: 0.45rem 0.65rem;
-	cursor: pointer;
-	transition:
-		background 0.2s,
-		border-color 0.2s;
-}
-
-.account-header__ip:hover {
-	background: rgba(74, 222, 128, 0.14);
-	border-color: rgba(74, 222, 128, 0.45);
-}
-
-.account-header__ip.is-copied {
-	color: var(--bg);
-	background: var(--green);
-	border-color: var(--green);
-}
-
-.account-header__cta {
-	font-size: 0.65rem;
-	font-weight: 700;
-	letter-spacing: 0.1em;
-	text-transform: uppercase;
-	text-decoration: none;
-	color: var(--bg);
-	background: linear-gradient(90deg, var(--green-dark), var(--green-mid));
-	border: 1px solid var(--green-dark);
-	border-radius: var(--radius-sm);
-	padding: 0.48rem 0.85rem;
-	transition: filter 0.2s;
-}
-
-.account-header__cta:hover {
-	filter: brightness(1.08);
-}
-
 .auth-page {
-	min-height: calc(100vh - var(--account-header-h));
-	padding: 1.75rem 1rem 3rem;
+	min-height: 100vh;
+	padding: 0 1rem 3rem;
 	background:
 		radial-gradient(ellipse 80% 50% at 50% -20%, rgba(34, 197, 94, 0.12) 0%, transparent 55%),
 		radial-gradient(circle at 100% 80%, rgba(22, 101, 52, 0.15) 0%, transparent 40%),
@@ -921,27 +802,7 @@
 	margin-top: 0.65rem;
 }
 
-@media (max-width: 768px) {
-	.account-header__nav {
-		order: 3;
-		width: 100%;
-		justify-content: flex-start;
-		overflow-x: auto;
-		padding-bottom: 0.15rem;
-		-webkit-overflow-scrolling: touch;
-	}
-
-	.account-header__bar {
-		padding-bottom: 0.5rem;
-	}
-}
-
 @media (max-width: 640px) {
-	.account-header__actions {
-		width: 100%;
-		justify-content: flex-end;
-	}
-
 	.account-user-bar {
 		flex-direction: column;
 		align-items: stretch;

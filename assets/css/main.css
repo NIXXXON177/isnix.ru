@@ -177,6 +177,38 @@
 			.nav-logo span {
 				color: var(--green);
 			}
+			.site-top__ip {
+				font-family: ui-monospace, 'Cascadia Code', monospace;
+				font-size: 0.65rem;
+				font-weight: 600;
+				letter-spacing: 0.06em;
+				color: var(--green);
+				background: rgba(74, 222, 128, 0.08);
+				border: 1px solid rgba(74, 222, 128, 0.28);
+				border-radius: var(--radius-sm);
+				padding: 0.4rem 0.6rem;
+				cursor: pointer;
+				flex-shrink: 0;
+				margin-left: auto;
+				margin-right: 0.5rem;
+				transition:
+					background 0.2s,
+					border-color 0.2s,
+					color 0.2s;
+			}
+			.site-top__ip:hover {
+				background: rgba(74, 222, 128, 0.14);
+				border-color: rgba(74, 222, 128, 0.45);
+			}
+			.site-top__ip.is-copied {
+				color: var(--bg);
+				background: var(--green);
+				border-color: var(--green);
+			}
+			body[data-page]:not([data-page='home']) .auth-page,
+			body[data-page]:not([data-page='home']) .htp-main {
+				padding-top: calc(var(--nav-h) + env(safe-area-inset-top, 0px) + 0.75rem);
+			}
 			.nav-links {
 				display: flex;
 				gap: 2rem;
@@ -197,6 +229,13 @@
 			}
 			.nav-links a.active {
 				text-shadow: 0 0 20px rgba(74, 222, 128, 0.25);
+			}
+			.nav-links a.nav-btn--admin {
+				color: #fca5a5;
+			}
+			.nav-links a.nav-btn--admin:hover,
+			.nav-links a.nav-btn--admin.active {
+				color: #fecaca;
 			}
 			.nav-btn {
 				background: var(--green-dark);
@@ -1851,6 +1890,10 @@
 					flex-shrink: 0;
 					height: auto;
 					padding: 0;
+				}
+				.site-top__ip {
+					margin-left: 0;
+					margin-right: 0;
 				}
 				.nav-toggle {
 					display: none !important;

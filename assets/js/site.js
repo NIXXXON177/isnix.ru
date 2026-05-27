@@ -766,150 +766,15 @@
 		reduce.addEventListener('change', apply)
 	})()
 
-	;(function initSiteNav() {
-		var nav = document.getElementById('siteNav') || document.querySelector('nav')
-		var toggle = document.getElementById('navToggle')
-		var menu = document.getElementById('navMenu')
-		var backdrop = document.getElementById('navBackdrop')
-		var logo = document.getElementById('navLogo')
-		var mqMobile = window.matchMedia('(max-width: 1100px)')
-		if (!toggle || !menu) return
-
-		function isMobileNav() {
-			return mqMobile.matches
-		}
-
-		function setMenuOpen(open) {
-			var mobile = isMobileNav()
-			var show = open && mobile
-			menu.classList.toggle('is-open', show)
-			if (show) menu.scrollTop = 0
-			if (backdrop) backdrop.classList.toggle('is-visible', open && mobile)
-			toggle.setAttribute('aria-expanded', open && mobile ? 'true' : 'false')
-			toggle.setAttribute(
-				'aria-label',
-				open && mobile ? 'Закрыть меню' : 'Открыть меню',
-			)
-			if (mobile) {
-				menu.setAttribute('aria-hidden', open ? 'false' : 'true')
-				if (backdrop) {
-					backdrop.setAttribute('aria-hidden', open ? 'false' : 'true')
-				}
-			} else {
-				menu.setAttribute('aria-hidden', 'false')
-				if (backdrop) backdrop.setAttribute('aria-hidden', 'true')
-			}
-			document.documentElement.classList.toggle('nav-open', open && mobile)
-			document.body.classList.toggle('nav-open', open && mobile)
-		}
-
-		function closeMenu() {
-			setMenuOpen(false)
-		}
-
-		function openMenu() {
-			if (!isMobileNav()) return
-			setMenuOpen(true)
-		}
-
-		function toggleMenu() {
-			if (!isMobileNav()) {
-				closeMenu()
-				return
-			}
-			setMenuOpen(!menu.classList.contains('is-open'))
-		}
-
-		var siteHeader = document.querySelector('.site-header')
-		if (nav || siteHeader) {
-			function onNavScroll() {
-				var scrolled = window.scrollY > 12
-				if (nav) nav.classList.toggle('is-scrolled', scrolled)
-				if (siteHeader) siteHeader.classList.toggle('is-scrolled', scrolled)
-			}
-			onNavScroll()
-			window.addEventListener('scroll', onNavScroll, { passive: true })
-		}
-
-		toggle.addEventListener('click', function (e) {
-			e.stopPropagation()
-			toggleMenu()
-		})
-
-		if (backdrop) {
-			backdrop.addEventListener('click', closeMenu)
-		}
-
-		menu.querySelectorAll('a').forEach(function (a) {
-			a.addEventListener('click', function () {
-				if (isMobileNav()) closeMenu()
-			})
-		})
-
-		if (logo) {
-			logo.addEventListener('click', function (e) {
-				e.preventDefault()
-				closeMenu()
-				window.scrollTo({ top: 0, behavior: 'smooth' })
-			})
-		}
-
+	;(function initFooterLogo() {
 		var footerLogo = document.getElementById('footerLogo')
-		if (footerLogo) {
-			footerLogo.addEventListener('click', function (e) {
-				var href = footerLogo.getAttribute('href')
-				if (!href || href === '#') {
-					e.preventDefault()
-					window.scrollTo({ top: 0, behavior: 'smooth' })
-				}
-			})
-		}
-
-		document.addEventListener('keydown', function (e) {
-			if (e.key === 'Escape' && menu.classList.contains('is-open')) {
-				closeMenu()
-				toggle.focus()
+		if (!footerLogo) return
+		footerLogo.addEventListener('click', function (e) {
+			var href = footerLogo.getAttribute('href')
+			if (!href || href === '#') {
+				e.preventDefault()
+				window.scrollTo({ top: 0, behavior: 'smooth' })
 			}
-		})
-
-		mqMobile.addEventListener('change', function () {
-			if (!mqMobile.matches) closeMenu()
-		})
-
-		window.addEventListener('resize', function () {
-			if (!isMobileNav()) closeMenu()
-		})
-	})()
-	;(function initNavScrollSpy() {
-		var links = document.querySelectorAll('.nav-links a[data-nav]')
-		if (!links.length) return
-		var map = {}
-		links.forEach(function (link) {
-			var id = link.getAttribute('data-nav')
-			var el = document.getElementById(id)
-			if (el) map[id] = { link: link, el: el }
-		})
-		var ids = Object.keys(map)
-		if (!ids.length) return
-		var io = new IntersectionObserver(
-			function (entries) {
-				var visible = entries
-					.filter(function (e) {
-						return e.isIntersecting
-					})
-					.sort(function (a, b) {
-						return b.intersectionRatio - a.intersectionRatio
-					})
-				if (!visible.length) return
-				var id = visible[0].target.id
-				links.forEach(function (l) {
-					l.classList.toggle('active', l.getAttribute('data-nav') === id)
-				})
-			},
-			{ rootMargin: '-25% 0px -55% 0px', threshold: [0, 0.12, 0.35] },
-		)
-		ids.forEach(function (id) {
-			io.observe(map[id].el)
 		})
 	})()
 	;(function initSmoothAnchors() {

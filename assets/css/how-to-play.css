@@ -1,88 +1,4 @@
 /* Как начать играть — без Tailwind */
-.htp-header {
-	position: sticky;
-	top: 0;
-	z-index: 100;
-	background: rgba(10, 15, 10, 0.96);
-	backdrop-filter: blur(16px);
-	-webkit-backdrop-filter: blur(16px);
-	border-bottom: 1px solid var(--border);
-}
-
-.htp-header__bar {
-	max-width: 72rem;
-	margin: 0 auto;
-	padding: 0.65rem 1.5rem;
-	min-height: 4rem;
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	gap: 1rem;
-	flex-wrap: wrap;
-}
-
-.htp-header__logo {
-	font-family: 'Cinzel', serif;
-	font-size: 1rem;
-	font-weight: 900;
-	color: var(--text);
-	letter-spacing: 0.08em;
-	text-decoration: none;
-}
-
-.htp-header__logo span {
-	color: var(--green);
-}
-
-.htp-header__nav {
-	display: flex;
-	align-items: center;
-	gap: clamp(0.75rem, 2vw, 2rem);
-	list-style: none;
-	flex: 1;
-	justify-content: center;
-}
-
-.htp-header__nav a {
-	text-decoration: none;
-	color: var(--muted);
-	font-size: 0.72rem;
-	font-weight: 600;
-	letter-spacing: 0.15em;
-	text-transform: uppercase;
-	transition: color 0.2s;
-}
-
-.htp-header__nav a:hover,
-.htp-header__nav a.is-active {
-	color: var(--green);
-}
-
-.htp-header__cta {
-	flex-shrink: 0;
-	background: var(--green-dark);
-	color: var(--green);
-	border: 1px solid var(--green-dark);
-	padding: 0.5rem 1.2rem;
-	font-family: 'Raleway', sans-serif;
-	font-size: 0.72rem;
-	font-weight: 700;
-	letter-spacing: 0.08em;
-	text-transform: uppercase;
-	text-decoration: none;
-	border-radius: var(--radius-sm);
-	transition:
-		background 0.2s,
-		color 0.2s,
-		transform 0.2s;
-}
-
-.htp-header__cta:hover {
-	background: var(--green);
-	color: var(--bg);
-	transform: translateY(-1px);
-}
-
 .htp-page {
 	min-height: 100vh;
 	background:
@@ -95,7 +11,7 @@
 .htp-main {
 	max-width: 52rem;
 	margin: 0 auto;
-	padding: 5.5rem 1rem 5rem;
+	padding: 0 1rem 5rem;
 }
 
 .htp-hero {
@@ -374,17 +290,6 @@
 
 	.htp-step {
 		padding: 2rem;
-	}
-}
-
-@media (max-width: 900px) {
-	.htp-header__nav {
-		display: none;
-	}
-
-	.htp-header__bar {
-		padding-left: 1rem;
-		padding-right: 1rem;
 	}
 }
 

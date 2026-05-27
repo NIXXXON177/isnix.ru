@@ -22,32 +22,59 @@
 		<link rel="stylesheet" href="assets/css/components.css" />
 		<link rel="stylesheet" href="assets/css/how-to-play.css" />
 	</head>
-	<body class="htp-page">
-		<header class="htp-header">
-			<div class="htp-header__bar">
-				<a href="index.html" class="htp-header__logo">ISTHIS<span>NIXXXON</span></a>
-				<ul class="htp-header__nav">
-					<li><a href="index.html#about">О сервере</a></li>
-					<li><a href="index.html#download">Скачать</a></li>
-					<li><a href="index.html#shop">Магазин</a></li>
-					<li><a href="index.html#rules">Правила</a></li>
-					<li><a href="index.html#join-server">На сервер</a></li>
-					<li><a href="index.html#links">Контакты</a></li>
+	<body class="htp-page" data-page="how-to-play">
+		<div class="site-header" id="siteHeader">
+			<header class="site-top" id="siteNav">
+				<a href="index.html" class="nav-logo" id="navLogo">ISTHIS<span>NIXXXON</span></a>
+				<button
+					type="button"
+					class="site-top__ip"
+					id="siteCopyIp"
+					title="Скопировать IP сервера"
+				>
+					mc.isnix.ru
+				</button>
+				<button
+					type="button"
+					class="nav-toggle"
+					id="navToggle"
+					aria-expanded="false"
+					aria-controls="navMenu"
+					aria-label="Открыть меню"
+				>
+					<span></span><span></span><span></span>
+				</button>
+			</header>
+			<nav class="nav-drawer" id="navMenu" aria-label="Навигация по сайту">
+				<ul class="nav-links">
+					<li><a href="#about" data-nav="about">О сервере</a></li>
+					<li><a href="#download" data-nav="download">Скачать</a></li>
+					<li><a href="#barter" data-nav="barter">Бартер</a></li>
+					<li><a href="#shop" data-nav="shop">Магазин</a></li>
+					<li><a href="#rules" data-nav="rules">Правила</a></li>
+					<li><a href="#join-server" data-nav="join-server">На сервер</a></li>
 					<li>
-						<a href="how-to-play.html" class="is-active" aria-current="page"
-							>Как играть</a
+						<a href="how-to-play.html" data-page-link="how-to-play">Как играть</a>
+					</li>
+					<li>
+						<a href="account.html" data-page-link="account" id="navAccountBtn"
+							>Аккаунт</a
 						>
 					</li>
+					<li><a href="#links" data-nav="links">Контакты</a></li>
 				</ul>
-				<a
-					href="https://vk.com/isthisnixxxon"
-					target="_blank"
-					rel="noopener noreferrer"
-					class="htp-header__cta"
-					>Вайтлист</a
+				<a href="#join-server" class="nav-btn nav-btn-menu" id="navJoinBtn"
+					>На сервер</a
 				>
-			</div>
-		</header>
+			</nav>
+		</div>
+		<button
+			type="button"
+			class="nav-backdrop"
+			id="navBackdrop"
+			aria-hidden="true"
+			tabindex="-1"
+		></button>
 
 		<main class="htp-main">
 			<header class="htp-hero">
@@ -387,6 +414,7 @@
 			</div>
 		</footer>
 
+		<script src="assets/js/site-header.js" defer></script>
 		<script src="assets/js/site.js" defer></script>
 	</body>
 </html>

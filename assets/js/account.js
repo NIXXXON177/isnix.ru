@@ -974,31 +974,6 @@
 	async function init() {
 		await loadWhitelist()
 
-		var copyIpBtn = document.getElementById('accountCopyIp')
-		if (copyIpBtn) {
-			copyIpBtn.addEventListener('click', function () {
-				var ip = 'mc.isnix.ru'
-				function done(ok) {
-					if (!ok) return
-					copyIpBtn.classList.add('is-copied')
-					copyIpBtn.textContent = 'Скопировано'
-					setTimeout(function () {
-						copyIpBtn.classList.remove('is-copied')
-						copyIpBtn.textContent = ip
-					}, 1600)
-				}
-				if (navigator.clipboard && navigator.clipboard.writeText) {
-					navigator.clipboard.writeText(ip).then(function () {
-						done(true)
-					}).catch(function () {
-						done(false)
-					})
-				} else {
-					done(false)
-				}
-			})
-		}
-
 		if (!window.IsnixAuth || !IsnixAuth.isReady()) {
 			showSetupNotice()
 			return

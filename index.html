@@ -32,7 +32,7 @@
 		<link rel="stylesheet" href="assets/css/main.css" />
 		<link rel="stylesheet" href="assets/css/components.css" />
 	</head>
-	<body class="preloader-lock">
+	<body class="preloader-lock" data-page="home">
 		<div
 			id="pagePreloader"
 			class="page-preloader"
@@ -68,9 +68,17 @@
 			</div>
 		</div>
 
-		<div class="site-header">
+		<div class="site-header" id="siteHeader">
 			<header class="site-top" id="siteNav">
-				<a href="#" class="nav-logo" id="navLogo">ISTHIS<span>NIXXXON</span></a>
+				<a href="index.html" class="nav-logo" id="navLogo">ISTHIS<span>NIXXXON</span></a>
+				<button
+					type="button"
+					class="site-top__ip"
+					id="siteCopyIp"
+					title="Скопировать IP сервера"
+				>
+					mc.isnix.ru
+				</button>
 				<button
 					type="button"
 					class="nav-toggle"
@@ -90,12 +98,18 @@
 					<li><a href="#shop" data-nav="shop">Магазин</a></li>
 					<li><a href="#rules" data-nav="rules">Правила</a></li>
 					<li><a href="#join-server" data-nav="join-server">На сервер</a></li>
-					<li><a href="account.html">Аккаунт</a></li>
-					<li><a href="how-to-play.html">Как играть</a></li>
+					<li>
+						<a href="how-to-play.html" data-page-link="how-to-play">Как играть</a>
+					</li>
+					<li>
+						<a href="account.html" data-page-link="account" id="navAccountBtn"
+							>Аккаунт</a
+						>
+					</li>
 					<li><a href="#links" data-nav="links">Контакты</a></li>
 				</ul>
-				<a href="account.html" class="nav-btn nav-btn-menu" id="navAccountBtn"
-					>Аккаунт</a
+				<a href="#join-server" class="nav-btn nav-btn-menu" id="navJoinBtn"
+					>На сервер</a
 				>
 			</nav>
 		</div>
@@ -1775,4 +1789,5 @@
 		<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 		<script src="assets/js/auth.js"></script>
 		<script src="assets/js/shop-slider.js" defer></script>
+		<script src="assets/js/site-header.js" defer></script>
 		<script src="assets/js/site.js" defer></script>

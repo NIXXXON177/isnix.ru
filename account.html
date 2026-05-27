@@ -21,28 +21,59 @@
 		<link rel="stylesheet" href="assets/css/components.css" />
 		<link rel="stylesheet" href="assets/css/auth.css" />
 	</head>
-	<body class="account-page">
-		<header class="account-header" id="accountHeader">
-			<div class="account-header__bar">
-				<a href="index.html" class="account-header__logo">ISTHIS<span>NIXXXON</span></a>
-				<nav class="account-header__nav" aria-label="Навигация по сайту">
-					<a href="index.html">Главная</a>
-					<a href="how-to-play.html">Как играть</a>
-					<a href="account.html" class="is-active" aria-current="page">Кабинет</a>
-				</nav>
-				<div class="account-header__actions">
-					<button
-						type="button"
-						class="account-header__ip"
-						id="accountCopyIp"
-						title="Скопировать IP"
-					>
-						mc.isnix.ru
-					</button>
-					<a href="index.html#join-server" class="account-header__cta">На сервер</a>
-				</div>
-			</div>
-		</header>
+	<body class="account-page" data-page="account">
+		<div class="site-header" id="siteHeader">
+			<header class="site-top" id="siteNav">
+				<a href="index.html" class="nav-logo" id="navLogo">ISTHIS<span>NIXXXON</span></a>
+				<button
+					type="button"
+					class="site-top__ip"
+					id="siteCopyIp"
+					title="Скопировать IP сервера"
+				>
+					mc.isnix.ru
+				</button>
+				<button
+					type="button"
+					class="nav-toggle"
+					id="navToggle"
+					aria-expanded="false"
+					aria-controls="navMenu"
+					aria-label="Открыть меню"
+				>
+					<span></span><span></span><span></span>
+				</button>
+			</header>
+			<nav class="nav-drawer" id="navMenu" aria-label="Навигация по сайту">
+				<ul class="nav-links">
+					<li><a href="#about" data-nav="about">О сервере</a></li>
+					<li><a href="#download" data-nav="download">Скачать</a></li>
+					<li><a href="#barter" data-nav="barter">Бартер</a></li>
+					<li><a href="#shop" data-nav="shop">Магазин</a></li>
+					<li><a href="#rules" data-nav="rules">Правила</a></li>
+					<li><a href="#join-server" data-nav="join-server">На сервер</a></li>
+					<li>
+						<a href="how-to-play.html" data-page-link="how-to-play">Как играть</a>
+					</li>
+					<li>
+						<a href="account.html" data-page-link="account" id="navAccountBtn"
+							>Аккаунт</a
+						>
+					</li>
+					<li><a href="#links" data-nav="links">Контакты</a></li>
+				</ul>
+				<a href="#join-server" class="nav-btn nav-btn-menu" id="navJoinBtn"
+					>На сервер</a
+				>
+			</nav>
+		</div>
+		<button
+			type="button"
+			class="nav-backdrop"
+			id="navBackdrop"
+			aria-hidden="true"
+			tabindex="-1"
+		></button>
 
 		<main class="auth-page">
 			<div class="auth-wrap">
@@ -494,6 +525,7 @@
 		<script src="https://unpkg.com/skinview3d@2.7.12/bundles/skinview3d.bundle.js"></script>
 		<script src="assets/js/server-status.js?v=5"></script>
 		<script src="assets/js/auth.js"></script>
+		<script src="assets/js/site-header.js" defer></script>
 		<script src="assets/js/account.js?v=5"></script>
 	</body>
 </html>
