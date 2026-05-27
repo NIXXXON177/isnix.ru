@@ -30,12 +30,63 @@
 		)
 	}
 
+	function isNetworkError(err) {
+		if (!err) return false
+		var msg = String(
+			typeof err === 'string' ? err : err.message || err.details || err.code || '',
+		)
+		return /Failed to fetch|NetworkError|network|ERR_CONNECTION|ERR_HTTP2|PING_FAILED|Load failed|fetch failed|timeout|aborted/i.test(
+			msg,
+		)
+	}
+
+	function sleep(ms) {
+		return new Promise(function (resolve) {
+			setTimeout(resolve, ms)
+		})
+	}
+
+	/** Повтор при обрыве HTTP/2 (ERR_HTTP2_PING_FAILED) и сбросе соединения */
+	function fetchWithRetry(url, options) {
+		var delays = [0, 700, 1500]
+		var lastErr = null
+		function attempt(i) {
+			return global.fetch(url, options).catch(function (err) {
+				lastErr = err
+				if (!isNetworkError(err) || i >= delays.length - 1) {
+					throw err
+				}
+				return sleep(delays[i + 1]).then(function () {
+					return attempt(i + 1)
+				})
+			})
+		}
+		return attempt(0)
+	}
+
+	async function withNetworkRetry(fn) {
+		var lastErr = null
+		for (var i = 0; i < 3; i++) {
+			try {
+				return await fn()
+			} catch (err) {
+				lastErr = err
+				if (!isNetworkError(err) || i >= 2) throw err
+				await sleep(600 * (i + 1))
+			}
+		}
+		throw lastErr
+	}
+
 	function getClient() {
 		if (!isReady()) return null
 		if (!client) {
 			client = global.supabase.createClient(
 				getConfig().supabaseUrl,
 				getConfig().supabaseAnonKey,
+				{
+					global: { fetch: fetchWithRetry },
+				},
 			)
 		}
 		return client
@@ -45,12 +96,8 @@
 		if (!err) return 'Неизвестная ошибка'
 		if (typeof err === 'string') return err
 		var msg = String(err.message || err.details || '')
-		if (
-			/Failed to fetch|NetworkError|network|ERR_CONNECTION|ERR_HTTP2|Load failed|fetch failed/i.test(
-				msg,
-			)
-		) {
-			return 'Нет связи с базой данных. Проверь интернет или открой страницу через минуту.'
+		if (isNetworkError(err)) {
+			return 'Нет связи с базой данных. Проверь интернет, отключи VPN/блокировщик или попробуй через минуту.'
 		}
 		if (err.code === 'PGRST301' || /JWT|session/i.test(msg)) {
 			return 'Сессия истекла — выйди и войди снова.'
@@ -100,13 +147,15 @@
 	async function getProfile(userId) {
 		var sb = getClient()
 		if (!sb) return null
-		var res = await sb
-			.from('profiles')
-			.select('minecraft_nick, display_name, email, role')
-			.eq('id', userId)
-			.maybeSingle()
-		if (res.error) throw res.error
-		return res.data
+		return withNetworkRetry(async function () {
+			var res = await sb
+				.from('profiles')
+				.select('minecraft_nick, display_name, email, role')
+				.eq('id', userId)
+				.maybeSingle()
+			if (res.error) throw res.error
+			return res.data
+		})
 	}
 
 	function isAdminProfile(profile) {
@@ -139,15 +188,17 @@
 	async function getApplications(userId) {
 		var sb = getClient()
 		if (!sb) return []
-		var res = await sb
-			.from('whitelist_applications')
-			.select(
-				'id, minecraft_nick, call_name, age, reason, status, admin_note, created_at',
-			)
-			.eq('user_id', userId)
-			.order('created_at', { ascending: false })
-		if (res.error) throw res.error
-		return res.data || []
+		return withNetworkRetry(async function () {
+			var res = await sb
+				.from('whitelist_applications')
+				.select(
+					'id, minecraft_nick, call_name, age, reason, status, admin_note, created_at',
+				)
+				.eq('user_id', userId)
+				.order('created_at', { ascending: false })
+			if (res.error) throw res.error
+			return res.data || []
+		})
 	}
 
 	async function submitApplication(userId, data) {
@@ -174,16 +225,18 @@
 	async function getAdminApplications(status) {
 		var sb = getClient()
 		if (!sb) return []
-		var q = sb
-			.from('whitelist_applications')
-			.select(
-				'id, user_id, minecraft_nick, call_name, age, reason, status, admin_note, applicant_email, created_at',
-			)
-			.order('created_at', { ascending: false })
-		if (status) q = q.eq('status', status)
-		var res = await q
-		if (res.error) throw res.error
-		return res.data || []
+		return withNetworkRetry(async function () {
+			var q = sb
+				.from('whitelist_applications')
+				.select(
+					'id, user_id, minecraft_nick, call_name, age, reason, status, admin_note, applicant_email, created_at',
+				)
+				.order('created_at', { ascending: false })
+			if (status) q = q.eq('status', status)
+			var res = await q
+			if (res.error) throw res.error
+			return res.data || []
+		})
 	}
 
 	async function moderateApplication(id, status, adminNote) {
@@ -216,12 +269,14 @@
 	async function getAdminProfiles() {
 		var sb = getClient()
 		if (!sb) return []
-		var res = await sb
-			.from('profiles')
-			.select('id, email, minecraft_nick, display_name, role, created_at')
-			.order('created_at', { ascending: false })
-		if (res.error) throw res.error
-		return res.data || []
+		return withNetworkRetry(async function () {
+			var res = await sb
+				.from('profiles')
+				.select('id, email, minecraft_nick, display_name, role, created_at')
+				.order('created_at', { ascending: false })
+			if (res.error) throw res.error
+			return res.data || []
+		})
 	}
 
 	function onAuthStateChange(callback) {

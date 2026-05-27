@@ -472,7 +472,7 @@
 			) {
 				renderAdminServerList()
 			}
-		}, 120000)
+		}, 300000)
 	}
 
 	function switchTab(tab) {

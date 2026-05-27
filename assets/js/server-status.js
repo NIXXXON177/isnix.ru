@@ -6,7 +6,8 @@
 	var CACHE_KEY = 'isnix_server_status_v4'
 	var CACHE_TTL_MS = 90000
 	var STALE_CACHE_MS = 600000
-	var FAIL_BACKOFF_MS = 120000
+	var FAIL_BACKOFF_MS = 300000
+	var STATUS_DISABLED_KEY = 'isnix_status_fetch_disabled'
 
 	var inflight = null
 	var lastNetworkFail = 0
@@ -94,9 +95,29 @@
 		}
 	}
 
+	function isStatusFetchDisabled() {
+		try {
+			return sessionStorage.getItem(STATUS_DISABLED_KEY) === '1'
+		} catch (_e) {
+			return false
+		}
+	}
+
+	function disableStatusFetch() {
+		try {
+			sessionStorage.setItem(STATUS_DISABLED_KEY, '1')
+		} catch (_e) {
+			/* ignore */
+		}
+	}
+
 	async function fetchStatus(force) {
 		var now = Date.now()
 		if (!force && inflight) return inflight
+
+		if (!force && isStatusFetchDisabled()) {
+			return readCache(true)
+		}
 
 		if (!force) {
 			var fresh = readCache(false)
@@ -114,6 +135,9 @@
 				return parsed
 			} catch (_e) {
 				lastNetworkFail = Date.now()
+				if (!readCache(true)) {
+					disableStatusFetch()
+				}
 				return readCache(true)
 			} finally {
 				inflight = null
