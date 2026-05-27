@@ -52,7 +52,7 @@ Workflow подставит ключ в `auth-config.js` при деплое. В
 
 **На сайте** сразу видно «На сайте» (дата регистрации из `profiles.created_at`). Поля «Всего в игре» и точная «Текущая сессия» заполняются с **игрового сервера** (пока нет — в кабинете «—», сессия приблизительно, пока открыта страница и ник в онлайне API).
 
-Запись в `player_stats` — только с сервера (ключ **service_role** в Play2GO, не в браузере): при входе `session_started_at = now()`, при выходе прибавить длительность к `total_play_seconds` и обнулить `session_started_at`. `user_id` взять из `profiles` по `minecraft_nick`.
+Запись в `player_stats` — мод **[isnix-player-stats-mod.md](isnix-player-stats-mod.md)** на сервере Fabric: `config/isnix-player-stats.json` с ключом **service_role** (не в браузере и не в git).
 
 ## 6. Администраторы сайта
 

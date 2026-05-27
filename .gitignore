@@ -13,3 +13,7 @@ isnix-chat/.gradle/
 isnix-chat/build/
 isnix-chat/run/
 isnix-chat/.idea/
+isnix-player-stats/.gradle/
+isnix-player-stats/build/
+isnix-player-stats/run/
+isnix-player-stats/.idea/

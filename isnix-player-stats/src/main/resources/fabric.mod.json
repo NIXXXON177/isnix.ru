@@ -1,0 +1,21 @@
+{
+	"schemaVersion": 1,
+	"id": "isnix_player_stats",
+	"version": "${version}",
+	"name": "ISNIX Player Stats",
+	"description": "Время в игре в Supabase для кабинета isnix.ru",
+	"authors": ["ISTHISNIXXXON"],
+	"license": "MIT",
+	"environment": "server",
+	"entrypoints": {
+		"server": [
+			"ru.isnix.stats.IsnixPlayerStatsMod"
+		]
+	},
+	"depends": {
+		"fabricloader": ">=0.16.0",
+		"minecraft": "~1.21.1",
+		"java": ">=21",
+		"fabric-api": "*"
+	}
+}
