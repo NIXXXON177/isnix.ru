@@ -18,6 +18,9 @@
 	var statusRefreshTimer = null
 	var onSessionTimer = null
 	var dashboardLoading = false
+	var dashboardEnterPromise = null
+	var dashboardEnterUserId = null
+	var PROFILE_CACHE_TTL_MS = 300000
 	var adminActionInFlight = {}
 	var adminListDelegationBound = false
 	var whitelistLoadPromise = null
@@ -342,6 +345,86 @@
 			})
 		} catch (_e) {
 			return iso
+		}
+	}
+
+	function profileFromSession(session) {
+		return {
+			id: session.user.id,
+			email: session.user.email || null,
+			minecraft_nick: null,
+			display_name: null,
+			role: 'player',
+		}
+	}
+
+	function readProfileCache(userId) {
+		try {
+			var raw = sessionStorage.getItem('isnix_profile_' + userId)
+			if (!raw) return null
+			var o = JSON.parse(raw)
+			if (!o || !o.p || Date.now() - o.t > PROFILE_CACHE_TTL_MS) return null
+			o.p.id = userId
+			return o.p
+		} catch (_e) {
+			return null
+		}
+	}
+
+	function writeProfileCache(userId, profile) {
+		if (!userId || !profile) return
+		try {
+			sessionStorage.setItem(
+				'isnix_profile_' + userId,
+				JSON.stringify({ p: profile, t: Date.now() }),
+			)
+		} catch (_e) {
+			/* ignore */
+		}
+	}
+
+	function clearProfileCaches() {
+		try {
+			var keys = []
+			for (var i = 0; i < sessionStorage.length; i++) {
+				var k = sessionStorage.key(i)
+				if (k && k.indexOf('isnix_profile_') === 0) keys.push(k)
+			}
+			keys.forEach(function (k) {
+				sessionStorage.removeItem(k)
+			})
+		} catch (_e) {
+			/* ignore */
+		}
+	}
+
+	function applyDashboardProfile(profile, session) {
+		if (!profile || !session || !session.user) return
+		profile.id = session.user.id
+		if (!profile.email) profile.email = session.user.email
+		currentProfile = profile
+		playerStatsUserId = session.user.id
+		applyProfileToForm(profile)
+		updateDashAvatar(profile.minecraft_nick ? profile.minecraft_nick : '')
+		updateProfileMeta(profile, cachedServerStatus)
+		renderPlayerStats(profile, playerStats, cachedServerStatus)
+		updateProfileNickHint()
+		updateWhitelistHint()
+		var isAdmin = IsnixAuth && IsnixAuth.isAdminProfile(profile)
+		var wrap = document.querySelector('.auth-wrap')
+		if (wrap) wrap.classList.toggle('auth-wrap--wide', isAdmin)
+		var badge = document.getElementById('adminRoleBadge')
+		if (badge) badge.hidden = !isAdmin
+		var adminPanel = document.getElementById('adminPanel')
+		if (adminPanel) adminPanel.hidden = !isAdmin
+	}
+
+	function showDashboardShell(session, profile) {
+		showDashboard(session.user, profile)
+		showConnectionNotice('')
+		var list = document.getElementById('applicationsList')
+		if (list) {
+			list.innerHTML = '<p class="auth-muted">Загрузка заявок…</p>'
 		}
 	}
 
@@ -884,6 +967,9 @@
 		if (setupNotice) setupNotice.hidden = true
 		if (authPanels) authPanels.hidden = false
 		if (dashboard) dashboard.hidden = true
+		dashboardEnterUserId = null
+		dashboardEnterPromise = null
+		dashboardLoading = false
 		stopPlayerStatsTicker()
 		playerStats = null
 		playerStatsUserId = null
@@ -1259,14 +1345,25 @@
 	}
 
 	async function loadDashboard(session) {
-		if (dashboardLoading) return
-		dashboardLoading = true
-		try {
-			var userId = session.user.id
-			var profile = null
+		if (!session || !session.user) return
+		var userId = session.user.id
+
+		if (dashboardEnterPromise && dashboardEnterUserId === userId) {
+			return dashboardEnterPromise
+		}
+
+		dashboardEnterUserId = userId
+		dashboardEnterPromise = (async function () {
+			dashboardLoading = true
+
+			var quickProfile = readProfileCache(userId) || profileFromSession(session)
+			playerStats = null
+			showDashboardShell(session, quickProfile)
+			applyDashboardProfile(quickProfile, session)
+			startPlayerStatsTicker()
+			loadWhitelist()
+
 			var profileErr = null
-			var appsErr = null
-			var wlPromise = loadWhitelist()
 
 			try {
 				var profileRes = await Promise.all([
@@ -1275,103 +1372,89 @@
 						return null
 					}),
 				])
-				profile = profileRes[0]
+				var profile = profileRes[0]
 				playerStats = profileRes[1]
+
+				if (profile && session.user.email) {
+					profile.email = profile.email || session.user.email
+				} else if (!profile) {
+					profile = profileFromSession(session)
+				}
+				writeProfileCache(userId, profile)
+				applyDashboardProfile(profile, session)
+
+				if (IsnixAuth.isAdminProfile(profile)) {
+					deferAccountTask(function () {
+						switchAdminView(adminView)
+					}, 150)
+				}
+				deferAccountTask(function () {
+					refreshPlayerStatus(false)
+				}, 80)
+				startStatusPolling()
 			} catch (e) {
 				profileErr = e
-				profile = null
-				playerStats = null
-			}
-
-			if (profile && session.user.email) {
-				profile.email = profile.email || session.user.email
-			} else if (!profile && session.user.email) {
-				profile = {
-					email: session.user.email,
-					minecraft_nick: null,
-					display_name: null,
-					role: 'player',
-				}
-			}
-
-			currentProfile = profile
-			playerStatsUserId = userId
-			if (profile) profile.id = userId
-			showDashboard(session.user, profile)
-			showConnectionNotice('')
-			renderPlayerStats(profile, playerStats, null)
-			startPlayerStatsTicker()
-
-			if (profileErr) {
 				showConnectionNotice(
 					'Профиль не загрузился: ' +
-						IsnixAuth.formatAuthError(profileErr) +
+						IsnixAuth.formatAuthError(e) +
 						' Нажми «Повторить загрузку».',
 				)
-			} else {
-				applyProfileToForm(profile)
 			}
 
-			updateDashAvatar(profile && profile.minecraft_nick ? profile.minecraft_nick : '')
-
-			var appsPromise = renderApplications(userId).catch(function (e) {
-				appsErr = e
-				var list = document.getElementById('applicationsList')
-				if (list) {
-					list.innerHTML =
-						'<p class="auth-message auth-message--err">' +
-						escapeHtml(IsnixAuth.formatAuthError(e)) +
-						'</p>'
-				}
-			})
-
-			await Promise.all([wlPromise, appsPromise])
-
-			if (profileErr && appsErr) {
-				showConnectionNotice(
-					'Профиль: ' +
-						IsnixAuth.formatAuthError(profileErr) +
-						' · Заявки: ' +
-						IsnixAuth.formatAuthError(appsErr),
-				)
-			} else if (appsErr && !profileErr) {
-				showConnectionNotice(
-					'Заявки: ' + IsnixAuth.formatAuthError(appsErr),
-				)
-			}
-
-			updateProfileNickHint()
-			updateWhitelistHint()
-
-			if (IsnixAuth.isAdminProfile(profile)) {
-				deferAccountTask(function () {
-					switchAdminView(adminView)
-				}, 400)
-			}
-
-			deferAccountTask(function () {
-				refreshPlayerStatus(false)
-			}, 300)
-
-			startStatusPolling()
-		} finally {
+			renderApplications(userId)
+				.then(function () {
+					updateProfileNickHint()
+					updateWhitelistHint()
+				})
+				.catch(function (e) {
+					var list = document.getElementById('applicationsList')
+					if (list) {
+						list.innerHTML =
+							'<p class="auth-message auth-message--err">' +
+							escapeHtml(IsnixAuth.formatAuthError(e)) +
+							'</p>'
+					}
+					if (!profileErr) {
+						showConnectionNotice(
+							'Заявки: ' + IsnixAuth.formatAuthError(e),
+						)
+					}
+				})
+		})().finally(function () {
 			dashboardLoading = false
-		}
+			if (dashboardEnterUserId === userId) {
+				dashboardEnterPromise = null
+			}
+		})
+
+		return dashboardEnterPromise
 	}
 
 	function scheduleOnSession(session) {
 		clearTimeout(onSessionTimer)
 		onSessionTimer = setTimeout(function () {
 			runOnSession(session)
-		}, 80)
+		}, 0)
 	}
 
 	async function runOnSession(session) {
 		if (!session || !session.user) {
 			currentProfile = null
 			dashboardLoading = false
+			dashboardEnterUserId = null
+			dashboardEnterPromise = null
 			showConnectionNotice('')
 			showGuest()
+			return
+		}
+
+		if (
+			dashboard &&
+			!dashboard.hidden &&
+			dashboardEnterUserId === session.user.id &&
+			!dashboardLoading &&
+			!dashboardEnterPromise
+		) {
 			return
 		}
 
@@ -1423,11 +1506,14 @@
 				setLoading(loginForm, true)
 				showMsg('', true)
 				try {
-					await IsnixAuth.signIn(
+					var loginData = await IsnixAuth.signIn(
 						document.getElementById('loginEmail').value.trim(),
 						document.getElementById('loginPassword').value,
 					)
 					showMsg('Вы вошли в аккаунт', true)
+					if (loginData && loginData.session) {
+						await loadDashboard(loginData.session)
+					}
 				} catch (err) {
 					showMsg(IsnixAuth.formatAuthError(err), false)
 				} finally {
@@ -1459,6 +1545,7 @@
 					)
 					if (data.session) {
 						showMsg('Аккаунт создан', true)
+						await loadDashboard(data.session)
 					} else {
 						showMsg(
 							'Письмо отправлено на почту — подтверди регистрацию и войди',
@@ -1478,6 +1565,7 @@
 		if (logoutBtn) {
 			logoutBtn.addEventListener('click', async function () {
 				await IsnixAuth.signOut()
+				clearProfileCaches()
 				showMsg('Вы вышли', true)
 				showGuest()
 			})
@@ -1517,6 +1605,7 @@
 						role: currentProfile ? currentProfile.role : 'player',
 						created_at: currentProfile ? currentProfile.created_at : null,
 					}
+					writeProfileCache(session.user.id, currentProfile)
 					await loadWhitelist()
 					updateProfileNickHint()
 					updateDashAvatar(nick)
@@ -1655,7 +1744,8 @@
 						showGuest()
 						return
 					}
-					dashboardLoading = false
+					dashboardEnterUserId = null
+					dashboardEnterPromise = null
 					await loadDashboard(session)
 				} catch (err) {
 					showConnectionNotice(IsnixAuth.formatAuthError(err))

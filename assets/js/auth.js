@@ -63,8 +63,7 @@
 	/** Повтор только для GET; PATCH/POST при сбое не дублируем (иначе лавина запросов). */
 	function fetchWithRetry(url, options) {
 		var method = ((options && options.method) || 'GET').toUpperCase()
-		var delays =
-			method === 'GET' || method === 'HEAD' ? [0, 1200, 2800] : [0]
+		var delays = method === 'GET' || method === 'HEAD' ? [0, 450] : [0]
 		function attempt(i) {
 			return global.fetch(url, options).catch(function (err) {
 				if (!isNetworkError(err) || i >= delays.length - 1) {
@@ -79,17 +78,13 @@
 	}
 
 	async function withNetworkRetry(fn) {
-		var lastErr = null
-		for (var i = 0; i < 2; i++) {
-			try {
-				return await fn()
-			} catch (err) {
-				lastErr = err
-				if (!isNetworkError(err) || i >= 1) throw err
-				await sleep(400)
-			}
+		try {
+			return await fn()
+		} catch (err) {
+			if (!isNetworkError(err)) throw err
+			await sleep(200)
+			return await fn()
 		}
-		throw lastErr
 	}
 
 	function getClient() {
@@ -189,15 +184,13 @@
 	async function getProfile(userId) {
 		var sb = getClient()
 		if (!sb) return null
-		return withNetworkRetry(async function () {
-			var res = await sb
-				.from('profiles')
-				.select('minecraft_nick, display_name, email, role, created_at')
-				.eq('id', userId)
-				.maybeSingle()
-			if (res.error) throw res.error
-			return res.data
-		})
+		var res = await sb
+			.from('profiles')
+			.select('minecraft_nick, display_name, email, role, created_at')
+			.eq('id', userId)
+			.maybeSingle()
+		if (res.error) throw res.error
+		return res.data
 	}
 
 	function isAdminProfile(profile) {
@@ -260,14 +253,12 @@
 	async function getApplications(userId) {
 		var sb = getClient()
 		if (!sb) return []
-		return withNetworkRetry(async function () {
-			try {
-				return await queryApplications(sb, userId, true)
-			} catch (err) {
-				if (!isMissingApplicantReplyColumn(err)) throw err
-				return await queryApplications(sb, userId, false)
-			}
-		})
+		try {
+			return await queryApplications(sb, userId, true)
+		} catch (err) {
+			if (!isMissingApplicantReplyColumn(err)) throw err
+			return await queryApplications(sb, userId, false)
+		}
 	}
 
 	async function submitApplication(userId, data) {
@@ -294,14 +285,12 @@
 	async function getAdminApplications(status) {
 		var sb = getClient()
 		if (!sb) return []
-		return withNetworkRetry(async function () {
-			try {
-				return await queryAdminApplications(sb, status, true)
-			} catch (err) {
-				if (!isMissingApplicantReplyColumn(err)) throw err
-				return await queryAdminApplications(sb, status, false)
-			}
-		})
+		try {
+			return await queryAdminApplications(sb, status, true)
+		} catch (err) {
+			if (!isMissingApplicantReplyColumn(err)) throw err
+			return await queryAdminApplications(sb, status, false)
+		}
 	}
 
 	async function sendAdminApplicationMessage(id, adminNote) {
@@ -365,37 +354,33 @@
 	async function getPlayerStats(userId) {
 		var sb = getClient()
 		if (!sb) return null
-		return withNetworkRetry(async function () {
-			var res = await sb
-				.from('player_stats')
-				.select('total_play_seconds, session_started_at, minecraft_nick, updated_at')
-				.eq('user_id', userId)
-				.maybeSingle()
-			if (res.error) {
-				if (
-					res.code === 'PGRST205' ||
-					res.code === '42P01' ||
-					/player_stats/i.test(res.message || '')
-				) {
-					return null
-				}
-				throw res.error
+		var res = await sb
+			.from('player_stats')
+			.select('total_play_seconds, session_started_at, minecraft_nick, updated_at')
+			.eq('user_id', userId)
+			.maybeSingle()
+		if (res.error) {
+			if (
+				res.code === 'PGRST205' ||
+				res.code === '42P01' ||
+				/player_stats/i.test(res.message || '')
+			) {
+				return null
 			}
-			return res.data
-		})
+			throw res.error
+		}
+		return res.data
 	}
 
 	async function getAdminProfiles() {
 		var sb = getClient()
 		if (!sb) return []
-		return withNetworkRetry(async function () {
-			var res = await sb
-				.from('profiles')
-				.select('id, email, minecraft_nick, display_name, role, created_at')
-				.order('created_at', { ascending: false })
-			if (res.error) throw res.error
-			return res.data || []
-		})
+		var res = await sb
+			.from('profiles')
+			.select('id, email, minecraft_nick, display_name, role, created_at')
+			.order('created_at', { ascending: false })
+		if (res.error) throw res.error
+		return res.data || []
 	}
 
 	function onAuthStateChange(callback) {
