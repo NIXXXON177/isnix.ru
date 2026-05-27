@@ -64,13 +64,10 @@
 		if (!img || !fallback) return
 		var v = (nick || '').trim()
 		if (v && IsnixAuth && IsnixAuth.MC_NICK_RE.test(v)) {
-			img.src = 'https://mc-heads.net/avatar/' + encodeURIComponent(v) + '/48'
+			img.src = 'https://skinsystem.ely.by/avatars/' + encodeURIComponent(v) + '?size=48'
 			img.onerror = function () {
-				img.onerror = function () {
-					img.onerror = null
-					img.src = 'https://minotar.net/avatar/' + encodeURIComponent(v) + '/48'
-				}
-				img.src = 'https://skinsystem.ely.by/avatars/' + encodeURIComponent(v) + '?size=48'
+				img.onerror = null
+				img.src = 'https://mc-heads.net/avatar/' + encodeURIComponent(v) + '/48'
 			}
 			img.alt = v
 			img.hidden = false
@@ -111,8 +108,8 @@
 	function getSkinSources(nick) {
 		var safe = encodeURIComponent(nick)
 		return [
-			'https://mc-heads.net/skin/' + safe,
 			'https://skinsystem.ely.by/skins/' + safe,
+			'https://mc-heads.net/skin/' + safe,
 			'https://ely.by/skins/' + safe + '.png',
 		]
 	}
@@ -225,17 +222,40 @@
 
 	function updateProfileNickHint() {
 		var nickEl = document.getElementById('profileNick')
+		var nick = nickEl ? nickEl.value : ''
 		updateNickHint(
 			document.getElementById('profileNickHint'),
-			nickEl ? nickEl.value : '',
+			nick,
 		)
+		syncWhitelistSectionVisibility(nick)
 	}
 
 	function updateWhitelistHint() {
 		var nickEl = document.getElementById('appNick')
 		var nick = nickEl ? nickEl.value : ''
 		updateNickHint(document.getElementById('whitelistNickHint'), nick)
+		syncWhitelistSectionVisibility(nick)
 		syncWhitelistFormState(nick)
+	}
+
+	function syncWhitelistSectionVisibility(nick) {
+		var section = document.getElementById('whitelist')
+		if (!section) return
+		if (IsnixAuth.isAdminProfile(currentProfile)) {
+			section.hidden = false
+			return
+		}
+		var profileNickEl = document.getElementById('profileNick')
+		var baseNick = (nick || '').trim()
+		if (!baseNick && profileNickEl) {
+			baseNick = (profileNickEl.value || '').trim()
+		}
+		var inWhitelist = !!(
+			baseNick &&
+			IsnixAuth.MC_NICK_RE.test(baseNick) &&
+			isOnWhitelist(baseNick)
+		)
+		section.hidden = inWhitelist
 	}
 
 	function syncWhitelistFormState(nick) {
@@ -475,13 +495,11 @@
 		var enc = encodeURIComponent(nick)
 		return (
 			'<div class="auth-player-row">' +
-			'<img class="auth-player-head" src="https://mc-heads.net/avatar/' +
+			'<img class="auth-player-head" src="https://skinsystem.ely.by/avatars/' +
 			enc +
-			'/32" width="32" height="32" alt="" loading="lazy" decoding="async" onerror="this.onerror=function(){this.onerror=null;this.src=\'https://minotar.net/avatar/' +
+			'?size=32" width="32" height="32" alt="" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=\'https://mc-heads.net/avatar/' +
 			enc +
-			'/32\'};this.src=\'https://skinsystem.ely.by/avatars/' +
-			enc +
-			'?size=32\'" />' +
+			'/32\'" />' +
 			'<div class="auth-player-info"><strong>' +
 			safe +
 			'</strong>' +
@@ -629,6 +647,8 @@
 		if (setupNotice) setupNotice.hidden = true
 		if (authPanels) authPanels.hidden = false
 		if (dashboard) dashboard.hidden = true
+		var wlSection = document.getElementById('whitelist')
+		if (wlSection) wlSection.hidden = false
 		disposeSkinViewer()
 		if (statusRefreshTimer) {
 			clearInterval(statusRefreshTimer)
