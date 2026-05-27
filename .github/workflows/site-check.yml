@@ -30,6 +30,7 @@ jobs:
           test -f assets/js/site.js
           test -f assets/js/auth.js
           test -f assets/js/account.js
+          test -f assets/js/server-status.js
           test -f assets/js/auth-config.js
           test -f assets/js/shop-slider.js
           test -f whitelist.json

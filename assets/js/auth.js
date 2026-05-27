@@ -192,6 +192,27 @@
 		if (res.error) throw res.error
 	}
 
+	async function updatePassword(newPassword) {
+		var sb = getClient()
+		if (!sb) throw new Error('Нет подключения')
+		if ((newPassword || '').length < 6) {
+			throw new Error('Новый пароль — минимум 6 символов')
+		}
+		var res = await sb.auth.updateUser({ password: newPassword })
+		if (res.error) throw res.error
+	}
+
+	async function getAdminProfiles() {
+		var sb = getClient()
+		if (!sb) return []
+		var res = await sb
+			.from('profiles')
+			.select('id, email, minecraft_nick, display_name, role, created_at')
+			.order('created_at', { ascending: false })
+		if (res.error) throw res.error
+		return res.data || []
+	}
+
 	function onAuthStateChange(callback) {
 		var sb = getClient()
 		if (!sb) return function () {}
@@ -277,6 +298,8 @@
 		getAdminApplications: getAdminApplications,
 		moderateApplication: moderateApplication,
 		submitApplication: submitApplication,
+		updatePassword: updatePassword,
+		getAdminProfiles: getAdminProfiles,
 		onAuthStateChange: onAuthStateChange,
 		formatAuthError: formatAuthError,
 		MC_NICK_RE: MC_NICK_RE,

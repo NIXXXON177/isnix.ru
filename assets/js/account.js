@@ -8,6 +8,10 @@
 	var whitelistPlayers = null
 	var currentProfile = null
 	var adminFilter = 'pending'
+	var adminView = 'applications'
+	var skinViewer = null
+	var skinUpdateTimer = null
+	var statusRefreshTimer = null
 
 	function showMsg(text, ok) {
 		if (!authMsg) return
@@ -182,6 +186,7 @@
 			await renderApplications(session.user.id)
 			updateWhitelistHint()
 			updateProfileNickHint()
+			await refreshPlayerStatus()
 			return true
 		} catch (err) {
 			showMsg(IsnixAuth.formatAuthError(err), false)
@@ -189,6 +194,262 @@
 		} finally {
 			if (formEl) setLoading(formEl, false)
 		}
+	}
+
+	function disposeSkinViewer() {
+		if (skinViewer) {
+			try {
+				skinViewer.dispose()
+			} catch (_e) {
+				/* ignore */
+			}
+			skinViewer = null
+		}
+	}
+
+	function updateSkinViewer(nick) {
+		var canvas = document.getElementById('profileSkinCanvas')
+		var placeholder = document.getElementById('profileSkinPlaceholder')
+		if (!canvas || !placeholder || typeof skinview3d === 'undefined') {
+			if (placeholder) placeholder.hidden = false
+			return
+		}
+		if (!nick || !IsnixAuth.MC_NICK_RE.test(nick)) {
+			disposeSkinViewer()
+			canvas.hidden = true
+			placeholder.hidden = false
+			return
+		}
+		placeholder.hidden = true
+		canvas.hidden = false
+		disposeSkinViewer()
+		try {
+			skinViewer = new skinview3d.SkinViewer({
+				canvas: canvas,
+				width: 220,
+				height: 300,
+				skin: 'https://mc-heads.net/skin/' + encodeURIComponent(nick),
+			})
+			skinViewer.controls.enableRotate = true
+			skinViewer.controls.enableZoom = false
+			skinViewer.animation = new skinview3d.WalkingAnimation()
+			skinViewer.camera.position.y = 8
+		} catch (_e) {
+			canvas.hidden = true
+			placeholder.hidden = false
+			placeholder.textContent = 'Не удалось загрузить скин'
+		}
+	}
+
+	function scheduleSkinUpdate() {
+		clearTimeout(skinUpdateTimer)
+		skinUpdateTimer = setTimeout(function () {
+			var nickEl = document.getElementById('profileNick')
+			updateSkinViewer(nickEl ? nickEl.value.trim() : '')
+		}, 350)
+	}
+
+	function updateProfileMeta(profile, serverStatus) {
+		var nameEl = document.getElementById('profileDisplayName')
+		var nickLine = document.getElementById('profileNickDisplay')
+		var wlBadge = document.getElementById('profileWlBadge')
+		var onlineBadge = document.getElementById('profileOnlineBadge')
+		var nick =
+			profile && profile.minecraft_nick ? profile.minecraft_nick.trim() : ''
+		var display =
+			profile && profile.display_name ? profile.display_name.trim() : ''
+
+		if (nameEl) nameEl.textContent = display || nick || 'Игрок'
+		if (nickLine) {
+			nickLine.textContent = nick ? nick : 'Ник не указан'
+		}
+		if (wlBadge) {
+			if (!nick) {
+				wlBadge.textContent = 'Укажи ник'
+				wlBadge.className = 'profile-badge'
+			} else if (isOnWhitelist(nick)) {
+				wlBadge.textContent = '✓ В вайтлисте'
+				wlBadge.className = 'profile-badge profile-badge--ok'
+			} else {
+				wlBadge.textContent = 'Нет в вайтлисте'
+				wlBadge.className = 'profile-badge profile-badge--warn'
+			}
+		}
+		if (onlineBadge) {
+			if (!nick) {
+				onlineBadge.textContent = 'Сервер'
+				onlineBadge.className = 'profile-badge'
+			} else if (!serverStatus) {
+				onlineBadge.textContent = 'Статус…'
+				onlineBadge.className = 'profile-badge'
+			} else if (!serverStatus.online) {
+				onlineBadge.textContent = 'Сервер офлайн'
+				onlineBadge.className = 'profile-badge profile-badge--off'
+			} else if (
+				window.IsnixServer &&
+				IsnixServer.isPlayerOnline(nick, serverStatus)
+			) {
+				onlineBadge.textContent = '● Онлайн на сервере'
+				onlineBadge.className = 'profile-badge profile-badge--online'
+			} else {
+				onlineBadge.textContent = 'Не в сети'
+				onlineBadge.className = 'profile-badge profile-badge--off'
+			}
+		}
+	}
+
+	async function refreshPlayerStatus() {
+		if (!window.IsnixServer) return null
+		var status = await IsnixServer.fetchStatus()
+		updateProfileMeta(currentProfile, status)
+		return status
+	}
+
+	function switchAdminView(view) {
+		adminView = view || 'applications'
+		document.querySelectorAll('[data-admin-view]').forEach(function (btn) {
+			btn.classList.toggle('active', btn.dataset.adminView === adminView)
+		})
+		var appsEl = document.getElementById('adminViewApplications')
+		var serverEl = document.getElementById('adminViewServer')
+		var usersEl = document.getElementById('adminViewUsers')
+		if (appsEl) appsEl.hidden = adminView !== 'applications'
+		if (serverEl) serverEl.hidden = adminView !== 'server'
+		if (usersEl) usersEl.hidden = adminView !== 'users'
+		if (adminView === 'applications') renderAdminApplications()
+		else if (adminView === 'server') renderAdminServerList()
+		else if (adminView === 'users') renderAdminUsersList()
+	}
+
+	function renderPlayerRow(nick, extraHtml) {
+		var safe = escapeHtml(nick)
+		return (
+			'<div class="auth-player-row">' +
+			'<img class="auth-player-head" src="https://mc-heads.net/avatar/' +
+			encodeURIComponent(nick) +
+			'/32" width="32" height="32" alt="" loading="lazy" decoding="async" />' +
+			'<div class="auth-player-info"><strong>' +
+			safe +
+			'</strong>' +
+			(extraHtml || '') +
+			'</div></div>'
+		)
+	}
+
+	async function renderAdminServerList() {
+		var list = document.getElementById('adminServerList')
+		if (!list) return
+		list.innerHTML = '<p class="auth-muted">Загрузка…</p>'
+		if (!window.IsnixServer) {
+			list.innerHTML = '<p class="auth-muted">Статус сервера недоступен</p>'
+			return
+		}
+		try {
+			var status = await IsnixServer.fetchStatus(true)
+			if (!status) {
+				list.innerHTML = '<p class="auth-muted">Не удалось получить статус сервера</p>'
+				return
+			}
+			if (!status.online) {
+				list.innerHTML =
+					'<p class="auth-muted">Сервер <strong>mc.isnix.ru</strong> сейчас офлайн</p>'
+				return
+			}
+			if (!status.players.length) {
+				list.innerHTML =
+					'<p class="auth-muted">Сервер онлайн, игроков нет (' +
+					status.count +
+					(status.max != null ? ' / ' + status.max : '') +
+					')</p>'
+				return
+			}
+			var header =
+				'<p class="auth-muted auth-admin-server-count">Онлайн: <strong>' +
+				status.count +
+				(status.max != null ? ' / ' + status.max : '') +
+				'</strong></p>'
+			list.innerHTML =
+				header +
+				status.players
+					.map(function (n) {
+						return renderPlayerRow(n, '')
+					})
+					.join('')
+		} catch (err) {
+			list.innerHTML =
+				'<p class="auth-message auth-message--err">' +
+				escapeHtml(err.message || 'Ошибка') +
+				'</p>'
+		}
+	}
+
+	async function renderAdminUsersList() {
+		var list = document.getElementById('adminUsersList')
+		if (!list) return
+		list.innerHTML = '<p class="auth-muted">Загрузка…</p>'
+		try {
+			var profiles = await IsnixAuth.getAdminProfiles()
+			var status = window.IsnixServer ? await IsnixServer.fetchStatus() : null
+			if (!profiles.length) {
+				list.innerHTML = '<p class="auth-muted">Пока никто не зарегистрировался</p>'
+				return
+			}
+			list.innerHTML = profiles
+				.map(function (p) {
+					var nick = p.minecraft_nick || '—'
+					var email = p.email || '—'
+					var role =
+						p.role === 'admin' && IsnixAuth.isAdminProfile(p)
+							? '<span class="auth-status auth-status--bad">админ</span>'
+							: ''
+					var online =
+						p.minecraft_nick &&
+						status &&
+						IsnixServer.isPlayerOnline(p.minecraft_nick, status)
+							? '<span class="auth-status auth-status--ok">онлайн</span>'
+							: ''
+					var meta =
+						'<p class="auth-muted">' +
+						escapeHtml(email) +
+						' · ' +
+						formatDate(p.created_at) +
+						'</p>'
+					var tags =
+						'<div class="auth-player-tags">' + role + online + '</div>'
+					if (p.minecraft_nick && IsnixAuth.MC_NICK_RE.test(p.minecraft_nick)) {
+						return renderPlayerRow(p.minecraft_nick, meta + tags)
+					}
+					return (
+						'<article class="auth-app-card">' +
+						'<strong>' +
+						escapeHtml(nick) +
+						'</strong> ' +
+						tags +
+						meta +
+						'</article>'
+					)
+				})
+				.join('')
+		} catch (err) {
+			list.innerHTML =
+				'<p class="auth-message auth-message--err">' +
+				escapeHtml(IsnixAuth.formatAuthError(err)) +
+				'</p>'
+		}
+	}
+
+	function startStatusPolling() {
+		if (statusRefreshTimer) clearInterval(statusRefreshTimer)
+		refreshPlayerStatus()
+		statusRefreshTimer = setInterval(function () {
+			refreshPlayerStatus()
+			if (
+				IsnixAuth.isAdminProfile(currentProfile) &&
+				adminView === 'server'
+			) {
+				renderAdminServerList()
+			}
+		}, 60000)
 	}
 
 	function switchTab(tab) {
@@ -212,6 +473,11 @@
 		if (setupNotice) setupNotice.hidden = true
 		if (authPanels) authPanels.hidden = false
 		if (dashboard) dashboard.hidden = true
+		disposeSkinViewer()
+		if (statusRefreshTimer) {
+			clearInterval(statusRefreshTimer)
+			statusRefreshTimer = null
+		}
 	}
 
 	function showDashboard(user, profile) {
@@ -295,6 +561,7 @@
 				appNick.value = profile.minecraft_nick
 			}
 			updateProfileNickHint()
+			updateSkinViewer(profile.minecraft_nick ? profile.minecraft_nick.trim() : '')
 		} catch (_e) {
 			/* ignore */
 		}
@@ -429,14 +696,18 @@
 		if (profile && session.user.email) {
 			profile.email = profile.email || session.user.email
 		}
+		currentProfile = profile
 		showDashboard(session.user, profile)
+		await loadWhitelist()
 		await fillProfileForm(session.user.id)
 		await renderApplications(session.user.id)
 		if (IsnixAuth.isAdminProfile(profile)) {
-			await renderAdminApplications()
+			switchAdminView(adminView)
 		}
 		updateProfileNickHint()
 		updateWhitelistHint()
+		updateSkinViewer(profile && profile.minecraft_nick ? profile.minecraft_nick.trim() : '')
+		startStatusPolling()
 	}
 
 	async function init() {
@@ -453,10 +724,16 @@
 			})
 		})
 
-		document.querySelectorAll('.auth-admin-tab').forEach(function (btn) {
+		document.querySelectorAll('[data-admin-view]').forEach(function (btn) {
+			btn.addEventListener('click', function () {
+				switchAdminView(btn.dataset.adminView)
+			})
+		})
+
+		document.querySelectorAll('[data-admin-filter]').forEach(function (btn) {
 			btn.addEventListener('click', function () {
 				adminFilter = btn.dataset.adminFilter || 'pending'
-				document.querySelectorAll('.auth-admin-tab').forEach(function (b) {
+				document.querySelectorAll('[data-admin-filter]').forEach(function (b) {
 					b.classList.toggle('active', b === btn)
 				})
 				renderAdminApplications()
@@ -533,7 +810,10 @@
 		var profileForm = document.getElementById('profileForm')
 		var profileNick = document.getElementById('profileNick')
 		if (profileNick) {
-			profileNick.addEventListener('input', updateProfileNickHint)
+			profileNick.addEventListener('input', function () {
+				updateProfileNickHint()
+				scheduleSkinUpdate()
+			})
 		}
 		if (profileForm) {
 			profileForm.addEventListener('submit', async function (e) {
@@ -552,8 +832,16 @@
 						minecraft_nick: nick || null,
 						display_name: callName,
 					})
+					currentProfile = {
+						email: session.user.email,
+						minecraft_nick: nick || null,
+						display_name: callName,
+						role: currentProfile ? currentProfile.role : 'player',
+					}
 					await loadWhitelist()
 					updateProfileNickHint()
+					updateSkinViewer(nick)
+					await refreshPlayerStatus()
 					var appNickEl = document.getElementById('appNick')
 					var appCallEl = document.getElementById('appCallName')
 					if (appNickEl && nick) appNickEl.value = nick
@@ -587,6 +875,29 @@
 					showMsg(IsnixAuth.formatAuthError(err), false)
 				} finally {
 					setLoading(profileForm, false)
+				}
+			})
+		}
+
+		var passwordForm = document.getElementById('passwordForm')
+		if (passwordForm) {
+			passwordForm.addEventListener('submit', async function (e) {
+				e.preventDefault()
+				var p1 = document.getElementById('newPassword').value
+				var p2 = document.getElementById('newPassword2').value
+				if (p1 !== p2) {
+					showMsg('Пароли не совпадают', false)
+					return
+				}
+				setLoading(passwordForm, true)
+				try {
+					await IsnixAuth.updatePassword(p1)
+					showMsg('Пароль обновлён', true)
+					passwordForm.reset()
+				} catch (err) {
+					showMsg(IsnixAuth.formatAuthError(err), false)
+				} finally {
+					setLoading(passwordForm, false)
 				}
 			})
 		}

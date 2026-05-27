@@ -166,31 +166,82 @@
 
 					<section id="adminPanel" class="auth-admin-panel" hidden>
 						<h2 class="auth-section-title" id="admin">Панель администрации</h2>
-						<p class="auth-muted auth-admin-lead">
-							Заявки в вайтлист с сайта. После одобрения добавь ник на сервер
-							вручную.
-						</p>
-						<div class="auth-admin-tabs" role="tablist">
+						<div class="auth-admin-tabs auth-admin-tabs--main" role="tablist">
 							<button
 								type="button"
 								class="auth-admin-tab active"
-								data-admin-filter="pending"
+								data-admin-view="applications"
 							>
-								Ожидают
+								Заявки
 							</button>
-							<button
-								type="button"
-								class="auth-admin-tab"
-								data-admin-filter="all"
-							>
-								Все
+							<button type="button" class="auth-admin-tab" data-admin-view="server">
+								На сервере
+							</button>
+							<button type="button" class="auth-admin-tab" data-admin-view="users">
+								Аккаунты
 							</button>
 						</div>
-						<div id="adminApplicationsList"></div>
+						<div id="adminViewApplications">
+							<p class="auth-muted auth-admin-lead">
+								Заявки в вайтлист. После одобрения добавь ник на сервер вручную.
+							</p>
+							<div class="auth-admin-tabs" role="tablist">
+								<button
+									type="button"
+									class="auth-admin-tab auth-admin-tab--sub active"
+									data-admin-filter="pending"
+								>
+									Ожидают
+								</button>
+								<button
+									type="button"
+									class="auth-admin-tab auth-admin-tab--sub"
+									data-admin-filter="all"
+								>
+									Все
+								</button>
+							</div>
+							<div id="adminApplicationsList"></div>
+						</div>
+						<div id="adminViewServer" hidden>
+							<p class="auth-muted auth-admin-lead">
+								Игроки на <strong>mc.isnix.ru</strong> (обновление каждую минуту).
+							</p>
+							<div id="adminServerList"></div>
+						</div>
+						<div id="adminViewUsers" hidden>
+							<p class="auth-muted auth-admin-lead">
+								Все, кто зарегистрировался на сайте.
+							</p>
+							<div id="adminUsersList"></div>
+						</div>
 					</section>
 
 					<div id="playerSections">
-					<h2 class="auth-section-title">Профиль</h2>
+					<section class="profile-hero">
+						<div class="profile-skin-block">
+							<canvas
+								id="profileSkinCanvas"
+								class="profile-skin-canvas"
+								width="220"
+								height="300"
+								aria-hidden="true"
+							></canvas>
+							<p id="profileSkinPlaceholder" class="profile-skin-placeholder">
+								Укажи ник в профиле — появится 3D-модель скина
+							</p>
+						</div>
+						<div class="profile-meta">
+							<p class="profile-meta-eyebrow">Профиль</p>
+							<h2 class="profile-display-name" id="profileDisplayName">Игрок</h2>
+							<p class="profile-nick-line" id="profileNickDisplay">—</p>
+							<div class="profile-badges">
+								<span id="profileWlBadge" class="profile-badge">Вайтлист</span>
+								<span id="profileOnlineBadge" class="profile-badge">Сервер</span>
+							</div>
+						</div>
+					</section>
+
 					<form id="profileForm" class="auth-form">
 						<div class="auth-field">
 							<label for="profileNick">Ник в Minecraft</label>
@@ -215,6 +266,35 @@
 						</div>
 						<button type="submit" class="auth-submit">Сохранить профиль</button>
 					</form>
+
+					<details class="auth-password-panel">
+						<summary class="auth-password-summary">Сменить пароль</summary>
+						<form id="passwordForm" class="auth-form auth-form--password">
+							<div class="auth-field">
+								<label for="newPassword">Новый пароль</label>
+								<input
+									id="newPassword"
+									type="password"
+									autocomplete="new-password"
+									minlength="6"
+									required
+								/>
+							</div>
+							<div class="auth-field">
+								<label for="newPassword2">Повтор пароля</label>
+								<input
+									id="newPassword2"
+									type="password"
+									autocomplete="new-password"
+									minlength="6"
+									required
+								/>
+							</div>
+							<button type="submit" class="auth-submit auth-submit--ghost">
+								Обновить пароль
+							</button>
+						</form>
+					</details>
 
 					<h2 class="auth-section-title">Мои заявки</h2>
 					<div id="applicationsList"></div>
@@ -340,6 +420,8 @@
 		</script>
 		<script src="assets/js/auth-config.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+		<script src="https://unpkg.com/skinview3d@2.7.12/bundles/skinview3d.bundle.js"></script>
+		<script src="assets/js/server-status.js"></script>
 		<script src="assets/js/auth.js"></script>
 		<script src="assets/js/account.js"></script>
 	</body>
