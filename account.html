@@ -38,6 +38,16 @@
 				</header>
 
 				<div id="authMessage" class="auth-message" hidden></div>
+				<div id="authConnectionNotice" class="auth-connection-notice" hidden>
+					<p id="authConnectionText" class="auth-muted"></p>
+					<button
+						type="button"
+						id="authRetryBtn"
+						class="auth-submit auth-submit--ghost auth-retry-btn"
+					>
+						Повторить загрузку
+					</button>
+				</div>
 
 				<div id="authSetupNotice" class="auth-card auth-setup" hidden>
 					<p class="auth-lead">
@@ -270,6 +280,16 @@
 					<details class="auth-password-panel">
 						<summary class="auth-password-summary">Сменить пароль</summary>
 						<form id="passwordForm" class="auth-form auth-form--password">
+							<input
+								type="text"
+								id="passwordFormUsername"
+								name="username"
+								class="auth-sr-only"
+								autocomplete="username"
+								tabindex="-1"
+								aria-hidden="true"
+								value=""
+							/>
 							<div class="auth-field">
 								<label for="newPassword">Новый пароль</label>
 								<input

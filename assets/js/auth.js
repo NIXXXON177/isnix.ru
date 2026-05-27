@@ -44,7 +44,18 @@
 	function formatAuthError(err) {
 		if (!err) return 'Неизвестная ошибка'
 		if (typeof err === 'string') return err
-		return err.message || 'Ошибка авторизации'
+		var msg = String(err.message || err.details || '')
+		if (
+			/Failed to fetch|NetworkError|network|ERR_CONNECTION|ERR_HTTP2|Load failed|fetch failed/i.test(
+				msg,
+			)
+		) {
+			return 'Нет связи с базой данных. Проверь интернет или открой страницу через минуту.'
+		}
+		if (err.code === 'PGRST301' || /JWT|session/i.test(msg)) {
+			return 'Сессия истекла — выйди и войди снова.'
+		}
+		return msg || 'Ошибка авторизации'
 	}
 
 	async function getSession() {
