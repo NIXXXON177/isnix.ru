@@ -64,7 +64,7 @@
 		if (!img || !fallback) return
 		var v = (nick || '').trim()
 		if (v && IsnixAuth && IsnixAuth.MC_NICK_RE.test(v)) {
-			img.src = 'https://skinsystem.ely.by/avatars/' + encodeURIComponent(v) + '?size=48'
+			img.src = 'https://ely.by/avatar/' + encodeURIComponent(v)
 			img.onerror = function () {
 				img.onerror = null
 				img.src = 'https://mc-heads.net/avatar/' + encodeURIComponent(v) + '/48'
@@ -80,51 +80,13 @@
 		}
 	}
 
-	function testImageUrl(url, timeoutMs) {
-		return new Promise(function (resolve, reject) {
-			var done = false
-			var img = new Image()
-			var timer = setTimeout(function () {
-				if (done) return
-				done = true
-				reject(new Error('timeout'))
-			}, timeoutMs || 3000)
-			img.onload = function () {
-				if (done) return
-				done = true
-				clearTimeout(timer)
-				resolve(url)
-			}
-			img.onerror = function () {
-				if (done) return
-				done = true
-				clearTimeout(timer)
-				reject(new Error('image error'))
-			}
-			img.src = url
-		})
-	}
-
 	function getSkinSources(nick) {
 		var safe = encodeURIComponent(nick)
 		return [
+			'https://ely.by/skins/' + safe + '.png',
 			'https://skinsystem.ely.by/skins/' + safe,
 			'https://mc-heads.net/skin/' + safe,
-			'https://ely.by/skins/' + safe + '.png',
 		]
-	}
-
-	async function resolveSkinSource(nick) {
-		var sources = getSkinSources(nick)
-		for (var i = 0; i < sources.length; i++) {
-			try {
-				await testImageUrl(sources[i], 3200)
-				return sources[i]
-			} catch (_e) {
-				/* try next source */
-			}
-		}
-		return null
 	}
 
 	function setLoading(form, loading) {
@@ -186,6 +148,11 @@
 		} catch (_e) {
 			whitelistPlayers = null
 		}
+		var profileNickEl = document.getElementById('profileNick')
+		var appNickEl = document.getElementById('appNick')
+		syncWhitelistSectionVisibility(
+			(profileNickEl && profileNickEl.value) || (appNickEl && appNickEl.value) || '',
+		)
 	}
 
 	function isOnWhitelist(nick) {
@@ -384,17 +351,26 @@
 		canvas.hidden = false
 		disposeSkinViewer()
 		try {
-			var skinUrl = await resolveSkinSource(nick)
-			if (reqId !== skinRequestId) return
-			if (!skinUrl) {
-				throw new Error('skin source unavailable')
-			}
 			skinViewer = new skinview3d.SkinViewer({
 				canvas: canvas,
 				width: 220,
 				height: 300,
-				skin: skinUrl,
 			})
+			var sources = getSkinSources(nick)
+			var loaded = false
+			for (var i = 0; i < sources.length; i++) {
+				try {
+					await Promise.resolve(skinViewer.loadSkin(sources[i]))
+					loaded = true
+					break
+				} catch (_e) {
+					/* try next source */
+				}
+			}
+			if (reqId !== skinRequestId) return
+			if (!loaded) {
+				throw new Error('skin source unavailable')
+			}
 			skinViewer.controls.enableRotate = true
 			skinViewer.controls.enableZoom = false
 			skinViewer.animation = new skinview3d.WalkingAnimation()
@@ -495,9 +471,9 @@
 		var enc = encodeURIComponent(nick)
 		return (
 			'<div class="auth-player-row">' +
-			'<img class="auth-player-head" src="https://skinsystem.ely.by/avatars/' +
+			'<img class="auth-player-head" src="https://ely.by/avatar/' +
 			enc +
-			'?size=32" width="32" height="32" alt="" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=\'https://mc-heads.net/avatar/' +
+			'" width="32" height="32" alt="" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=\'https://mc-heads.net/avatar/' +
 			enc +
 			'/32\'" />' +
 			'<div class="auth-player-info"><strong>' +
