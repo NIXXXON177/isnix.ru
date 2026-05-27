@@ -6,6 +6,7 @@
 	var authPanels = document.getElementById('authPanels')
 	var dashboard = document.getElementById('authDashboard')
 	var whitelistPlayers = null
+	var cachedApplications = []
 	var currentProfile = null
 	var adminFilter = 'pending'
 	var adminView = 'applications'
@@ -149,11 +150,22 @@
 			var raw = Array.isArray(j) ? j : j.players || []
 			whitelistPlayers = raw
 				.map(function (e) {
-					return typeof e === 'string' ? e : e && e.name
+					if (typeof e === 'string' || typeof e === 'number') {
+						return String(e).trim()
+					}
+					if (e && typeof e === 'object') {
+						return (
+							e.name ||
+							e.username ||
+							e.player ||
+							''
+						).trim()
+					}
+					return ''
 				})
 				.filter(Boolean)
 				.map(function (s) {
-					return String(s).trim().toLowerCase()
+					return s.toLowerCase()
 				})
 		} catch (_e) {
 			whitelistPlayers = null
@@ -166,8 +178,25 @@
 	}
 
 	function isOnWhitelist(nick) {
-		if (!whitelistPlayers) return false
-		return whitelistPlayers.indexOf(nick.toLowerCase()) !== -1
+		if (!whitelistPlayers || !nick) return false
+		return whitelistPlayers.indexOf(String(nick).trim().toLowerCase()) !== -1
+	}
+
+	function hasApprovedApplication(apps, nick) {
+		if (!apps || !apps.length || !nick) return false
+		var low = String(nick).trim().toLowerCase()
+		return apps.some(function (a) {
+			return (
+				a.status === 'approved' &&
+				a.minecraft_nick &&
+				String(a.minecraft_nick).trim().toLowerCase() === low
+			)
+		})
+	}
+
+	function whitelistAccessGranted(nick) {
+		if (!nick || !IsnixAuth || !IsnixAuth.MC_NICK_RE.test(nick)) return false
+		return isOnWhitelist(nick) || hasApprovedApplication(cachedApplications, nick)
 	}
 
 	function hasPendingApplication(apps) {
@@ -185,8 +214,10 @@
 			hintEl.className = 'auth-hint'
 			return
 		}
-		if (isOnWhitelist(v)) {
-			hintEl.textContent = '✅ Этот ник в вайтлисте — можно заходить на сервер'
+		if (whitelistAccessGranted(v)) {
+			hintEl.textContent = isOnWhitelist(v)
+				? '✅ Этот ник в вайтлисте — можно заходить на сервер'
+				: '✅ Заявка одобрена — можно заходить на сервер'
 			hintEl.className = 'auth-hint auth-hint--ok'
 		} else if (IsnixAuth && IsnixAuth.MC_NICK_RE.test(v)) {
 			hintEl.textContent = 'Ника нет в вайтлисте — после сохранения откроется заявка'
@@ -227,12 +258,21 @@
 		if (!baseNick && profileNickEl) {
 			baseNick = (profileNickEl.value || '').trim()
 		}
-		var inWhitelist = !!(
+		var hide = !!(
 			baseNick &&
 			IsnixAuth.MC_NICK_RE.test(baseNick) &&
-			isOnWhitelist(baseNick)
+			whitelistAccessGranted(baseNick)
 		)
-		section.hidden = inWhitelist
+		section.hidden = hide
+		var okBanner = document.getElementById('profileWhitelistOk')
+		if (okBanner) {
+			okBanner.hidden = !hide
+			if (hide) {
+				okBanner.textContent = isOnWhitelist(baseNick)
+					? 'Этот ник уже в вайтлисте — заявку заполнять не нужно, можно заходить на сервер.'
+					: 'Заявка одобрена — заявку заполнять не нужно, можно заходить на сервер.'
+			}
+		}
 	}
 
 	function syncWhitelistFormState(nick) {
@@ -241,7 +281,7 @@
 		if (!form) return
 
 		var v = (nick || '').trim()
-		var blocked = !!(v && IsnixAuth.MC_NICK_RE.test(v) && isOnWhitelist(v))
+		var blocked = !!(v && IsnixAuth.MC_NICK_RE.test(v) && whitelistAccessGranted(v))
 
 		form
 			.querySelectorAll('#appCallName, #appAge, #appReason, button[type="submit"]')
@@ -294,7 +334,7 @@
 		if (!nick || !IsnixAuth.MC_NICK_RE.test(nick)) return false
 		if (IsnixAuth.isAdminProfile(currentProfile)) return false
 		await loadWhitelist()
-		if (isOnWhitelist(nick)) return false
+		if (whitelistAccessGranted(nick)) return false
 		var list = apps
 		if (!list) {
 			try {
@@ -310,7 +350,7 @@
 
 	async function submitWhitelistApplication(session, data, formEl) {
 		var nick = (data.minecraft_nick || '').trim()
-		if (isOnWhitelist(nick)) {
+		if (whitelistAccessGranted(nick)) {
 			showMsg('Этот ник уже в вайтлисте — можно заходить на сервер', true)
 			return false
 		}
@@ -419,8 +459,10 @@
 			if (!nick) {
 				wlBadge.textContent = 'Укажи ник'
 				wlBadge.className = 'profile-badge'
-			} else if (isOnWhitelist(nick)) {
-				wlBadge.textContent = '✓ В вайтлисте'
+			} else if (whitelistAccessGranted(nick)) {
+				wlBadge.textContent = isOnWhitelist(nick)
+					? '✓ В вайтлисте'
+					: '✓ Одобрено'
 				wlBadge.className = 'profile-badge profile-badge--ok'
 			} else {
 				wlBadge.textContent = 'Нет в вайтлисте'
@@ -653,8 +695,6 @@
 		if (setupNotice) setupNotice.hidden = true
 		if (authPanels) authPanels.hidden = false
 		if (dashboard) dashboard.hidden = true
-		var wlSection = document.getElementById('whitelist')
-		if (wlSection) wlSection.hidden = false
 		disposeSkinViewer()
 		if (statusRefreshTimer) {
 			clearInterval(statusRefreshTimer)
@@ -687,6 +727,7 @@
 		list.innerHTML = '<p class="auth-muted">Загрузка…</p>'
 		try {
 			var apps = await IsnixAuth.getApplications(userId)
+			cachedApplications = apps
 			if (!apps.length) {
 				list.innerHTML =
 					'<p class="auth-muted">Заявок пока нет. Заполни форму ниже.</p>'
@@ -734,9 +775,15 @@
 						'</article>'
 					)
 				})
-				.join('')
+					.join('')
+			syncWhitelistSectionVisibility(
+				document.getElementById('profileNick')
+					? document.getElementById('profileNick').value
+					: '',
+			)
 			return apps
 		} catch (err) {
+			cachedApplications = []
 			list.innerHTML =
 				'<p class="auth-message auth-message--err">' +
 				escapeHtml(IsnixAuth.formatAuthError(err)) +
@@ -1123,7 +1170,7 @@
 					if (appCallEl && callName) appCallEl.value = callName
 					updateWhitelistHint()
 
-					if (nick && isOnWhitelist(nick)) {
+					if (nick && whitelistAccessGranted(nick)) {
 						showMsg(
 							'Профиль сохранён. Ты в вайтлисте — можно заходить на сервер!',
 							true,

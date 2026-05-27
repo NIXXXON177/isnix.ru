@@ -15,8 +15,11 @@
 			if (!id) return
 			a.href = onHome ? '#' + id : 'index.html#' + id
 		})
-		var join = document.getElementById('navJoinBtn')
-		if (join) join.href = onHome ? '#join-server' : 'index.html#join-server'
+		var joinHref = onHome ? '#join-server' : 'index.html#join-server'
+		;['navJoinBtn', 'navJoinTop'].forEach(function (id) {
+			var el = document.getElementById(id)
+			if (el) el.href = joinHref
+		})
 	}
 
 	function markActivePage() {

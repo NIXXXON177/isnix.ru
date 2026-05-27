@@ -1,46 +1,52 @@
-<!-- Единая шапка: вставлять на index.html, account.html, how-to-play.html -->
+<!-- Единая шапка: index.html, account.html, how-to-play.html, status.html -->
 <div class="site-header" id="siteHeader">
-	<header class="site-top" id="siteNav">
-		<a href="index.html" class="nav-logo" id="navLogo">ISTHIS<span>NIXXXON</span></a>
-		<button
-			type="button"
-			class="site-top__ip"
-			id="siteCopyIp"
-			title="Скопировать IP сервера"
-		>
-			mc.isnix.ru
-		</button>
-		<button
-			type="button"
-			class="nav-toggle"
-			id="navToggle"
-			aria-expanded="false"
-			aria-controls="navMenu"
-			aria-label="Открыть меню"
-		>
-			<span></span><span></span><span></span>
-		</button>
-	</header>
-	<nav class="nav-drawer" id="navMenu" aria-label="Навигация по сайту">
-		<ul class="nav-links">
-			<li><a href="#about" data-nav="about">О сервере</a></li>
-			<li><a href="#download" data-nav="download">Скачать</a></li>
-			<li><a href="#barter" data-nav="barter">Бартер</a></li>
-			<li><a href="#shop" data-nav="shop">Магазин</a></li>
-			<li><a href="#rules" data-nav="rules">Правила</a></li>
-			<li><a href="#join-server" data-nav="join-server">На сервер</a></li>
-			<li>
-				<a href="how-to-play.html" data-page-link="how-to-play">Как играть</a>
-			</li>
-			<li>
-				<a href="account.html" data-page-link="account" id="navAccountBtn"
-					>Аккаунт</a
+	<div class="site-header__inner">
+		<header class="site-top" id="siteNav">
+			<a href="index.html" class="nav-logo" id="navLogo">ISTHIS<span>NIXXXON</span></a>
+			<div class="site-top__actions">
+				<button
+					type="button"
+					class="site-top__ip"
+					id="siteCopyIp"
+					title="Скопировать IP сервера"
 				>
-			</li>
-			<li><a href="#links" data-nav="links">Контакты</a></li>
-		</ul>
-		<a href="#join-server" class="nav-btn nav-btn-menu" id="navJoinBtn">На сервер</a>
-	</nav>
+					mc.isnix.ru
+				</button>
+				<a href="#join-server" class="nav-btn nav-btn--top" id="navJoinTop">На сервер</a>
+				<button
+					type="button"
+					class="nav-toggle"
+					id="navToggle"
+					aria-expanded="false"
+					aria-controls="navMenu"
+					aria-label="Открыть меню"
+				>
+					<span></span><span></span><span></span>
+				</button>
+			</div>
+		</header>
+		<nav class="nav-drawer" id="navMenu" aria-label="Навигация по сайту">
+			<ul class="nav-links">
+				<li><a href="#about" data-nav="about">О сервере</a></li>
+				<li><a href="#download" data-nav="download">Скачать</a></li>
+				<li><a href="#barter" data-nav="barter">Бартер</a></li>
+				<li><a href="#shop" data-nav="shop">Магазин</a></li>
+				<li><a href="#rules" data-nav="rules">Правила</a></li>
+				<li><a href="#join-server" data-nav="join-server">На сервер</a></li>
+				<li><a href="status.html" data-page-link="status">Статус</a></li>
+				<li>
+					<a href="how-to-play.html" data-page-link="how-to-play">Как играть</a>
+				</li>
+				<li>
+					<a href="account.html" data-page-link="account" id="navAccountBtn"
+						>Аккаунт</a
+					>
+				</li>
+				<li><a href="#links" data-nav="links">Контакты</a></li>
+			</ul>
+			<a href="#join-server" class="nav-btn nav-btn-menu" id="navJoinBtn">На сервер</a>
+		</nav>
+	</div>
 </div>
 <button
 	type="button"

@@ -29,6 +29,7 @@ jobs:
           test -f assets/css/main.css
           test -f assets/css/components.css
           test -f assets/css/auth.css
+          test -f assets/css/site-header.css
           test -f assets/js/site.js
           test -f assets/js/site-header.js
           test -f assets/js/auth.js

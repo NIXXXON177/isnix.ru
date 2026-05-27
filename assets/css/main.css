@@ -189,8 +189,6 @@
 				padding: 0.4rem 0.6rem;
 				cursor: pointer;
 				flex-shrink: 0;
-				margin-left: auto;
-				margin-right: 0.5rem;
 				transition:
 					background 0.2s,
 					border-color 0.2s,

@@ -20,31 +20,38 @@
 		<link rel="stylesheet" href="assets/css/main.css" />
 		<link rel="stylesheet" href="assets/css/components.css" />
 		<link rel="stylesheet" href="assets/css/auth.css" />
+		<link rel="stylesheet" href="assets/css/site-header.css" />
 	</head>
 	<body class="account-page" data-page="account">
 		<div class="site-header" id="siteHeader">
-			<header class="site-top" id="siteNav">
-				<a href="index.html" class="nav-logo" id="navLogo">ISTHIS<span>NIXXXON</span></a>
-				<button
-					type="button"
-					class="site-top__ip"
-					id="siteCopyIp"
-					title="Скопировать IP сервера"
-				>
-					mc.isnix.ru
-				</button>
-				<button
-					type="button"
-					class="nav-toggle"
-					id="navToggle"
-					aria-expanded="false"
-					aria-controls="navMenu"
-					aria-label="Открыть меню"
-				>
-					<span></span><span></span><span></span>
-				</button>
-			</header>
-			<nav class="nav-drawer" id="navMenu" aria-label="Навигация по сайту">
+			<div class="site-header__inner">
+				<header class="site-top" id="siteNav">
+					<a href="index.html" class="nav-logo" id="navLogo">ISTHIS<span>NIXXXON</span></a>
+					<div class="site-top__actions">
+						<button
+							type="button"
+							class="site-top__ip"
+							id="siteCopyIp"
+							title="Скопировать IP сервера"
+						>
+							mc.isnix.ru
+						</button>
+						<a href="index.html#join-server" class="nav-btn nav-btn--top" id="navJoinTop"
+							>На сервер</a
+						>
+						<button
+							type="button"
+							class="nav-toggle"
+							id="navToggle"
+							aria-expanded="false"
+							aria-controls="navMenu"
+							aria-label="Открыть меню"
+						>
+							<span></span><span></span><span></span>
+						</button>
+					</div>
+				</header>
+				<nav class="nav-drawer" id="navMenu" aria-label="Навигация по сайту">
 				<ul class="nav-links">
 					<li><a href="#about" data-nav="about">О сервере</a></li>
 					<li><a href="#download" data-nav="download">Скачать</a></li>
@@ -66,7 +73,8 @@
 				<a href="#join-server" class="nav-btn nav-btn-menu" id="navJoinBtn"
 					>На сервер</a
 				>
-			</nav>
+				</nav>
+			</div>
 		</div>
 		<button
 			type="button"
@@ -342,6 +350,10 @@
 						</div>
 						<button type="submit" class="auth-submit">Сохранить профиль</button>
 					</form>
+					<p id="profileWhitelistOk" class="auth-hint auth-hint--ok" hidden>
+						Этот ник уже в вайтлисте — заявку заполнять не нужно, можно заходить на
+						сервер.
+					</p>
 
 					<details class="auth-password-panel auth-password-panel--inset">
 						<summary class="auth-password-summary">Сменить пароль</summary>
@@ -516,6 +528,6 @@
 		<script src="assets/js/server-status.js?v=5"></script>
 		<script src="assets/js/auth.js"></script>
 		<script src="assets/js/site-header.js" defer></script>
-		<script src="assets/js/account.js?v=5"></script>
+		<script src="assets/js/account.js?v=6"></script>
 	</body>
 </html>
