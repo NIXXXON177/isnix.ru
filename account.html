@@ -21,21 +21,43 @@
 		<link rel="stylesheet" href="assets/css/components.css" />
 		<link rel="stylesheet" href="assets/css/auth.css" />
 	</head>
-	<body>
+	<body class="account-page">
+		<header class="account-header" id="accountHeader">
+			<div class="account-header__bar">
+				<a href="index.html" class="account-header__logo">ISTHIS<span>NIXXXON</span></a>
+				<nav class="account-header__nav" aria-label="Навигация по сайту">
+					<a href="index.html">Главная</a>
+					<a href="how-to-play.html">Как играть</a>
+					<a href="account.html" class="is-active" aria-current="page">Кабинет</a>
+				</nav>
+				<div class="account-header__actions">
+					<button
+						type="button"
+						class="account-header__ip"
+						id="accountCopyIp"
+						title="Скопировать IP"
+					>
+						mc.isnix.ru
+					</button>
+					<a href="index.html#join-server" class="account-header__cta">На сервер</a>
+				</div>
+			</div>
+		</header>
+
 		<main class="auth-page">
 			<div class="auth-wrap">
-				<div class="auth-top-nav">
-					<a href="index.html" class="auth-logo">ISTHIS<span>NIXXXON</span></a>
-					<a href="index.html" class="auth-back">← На главную</a>
-				</div>
-				<header class="auth-header">
-					<p class="auth-eyebrow">Личный кабинет</p>
-					<h1 class="auth-title">Аккаунт и вайтлист</h1>
-					<p class="auth-lead">
-						Зарегистрируйся, войди и отправь заявку на сервер. Статус заявки
-						виден здесь же.
+				<section class="account-hero">
+					<p class="account-hero__eyebrow">Личный кабинет</p>
+					<h1 class="account-hero__title" id="accountHeroTitle">Аккаунт</h1>
+					<p class="account-hero__lead" id="accountHeroLead">
+						Войди или зарегистрируйся, чтобы подать заявку в вайтлист и следить за
+						статусом.
 					</p>
-				</header>
+					<ul class="account-hero__hints" id="accountHeroHints" hidden>
+						<li>Обычный чат слышат рядом</li>
+						<li><strong>!</strong> в начале — сообщение всем на сервере</li>
+					</ul>
+				</section>
 
 				<div id="authMessage" class="auth-message" hidden></div>
 				<div id="authConnectionNotice" class="auth-connection-notice" hidden>
@@ -159,17 +181,38 @@
 					</p>
 				</div>
 
-				<div id="authDashboard" class="auth-card" hidden>
-					<div class="auth-dash-head">
-						<div>
-							<p class="auth-dash-email">
-								Вы вошли как <strong id="dashEmail">—</strong>
-							</p>
-							<span id="adminRoleBadge" class="auth-admin-badge" hidden
-								>Администрация</span
-							>
+				<div id="authDashboard" class="auth-card auth-card--dashboard" hidden>
+					<div class="auth-dash-head account-user-bar">
+						<div class="account-user-bar__identity">
+							<div class="account-user-bar__avatar-wrap" aria-hidden="true">
+								<img
+									id="dashAvatar"
+									class="account-user-bar__avatar"
+									src=""
+									alt=""
+									width="48"
+									height="48"
+									hidden
+								/>
+								<span class="account-user-bar__avatar-fallback" id="dashAvatarFallback"
+									>?</span
+								>
+							</div>
+							<div class="account-user-bar__meta">
+								<p class="account-user-bar__label">Вы вошли</p>
+								<p class="auth-dash-email">
+									<strong id="dashEmail">—</strong>
+								</p>
+								<span id="adminRoleBadge" class="auth-admin-badge" hidden
+									>Администрация</span
+								>
+							</div>
 						</div>
-						<button type="button" id="logoutBtn" class="auth-submit auth-submit--ghost">
+						<button
+							type="button"
+							id="logoutBtn"
+							class="auth-submit auth-submit--ghost account-user-bar__logout"
+						>
 							Выйти
 						</button>
 					</div>
@@ -227,8 +270,8 @@
 						</div>
 					</section>
 
-					<div id="playerSections">
-					<section class="profile-hero">
+					<div id="playerSections" class="account-sections">
+					<section class="auth-panel profile-hero">
 						<div class="profile-skin-block">
 							<canvas
 								id="profileSkinCanvas"
@@ -252,6 +295,8 @@
 						</div>
 					</section>
 
+					<section class="auth-panel">
+						<h2 class="auth-panel__title">Настройки профиля</h2>
 					<form id="profileForm" class="auth-form">
 						<div class="auth-field">
 							<label for="profileNick">Ник в Minecraft</label>
@@ -277,7 +322,7 @@
 						<button type="submit" class="auth-submit">Сохранить профиль</button>
 					</form>
 
-					<details class="auth-password-panel">
+					<details class="auth-password-panel auth-password-panel--inset">
 						<summary class="auth-password-summary">Сменить пароль</summary>
 						<form id="passwordForm" class="auth-form auth-form--password">
 							<input
@@ -315,11 +360,15 @@
 							</button>
 						</form>
 					</details>
+					</section>
 
-					<h2 class="auth-section-title">Мои заявки</h2>
+					<section class="auth-panel">
+						<h2 class="auth-panel__title">Мои заявки</h2>
 					<div id="applicationsList"></div>
+					</section>
 
-					<h2 class="auth-section-title" id="whitelist">Заявка в вайтлист</h2>
+					<section class="auth-panel" id="whitelist">
+						<h2 class="auth-panel__title">Заявка в вайтлист</h2>
 					<p class="auth-muted auth-whitelist-lead">
 						Если тебя ещё нет в вайтлисте — укажи ник в профиле и нажми
 						«Сохранить», откроется форма заявки. Или заполни её ниже.
@@ -357,6 +406,7 @@
 						</div>
 						<button type="submit" class="auth-submit">Отправить заявку</button>
 					</form>
+					</section>
 					</div>
 				</div>
 			</div>

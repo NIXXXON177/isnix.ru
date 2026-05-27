@@ -41,6 +41,41 @@
 		if (el) el.value = email || ''
 	}
 
+	function setAccountPageMode(loggedIn) {
+		document.body.classList.toggle('account--logged-in', !!loggedIn)
+		var title = document.getElementById('accountHeroTitle')
+		var lead = document.getElementById('accountHeroLead')
+		var hints = document.getElementById('accountHeroHints')
+		if (title) {
+			title.textContent = loggedIn ? 'Твой профиль' : 'Аккаунт'
+		}
+		if (lead) {
+			lead.textContent = loggedIn
+				? 'Профиль, заявки в вайтлист и настройки аккаунта.'
+				: 'Войди или зарегистрируйся, чтобы подать заявку в вайтлист и следить за статусом.'
+		}
+		if (hints) hints.hidden = !loggedIn
+	}
+
+	function updateDashAvatar(nick) {
+		var img = document.getElementById('dashAvatar')
+		var fallback = document.getElementById('dashAvatarFallback')
+		if (!img || !fallback) return
+		var v = (nick || '').trim()
+		if (v && IsnixAuth && IsnixAuth.MC_NICK_RE.test(v)) {
+			img.src =
+				'https://mc-heads.net/avatar/' + encodeURIComponent(v) + '/48'
+			img.alt = v
+			img.hidden = false
+			fallback.hidden = true
+		} else {
+			img.hidden = true
+			img.removeAttribute('src')
+			fallback.hidden = false
+			fallback.textContent = v ? v.charAt(0).toUpperCase() : '?'
+		}
+	}
+
 	function setLoading(form, loading) {
 		if (!form) return
 		form.classList.toggle('auth-form--loading', loading)
@@ -487,12 +522,14 @@
 	}
 
 	function showSetupNotice() {
+		setAccountPageMode(false)
 		if (setupNotice) setupNotice.hidden = false
 		if (authPanels) authPanels.hidden = true
 		if (dashboard) dashboard.hidden = true
 	}
 
 	function showGuest() {
+		setAccountPageMode(false)
 		if (setupNotice) setupNotice.hidden = true
 		if (authPanels) authPanels.hidden = false
 		if (dashboard) dashboard.hidden = true
@@ -504,6 +541,7 @@
 	}
 
 	function showDashboard(user, profile) {
+		setAccountPageMode(true)
 		if (setupNotice) setupNotice.hidden = true
 		if (authPanels) authPanels.hidden = true
 		if (dashboard) dashboard.hidden = false
@@ -518,6 +556,7 @@
 		var emailEl = document.getElementById('dashEmail')
 		if (emailEl) emailEl.textContent = user.email || '—'
 		syncPasswordFormUsername(user.email || '')
+		updateDashAvatar(profile && profile.minecraft_nick ? profile.minecraft_nick : '')
 	}
 
 	async function renderApplications(userId) {
@@ -777,6 +816,7 @@
 			updateSkinViewer(
 				profile && profile.minecraft_nick ? profile.minecraft_nick.trim() : '',
 			)
+			updateDashAvatar(profile && profile.minecraft_nick ? profile.minecraft_nick : '')
 			startStatusPolling()
 		} finally {
 			dashboardLoading = false
@@ -810,6 +850,31 @@
 
 	async function init() {
 		await loadWhitelist()
+
+		var copyIpBtn = document.getElementById('accountCopyIp')
+		if (copyIpBtn) {
+			copyIpBtn.addEventListener('click', function () {
+				var ip = 'mc.isnix.ru'
+				function done(ok) {
+					if (!ok) return
+					copyIpBtn.classList.add('is-copied')
+					copyIpBtn.textContent = 'Скопировано'
+					setTimeout(function () {
+						copyIpBtn.classList.remove('is-copied')
+						copyIpBtn.textContent = ip
+					}, 1600)
+				}
+				if (navigator.clipboard && navigator.clipboard.writeText) {
+					navigator.clipboard.writeText(ip).then(function () {
+						done(true)
+					}).catch(function () {
+						done(false)
+					})
+				} else {
+					done(false)
+				}
+			})
+		}
 
 		if (!window.IsnixAuth || !IsnixAuth.isReady()) {
 			showSetupNotice()
@@ -939,6 +1004,7 @@
 					await loadWhitelist()
 					updateProfileNickHint()
 					updateSkinViewer(nick)
+					updateDashAvatar(nick)
 					await refreshPlayerStatus()
 					var appNickEl = document.getElementById('appNick')
 					var appCallEl = document.getElementById('appCallName')
