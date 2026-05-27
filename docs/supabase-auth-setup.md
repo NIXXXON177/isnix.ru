@@ -13,7 +13,7 @@
 
 Если ошибка `permission denied for table profiles` — **[supabase-grants-fix.sql](supabase-grants-fix.sql)**.
 
-Если обычный игрок видит «Администрация» — **[supabase-fix-admin-escalation.sql](supabase-fix-admin-escalation.sql)**.
+Если у всех в таблице `profiles` роль **admin** или игроки видят панель админа — выполни **[supabase-fix-admin-escalation.sql](supabase-fix-admin-escalation.sql)** (или полный **[supabase-fix-connection.sql](supabase-fix-connection.sql)** — там сброс ролей и `is_admin` только для трёх email).
 
 ## 3. Auth (письма)
 

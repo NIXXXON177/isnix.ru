@@ -912,10 +912,9 @@
 				.map(function (p) {
 					var nick = p.minecraft_nick || '—'
 					var email = p.email || '—'
-					var role =
-						p.role === 'admin' && IsnixAuth.isAdminProfile(p)
-							? '<span class="auth-status auth-status--bad">админ</span>'
-							: ''
+					var role = IsnixAuth.isAdminProfile(p)
+						? '<span class="auth-status auth-status--bad">админ</span>'
+						: '<span class="auth-status auth-status--pending">игрок</span>'
 					var mcOnline =
 						p.minecraft_nick &&
 						status &&
