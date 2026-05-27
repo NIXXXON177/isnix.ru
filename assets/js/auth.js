@@ -44,7 +44,7 @@
 
 	function isNetworkError(err) {
 		var msg = errorText(err)
-		return /Failed to fetch|NetworkError|ERR_CONNECTION|ERR_HTTP2|PING_FAILED|Load failed|fetch failed|Network request failed|ERR_NAME_NOT_RESOLVED|ERR_SSL|ERR_TIMED_OUT|CONNECTION_RESET|CONNECTION_TIMED_OUT|HTTP2_PING_FAILED/i.test(
+		return /Failed to fetch|NetworkError|NetworkError when attempting to fetch|CORS|cross-origin|ERR_CONNECTION|ERR_HTTP2|PING_FAILED|Load failed|fetch failed|Network request failed|ERR_NAME_NOT_RESOLVED|ERR_SSL|ERR_TIMED_OUT|CONNECTION_RESET|CONNECTION_TIMED_OUT|HTTP2_PING_FAILED|не удалось выполнить запрос/i.test(
 			msg,
 		)
 	}
@@ -52,6 +52,14 @@
 	function isMissingApplicantReplyColumn(err) {
 		var msg = errorText(err)
 		return /applicant_reply/i.test(msg) && /does not exist|42703/i.test(msg)
+	}
+
+	function isMissingSitePresenceColumns(err) {
+		var msg = errorText(err)
+		return (
+			/site_last_seen_at|site_device/i.test(msg) &&
+			/does not exist|42703|PGRST204/i.test(msg)
+		)
 	}
 
 	function sleep(ms) {
@@ -113,9 +121,7 @@
 		}
 		if (isNetworkError(err)) {
 			return (
-				'Браузер не достучался до Supabase (' +
-				(msg || 'сбой сети') +
-				'). Попробуй другой браузер, отключи AdBlock/VPN, открой isnix.ru по HTTPS. Если не поможет — проект Supabase мог быть на паузе (Dashboard → Restore).'
+				'Нет связи с Supabase (сеть или CORS). Отключи AdBlock/VPN для isnix.ru, проверь что проект Supabase не на паузе. В Dashboard → Authentication → URL Configuration укажи https://isnix.ru. См. docs/supabase-cors-troubleshooting.md'
 			)
 		}
 		if (err.code === 'PGRST301' || /JWT|session/i.test(msg)) {
@@ -221,31 +227,42 @@
 
 	async function sitePresenceHeartbeat(device) {
 		var sb = getClient()
-		if (!sb) return
-		var res = await sb.rpc('site_presence_heartbeat', {
-			p_device: device || detectSiteDevice(),
-		})
-		if (res.error) {
-			if (
-				/PGRST202|site_presence_heartbeat/i.test(res.error.message || '') ||
-				res.error.code === 'PGRST202'
-			) {
-				return
+		if (!sb) return false
+		try {
+			var res = await sb.rpc('site_presence_heartbeat', {
+				p_device: device || detectSiteDevice(),
+			})
+			if (res.error) {
+				if (
+					res.code === 'PGRST202' ||
+					/PGRST202|site_presence_heartbeat/i.test(res.error.message || '')
+				) {
+					return false
+				}
+				if (isNetworkError(res.error)) return false
+				return false
 			}
-			throw res.error
+			return true
+		} catch (err) {
+			if (isNetworkError(err)) return false
+			return false
 		}
+	}
+
+	async function queryProfile(sb, userId, withSitePresence) {
+		var fields = withSitePresence
+			? 'minecraft_nick, display_name, email, role, created_at, site_last_seen_at, site_device'
+			: 'minecraft_nick, display_name, email, role, created_at'
+		return sb.from('profiles').select(fields).eq('id', userId).maybeSingle()
 	}
 
 	async function getProfile(userId) {
 		var sb = getClient()
 		if (!sb) return null
-		var res = await sb
-			.from('profiles')
-			.select(
-				'minecraft_nick, display_name, email, role, created_at, site_last_seen_at, site_device',
-			)
-			.eq('id', userId)
-			.maybeSingle()
+		var res = await queryProfile(sb, userId, true)
+		if (res.error && isMissingSitePresenceColumns(res.error)) {
+			res = await queryProfile(sb, userId, false)
+		}
 		if (res.error) throw res.error
 		return res.data
 	}
@@ -432,12 +449,20 @@
 	async function getAdminProfiles() {
 		var sb = getClient()
 		if (!sb) return []
+		var fieldsWithSite =
+			'id, email, minecraft_nick, display_name, role, created_at, site_last_seen_at, site_device'
+		var fieldsBase =
+			'id, email, minecraft_nick, display_name, role, created_at'
 		var res = await sb
 			.from('profiles')
-			.select(
-				'id, email, minecraft_nick, display_name, role, created_at, site_last_seen_at, site_device',
-			)
+			.select(fieldsWithSite)
 			.order('created_at', { ascending: false })
+		if (res.error && isMissingSitePresenceColumns(res.error)) {
+			res = await sb
+				.from('profiles')
+				.select(fieldsBase)
+				.order('created_at', { ascending: false })
+		}
 		if (res.error) throw res.error
 		return res.data || []
 	}
