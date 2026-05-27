@@ -233,7 +233,36 @@
 
 	function updateWhitelistHint() {
 		var nickEl = document.getElementById('appNick')
-		updateNickHint(document.getElementById('whitelistNickHint'), nickEl ? nickEl.value : '')
+		var nick = nickEl ? nickEl.value : ''
+		updateNickHint(document.getElementById('whitelistNickHint'), nick)
+		syncWhitelistFormState(nick)
+	}
+
+	function syncWhitelistFormState(nick) {
+		var form = document.getElementById('whitelistForm')
+		var note = document.getElementById('whitelistStateNote')
+		if (!form) return
+
+		var v = (nick || '').trim()
+		var blocked = !!(v && IsnixAuth.MC_NICK_RE.test(v) && isOnWhitelist(v))
+
+		form
+			.querySelectorAll('#appCallName, #appAge, #appReason, button[type="submit"]')
+			.forEach(function (el) {
+				el.disabled = blocked
+			})
+
+		if (!note) return
+		if (blocked) {
+			note.textContent =
+				'Этот ник уже в whitelist. Заявку заполнять не нужно — можно заходить на сервер.'
+			note.className = 'auth-hint auth-hint--ok'
+			note.hidden = false
+		} else {
+			note.hidden = true
+			note.textContent = ''
+			note.className = 'auth-hint'
+		}
 	}
 
 	function openWhitelistModal(nick, callName) {
@@ -691,6 +720,7 @@
 				appNick.value = profile.minecraft_nick
 			}
 			updateProfileNickHint()
+			updateWhitelistHint()
 			updateSkinViewer(profile.minecraft_nick ? profile.minecraft_nick.trim() : '')
 		} catch (_e) {
 			/* ignore */
@@ -1153,7 +1183,10 @@
 					},
 					appForm,
 				)
-				if (ok) appForm.reset()
+				if (ok) {
+					appForm.reset()
+					updateWhitelistHint()
+				}
 			})
 		}
 
