@@ -164,8 +164,6 @@
 		window.open(buildDonationUrl(prefix, amount), '_blank', 'noopener')
 	}
 
-	const VK_URL = 'https://vk.com/isthisnixxxon'
-
 	function openCreatorPrefix(btn) {
 		const nick = getNick()
 		if (!nick) {
@@ -189,12 +187,12 @@
 		if (navigator.clipboard && navigator.clipboard.writeText) {
 			navigator.clipboard.writeText(text).then(function () {
 				showToast(
-					'Текст заявки скопирован — вставь в сообщение ВКонтакте',
+					'Текст заявки скопирован — вставь его в заявку в личном кабинете',
 					true,
 				)
 			})
 		}
-		window.open(VK_URL, '_blank', 'noopener')
+		window.open('account.html#whitelist', '_blank', 'noopener')
 	}
 
 	function buildBoldNickDonationUrl(nickCanon) {

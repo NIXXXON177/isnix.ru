@@ -694,12 +694,26 @@
 			}
 			list.innerHTML = apps
 				.map(function (app) {
-					var note =
-						app.admin_note && app.status === 'rejected'
-							? '<p class="auth-app-note">' +
-								escapeHtml(app.admin_note) +
-								'</p>'
-							: ''
+					var decision =
+						app.status === 'approved'
+							? '✅ Одобрено'
+							: app.status === 'rejected'
+								? '❌ Отклонено'
+								: '⏳ На рассмотрении'
+					var note = app.admin_note
+						? '<p class="auth-app-note"><strong>Комментарий:</strong> ' +
+							escapeHtml(app.admin_note) +
+							'</p>'
+						: ''
+					var timeline =
+						'<ul class="auth-muted" style="margin:0.5rem 0 0.75rem;padding-left:1.1rem">' +
+						'<li>Заявка отправлена — ' +
+						escapeHtml(formatDate(app.created_at)) +
+						'</li>' +
+						'<li>Статус: <strong>' +
+						escapeHtml(decision) +
+						'</strong></li>' +
+						'</ul>'
 					return (
 						'<article class="auth-app-card">' +
 						'<div class="auth-app-head">' +
@@ -712,9 +726,7 @@
 						statusLabel(app.status) +
 						'</span>' +
 						'</div>' +
-						'<p class="auth-muted">' +
-						formatDate(app.created_at) +
-						'</p>' +
+						timeline +
 						'<p>' +
 						escapeHtml(app.reason) +
 						'</p>' +
