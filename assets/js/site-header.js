@@ -126,8 +126,8 @@
 			backdrop.addEventListener('click', closeMenu)
 		}
 
-		menu.querySelectorAll('a').forEach(function (a) {
-			a.addEventListener('click', function () {
+		menu.querySelectorAll('a, .nav-drawer-auth__logout').forEach(function (el) {
+			el.addEventListener('click', function () {
 				if (isMobileNav()) closeMenu()
 			})
 		})

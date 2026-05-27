@@ -394,6 +394,116 @@
 		}
 	}
 
+	var PROFILE_CACHE_TTL_MS = 300000
+	var navDrawerLogoutBound = false
+
+	function readNavProfileCache(userId) {
+		try {
+			var raw = sessionStorage.getItem('isnix_profile_' + userId)
+			if (!raw) return null
+			var o = JSON.parse(raw)
+			if (!o || !o.p || Date.now() - o.t > PROFILE_CACHE_TTL_MS) return null
+			return o.p
+		} catch (_e) {
+			return null
+		}
+	}
+
+	function clearNavProfileCaches() {
+		try {
+			var keys = []
+			for (var i = 0; i < sessionStorage.length; i++) {
+				var k = sessionStorage.key(i)
+				if (k && k.indexOf('isnix_profile_') === 0) keys.push(k)
+			}
+			keys.forEach(function (k) {
+				sessionStorage.removeItem(k)
+			})
+		} catch (_e) {
+			/* ignore */
+		}
+	}
+
+	function mcHeadAvatarUrl(nick, size) {
+		return (
+			'https://mc-heads.net/avatar/' +
+			encodeURIComponent(nick) +
+			'/' +
+			(size || 40)
+		)
+	}
+
+	function closeMobileNavMenu() {
+		var menu = document.getElementById('navMenu')
+		var backdrop = document.getElementById('navBackdrop')
+		var toggle = document.getElementById('navToggle')
+		if (menu) menu.classList.remove('is-open')
+		if (backdrop) backdrop.classList.remove('is-visible')
+		document.documentElement.classList.remove('nav-open')
+		document.body.classList.remove('nav-open')
+		if (toggle) {
+			toggle.setAttribute('aria-expanded', 'false')
+			toggle.setAttribute('aria-label', 'Открыть меню')
+		}
+		if (menu) menu.setAttribute('aria-hidden', 'true')
+		if (backdrop) backdrop.setAttribute('aria-hidden', 'true')
+	}
+
+	function updateNavDrawerAuth(session, profile) {
+		var loginEl = document.getElementById('navDrawerLogin')
+		var userEl = document.getElementById('navDrawerUser')
+		var logoutBtn = document.getElementById('navDrawerLogout')
+		var nickEl = document.getElementById('navDrawerNick')
+		var emailEl = document.getElementById('navDrawerEmail')
+		var avatarImg = document.getElementById('navDrawerAvatar')
+		var avatarFb = document.getElementById('navDrawerAvatarFb')
+		if (!loginEl && !userEl) return
+
+		var loggedIn = isReady() && session && session.user
+		if (!loggedIn) {
+			if (loginEl) loginEl.hidden = false
+			if (userEl) userEl.hidden = true
+			if (logoutBtn) logoutBtn.hidden = true
+			return
+		}
+
+		if (loginEl) loginEl.hidden = true
+		if (userEl) userEl.hidden = false
+		if (logoutBtn) logoutBtn.hidden = false
+
+		var email =
+			(profile && profile.email) || session.user.email || '—'
+		var nick =
+			profile && profile.minecraft_nick
+				? String(profile.minecraft_nick).trim()
+				: ''
+
+		if (emailEl) emailEl.textContent = email
+		if (nickEl) {
+			nickEl.textContent = nick || 'Профиль'
+		}
+
+		if (userEl) {
+			var admin = isAdminProfile(profile)
+			userEl.classList.toggle('nav-drawer-auth__user--admin', admin)
+			userEl.href = admin ? 'account.html#admin' : 'account.html'
+		}
+
+		if (avatarImg && avatarFb) {
+			if (nick && MC_NICK_RE.test(nick)) {
+				avatarImg.src = mcHeadAvatarUrl(nick, 40)
+				avatarImg.alt = nick
+				avatarImg.hidden = false
+				avatarFb.hidden = true
+			} else {
+				avatarImg.hidden = true
+				avatarImg.removeAttribute('src')
+				avatarFb.hidden = false
+				avatarFb.textContent = (email.charAt(0) || '?').toUpperCase()
+			}
+		}
+	}
+
 	function updateNavAccountLink(session, profile) {
 		var el = document.getElementById('navAccountBtn')
 		if (!el) return
@@ -416,24 +526,61 @@
 		}
 	}
 
+	function applyNavAuthUi(session, profile) {
+		updateNavAccountLink(session, profile)
+		updateNavDrawerAuth(session, profile)
+	}
+
 	async function refreshNavAccountLink(session) {
-		if (!session || !session.user) {
-			updateNavAccountLink(null, null)
-			return
+		applyNavAuthUi(null, null)
+		if (!session || !session.user) return
+
+		var quick = readNavProfileCache(session.user.id)
+		if (quick) {
+			quick.email = quick.email || session.user.email
+			applyNavAuthUi(session, quick)
+		} else {
+			applyNavAuthUi(session, { email: session.user.email })
 		}
+
 		try {
 			var profile = await getProfile(session.user.id)
 			if (profile && session.user.email) {
 				profile.email = profile.email || session.user.email
 			}
-			updateNavAccountLink(session, profile)
+			applyNavAuthUi(session, profile)
 		} catch (_e) {
-			updateNavAccountLink(session, null)
+			applyNavAuthUi(session, { email: session.user.email })
 		}
 	}
 
+	function bindNavDrawerLogout() {
+		if (navDrawerLogoutBound) return
+		var btn = document.getElementById('navDrawerLogout')
+		if (!btn) return
+		navDrawerLogoutBound = true
+		btn.addEventListener('click', async function () {
+			if (!isReady()) return
+			btn.disabled = true
+			try {
+				await signOut()
+				clearNavProfileCaches()
+				applyNavAuthUi(null, null)
+				closeMobileNavMenu()
+				if (document.body.getAttribute('data-page') === 'account') {
+					window.location.reload()
+				}
+			} catch (err) {
+				global.alert(formatAuthError(err))
+			} finally {
+				btn.disabled = false
+			}
+		})
+	}
+
 	async function initNavAuth() {
-		updateNavAccountLink(null, null)
+		applyNavAuthUi(null, null)
+		bindNavDrawerLogout()
 		if (!isReady()) return
 		try {
 			var session = await getSession()

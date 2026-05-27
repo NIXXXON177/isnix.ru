@@ -96,6 +96,36 @@
 					</div>
 				</header>
 				<nav class="nav-drawer" id="navMenu" aria-label="Навигация по сайту">
+					<div class="nav-drawer-auth" id="navDrawerAuth">
+						<a href="account.html" class="nav-drawer-auth__login" id="navDrawerLogin"
+							>Вход</a
+						>
+						<a
+							href="account.html"
+							class="nav-drawer-auth__user"
+							id="navDrawerUser"
+							hidden
+						>
+							<span class="nav-drawer-auth__avatar-wrap" aria-hidden="true">
+								<img
+									class="nav-drawer-auth__avatar"
+									id="navDrawerAvatar"
+									width="40"
+									height="40"
+									alt=""
+								/>
+								<span
+									class="nav-drawer-auth__avatar-fallback"
+									id="navDrawerAvatarFb"
+									>?</span
+								>
+							</span>
+							<span class="nav-drawer-auth__meta">
+								<span class="nav-drawer-auth__nick" id="navDrawerNick">—</span>
+								<span class="nav-drawer-auth__email" id="navDrawerEmail">—</span>
+							</span>
+						</a>
+					</div>
 				<ul class="nav-links">
 					<li><a href="#about" data-nav="about">О сервере</a></li>
 					<li><a href="#download" data-nav="download">Скачать</a></li>
@@ -106,7 +136,7 @@
 					<li>
 						<a href="how-to-play.html" data-page-link="how-to-play">Как играть</a>
 					</li>
-					<li>
+					<li class="nav-links__account">
 						<a href="account.html" data-page-link="account" id="navAccountBtn"
 							>Аккаунт</a
 						>
@@ -116,6 +146,16 @@
 				<a href="#join-server" class="nav-btn nav-btn-menu" id="navJoinBtn"
 					>На сервер</a
 				>
+					<div class="nav-drawer__footer">
+						<button
+							type="button"
+							class="nav-drawer-auth__logout"
+							id="navDrawerLogout"
+							hidden
+						>
+							Выход
+						</button>
+					</div>
 				</nav>
 			</div>
 		</div>
@@ -1801,7 +1841,7 @@
 		</script>
 		<script src="assets/js/auth-config.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-		<script src="assets/js/auth.js"></script>
+		<script src="assets/js/auth.js?v=15"></script>
 		<script src="assets/js/shop-slider.js" defer></script>
 		<script src="assets/js/site-header.js" defer></script>
 		<script src="assets/js/site.js" defer></script>
