@@ -11,6 +11,8 @@
 	var adminFilter = 'pending'
 	var adminView = 'applications'
 	var skinViewer = null
+	var skinViewerLoadedNick = null
+	var skinViewerLoading = false
 	var skinUpdateTimer = null
 	var statusRefreshTimer = null
 	var onSessionTimer = null
@@ -429,12 +431,23 @@
 			}
 			skinViewer = null
 		}
+		skinViewerLoadedNick = null
+		skinViewerLoading = false
 	}
 
 	async function updateSkinViewer(nick) {
 		var canvas = document.getElementById('profileSkinCanvas')
 		var placeholder = document.getElementById('profileSkinPlaceholder')
 		if (!canvas || !placeholder) return
+		var normalized = nick ? nick.trim() : ''
+		if (
+			normalized &&
+			skinViewer &&
+			skinViewerLoadedNick === normalized &&
+			!skinViewerLoading
+		) {
+			return
+		}
 		if (typeof skinview3d === 'undefined') {
 			canvas.hidden = true
 			placeholder.hidden = false
@@ -442,13 +455,15 @@
 				'3D-просмотр недоступен — не загрузилась библиотека skinview3d'
 			return
 		}
-		if (!nick || !IsnixAuth.MC_NICK_RE.test(nick)) {
+		if (!normalized || !IsnixAuth.MC_NICK_RE.test(normalized)) {
 			disposeSkinViewer()
 			canvas.hidden = true
 			placeholder.hidden = false
 			return
 		}
+		if (skinViewerLoading) return
 		var reqId = ++skinRequestId
+		skinViewerLoading = true
 		placeholder.textContent = 'Загрузка скина…'
 		placeholder.hidden = true
 		canvas.hidden = false
@@ -460,12 +475,14 @@
 				height: 300,
 				background: 0x0a0f0a,
 				pixelRatio: 1,
+				enableControls: false,
 			})
 			if (skinViewer.fxaaPass) {
 				skinViewer.fxaaPass.enabled = false
 			}
 			resetWebGLPixelStore(skinViewer)
-			var sources = getSkinSources(nick)
+			skinViewer.autoRotate = true
+			var sources = getSkinSources(normalized)
 			var loaded = false
 			for (var si = 0; si < sources.length; si++) {
 				try {
@@ -480,16 +497,20 @@
 			if (!loaded) {
 				throw new Error('skin source unavailable')
 			}
-			skinViewer.controls.enableRotate = true
-			skinViewer.controls.enableZoom = false
 			skinViewer.animation = new skinview3d.WalkingAnimation()
 			skinViewer.camera.position.y = 8
 			skinViewer.render()
+			skinViewerLoadedNick = normalized
 		} catch (_e) {
 			if (reqId !== skinRequestId) return
+			disposeSkinViewer()
 			canvas.hidden = true
 			placeholder.hidden = false
 			placeholder.textContent = 'Не удалось загрузить скин (включая Ely.by)'
+		} finally {
+			if (reqId === skinRequestId) {
+				skinViewerLoading = false
+			}
 		}
 	}
 
@@ -497,8 +518,10 @@
 		clearTimeout(skinUpdateTimer)
 		skinUpdateTimer = setTimeout(function () {
 			var nickEl = document.getElementById('profileNick')
-			updateSkinViewer(nickEl ? nickEl.value.trim() : '')
-		}, 350)
+			var next = nickEl ? nickEl.value.trim() : ''
+			if (next === skinViewerLoadedNick && skinViewer) return
+			updateSkinViewer(next)
+		}, 500)
 	}
 
 	function updateProfileMeta(profile, serverStatus) {
@@ -908,7 +931,6 @@
 			}
 			updateProfileNickHint()
 			updateWhitelistHint()
-			updateSkinViewer(profile.minecraft_nick ? profile.minecraft_nick.trim() : '')
 		} catch (_e) {
 			/* ignore */
 		}
