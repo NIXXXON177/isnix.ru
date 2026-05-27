@@ -38,9 +38,19 @@
 		if (!data || typeof data.online !== 'boolean') return null
 		var list = []
 		if (data.players && Array.isArray(data.players.list)) {
-			list = data.players.list.filter(Boolean).map(function (n) {
-				return String(n).trim()
-			})
+			list = data.players.list
+				.filter(Boolean)
+				.map(function (p) {
+					if (typeof p === 'string') return p
+					if (p && typeof p === 'object') {
+						return p.name || p.username || p.player || p.displayname || ''
+					}
+					return ''
+				})
+				.map(function (n) {
+					return String(n || '').trim()
+				})
+				.filter(Boolean)
 		}
 		var count =
 			data.players && typeof data.players.online === 'number'
