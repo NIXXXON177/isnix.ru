@@ -80,13 +80,13 @@
 
 	async function withNetworkRetry(fn) {
 		var lastErr = null
-		for (var i = 0; i < 3; i++) {
+		for (var i = 0; i < 2; i++) {
 			try {
 				return await fn()
 			} catch (err) {
 				lastErr = err
-				if (!isNetworkError(err) || i >= 2) throw err
-				await sleep(600 * (i + 1))
+				if (!isNetworkError(err) || i >= 1) throw err
+				await sleep(400)
 			}
 		}
 		throw lastErr

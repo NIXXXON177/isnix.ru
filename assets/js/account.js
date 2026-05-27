@@ -20,6 +20,13 @@
 	var skinRequestId = 0
 	var adminActionInFlight = {}
 	var adminListDelegationBound = false
+	var whitelistLoadPromise = null
+	var skinview3dLoadPromise = null
+	var adminListsLoaded = {
+		applications: false,
+		server: false,
+		users: false,
+	}
 
 	function showMsg(text, ok) {
 		if (!authMsg) return
@@ -193,9 +200,16 @@
 			.replace(/"/g, '&quot;')
 	}
 
-	async function loadWhitelist() {
+	function loadWhitelist() {
+		if (whitelistPlayers) return Promise.resolve()
+		if (whitelistLoadPromise) return whitelistLoadPromise
+		whitelistLoadPromise = fetchWhitelistInner()
+		return whitelistLoadPromise
+	}
+
+	async function fetchWhitelistInner() {
 		try {
-			var r = await fetch('whitelist.json', { cache: 'no-store' })
+			var r = await fetch('whitelist.json', { cache: 'default' })
 			if (!r.ok) return
 			var j = await r.json()
 			var raw = Array.isArray(j) ? j : j.players || []
@@ -422,6 +436,40 @@
 		}
 	}
 
+	function ensureSkinview3d() {
+		if (typeof skinview3d !== 'undefined') return Promise.resolve()
+		if (skinview3dLoadPromise) return skinview3dLoadPromise
+		skinview3dLoadPromise = new Promise(function (resolve, reject) {
+			var script = document.createElement('script')
+			script.src =
+				'https://cdn.jsdelivr.net/npm/skinview3d@3.4.2/bundles/skinview3d.bundle.js'
+			script.async = true
+			script.onload = function () {
+				resolve()
+			}
+			script.onerror = function () {
+				reject(new Error('skinview3d load failed'))
+			}
+			document.head.appendChild(script)
+		})
+		return skinview3dLoadPromise
+	}
+
+	function deferAccountTask(fn, delayMs) {
+		var run = function () {
+			try {
+				fn()
+			} catch (_e) {
+				/* ignore */
+			}
+		}
+		if (typeof requestIdleCallback === 'function') {
+			requestIdleCallback(run, { timeout: delayMs || 1200 })
+		} else {
+			setTimeout(run, delayMs || 200)
+		}
+	}
+
 	function disposeSkinViewer() {
 		if (skinViewer) {
 			try {
@@ -446,6 +494,15 @@
 			skinViewerLoadedNick === normalized &&
 			!skinViewerLoading
 		) {
+			return
+		}
+		try {
+			await ensureSkinview3d()
+		} catch (_e) {
+			canvas.hidden = true
+			placeholder.hidden = false
+			placeholder.textContent =
+				'3D-просмотр недоступен — не загрузилась библиотека skinview3d'
 			return
 		}
 		if (typeof skinview3d === 'undefined') {
@@ -597,9 +654,22 @@
 		if (serverEl) serverEl.hidden = adminView !== 'server'
 		if (usersEl) usersEl.hidden = adminView !== 'users'
 		if (!IsnixAuth || !IsnixAuth.isAdminProfile(currentProfile)) return
-		if (adminView === 'applications') renderAdminApplications()
-		else if (adminView === 'server') renderAdminServerList()
-		else if (adminView === 'users') renderAdminUsersList()
+		if (adminView === 'applications') {
+			if (!adminListsLoaded.applications) {
+				adminListsLoaded.applications = true
+				renderAdminApplications()
+			}
+		} else if (adminView === 'server') {
+			if (!adminListsLoaded.server) {
+				adminListsLoaded.server = true
+				renderAdminServerList()
+			}
+		} else if (adminView === 'users') {
+			if (!adminListsLoaded.users) {
+				adminListsLoaded.users = true
+				renderAdminUsersList()
+			}
+		}
 	}
 
 	function playerNick(entry) {
@@ -752,7 +822,9 @@
 
 	function startStatusPolling() {
 		if (statusRefreshTimer) clearInterval(statusRefreshTimer)
-		refreshPlayerStatus(false)
+		deferAccountTask(function () {
+			refreshPlayerStatus(false)
+		}, 800)
 		statusRefreshTimer = setInterval(function () {
 			refreshPlayerStatus(false)
 			if (
@@ -917,22 +989,15 @@
 		}
 	}
 
-	async function fillProfileForm(userId) {
-		try {
-			var profile = await IsnixAuth.getProfile(userId)
-			if (!profile) return
-			var nick = document.getElementById('profileNick')
-			var name = document.getElementById('profileCallName')
-			if (nick && profile.minecraft_nick) nick.value = profile.minecraft_nick
-			if (name && profile.display_name) name.value = profile.display_name
-			var appNick = document.getElementById('appNick')
-			if (appNick && profile.minecraft_nick && !appNick.value) {
-				appNick.value = profile.minecraft_nick
-			}
-			updateProfileNickHint()
-			updateWhitelistHint()
-		} catch (_e) {
-			/* ignore */
+	function applyProfileToForm(profile) {
+		if (!profile) return
+		var nick = document.getElementById('profileNick')
+		var name = document.getElementById('profileCallName')
+		if (nick && profile.minecraft_nick) nick.value = profile.minecraft_nick
+		if (name && profile.display_name) name.value = profile.display_name
+		var appNick = document.getElementById('appNick')
+		if (appNick && profile.minecraft_nick && !appNick.value) {
+			appNick.value = profile.minecraft_nick
 		}
 	}
 
@@ -1169,6 +1234,7 @@
 			var profile = null
 			var profileErr = null
 			var appsErr = null
+			var wlPromise = loadWhitelist()
 
 			try {
 				profile = await IsnixAuth.getProfile(userId)
@@ -1198,17 +1264,13 @@
 						IsnixAuth.formatAuthError(profileErr) +
 						' Нажми «Повторить загрузку».',
 				)
+			} else {
+				applyProfileToForm(profile)
 			}
 
-			await loadWhitelist()
+			updateDashAvatar(profile && profile.minecraft_nick ? profile.minecraft_nick : '')
 
-			if (!profileErr) {
-				await fillProfileForm(userId)
-			}
-
-			try {
-				await renderApplications(userId)
-			} catch (e) {
+			var appsPromise = renderApplications(userId).catch(function (e) {
 				appsErr = e
 				var list = document.getElementById('applicationsList')
 				if (list) {
@@ -1217,7 +1279,9 @@
 						escapeHtml(IsnixAuth.formatAuthError(e)) +
 						'</p>'
 				}
-			}
+			})
+
+			await Promise.all([wlPromise, appsPromise])
 
 			if (profileErr && appsErr) {
 				showConnectionNotice(
@@ -1232,15 +1296,23 @@
 				)
 			}
 
-			if (IsnixAuth.isAdminProfile(profile)) {
-				switchAdminView(adminView)
-			}
 			updateProfileNickHint()
 			updateWhitelistHint()
-			updateSkinViewer(
-				profile && profile.minecraft_nick ? profile.minecraft_nick.trim() : '',
-			)
-			updateDashAvatar(profile && profile.minecraft_nick ? profile.minecraft_nick : '')
+
+			if (IsnixAuth.isAdminProfile(profile)) {
+				deferAccountTask(function () {
+					switchAdminView(adminView)
+				}, 400)
+			}
+
+			var skinNick =
+				profile && profile.minecraft_nick ? profile.minecraft_nick.trim() : ''
+			if (skinNick) {
+				deferAccountTask(function () {
+					updateSkinViewer(skinNick)
+				}, 600)
+			}
+
 			startStatusPolling()
 		} finally {
 			dashboardLoading = false
@@ -1273,7 +1345,7 @@
 	}
 
 	async function init() {
-		await loadWhitelist()
+		loadWhitelist()
 
 		if (!window.IsnixAuth || !IsnixAuth.isReady()) {
 			showSetupNotice()
