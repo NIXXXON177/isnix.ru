@@ -58,16 +58,26 @@
 		if (hints) hints.hidden = !loggedIn
 	}
 
+	function avatarUrl(nick, size) {
+		return (
+			'https://skins.ely.by/render/' +
+			encodeURIComponent(nick) +
+			'?slim=true&size=' +
+			(size || 48)
+		)
+	}
+
 	function updateDashAvatar(nick) {
 		var img = document.getElementById('dashAvatar')
 		var fallback = document.getElementById('dashAvatarFallback')
 		if (!img || !fallback) return
 		var v = (nick || '').trim()
 		if (v && IsnixAuth && IsnixAuth.MC_NICK_RE.test(v)) {
-			img.src = 'https://ely.by/avatar/' + encodeURIComponent(v)
+			img.src = avatarUrl(v, 48)
 			img.onerror = function () {
 				img.onerror = null
-				img.src = 'https://mc-heads.net/avatar/' + encodeURIComponent(v) + '/48'
+				img.src =
+					'https://mc-heads.net/avatar/' + encodeURIComponent(v) + '/48'
 			}
 			img.alt = v
 			img.hidden = false
@@ -358,9 +368,9 @@
 			})
 			var sources = getSkinSources(nick)
 			var loaded = false
-			for (var i = 0; i < sources.length; i++) {
+			for (var si = 0; si < sources.length; si++) {
 				try {
-					await Promise.resolve(skinViewer.loadSkin(sources[i]))
+					await skinViewer.loadSkin(sources[si])
 					loaded = true
 					break
 				} catch (_e) {
@@ -466,13 +476,32 @@
 		else if (adminView === 'users') renderAdminUsersList()
 	}
 
+	function playerNick(entry) {
+		if (entry == null) return ''
+		if (typeof entry === 'string' || typeof entry === 'number') {
+			return String(entry).trim()
+		}
+		if (typeof entry === 'object') {
+			return (
+				entry.name_clean ||
+				entry.name_raw ||
+				entry.name ||
+				entry.username ||
+				''
+			).trim()
+		}
+		return ''
+	}
+
 	function renderPlayerRow(nick, extraHtml) {
-		var safe = escapeHtml(nick)
-		var enc = encodeURIComponent(nick)
+		var name = playerNick(nick)
+		if (!name) return ''
+		var safe = escapeHtml(name)
+		var enc = encodeURIComponent(name)
 		return (
 			'<div class="auth-player-row">' +
-			'<img class="auth-player-head" src="https://ely.by/avatar/' +
-			enc +
+			'<img class="auth-player-head" src="' +
+			avatarUrl(name, 32) +
 			'" width="32" height="32" alt="" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=\'https://mc-heads.net/avatar/' +
 			enc +
 			'/32\'" />' +
@@ -522,6 +551,7 @@
 					.map(function (n) {
 						return renderPlayerRow(n, '')
 					})
+					.filter(Boolean)
 					.join('')
 		} catch (err) {
 			list.innerHTML =
@@ -1068,6 +1098,7 @@
 		if (profileNick) {
 			profileNick.addEventListener('input', function () {
 				updateProfileNickHint()
+				syncWhitelistSectionVisibility(profileNick.value)
 				scheduleSkinUpdate()
 			})
 		}

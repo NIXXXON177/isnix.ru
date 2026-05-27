@@ -3,7 +3,7 @@
 
 	var HOST = 'mc.isnix.ru'
 	var FETCH_MS = 4500
-	var CACHE_KEY = 'isnix_server_status_v4'
+	var CACHE_KEY = 'isnix_server_status_v5'
 	var CACHE_TTL_MS = 90000
 	var STALE_CACHE_MS = 600000
 	var FAIL_BACKOFF_MS = 300000
@@ -18,8 +18,8 @@
 			var box = JSON.parse(raw)
 			if (!box || !box.data) return null
 			var age = Date.now() - box.t
-			if (age <= CACHE_TTL_MS) return box.data
-			if (allowStale && age <= STALE_CACHE_MS) return box.data
+			if (age <= CACHE_TTL_MS) return normalizeStatus(box.data)
+			if (allowStale && age <= STALE_CACHE_MS) return normalizeStatus(box.data)
 			return null
 		} catch (_e) {
 			return null
@@ -34,23 +34,47 @@
 		}
 	}
 
+	function normalizePlayerEntry(entry) {
+		if (entry == null || entry === undefined) return ''
+		if (typeof entry === 'string' || typeof entry === 'number') {
+			return String(entry).trim()
+		}
+		if (typeof entry === 'object') {
+			return (
+				entry.name_clean ||
+				entry.name_raw ||
+				entry.name ||
+				entry.username ||
+				entry.player ||
+				entry.displayname ||
+				entry.displayName ||
+				''
+			).trim()
+		}
+		return ''
+	}
+
+	function normalizeStatus(data) {
+		if (!data || typeof data.online !== 'boolean') return null
+		var list = Array.isArray(data.players)
+			? data.players.map(normalizePlayerEntry).filter(Boolean)
+			: []
+		var count = typeof data.count === 'number' ? data.count : list.length
+		var max = typeof data.max === 'number' ? data.max : null
+		return {
+			online: data.online,
+			host: data.host || HOST,
+			count: count,
+			max: max,
+			players: list,
+		}
+	}
+
 	function parsePlayers(data) {
 		if (!data || typeof data.online !== 'boolean') return null
 		var list = []
 		if (data.players && Array.isArray(data.players.list)) {
-			list = data.players.list
-				.filter(Boolean)
-				.map(function (p) {
-					if (typeof p === 'string') return p
-					if (p && typeof p === 'object') {
-						return p.name || p.username || p.player || p.displayname || ''
-					}
-					return ''
-				})
-				.map(function (n) {
-					return String(n || '').trim()
-				})
-				.filter(Boolean)
+			list = data.players.list.map(normalizePlayerEntry).filter(Boolean)
 		}
 		var count =
 			data.players && typeof data.players.online === 'number'
@@ -58,13 +82,13 @@
 				: list.length
 		var max =
 			data.players && typeof data.players.max === 'number' ? data.players.max : null
-		return {
+		return normalizeStatus({
 			online: data.online,
 			host: HOST,
 			count: count,
 			max: max,
 			players: list,
-		}
+		})
 	}
 
 	async function fetchJson(url, signal) {
@@ -137,7 +161,7 @@
 		if (!nick || !status || !status.online || !status.players) return false
 		var low = nick.toLowerCase()
 		return status.players.some(function (p) {
-			return p.toLowerCase() === low
+			return String(p).toLowerCase() === low
 		})
 	}
 
