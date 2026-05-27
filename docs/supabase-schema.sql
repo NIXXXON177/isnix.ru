@@ -24,6 +24,7 @@ create table if not exists public.whitelist_applications (
 	status text not null default 'pending'
 		check (status in ('pending', 'approved', 'rejected')),
 	admin_note text,
+	applicant_reply text,
 	created_at timestamptz not null default now(),
 	updated_at timestamptz not null default now()
 );
@@ -116,11 +117,6 @@ as $$
 		from public.profiles p
 		where p.id = auth.uid()
 			and p.role = 'admin'
-			and p.email in (
-				'kupryuhinsemen@gmail.com',
-				'kudrasovn024@gmail.com',
-				'1511vasilisa@gmail.com'
-			)
 	);
 $$;
 

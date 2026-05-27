@@ -47,6 +47,7 @@ Workflow подставит ключ в `auth-config.js` при деплое. В
 1. Открой `https://isnix.ru/account.html` (или локально Live Server).
 2. Регистрация → вход → форма «Заявка в вайтлист».
 3. Заявки смотри в Supabase → Table Editor → `whitelist_applications`.
+4. Диалог админ ↔ игрок по заявке: выполни **[supabase-whitelist-dialog.sql](supabase-whitelist-dialog.sql)**.
 
 ## 6. Администраторы сайта
 

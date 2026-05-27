@@ -30,14 +30,28 @@
 		)
 	}
 
-	function isNetworkError(err) {
-		if (!err) return false
-		var msg = String(
-			typeof err === 'string' ? err : err.message || err.details || err.code || '',
+	function errorText(err) {
+		if (!err) return ''
+		if (typeof err === 'string') return err
+		return String(
+			err.message ||
+				err.details ||
+				err.hint ||
+				err.code ||
+				'',
 		)
-		return /Failed to fetch|NetworkError|network|ERR_CONNECTION|ERR_HTTP2|PING_FAILED|Load failed|fetch failed|timeout|aborted/i.test(
+	}
+
+	function isNetworkError(err) {
+		var msg = errorText(err)
+		return /Failed to fetch|NetworkError|ERR_CONNECTION|ERR_HTTP2|PING_FAILED|Load failed|fetch failed|Network request failed|ERR_NAME_NOT_RESOLVED|ERR_SSL|ERR_TIMED_OUT|CONNECTION_RESET|CONNECTION_TIMED_OUT|HTTP2_PING_FAILED/i.test(
 			msg,
 		)
+	}
+
+	function isMissingApplicantReplyColumn(err) {
+		var msg = errorText(err)
+		return /applicant_reply/i.test(msg) && /does not exist|42703/i.test(msg)
 	}
 
 	function sleep(ms) {
@@ -46,13 +60,13 @@
 		})
 	}
 
-	/** Повтор при обрыве HTTP/2 (ERR_HTTP2_PING_FAILED) и сбросе соединения */
+	/** Повтор только для GET; PATCH/POST при сбое не дублируем (иначе лавина запросов). */
 	function fetchWithRetry(url, options) {
-		var delays = [0, 700, 1500]
-		var lastErr = null
+		var method = ((options && options.method) || 'GET').toUpperCase()
+		var delays =
+			method === 'GET' || method === 'HEAD' ? [0, 1200, 2800] : [0]
 		function attempt(i) {
 			return global.fetch(url, options).catch(function (err) {
-				lastErr = err
 				if (!isNetworkError(err) || i >= delays.length - 1) {
 					throw err
 				}
@@ -95,12 +109,40 @@
 	function formatAuthError(err) {
 		if (!err) return 'Неизвестная ошибка'
 		if (typeof err === 'string') return err
-		var msg = String(err.message || err.details || '')
+		var msg = errorText(err)
+		if (isMissingApplicantReplyColumn(err)) {
+			return 'В Supabase не выполнена миграция диалога. SQL Editor → вставь и запусти docs/supabase-whitelist-dialog.sql (или supabase-grants-fix.sql + dialog).'
+		}
+		if (err.code === '42501' || /permission denied for table/i.test(msg)) {
+			return 'Нет доступа к таблице в Supabase. SQL Editor → запусти docs/supabase-grants-fix.sql, затем перезайди на сайт.'
+		}
 		if (isNetworkError(err)) {
-			return 'Нет связи с базой данных. Проверь интернет, отключи VPN/блокировщик или попробуй через минуту.'
+			return (
+				'Браузер не достучался до Supabase (' +
+				(msg || 'сбой сети') +
+				'). Попробуй другой браузер, отключи AdBlock/VPN, открой isnix.ru по HTTPS. Если не поможет — проект Supabase мог быть на паузе (Dashboard → Restore).'
+			)
 		}
 		if (err.code === 'PGRST301' || /JWT|session/i.test(msg)) {
 			return 'Сессия истекла — выйди и войди снова.'
+		}
+		if (
+			/forbidden|not allowed/i.test(msg) &&
+			!/permission denied for table/i.test(msg)
+		) {
+			return 'Нет прав на это действие. Проверь, что в Supabase у аккаунта role = admin и выполнен docs/supabase-whitelist-dialog.sql.'
+		}
+		if (/application_not_found_or_not_pending/i.test(msg)) {
+			return 'Заявка уже обработана или не найдена — обнови страницу.'
+		}
+		if (/no_admin_message_yet/i.test(msg)) {
+			return 'Сначала дождись вопроса от администрации.'
+		}
+		if (/reply_too_short/i.test(msg)) {
+			return 'Ответ слишком короткий (минимум 3 символа).'
+		}
+		if (/Could not find the function|PGRST202/i.test(msg)) {
+			return 'На сервере не включён диалог по заявкам. Выполни в Supabase SQL из docs/supabase-whitelist-dialog.sql.'
 		}
 		return msg || 'Ошибка авторизации'
 	}
@@ -185,19 +227,46 @@
 		if (res.error) throw res.error
 	}
 
+	var APP_SELECT_BASE =
+		'id, minecraft_nick, call_name, age, reason, status, admin_note, created_at'
+	var APP_SELECT_WITH_REPLY = APP_SELECT_BASE + ', applicant_reply'
+	var APP_ADMIN_SELECT_BASE =
+		'id, user_id, minecraft_nick, call_name, age, reason, status, admin_note, applicant_email, created_at'
+	var APP_ADMIN_SELECT_WITH_REPLY = APP_ADMIN_SELECT_BASE + ', applicant_reply'
+
+	async function queryApplications(sb, userId, withReply) {
+		var fields = withReply ? APP_SELECT_WITH_REPLY : APP_SELECT_BASE
+		var res = await sb
+			.from('whitelist_applications')
+			.select(fields)
+			.eq('user_id', userId)
+			.order('created_at', { ascending: false })
+		if (res.error) throw res.error
+		return res.data || []
+	}
+
+	async function queryAdminApplications(sb, status, withReply) {
+		var fields = withReply ? APP_ADMIN_SELECT_WITH_REPLY : APP_ADMIN_SELECT_BASE
+		var q = sb
+			.from('whitelist_applications')
+			.select(fields)
+			.order('created_at', { ascending: false })
+		if (status) q = q.eq('status', status)
+		var res = await q
+		if (res.error) throw res.error
+		return res.data || []
+	}
+
 	async function getApplications(userId) {
 		var sb = getClient()
 		if (!sb) return []
 		return withNetworkRetry(async function () {
-			var res = await sb
-				.from('whitelist_applications')
-				.select(
-					'id, minecraft_nick, call_name, age, reason, status, admin_note, created_at',
-				)
-				.eq('user_id', userId)
-				.order('created_at', { ascending: false })
-			if (res.error) throw res.error
-			return res.data || []
+			try {
+				return await queryApplications(sb, userId, true)
+			} catch (err) {
+				if (!isMissingApplicantReplyColumn(err)) throw err
+				return await queryApplications(sb, userId, false)
+			}
 		})
 	}
 
@@ -226,17 +295,37 @@
 		var sb = getClient()
 		if (!sb) return []
 		return withNetworkRetry(async function () {
-			var q = sb
-				.from('whitelist_applications')
-				.select(
-					'id, user_id, minecraft_nick, call_name, age, reason, status, admin_note, applicant_email, created_at',
-				)
-				.order('created_at', { ascending: false })
-			if (status) q = q.eq('status', status)
-			var res = await q
-			if (res.error) throw res.error
-			return res.data || []
+			try {
+				return await queryAdminApplications(sb, status, true)
+			} catch (err) {
+				if (!isMissingApplicantReplyColumn(err)) throw err
+				return await queryAdminApplications(sb, status, false)
+			}
 		})
+	}
+
+	async function sendAdminApplicationMessage(id, adminNote) {
+		var sb = getClient()
+		if (!sb) throw new Error('Нет подключения')
+		var msg = (adminNote || '').trim()
+		if (msg.length < 3) {
+			throw new Error('Напиши сообщение игроку (минимум 3 символа)')
+		}
+		var res = await sb.rpc('send_whitelist_admin_message', {
+			p_application_id: id,
+			p_message: msg,
+		})
+		if (res.error) throw res.error
+	}
+
+	async function submitApplicantReply(id, reply) {
+		var sb = getClient()
+		if (!sb) throw new Error('Нет подключения')
+		var res = await sb.rpc('submit_whitelist_applicant_reply', {
+			p_application_id: id,
+			p_reply: (reply || '').trim(),
+		})
+		if (res.error) throw res.error
 	}
 
 	async function moderateApplication(id, status, adminNote) {
@@ -253,7 +342,14 @@
 			.from('whitelist_applications')
 			.update(payload)
 			.eq('id', id)
+			.eq('status', 'pending')
+			.select('id')
 		if (res.error) throw res.error
+		if (!res.data || !res.data.length) {
+			throw new Error(
+				'Не удалось одобрить или отклонить: нет прав (admin в Supabase) или заявка уже обработана. Обнови страницу.',
+			)
+		}
 	}
 
 	async function updatePassword(newPassword) {
@@ -362,6 +458,8 @@
 		updateProfile: updateProfile,
 		getApplications: getApplications,
 		getAdminApplications: getAdminApplications,
+		sendAdminApplicationMessage: sendAdminApplicationMessage,
+		submitApplicantReply: submitApplicantReply,
 		moderateApplication: moderateApplication,
 		submitApplication: submitApplication,
 		updatePassword: updatePassword,

@@ -16,6 +16,8 @@
 	var onSessionTimer = null
 	var dashboardLoading = false
 	var skinRequestId = 0
+	var adminActionInFlight = {}
+	var adminListDelegationBound = false
 
 	function showMsg(text, ok) {
 		if (!authMsg) return
@@ -61,9 +63,9 @@
 
 	function avatarUrl(nick, size) {
 		return (
-			'https://skins.ely.by/render/' +
+			'https://mc-heads.net/avatar/' +
 			encodeURIComponent(nick) +
-			'?slim=true&size=' +
+			'/' +
 			(size || 48)
 		)
 	}
@@ -777,11 +779,40 @@
 							: app.status === 'rejected'
 								? '❌ Отклонено'
 								: '⏳ На рассмотрении'
-					var note = app.admin_note
-						? '<p class="auth-app-note"><strong>Комментарий:</strong> ' +
+					var adminMsg = app.admin_note
+						? '<div class="auth-dialog auth-dialog--admin">' +
+							'<p class="auth-dialog__label">Сообщение от администрации</p>' +
+							'<p class="auth-dialog__body">' +
 							escapeHtml(app.admin_note) +
-							'</p>'
+							'</p></div>'
 						: ''
+					var applicantMsg = app.applicant_reply
+						? '<div class="auth-dialog auth-dialog--user">' +
+							'<p class="auth-dialog__label">Твой ответ</p>' +
+							'<p class="auth-dialog__body">' +
+							escapeHtml(app.applicant_reply) +
+							'</p></div>'
+						: ''
+					var replyForm =
+						app.status === 'pending' && app.admin_note && !app.applicant_reply
+							? '<form class="auth-app-reply-form" data-reply-app="' +
+								app.id +
+								'">' +
+								'<label class="auth-dialog__label" for="reply-' +
+								app.id +
+								'">Ответить администрации</label>' +
+								'<textarea id="reply-' +
+								app.id +
+								'" class="auth-admin-note" rows="3" maxlength="2000" required placeholder="Ответь на вопрос админа…"></textarea>' +
+								'<button type="submit" class="auth-submit">Отправить ответ</button>' +
+								'</form>'
+							: ''
+					var note =
+						app.status !== 'pending' && app.admin_note
+							? '<p class="auth-app-note"><strong>Решение:</strong> ' +
+								escapeHtml(app.admin_note) +
+								'</p>'
+							: ''
 					var timeline =
 						'<ul class="auth-muted" style="margin:0.5rem 0 0.75rem;padding-left:1.1rem">' +
 						'<li>Заявка отправлена — ' +
@@ -804,14 +835,18 @@
 						'</span>' +
 						'</div>' +
 						timeline +
-						'<p>' +
+						'<p class="auth-app-reason"><strong>Заявка:</strong> ' +
 						escapeHtml(app.reason) +
 						'</p>' +
+						adminMsg +
+						applicantMsg +
+						replyForm +
 						note +
 						'</article>'
 					)
 				})
 					.join('')
+			bindApplicantReplyForms(list)
 			syncWhitelistSectionVisibility(
 				document.getElementById('profileNick')
 					? document.getElementById('profileNick').value
@@ -878,13 +913,41 @@
 							: '') +
 						(app.age ? ' · возраст: ' + escapeHtml(app.age) : '') +
 						'</p>'
+					var applicantBlock = app.applicant_reply
+						? '<div class="auth-dialog auth-dialog--user">' +
+							'<p class="auth-dialog__label">Ответ игрока</p>' +
+							'<p class="auth-dialog__body">' +
+							escapeHtml(app.applicant_reply) +
+							'</p></div>'
+						: ''
+					var prevAdminMsg =
+						app.admin_note && app.status === 'pending'
+							? '<div class="auth-dialog auth-dialog--admin">' +
+								'<p class="auth-dialog__label">Уже отправлено игроку</p>' +
+								'<p class="auth-dialog__body">' +
+								escapeHtml(app.admin_note) +
+								'</p></div>'
+							: ''
+					var noteValue = app.admin_note ? escapeHtml(app.admin_note) : ''
 					var actions =
 						app.status === 'pending'
 							? '<div class="auth-admin-actions">' +
-								'<textarea class="auth-admin-note" data-note-for="' +
+								prevAdminMsg +
+								applicantBlock +
+								'<label class="auth-dialog__label" for="admin-note-' +
 								app.id +
-								'" rows="2" placeholder="Комментарий (необязательно)"></textarea>' +
+								'">Сообщение игроку (диалог)</label>' +
+								'<textarea id="admin-note-' +
+								app.id +
+								'" class="auth-admin-note" data-note-for="' +
+								app.id +
+								'" rows="4" placeholder="Задай вопрос: возраст, опыт, почему именно наш сервер…">' +
+								noteValue +
+								'</textarea>' +
 								'<div class="auth-admin-btns">' +
+								'<button type="button" class="auth-submit auth-submit--ghost auth-admin-message" data-id="' +
+								app.id +
+								'">Отправить сообщение</button>' +
 								'<button type="button" class="auth-submit auth-admin-approve" data-id="' +
 								app.id +
 								'">Одобрить</button>' +
@@ -892,12 +955,14 @@
 								app.id +
 								'">Отклонить</button>' +
 								'</div>' +
+								'<p class="auth-hint">Сначала «Отправить сообщение» — игрок ответит в кабинете. Потом одобри или отклони.</p>' +
 								'</div>'
 							: app.admin_note
-								? '<p class="auth-app-note">' +
+								? '<p class="auth-app-note"><strong>Комментарий:</strong> ' +
 									escapeHtml(app.admin_note) +
-									'</p>'
-								: ''
+									'</p>' +
+									(applicantBlock || '')
+								: applicantBlock || ''
 					return (
 						'<article class="auth-app-card auth-app-card--admin">' +
 						'<div class="auth-app-head">' +
@@ -920,7 +985,7 @@
 					)
 				})
 				.join('')
-			bindAdminActions(list)
+			ensureAdminListDelegation()
 		} catch (err) {
 			list.innerHTML =
 				'<p class="auth-message auth-message--err">' +
@@ -929,27 +994,105 @@
 		}
 	}
 
-	function bindAdminActions(list) {
-		list.querySelectorAll('.auth-admin-approve').forEach(function (btn) {
-			btn.addEventListener('click', function () {
-				handleModerate(btn.dataset.id, 'approved')
-			})
+	function ensureAdminListDelegation() {
+		if (adminListDelegationBound) return
+		var list = document.getElementById('adminApplicationsList')
+		if (!list) return
+		adminListDelegationBound = true
+		list.addEventListener('click', function (e) {
+			var msgBtn = e.target.closest('.auth-admin-message')
+			var okBtn = e.target.closest('.auth-admin-approve')
+			var noBtn = e.target.closest('.auth-admin-reject')
+			if (msgBtn) {
+				e.preventDefault()
+				handleAdminMessage(msgBtn.dataset.id, msgBtn)
+			} else if (okBtn) {
+				e.preventDefault()
+				handleModerate(okBtn.dataset.id, 'approved', okBtn)
+			} else if (noBtn) {
+				e.preventDefault()
+				handleModerate(noBtn.dataset.id, 'rejected', noBtn)
+			}
 		})
-		list.querySelectorAll('.auth-admin-reject').forEach(function (btn) {
-			btn.addEventListener('click', function () {
-				handleModerate(btn.dataset.id, 'rejected')
+	}
+
+	function bindApplicantReplyForms(list) {
+		if (!list) return
+		list.querySelectorAll('.auth-app-reply-form').forEach(function (form) {
+			form.addEventListener('submit', function (e) {
+				e.preventDefault()
+				var appId = form.getAttribute('data-reply-app')
+				var ta = form.querySelector('textarea')
+				handleApplicantReply(appId, ta ? ta.value : '')
 			})
 		})
 	}
 
-	async function handleModerate(id, status) {
+	async function handleApplicantReply(appId, text) {
+		try {
+			await IsnixAuth.submitApplicantReply(appId, text)
+			showMsg('Ответ отправлен. Ожидай решения администрации.', true)
+			var session = await IsnixAuth.getSession()
+			if (session) await renderApplications(session.user.id)
+		} catch (err) {
+			showMsg(IsnixAuth.formatAuthError(err), false)
+		}
+	}
+
+	function adminActionKey(kind, id) {
+		return kind + ':' + id
+	}
+
+	function setAdminActionLoading(btn, loading) {
+		if (!btn) return
+		var wrap = btn.closest('.auth-admin-actions')
+		if (!wrap) return
+		wrap.querySelectorAll('button').forEach(function (b) {
+			b.disabled = loading
+		})
+	}
+
+	async function handleAdminMessage(id, btn) {
+		var key = adminActionKey('msg', id)
+		if (adminActionInFlight[key]) {
+			showMsg('Уже отправляется… подожди.', false)
+			return
+		}
 		var noteEl = document.querySelector('[data-note-for="' + id + '"]')
 		var note = noteEl ? noteEl.value : ''
+		adminActionInFlight[key] = true
+		setAdminActionLoading(btn, true)
+		try {
+			await IsnixAuth.sendAdminApplicationMessage(id, note)
+			showMsg(
+				'Сообщение отправлено. Игрок увидит его в разделе «Мои заявки».',
+				true,
+			)
+			await renderAdminApplications()
+		} catch (err) {
+			showMsg(IsnixAuth.formatAuthError(err), false)
+		} finally {
+			delete adminActionInFlight[key]
+			setAdminActionLoading(btn, false)
+		}
+	}
+
+	async function handleModerate(id, status, btn) {
+		var key = adminActionKey('mod', id)
+		if (adminActionInFlight[key]) {
+			showMsg('Заявка уже обрабатывается… не жми кнопку повторно.', false)
+			return
+		}
+		var noteEl = document.querySelector('[data-note-for="' + id + '"]')
+		var note = noteEl ? noteEl.value : ''
+		adminActionInFlight[key] = true
+		setAdminActionLoading(btn, true)
+		showMsg('Отправка… не закрывай страницу.', true)
 		try {
 			await IsnixAuth.moderateApplication(id, status, note)
 			showMsg(
 				status === 'approved'
-					? 'Заявка одобрена. Добавь ник на сервер.'
+					? 'Заявка одобрена. Добавь ник в whitelist на сервере.'
 					: 'Заявка отклонена.',
 				true,
 			)
@@ -959,6 +1102,9 @@
 			if (session) await renderApplications(session.user.id)
 		} catch (err) {
 			showMsg(IsnixAuth.formatAuthError(err), false)
+		} finally {
+			delete adminActionInFlight[key]
+			setAdminActionLoading(btn, false)
 		}
 	}
 
@@ -1022,7 +1168,14 @@
 
 			if (profileErr && appsErr) {
 				showConnectionNotice(
-					'Нет связи с Supabase. Проверь интернет или подожди (у Supabase бывают техработы).',
+					'Профиль: ' +
+						IsnixAuth.formatAuthError(profileErr) +
+						' · Заявки: ' +
+						IsnixAuth.formatAuthError(appsErr),
+				)
+			} else if (appsErr && !profileErr) {
+				showConnectionNotice(
+					'Заявки: ' + IsnixAuth.formatAuthError(appsErr),
 				)
 			}
 
@@ -1095,6 +1248,8 @@
 				renderAdminApplications()
 			})
 		})
+
+		ensureAdminListDelegation()
 
 		var loginForm = document.getElementById('loginForm')
 		if (loginForm) {
