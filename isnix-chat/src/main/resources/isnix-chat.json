@@ -3,5 +3,8 @@
 	"global_prefix": "!",
 	"local_tag": "[рядом]",
 	"global_tag": "[все]",
-	"notify_when_alone": true
+	"notify_when_alone": true,
+	"global_sound": true,
+	"global_sound_volume": 0.35,
+	"global_sound_pitch": 1.25
 }

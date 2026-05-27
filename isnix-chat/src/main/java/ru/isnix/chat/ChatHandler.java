@@ -3,6 +3,8 @@ package ru.isnix.chat;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.network.message.SignedMessage;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.Vec3d;
@@ -63,6 +65,9 @@ public final class ChatHandler {
 
 		for (ServerPlayerEntity target : recipients) {
 			target.sendMessage(line, false);
+			if (global) {
+				playGlobalSound(target, cfg);
+			}
 		}
 
 		IsnixChatMod.LOGGER.info("[chat] {}", line.getString());
@@ -84,6 +89,18 @@ public final class ChatHandler {
 			}
 		}
 		return out;
+	}
+
+	/** Короткий звук подбора опыта — только у получателя глобального сообщения. */
+	private static void playGlobalSound(ServerPlayerEntity player, ChatConfig cfg) {
+		if (!cfg.globalSound) {
+			return;
+		}
+		player.playSoundToPlayer(
+				SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP,
+				SoundCategory.PLAYERS,
+				cfg.globalSoundVolume,
+				cfg.globalSoundPitch);
 	}
 
 	private static Text buildLine(

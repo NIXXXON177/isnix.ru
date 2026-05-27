@@ -1,5 +1,6 @@
 package ru.isnix.chat;
 
+import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import net.fabricmc.loader.api.FabricLoader;
@@ -13,7 +14,10 @@ import java.nio.file.Path;
 
 public final class ChatConfig {
 	private static final Logger LOGGER = LoggerFactory.getLogger(IsnixChatMod.MOD_ID);
-	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
+	private static final Gson GSON = new GsonBuilder()
+			.setPrettyPrinting()
+			.setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
+			.create();
 	private static ChatConfig INSTANCE = new ChatConfig();
 
 	public int localRadius = 80;
@@ -21,6 +25,9 @@ public final class ChatConfig {
 	public String localTag = "[рядом]";
 	public String globalTag = "[все]";
 	public boolean notifyWhenAlone = true;
+	public boolean globalSound = true;
+	public float globalSoundVolume = 0.35f;
+	public float globalSoundPitch = 1.25f;
 
 	public static ChatConfig get() {
 		return INSTANCE;
@@ -73,6 +80,18 @@ public final class ChatConfig {
 		}
 		if (globalTag == null) {
 			globalTag = "[все]";
+		}
+		if (globalSoundVolume < 0.05f) {
+			globalSoundVolume = 0.05f;
+		}
+		if (globalSoundVolume > 1.0f) {
+			globalSoundVolume = 1.0f;
+		}
+		if (globalSoundPitch < 0.5f) {
+			globalSoundPitch = 0.5f;
+		}
+		if (globalSoundPitch > 2.0f) {
+			globalSoundPitch = 2.0f;
 		}
 	}
 }
