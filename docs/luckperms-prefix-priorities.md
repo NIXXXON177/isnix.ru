@@ -71,7 +71,7 @@ lp user SK_Joker meta setprefix 50 "&4&l[DEMON] &r"
 
 lp user kimshanin121112 parent set default
 lp user kimshanin121112 meta clear prefix
-lp user kimshanin121112 meta setprefix 50 "&c[YouTube] &r"
+lp user kimshanin121112 meta setprefix 50 "&c&l[YouTube] &r"
 
 lp user VITALISDI parent set default
 lp user VITALISDI meta clear prefix
@@ -147,7 +147,7 @@ lp user SK_Joker info
 | **[Адвокат]** | `"&6&l[Адвокат] &r"` — оранжевый, жирный |
 | [Легенда] | `"&6&l[Легенда] &r"` |
 | [DEMON] | `"&4&l[DEMON] &r"` |
-| [YouTube] | `"&c[YouTube] &r"` |
+| **[YouTube]** | `"&c&l[YouTube] &r"` — красный, жирный |
 | [ПВП] | `"&c[ПВП] &r"` |
 | [Механик] | `"&b[Механик] &r"` |
 
