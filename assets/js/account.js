@@ -14,6 +14,7 @@
 	var statusRefreshTimer = null
 	var onSessionTimer = null
 	var dashboardLoading = false
+	var skinRequestId = 0
 
 	function showMsg(text, ok) {
 		if (!authMsg) return
@@ -74,6 +75,53 @@
 			fallback.hidden = false
 			fallback.textContent = v ? v.charAt(0).toUpperCase() : '?'
 		}
+	}
+
+	function testImageUrl(url, timeoutMs) {
+		return new Promise(function (resolve, reject) {
+			var done = false
+			var img = new Image()
+			var timer = setTimeout(function () {
+				if (done) return
+				done = true
+				reject(new Error('timeout'))
+			}, timeoutMs || 3000)
+			img.onload = function () {
+				if (done) return
+				done = true
+				clearTimeout(timer)
+				resolve(url)
+			}
+			img.onerror = function () {
+				if (done) return
+				done = true
+				clearTimeout(timer)
+				reject(new Error('image error'))
+			}
+			img.src = url
+		})
+	}
+
+	function getSkinSources(nick) {
+		var safe = encodeURIComponent(nick)
+		return [
+			'https://mc-heads.net/skin/' + safe,
+			'https://skinsystem.ely.by/skins/' + safe,
+			'https://ely.by/skins/' + safe + '.png',
+		]
+	}
+
+	async function resolveSkinSource(nick) {
+		var sources = getSkinSources(nick)
+		for (var i = 0; i < sources.length; i++) {
+			try {
+				await testImageUrl(sources[i], 3200)
+				return sources[i]
+			} catch (_e) {
+				/* try next source */
+			}
+		}
+		return null
 	}
 
 	function setLoading(form, loading) {
@@ -262,7 +310,7 @@
 		}
 	}
 
-	function updateSkinViewer(nick) {
+	async function updateSkinViewer(nick) {
 		var canvas = document.getElementById('profileSkinCanvas')
 		var placeholder = document.getElementById('profileSkinPlaceholder')
 		if (!canvas || !placeholder || typeof skinview3d === 'undefined') {
@@ -275,24 +323,32 @@
 			placeholder.hidden = false
 			return
 		}
+		var reqId = ++skinRequestId
+		placeholder.textContent = 'Загрузка скина…'
 		placeholder.hidden = true
 		canvas.hidden = false
 		disposeSkinViewer()
 		try {
+			var skinUrl = await resolveSkinSource(nick)
+			if (reqId !== skinRequestId) return
+			if (!skinUrl) {
+				throw new Error('skin source unavailable')
+			}
 			skinViewer = new skinview3d.SkinViewer({
 				canvas: canvas,
 				width: 220,
 				height: 300,
-				skin: 'https://mc-heads.net/skin/' + encodeURIComponent(nick),
+				skin: skinUrl,
 			})
 			skinViewer.controls.enableRotate = true
 			skinViewer.controls.enableZoom = false
 			skinViewer.animation = new skinview3d.WalkingAnimation()
 			skinViewer.camera.position.y = 8
 		} catch (_e) {
+			if (reqId !== skinRequestId) return
 			canvas.hidden = true
 			placeholder.hidden = false
-			placeholder.textContent = 'Не удалось загрузить скин'
+			placeholder.textContent = 'Не удалось загрузить скин (включая Ely.by)'
 		}
 	}
 
