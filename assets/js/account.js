@@ -108,19 +108,45 @@
 		return res.blob()
 	}
 
-	async function loadSkinOnViewer(viewer, url) {
+	function loadSkinImageElement(url) {
+		return new Promise(function (resolve, reject) {
+			var img = new Image()
+			img.crossOrigin = 'anonymous'
+			img.onload = function () {
+				resolve(img)
+			}
+			img.onerror = function () {
+				reject(new Error('skin image load failed'))
+			}
+			img.src = url
+		})
+	}
+
+	function resetWebGLPixelStore(viewer) {
 		try {
-			await viewer.loadSkin(url)
-			return
+			var gl = viewer.renderer.getContext()
+			gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false)
+			gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, false)
+		} catch (_e) {
+			/* ignore */
+		}
+	}
+
+	async function loadSkinOnViewer(viewer, url) {
+		var img
+		try {
+			img = await loadSkinImageElement(url)
 		} catch (_direct) {
 			var blob = await fetchSkinForViewer(url)
 			var objectUrl = URL.createObjectURL(blob)
 			try {
-				await viewer.loadSkin(objectUrl)
+				img = await loadSkinImageElement(objectUrl)
 			} finally {
 				URL.revokeObjectURL(objectUrl)
 			}
 		}
+		resetWebGLPixelStore(viewer)
+		await viewer.loadSkin(img)
 	}
 
 	function setLoading(form, loading) {
@@ -433,7 +459,12 @@
 				width: 220,
 				height: 300,
 				background: 0x0a0f0a,
+				pixelRatio: 1,
 			})
+			if (skinViewer.fxaaPass) {
+				skinViewer.fxaaPass.enabled = false
+			}
+			resetWebGLPixelStore(skinViewer)
 			var sources = getSkinSources(nick)
 			var loaded = false
 			for (var si = 0; si < sources.length; si++) {
