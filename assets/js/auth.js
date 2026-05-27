@@ -234,7 +234,7 @@
 			})
 			if (res.error) {
 				if (
-					res.code === 'PGRST202' ||
+					res.error.code === 'PGRST202' ||
 					/PGRST202|site_presence_heartbeat/i.test(res.error.message || '')
 				) {
 					return false
