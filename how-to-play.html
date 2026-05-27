@@ -1,291 +1,392 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ru">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Как начать играть — ISTHISNIXXXON</title>
-<meta name="description" content="ElyPrismLauncher, сборка Fabric 1.21.1 и подключение к серверу ISTHISNIXXXON.">
-<meta name="theme-color" content="#0a0f0a">
-<link rel="canonical" href="https://isnix.ru/how-to-play.html">
-<link rel="icon" href="favicon.svg" type="image/svg+xml">
-<link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Raleway:wght@400;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/components.css">
-<style>
-:root{
-  --bg:#0a0f0a;--surface:#0f160f;--surface2:#141c14;--green:#4ade80;--green-dark:#166534;
-  --muted:#7a9a7a;--text:#e8f5e8;--text-soft:#9ab89a;--border:#1a2e1a;--border2:#243824;
-  --radius-md:12px;--radius-lg:18px;--shadow-card:0 12px 40px rgba(0,0,0,.35);
-}
-*{margin:0;padding:0;box-sizing:border-box}
-html{font-size:100%}
-@media(min-width:901px){html{font-size:107%}}
-body{
-  font-family:"Raleway",sans-serif;
-  background:
-    radial-gradient(circle at 12% -5%,rgba(34,197,94,.12) 0%,transparent 32%),
-    radial-gradient(circle at 90% 8%,rgba(74,222,128,.08) 0%,transparent 26%),var(--bg);
-  color:#e8f5e8;
-  overflow-x:hidden;
-  min-height:100vh;
-}
-::-webkit-scrollbar{width:4px;height:4px}
-::-webkit-scrollbar-track{background:var(--bg)}
-::-webkit-scrollbar-thumb{background:var(--green-dark)}
-nav{
-  position:fixed;top:0;left:0;right:0;z-index:100;
-  background:rgba(10,15,10,.96);backdrop-filter:blur(16px);
-  border-bottom:1px solid var(--border);padding:0 3rem;height:64px;
-  display:flex;align-items:center;justify-content:space-between;
-}
-.nav-logo{font-family:"Cinzel",serif;font-size:1rem;font-weight:900;color:#e8f5e8;letter-spacing:.08em;text-decoration:none}
-.nav-logo span{color:var(--green)}
-.nav-links{display:flex;gap:2rem;list-style:none}
-.nav-links a{text-decoration:none;color:var(--muted);font-size:.72rem;font-weight:600;letter-spacing:.15em;text-transform:uppercase;transition:color .2s}
-.nav-links a:hover,.nav-links a.active{color:var(--green)}
-.nav-btn{
-  background:var(--green-dark);color:var(--green);border:1px solid var(--green-dark);
-  padding:.5rem 1.2rem;font-family:"Raleway",sans-serif;font-size:.72rem;font-weight:700;
-  letter-spacing:.08em;text-transform:uppercase;text-decoration:none;border-radius:8px;
-  transition:background .2s,color .2s,box-shadow .2s,transform .2s;
-}
-.nav-btn:hover{background:var(--green);color:var(--bg);transform:translateY(-1px);box-shadow:0 0 24px rgba(74,222,128,.12)}
-a:focus-visible,button:focus-visible{outline:2px solid var(--green);outline-offset:3px}
-@media(max-width:900px){
-  nav{padding:0 1.5rem}
-  .nav-links{display:none}
-}
-</style>
-</head>
-<body>
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Как начать играть — ISTHISNIXXXON</title>
+		<meta
+			name="description"
+			content="ElyPrismLauncher, сборка Fabric 1.21.1 и подключение к серверу ISTHISNIXXXON."
+		/>
+		<meta name="theme-color" content="#0a0f0a" />
+		<link rel="canonical" href="https://isnix.ru/how-to-play.html" />
+		<link rel="icon" href="favicon.svg" type="image/svg+xml" />
+		<link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Raleway:wght@400;600;700&display=swap"
+			rel="stylesheet"
+		/>
+		<link rel="stylesheet" href="assets/css/main.css" />
+		<link rel="stylesheet" href="assets/css/components.css" />
+		<link rel="stylesheet" href="assets/css/how-to-play.css" />
+	</head>
+	<body class="htp-page">
+		<header class="htp-header">
+			<div class="htp-header__bar">
+				<a href="index.html" class="htp-header__logo">ISTHIS<span>NIXXXON</span></a>
+				<ul class="htp-header__nav">
+					<li><a href="index.html#about">О сервере</a></li>
+					<li><a href="index.html#download">Скачать</a></li>
+					<li><a href="index.html#shop">Магазин</a></li>
+					<li><a href="index.html#rules">Правила</a></li>
+					<li><a href="index.html#join-server">На сервер</a></li>
+					<li><a href="index.html#links">Контакты</a></li>
+					<li>
+						<a href="how-to-play.html" class="is-active" aria-current="page"
+							>Как играть</a
+						>
+					</li>
+				</ul>
+				<a
+					href="https://vk.com/isthisnixxxon"
+					target="_blank"
+					rel="noopener noreferrer"
+					class="htp-header__cta"
+					>Вайтлист</a
+				>
+			</div>
+		</header>
 
-<nav>
-  <a href="index.html" class="nav-logo">ISTHIS<span>NIXXXON</span></a>
-  <ul class="nav-links">
-    <li><a href="index.html#about">О сервере</a></li>
-    <li><a href="index.html#download">Скачать</a></li>
-    <li><a href="index.html#shop">Магазин</a></li>
-    <li><a href="index.html#rules">Правила</a></li>
-    <li><a href="index.html#join-server">На сервер</a></li>
-    <li><a href="index.html#links">Контакты</a></li>
-    <li><a href="how-to-play.html" class="active">Как играть</a></li>
-  </ul>
-  <a href="https://vk.com/isthisnixxxon" target="_blank" rel="noopener noreferrer" class="nav-btn">Вайтлист</a>
-</nav>
+		<main class="htp-main">
+			<header class="htp-hero">
+				<p class="htp-hero__eyebrow">Инструкция</p>
+				<h1 class="htp-hero__title">Как начать играть на ISTHISNIXXXON</h1>
+				<p class="htp-hero__lead">
+					Сервер на <strong>Fabric 1.21.1</strong>. Рекомендуем только
+					<strong>ElyPrismLauncher</strong> и готовую сборку с сайта.
+				</p>
+				<div class="htp-hero__actions">
+					<a
+						href="downloads/ISTHISNIXXXONmods.zip"
+						download="ISTHISNIXXXONmods.zip"
+						class="htp-btn htp-btn--primary"
+						>Скачать сборку (~35 МБ)</a
+					>
+					<a
+						href="https://github.com/ElyPrismLauncher/Launcher/releases"
+						target="_blank"
+						rel="noopener noreferrer"
+						class="htp-btn htp-btn--ghost"
+						>ElyPrismLauncher</a
+					>
+				</div>
+			</header>
 
-<main class="mx-auto max-w-[52rem] px-4 pb-20 pt-[5.85rem] sm:px-6 lg:max-w-[56rem] lg:pb-28">
-  <header class="text-center lg:text-left">
-    <p class="mb-2 text-[0.62rem] font-bold uppercase tracking-[0.35em] text-emerald-400/90">Инструкция</p>
-    <h1 class="font-['Cinzel',serif] text-balance text-[clamp(1.6rem,4.8vw,2.65rem)] font-bold leading-[1.12] text-white">Как начать играть на ISTHISNIXXXON</h1>
-    <p class="mx-auto mt-4 max-w-xl text-[0.9rem] leading-relaxed text-neutral-400 lg:mx-0">
-      Сервер на <strong class="font-semibold text-emerald-200/95">Fabric 1.21.1</strong>.
-      Рекомендуем только <strong class="font-semibold text-white">ElyPrismLauncher</strong> и готовую сборку с сайта.
-    </p>
-    <div class="mt-6 flex flex-wrap justify-center gap-3 lg:justify-start">
-      <a href="downloads/ISTHISNIXXXONmods.zip" download="ISTHISNIXXXONmods.zip"
-         class="inline-flex min-h-[2.75rem] items-center rounded-xl bg-gradient-to-r from-emerald-500 via-green-600 to-green-800 px-5 text-[0.72rem] font-bold uppercase tracking-wider text-neutral-950 shadow-[0_8px_28px_-6px_rgba(34,197,94,0.4)] transition hover:brightness-105">
-        Скачать сборку (~35 МБ)
-      </a>
-      <a href="https://github.com/ElyPrismLauncher/Launcher/releases" target="_blank" rel="noopener noreferrer"
-         class="inline-flex min-h-[2.75rem] items-center rounded-xl border border-emerald-800/55 bg-emerald-950/25 px-5 text-[0.72rem] font-bold uppercase tracking-wider text-emerald-400 transition hover:border-emerald-500/65 hover:bg-emerald-950/45">
-        ElyPrismLauncher
-      </a>
-    </div>
-  </header>
+			<div class="htp-steps">
+				<article class="htp-step">
+					<div class="htp-step__icon" aria-hidden="true">🚀</div>
+					<div class="htp-step__body">
+						<span class="htp-step__badge">Шаг 1</span>
+						<h2 class="htp-step__title">Установи ElyPrismLauncher</h2>
+						<ul class="htp-step__list">
+							<li>
+								Скачай лаунчер с
+								<a
+									href="https://github.com/ElyPrismLauncher/Launcher/releases"
+									target="_blank"
+									rel="noopener noreferrer"
+									>GitHub Releases</a
+								>. На Windows, если не уверен — бери
+								<strong>ElyPrismLauncher-Windows-MSVC-Setup</strong> (последняя
+								версия).
+							</li>
+							<li>
+								Установи и запусти. Войди через свой аккаунт Minecraft
+								(Microsoft) или офлайн-ник — как настроишь в лаунчере.
+							</li>
+							<li>
+								Другие лаунчеры мы не рекомендуем — на сервере тестируем только
+								связку <strong>ElyPrismLauncher + Fabric 1.21.1</strong>.
+							</li>
+						</ul>
+					</div>
+				</article>
 
-  <div class="mt-12 flex flex-col gap-8 lg:gap-10">
+				<article class="htp-step">
+					<div class="htp-step__icon" aria-hidden="true">📦</div>
+					<div class="htp-step__body">
+						<span class="htp-step__badge">Шаг 2</span>
+						<h2 class="htp-step__title">Скачай и установи сборку сервера</h2>
+						<p class="htp-step__text">
+							На главной в разделе
+							<a href="index.html#download">«Скачать»</a> или по кнопке выше —
+							архив <strong>ISTHISNIXXXONmods.zip</strong> с модами сервера.
+						</p>
+						<ul class="htp-step__list">
+							<li>
+								<strong>Вариант А (проще):</strong> в ElyPrismLauncher нажми
+								«Добавить» → «Импортировать из ZIP» и выбери скачанный архив.
+								Лаунчер создаст инстанс с нужной версией и модами.
+							</li>
+							<li>
+								<strong>Вариант Б:</strong> создай инстанс вручную — Minecraft
+								<strong>1.21.1</strong>, загрузчик <strong>Fabric</strong>.
+								Распакуй ZIP и скопируй папку <code>mods</code> (и при
+								необходимости другие файлы из архива) в папку этого инстанса.
+							</li>
+						</ul>
+						<p class="htp-step__tip">
+							<em>💡</em> Путь к папке инстанса: правый клик по инстансу в
+							лаунчере → «Папка инстанса» / «Открыть папку модов».
+						</p>
+					</div>
+				</article>
 
-    <article class="group relative overflow-hidden rounded-[1.5rem] border border-emerald-900/50 bg-gradient-to-br from-neutral-950/95 via-[#0f1710]/95 to-[#080a08]/98 p-6 shadow-[0_28px_64px_-20px_rgba(34,197,94,0.12)] sm:p-8">
-      <div class="absolute right-6 top-6 flex h-12 w-12 items-center justify-center rounded-xl border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 text-xl" aria-hidden="true">🚀</div>
-      <div class="pr-14 sm:pr-16">
-        <div class="mb-4 inline-flex items-center gap-2 rounded-full border border-emerald-600/40 bg-emerald-500/12 px-3 py-1">
-          <span class="font-['Cinzel',serif] text-[0.7rem] font-bold text-emerald-300">Шаг 1</span>
-        </div>
-        <h2 class="font-['Cinzel',serif] text-xl font-bold text-white md:text-[1.35rem]">Установи ElyPrismLauncher</h2>
-        <ul class="mt-5 space-y-3 text-[0.9rem] leading-relaxed text-neutral-300 [&_a]:text-emerald-400 [&_a]:underline-offset-2 hover:[&_a]:text-emerald-300">
-          <li class="flex gap-3">
-            <span class="mt-[0.35rem] shrink-0 text-emerald-500/85">●</span>
-            <span>Скачай лаунчер с
-              <a href="https://github.com/ElyPrismLauncher/Launcher/releases" target="_blank" rel="noopener noreferrer" class="underline">GitHub Releases</a>.
-              На Windows, если не уверен — бери <strong class="font-semibold text-white">ElyPrismLauncher-Windows-MSVC-Setup</strong> (последняя версия).</span>
-          </li>
-          <li class="flex gap-3">
-            <span class="mt-[0.35rem] shrink-0 text-emerald-500/85">●</span>
-            <span>Установи и запусти. Войди через свой аккаунт Minecraft (Microsoft) или офлайн-ник — как настроишь в лаунчере.</span>
-          </li>
-          <li class="flex gap-3">
-            <span class="mt-[0.35rem] shrink-0 text-emerald-500/85">●</span>
-            <span>Другие лаунчеры мы не рекомендуем — на сервере тестируем только связку <strong class="font-semibold text-white">ElyPrismLauncher + Fabric 1.21.1</strong>.</span>
-          </li>
-        </ul>
-      </div>
-    </article>
+				<article class="htp-step">
+					<div class="htp-step__icon" aria-hidden="true">🔊</div>
+					<div class="htp-step__body">
+						<span class="htp-step__badge">Шаг 3</span>
+						<h2 class="htp-step__title">Проверь моды и запусти игру</h2>
+						<p class="htp-step__text">
+							В сборке уже есть обязательный
+							<strong>Simple Voice Chat</strong> и остальные моды сервера. Если
+							ставишь вручную — убедись, что в папке <code>mods</code> лежат
+							jar-файлы для <strong>Fabric 1.21.1</strong>.
+						</p>
+						<ul class="htp-step__list">
+							<li>
+								В лаунчере выбери инстанс ISTHISNIXXXON / Fabric 1.21.1 и нажми
+								<strong>«Играть»</strong>.
+							</li>
+							<li>
+								Добавить мод отдельно: в ElyPrismLauncher открой инстанс →
+								«Моды» → Modrinth / CurseForge, версия <strong>1.21.1</strong>,
+								загрузчик <strong>Fabric</strong>.
+							</li>
+						</ul>
+					</div>
+				</article>
 
-    <article class="relative overflow-hidden rounded-[1.5rem] border border-emerald-900/55 bg-gradient-to-br from-[#0f1710]/95 via-neutral-950/95 to-[#0a1210]/98 p-6 shadow-[0_28px_60px_-18px_rgba(34,197,94,0.22)] sm:p-8">
-      <div class="absolute right-6 top-6 flex h-12 w-12 items-center justify-center rounded-xl border border-emerald-500/40 bg-emerald-500/14 text-emerald-400 text-xl" aria-hidden="true">📦</div>
-      <div class="pr-14 sm:pr-16">
-        <div class="mb-4 inline-flex items-center gap-2 rounded-full border border-emerald-700/38 bg-green-950/55 px-3 py-1">
-          <span class="font-['Cinzel',serif] text-[0.7rem] font-bold text-emerald-200">Шаг 2</span>
-        </div>
-        <h2 class="font-['Cinzel',serif] text-xl font-bold text-white md:text-[1.35rem]">Скачай и установи сборку сервера</h2>
-        <p class="mt-4 text-[0.9rem] leading-relaxed text-neutral-400">
-          На главной в разделе <a href="index.html#download" class="font-semibold text-emerald-400 underline underline-offset-2 hover:text-emerald-300">«Скачать»</a>
-          или по кнопке выше — архив <strong class="font-semibold text-emerald-200/90">ISTHISNIXXXONmods.zip</strong> с модами сервера.
-        </p>
-        <ul class="mt-5 space-y-3 text-[0.9rem] leading-relaxed text-neutral-300">
-          <li class="flex gap-3">
-            <span class="mt-[0.35rem] shrink-0 text-emerald-500/85">●</span>
-            <span><strong class="font-semibold text-white">Вариант А (проще):</strong> в ElyPrismLauncher нажми «Добавить» → «Импортировать из ZIP» и выбери скачанный архив. Лаунчер создаст инстанс с нужной версией и модами.</span>
-          </li>
-          <li class="flex gap-3">
-            <span class="mt-[0.35rem] shrink-0 text-emerald-500/85">●</span>
-            <span><strong class="font-semibold text-white">Вариант Б:</strong> создай инстанс вручную — Minecraft <strong class="font-semibold text-emerald-200/95">1.21.1</strong>, загрузчик <strong class="font-semibold text-white">Fabric</strong>. Распакуй ZIP и скопируй папку <code class="rounded bg-neutral-950/85 px-1.5 py-0.5 font-mono text-[0.78rem] text-emerald-400/95">mods</code> (и при необходимости другие файлы из архива) в папку этого инстанса.</span>
-          </li>
-        </ul>
-        <div class="mt-5 rounded-xl border border-dashed border-emerald-800/42 bg-black/25 px-4 py-3 text-[0.82rem] leading-relaxed text-neutral-400">
-          <span class="text-emerald-200/95">💡</span>
-          Путь к папке инстанса: правый клик по инстансу в лаунчере → «Папка инстанса» / «Открыть папку модов».
-        </div>
-      </div>
-    </article>
+				<article class="htp-step">
+					<div class="htp-step__icon" aria-hidden="true">🎮</div>
+					<div class="htp-step__body">
+						<span class="htp-step__badge">Шаг 4</span>
+						<h2 class="htp-step__title">Заходи на сервер</h2>
+						<ul class="htp-step__list">
+							<li>
+								<strong>IP:</strong>
+								<span class="htp-step__ip">mc.isnix.ru</span>
+							</li>
+							<li>
+								Подай заявку в вайтлист в
+								<a
+									href="https://vk.com/isthisnixxxon"
+									target="_blank"
+									rel="noopener noreferrer"
+									>сообществе ВКонтакте</a
+								>
+								(ник, как обращаться, зачем хочешь на сервер), через
+								<a href="account.html">личный кабинет</a> на сайте или раздел
+								<a href="index.html#join-server">«На сервер»</a> на главной.
+							</li>
+							<li>
+								Заходи только после одобрения вайтлиста — иначе сервер не
+								пустит.
+							</li>
+						</ul>
+					</div>
+				</article>
+			</div>
 
-    <article class="relative overflow-hidden rounded-[1.5rem] border border-emerald-800/45 bg-gradient-to-br from-neutral-950/95 via-[#0d1712]/92 to-[#0f1412]/96 p-6 shadow-[0_28px_64px_-20px_rgba(74,222,128,0.1)] sm:p-8">
-      <div class="absolute right-6 top-6 flex h-12 w-12 items-center justify-center rounded-xl border border-green-600/35 bg-green-600/15 text-green-400 text-xl" aria-hidden="true">🔊</div>
-      <div class="pr-14 sm:pr-16">
-        <div class="mb-4 inline-flex items-center gap-2 rounded-full border border-green-600/35 bg-green-600/10 px-3 py-1">
-          <span class="font-['Cinzel',serif] text-[0.7rem] font-bold text-green-300">Шаг 3</span>
-        </div>
-        <h2 class="font-['Cinzel',serif] text-xl font-bold text-white md:text-[1.35rem]">Проверь моды и запусти игру</h2>
-        <p class="mt-4 text-[0.9rem] leading-relaxed text-neutral-400">
-          В сборке уже есть обязательный <strong class="font-semibold text-emerald-200/90">Simple Voice Chat</strong> и остальные моды сервера.
-          Если ставишь вручную — убедись, что в папке <code class="rounded bg-neutral-950/85 px-1.5 py-0.5 font-mono text-[0.78rem] text-emerald-400/95">mods</code> лежат jar-файлы для <strong class="font-semibold text-white">Fabric 1.21.1</strong>.
-        </p>
-        <ul class="mt-5 space-y-3 text-[0.9rem] leading-relaxed text-neutral-300">
-          <li class="flex gap-3">
-            <span class="mt-[0.35rem] shrink-0 text-emerald-500/85">●</span>
-            <span>В лаунчере выбери инстанс ISTHISNIXXXON / Fabric 1.21.1 и нажми <strong class="font-semibold text-white">«Играть»</strong>.</span>
-          </li>
-          <li class="flex gap-3">
-            <span class="mt-[0.35rem] shrink-0 text-emerald-500/85">●</span>
-            <span>Добавить мод отдельно: в ElyPrismLauncher открой инстанс → «Моды» → Modrinth / CurseForge, версия <strong class="font-semibold text-white">1.21.1</strong>, загрузчик <strong class="font-semibold text-white">Fabric</strong>.</span>
-          </li>
-        </ul>
-      </div>
-    </article>
+			<p class="htp-bottom">
+				<a href="index.html">На главную</a><br />
+				ElyPrismLauncher · Fabric 1.21.1 · сборка с сайта · mc.isnix.ru
+			</p>
+		</main>
 
-    <article class="relative overflow-hidden rounded-[1.5rem] border border-emerald-800/45 bg-gradient-to-br from-neutral-950/95 via-[#0d1712]/92 to-[#0f1412]/96 p-6 shadow-[0_28px_64px_-20px_rgba(74,222,128,0.1)] sm:p-8">
-      <div class="absolute right-6 top-6 flex h-12 w-12 items-center justify-center rounded-xl border border-green-600/35 bg-green-600/15 text-green-400 text-xl" aria-hidden="true">🎮</div>
-      <div class="pr-14 sm:pr-16">
-        <div class="mb-4 inline-flex items-center gap-2 rounded-full border border-green-600/35 bg-green-600/10 px-3 py-1">
-          <span class="font-['Cinzel',serif] text-[0.7rem] font-bold text-green-300">Шаг 4</span>
-        </div>
-        <h2 class="font-['Cinzel',serif] text-xl font-bold text-white md:text-[1.35rem]">Заходи на сервер</h2>
-        <ul class="mt-5 space-y-4 text-[0.9rem] leading-relaxed text-neutral-300">
-          <li class="flex flex-wrap items-center gap-x-2 gap-y-1">
-            <span class="shrink-0 text-emerald-500/85">●</span>
-            <span><strong class="font-semibold text-white">IP:</strong>
-              <span class="font-mono font-bold tracking-wide text-emerald-400">mc.isnix.ru</span></span>
-          </li>
-          <li class="flex gap-3">
-            <span class="mt-[0.35rem] shrink-0 text-emerald-500/85">●</span>
-            <span>Подай заявку в вайтлист в <a href="https://vk.com/isthisnixxxon" target="_blank" rel="noopener noreferrer" class="font-semibold text-emerald-400 underline underline-offset-2 hover:text-emerald-300">сообществе ВКонтакте</a> (ник, как обращаться, зачем хочешь на сервер) или через раздел
-              <a href="index.html#join-server" class="font-semibold text-emerald-400 underline underline-offset-2 hover:text-emerald-300">«На сервер»</a> на главной.</span>
-          </li>
-          <li class="flex gap-3">
-            <span class="mt-[0.35rem] shrink-0 text-emerald-500/85">●</span>
-            <span>Заходи только после одобрения вайтлиста — иначе сервер не пустит.</span>
-          </li>
-        </ul>
-      </div>
-    </article>
-  </div>
+		<footer class="site-footer">
+			<div class="site-footer__glow" aria-hidden="true"></div>
+			<div class="site-footer__inner">
+				<div class="site-footer__top">
+					<div class="site-footer__brand">
+						<a href="index.html" class="site-footer__logo" id="footerLogo"
+							>ISTHIS<span>NIXXXON</span></a
+						>
+						<p class="site-footer__tagline">
+							Уютный ванильный Minecraft-сервер без pay-to-win. Честная игра,
+							живое комьюнити и настоящий Minecraft.
+						</p>
+						<div
+							class="site-footer__ip"
+							tabindex="0"
+							role="button"
+							aria-label="Скопировать IP сервера"
+						>
+							<div>
+								<div class="ip-lbl">Java Edition</div>
+								<div class="ip-val">mc.isnix.ru</div>
+							</div>
+							<span class="ip-hint">Нажми, чтобы скопировать</span>
+						</div>
+						<p class="site-footer__meta">Fabric 1.21.1 · Vanilla+ · Whitelist</p>
+					</div>
+					<nav class="site-footer__col" aria-label="Разделы сайта">
+						<h3 class="site-footer__heading">Сайт</h3>
+						<ul class="site-footer__links">
+							<li><a href="index.html#about">О сервере</a></li>
+							<li><a href="index.html#download">Скачать сборку</a></li>
+							<li><a href="how-to-play.html">Как играть</a></li>
+							<li><a href="account.html">Аккаунт</a></li>
+							<li><a href="index.html#shop">Магазин</a></li>
+							<li><a href="index.html#rules">Правила</a></li>
+							<li><a href="index.html#join-server">Заявка в вайтлист</a></li>
+						</ul>
+					</nav>
+					<nav class="site-footer__col" aria-label="Социальные сети">
+						<h3 class="site-footer__heading">Сообщество</h3>
+						<div class="site-footer__vote">
+							<a
+								href="https://vk.com/isthisnixxxon"
+								target="_blank"
+								rel="noopener noreferrer"
+								class="site-footer__vote-link"
+								aria-label="ВКонтакте — вайтлист"
+							>
+								<img
+									src="assets/images/social/vk.png"
+									alt=""
+									width="44"
+									height="44"
+									loading="lazy"
+									decoding="async"
+								/>
+								<span>ВКонтакте — вайтлист</span>
+							</a>
+							<a
+								href="https://t.me/isthisnixxxon"
+								target="_blank"
+								rel="noopener noreferrer"
+								class="site-footer__vote-link site-footer__vote-link--text"
+								><span>Telegram-канал</span></a
+							>
+							<a
+								href="https://www.tiktok.com/@isthisnixxxon"
+								target="_blank"
+								rel="noopener noreferrer"
+								class="site-footer__vote-link site-footer__vote-link--text"
+								><span>TikTok</span></a
+							>
+							<a
+								href="https://www.twitch.tv/isthisnixxxon"
+								target="_blank"
+								rel="noopener noreferrer"
+								class="site-footer__vote-link site-footer__vote-link--text"
+								><span>Twitch</span></a
+							>
+							<a
+								href="https://www.donationalerts.com/r/isthisnixxxon"
+								target="_blank"
+								rel="noopener noreferrer"
+								class="site-footer__vote-link"
+								aria-label="DonationAlerts"
+							>
+								<img
+									src="assets/images/social/donationalerts.png"
+									alt=""
+									width="44"
+									height="44"
+									loading="lazy"
+									decoding="async"
+								/>
+								<span>DonationAlerts</span>
+							</a>
+						</div>
+					</nav>
+					<div class="site-footer__col">
+						<h3 class="site-footer__heading">Поддержка</h3>
+						<ul class="site-footer__links">
+							<li>
+								<a
+									href="https://vk.com/isthisnixxxon"
+									target="_blank"
+									rel="noopener noreferrer"
+									class="site-footer__vote-link"
+								>
+									<img
+										src="assets/images/social/vk.png"
+										alt=""
+										width="44"
+										height="44"
+										loading="lazy"
+										decoding="async"
+									/>
+									<span>Написать админам</span>
+								</a>
+							</li>
+							<li><a href="index.html#links">Все контакты</a></li>
+							<li><a href="index.html#shop">Косметика в магазине</a></li>
+						</ul>
+						<h3 class="site-footer__heading site-footer__heading--spaced">
+							Голосование
+						</h3>
+						<div class="site-footer__vote">
+							<a
+								href="https://minecraftrating.ru/server/isthisnixxxon/"
+								target="_blank"
+								rel="noopener noreferrer"
+								class="site-footer__vote-link"
+								aria-label="Проголосовать на MinecraftRating"
+							>
+								<img
+									src="assets/images/vote/minecraftrating.png"
+									alt=""
+									width="44"
+									height="44"
+									loading="lazy"
+									decoding="async"
+								/>
+								<span>MinecraftRating</span>
+							</a>
+							<a
+								href="https://top-minecrafter.com/wipes/isthisnixxxon/"
+								target="_blank"
+								rel="noopener noreferrer"
+								class="site-footer__vote-link"
+								aria-label="Проголосовать на Top Minecrafter"
+							>
+								<img
+									src="assets/images/vote/top-minecrafter.png"
+									alt=""
+									width="44"
+									height="44"
+									loading="lazy"
+									decoding="async"
+								/>
+								<span>Top Minecrafter</span>
+							</a>
+							<a
+								href="https://hotmc.ru/minecraft-server-289396"
+								target="_blank"
+								rel="noopener noreferrer"
+								class="site-footer__vote-link"
+								aria-label="Проголосовать на HotMC"
+							>
+								<img
+									src="assets/images/vote/hotmc.png"
+									alt=""
+									width="44"
+									height="44"
+									loading="lazy"
+									decoding="async"
+								/>
+								<span>HotMC</span>
+							</a>
+						</div>
+					</div>
+				</div>
+				<div class="site-footer__bottom">
+					<p class="site-footer__copy">
+						© 2026 ISTHISNIXXXON. Не аффилирован с Mojang или Microsoft.
+					</p>
+					<p class="site-footer__note">
+						Магазин — только косметика, без игровых преимуществ.
+					</p>
+				</div>
+			</div>
+		</footer>
 
-  <p class="mt-12 flex flex-wrap items-center justify-center gap-3 rounded-2xl border border-neutral-700/55 bg-neutral-950/40 px-4 py-4 text-center text-[0.8rem] text-neutral-400 lg:text-left">
-    <a href="index.html" class="inline-flex rounded-lg border border-emerald-900/55 bg-emerald-950/30 px-4 py-2 text-[0.72rem] font-bold uppercase tracking-wider text-emerald-400 transition hover:border-emerald-600/65 hover:bg-emerald-950/50">На главную</a>
-    <span class="hidden sm:inline">·</span>
-    ElyPrismLauncher · Fabric 1.21.1 · сборка с сайта · mc.isnix.ru
-  </p>
-</main>
-
-<footer class="site-footer">
-  <div class="site-footer__glow" aria-hidden="true"></div>
-  <div class="site-footer__inner">
-    <div class="site-footer__top">
-      <div class="site-footer__brand">
-        <a href="index.html" class="site-footer__logo" id="footerLogo">ISTHIS<span>NIXXXON</span></a>
-        <p class="site-footer__tagline">Уютный ванильный Minecraft-сервер без pay-to-win. Честная игра, живое комьюнити и настоящий Minecraft.</p>
-        <div class="site-footer__ip" tabindex="0" role="button" aria-label="Скопировать IP сервера">
-          <div>
-            <div class="ip-lbl">Java Edition</div>
-            <div class="ip-val">mc.isnix.ru</div>
-          </div>
-          <span class="ip-hint">Нажми, чтобы скопировать</span>
-        </div>
-        <p class="site-footer__meta">Fabric 1.21.1 · Vanilla+ · Whitelist</p>
-      </div>
-      <nav class="site-footer__col" aria-label="Разделы сайта">
-        <h3 class="site-footer__heading">Сайт</h3>
-        <ul class="site-footer__links">
-          <li><a href="index.html#about">О сервере</a></li>
-          <li><a href="index.html#download">Скачать сборку</a></li>
-          <li><a href="how-to-play.html">Как играть</a></li>
-          <li><a href="index.html#shop">Магазин</a></li>
-          <li><a href="index.html#rules">Правила</a></li>
-          <li><a href="index.html#join-server">Заявка в вайтлист</a></li>
-        </ul>
-      </nav>
-      <nav class="site-footer__col" aria-label="Социальные сети">
-        <h3 class="site-footer__heading">Сообщество</h3>
-        <div class="site-footer__vote">
-          <a href="https://vk.com/isthisnixxxon" target="_blank" rel="noopener noreferrer" class="site-footer__vote-link" aria-label="ВКонтакте — вайтлист">
-            <img src="assets/images/social/vk.png" alt="" width="44" height="44" loading="lazy" decoding="async" />
-            <span>ВКонтакте — вайтлист</span>
-          </a>
-          <a href="https://t.me/isthisnixxxon" target="_blank" rel="noopener noreferrer" class="site-footer__vote-link site-footer__vote-link--text"><span>Telegram-канал</span></a>
-          <a href="https://www.tiktok.com/@isthisnixxxon" target="_blank" rel="noopener noreferrer" class="site-footer__vote-link site-footer__vote-link--text"><span>TikTok</span></a>
-          <a href="https://www.twitch.tv/isthisnixxxon" target="_blank" rel="noopener noreferrer" class="site-footer__vote-link site-footer__vote-link--text"><span>Twitch</span></a>
-          <a href="https://www.donationalerts.com/r/isthisnixxxon" target="_blank" rel="noopener noreferrer" class="site-footer__vote-link" aria-label="DonationAlerts">
-            <img src="assets/images/social/donationalerts.png" alt="" width="44" height="44" loading="lazy" decoding="async" />
-            <span>DonationAlerts</span>
-          </a>
-        </div>
-      </nav>
-      <div class="site-footer__col">
-        <h3 class="site-footer__heading">Поддержка</h3>
-        <ul class="site-footer__links">
-          <li>
-            <a href="https://vk.com/isthisnixxxon" target="_blank" rel="noopener noreferrer" class="site-footer__vote-link">
-              <img src="assets/images/social/vk.png" alt="" width="44" height="44" loading="lazy" decoding="async" />
-              <span>Написать админам</span>
-            </a>
-          </li>
-          <li><a href="index.html#links">Все контакты</a></li>
-          <li><a href="index.html#shop">Косметика в магазине</a></li>
-        </ul>
-        <h3 class="site-footer__heading site-footer__heading--spaced">Голосование</h3>
-        <div class="site-footer__vote">
-          <a href="https://minecraftrating.ru/server/isthisnixxxon/" target="_blank" rel="noopener noreferrer" class="site-footer__vote-link" aria-label="Проголосовать на MinecraftRating">
-            <img src="assets/images/vote/minecraftrating.png" alt="" width="44" height="44" loading="lazy" decoding="async" />
-            <span>MinecraftRating</span>
-          </a>
-          <a href="https://top-minecrafter.com/wipes/isthisnixxxon/" target="_blank" rel="noopener noreferrer" class="site-footer__vote-link" aria-label="Проголосовать на Top Minecrafter">
-            <img src="assets/images/vote/top-minecrafter.png" alt="" width="44" height="44" loading="lazy" decoding="async" />
-            <span>Top Minecrafter</span>
-          </a>
-          <a href="https://hotmc.ru/minecraft-server-289396" target="_blank" rel="noopener noreferrer" class="site-footer__vote-link" aria-label="Проголосовать на HotMC">
-            <img src="assets/images/vote/hotmc.png" alt="" width="44" height="44" loading="lazy" decoding="async" />
-            <span>HotMC</span>
-          </a>
-        </div>
-      </div>
-    </div>
-    <div class="site-footer__bottom">
-      <p class="site-footer__copy">© 2026 ISTHISNIXXXON. Не аффилирован с Mojang или Microsoft.</p>
-      <p class="site-footer__note">Магазин — только косметика, без игровых преимуществ.</p>
-    </div>
-  </div>
-</footer>
-
-<script src="assets/js/site.js" defer></script>
-</body>
+		<script src="assets/js/site.js" defer></script>
+	</body>
 </html>
