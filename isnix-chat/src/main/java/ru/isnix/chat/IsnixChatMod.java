@@ -12,7 +12,7 @@ public class IsnixChatMod implements DedicatedServerModInitializer {
 
 	@Override
 	public void onInitializeServer() {
-		ServerLifecycleEvents.SERVER_STARTING.register(server -> ChatConfig.load(server));
+		ServerLifecycleEvents.SERVER_STARTING.register(server -> ChatConfig.load());
 
 		ServerMessageEvents.ALLOW_CHAT_MESSAGE.register((message, sender, params) -> {
 			if (ChatHandler.handle(message, sender, params)) {

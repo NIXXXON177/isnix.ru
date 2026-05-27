@@ -2,12 +2,11 @@ package ru.isnix.chat;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import net.minecraft.server.MinecraftServer;
+import net.fabricmc.loader.api.FabricLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -27,8 +26,9 @@ public final class ChatConfig {
 		return INSTANCE;
 	}
 
-	public static void load(MinecraftServer server) {
-		Path path = server.getFile("config/isnix-chat.json").toPath();
+	public static void load() {
+		Path path = FabricLoader.getInstance().getConfigDir().resolve("isnix-chat.json");
+
 		if (!Files.isRegularFile(path)) {
 			try {
 				Files.createDirectories(path.getParent());
@@ -49,8 +49,8 @@ public final class ChatConfig {
 			try (var reader = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
 				ChatConfig loaded = GSON.fromJson(reader, ChatConfig.class);
 				if (loaded != null) {
+					loaded.clamp();
 					INSTANCE = loaded;
-					clamp();
 				}
 			} catch (IOException e) {
 				LOGGER.warn("Ошибка чтения isnix-chat.json: {}", e.getMessage());
