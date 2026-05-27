@@ -10,18 +10,17 @@
 	var currentProfile = null
 	var adminFilter = 'pending'
 	var adminView = 'applications'
-	var skinViewer = null
-	var skinViewerLoadedNick = null
-	var skinViewerLoading = false
-	var skinUpdateTimer = null
+	var playerStats = null
+	var playerStatsUserId = null
+	var playerStatsTimer = null
+	var statsRefreshTimer = null
+	var cachedServerStatus = null
 	var statusRefreshTimer = null
 	var onSessionTimer = null
 	var dashboardLoading = false
-	var skinRequestId = 0
 	var adminActionInFlight = {}
 	var adminListDelegationBound = false
 	var whitelistLoadPromise = null
-	var skinview3dLoadPromise = null
 	var adminListsLoaded = {
 		applications: false,
 		server: false,
@@ -102,60 +101,178 @@
 		}
 	}
 
-	function getSkinSources(nick) {
-		var safe = encodeURIComponent(nick)
-		return [
-			'https://mc-heads.net/skin/' + safe,
-			'https://skins.ely.by/textures/' + safe + '.png',
-			'https://skins.ely.by/textures/' + safe,
-		]
+	function formatDurationSeconds(totalSeconds) {
+		var s = Math.max(0, Math.floor(totalSeconds || 0))
+		if (s < 60) return s + ' сек'
+		var m = Math.floor(s / 60)
+		s %= 60
+		if (m < 60) {
+			return m + ' мин' + (s ? ' ' + s + ' сек' : '')
+		}
+		var h = Math.floor(m / 60)
+		m %= 60
+		if (h < 24) {
+			return h + ' ч' + (m ? ' ' + m + ' мин' : '')
+		}
+		var d = Math.floor(h / 24)
+		h %= 24
+		return d + ' д' + (h ? ' ' + h + ' ч' : '')
 	}
 
-	async function fetchSkinForViewer(url) {
-		var res = await fetch(url, { mode: 'cors', credentials: 'omit' })
-		if (!res.ok) throw new Error('skin fetch failed')
-		return res.blob()
+	function formatSiteTenure(createdAtIso) {
+		if (!createdAtIso) return '—'
+		var start = new Date(createdAtIso).getTime()
+		if (isNaN(start)) return '—'
+		var seconds = Math.floor((Date.now() - start) / 1000)
+		if (seconds < 60) return 'меньше минуты'
+		return formatDurationSeconds(seconds)
 	}
 
-	function loadSkinImageElement(url) {
-		return new Promise(function (resolve, reject) {
-			var img = new Image()
-			img.crossOrigin = 'anonymous'
-			img.onload = function () {
-				resolve(img)
-			}
-			img.onerror = function () {
-				reject(new Error('skin image load failed'))
-			}
-			img.src = url
-		})
+	function localSessionStorageKey(userId) {
+		return 'isnix_mc_session_' + userId
 	}
 
-	function resetWebGLPixelStore(viewer) {
+	function readLocalSessionStart(userId) {
+		if (!userId) return null
 		try {
-			var gl = viewer.renderer.getContext()
-			gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false)
-			gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, false)
+			var raw = sessionStorage.getItem(localSessionStorageKey(userId))
+			if (!raw) return null
+			var n = parseInt(raw, 10)
+			return isNaN(n) ? null : n
+		} catch (_e) {
+			return null
+		}
+	}
+
+	function writeLocalSessionStart(userId, ts) {
+		if (!userId) return
+		try {
+			sessionStorage.setItem(localSessionStorageKey(userId), String(ts))
 		} catch (_e) {
 			/* ignore */
 		}
 	}
 
-	async function loadSkinOnViewer(viewer, url) {
-		var img
+	function clearLocalSessionStart(userId) {
+		if (!userId) return
 		try {
-			img = await loadSkinImageElement(url)
-		} catch (_direct) {
-			var blob = await fetchSkinForViewer(url)
-			var objectUrl = URL.createObjectURL(blob)
-			try {
-				img = await loadSkinImageElement(objectUrl)
-			} finally {
-				URL.revokeObjectURL(objectUrl)
+			sessionStorage.removeItem(localSessionStorageKey(userId))
+		} catch (_e) {
+			/* ignore */
+		}
+	}
+
+	function getSessionStartMs(stats, userId, onlineOnServer) {
+		if (!onlineOnServer) {
+			clearLocalSessionStart(userId)
+			return null
+		}
+		if (stats && stats.session_started_at) {
+			var fromDb = new Date(stats.session_started_at).getTime()
+			if (!isNaN(fromDb)) return fromDb
+		}
+		var local = readLocalSessionStart(userId)
+		if (!local) {
+			local = Date.now()
+			writeLocalSessionStart(userId, local)
+		}
+		return local
+	}
+
+	function renderPlayerStats(profile, stats, serverStatus) {
+		var siteEl = document.getElementById('profileStatSite')
+		var totalEl = document.getElementById('profileStatTotal')
+		var sessionEl = document.getElementById('profileStatSession')
+		var hintEl = document.getElementById('profileStatsHint')
+		if (!siteEl || !totalEl || !sessionEl) return
+
+		var userId = profile && profile.id ? profile.id : playerStatsUserId
+		var nick =
+			profile && profile.minecraft_nick ? profile.minecraft_nick.trim() : ''
+		var onlineOnServer =
+			nick &&
+			serverStatus &&
+			window.IsnixServer &&
+			IsnixServer.isPlayerOnline(nick, serverStatus)
+
+		if (siteEl) {
+			if (profile && profile.created_at) {
+				siteEl.textContent = formatSiteTenure(profile.created_at)
+				siteEl.title = 'С ' + formatDate(profile.created_at)
+			} else {
+				siteEl.textContent = '—'
+				siteEl.removeAttribute('title')
 			}
 		}
-		resetWebGLPixelStore(viewer)
-		await viewer.loadSkin(img)
+
+		if (totalEl) {
+			if (stats && typeof stats.total_play_seconds === 'number') {
+				totalEl.textContent = formatDurationSeconds(stats.total_play_seconds)
+			} else {
+				totalEl.textContent = '—'
+			}
+		}
+
+		if (sessionEl) {
+			if (!nick) {
+				sessionEl.textContent = 'Укажи ник'
+				sessionEl.className = 'profile-stats-value'
+			} else if (onlineOnServer) {
+				var startMs = getSessionStartMs(stats, userId, true)
+				var liveSec = startMs
+					? Math.floor((Date.now() - startMs) / 1000)
+					: 0
+				sessionEl.textContent = formatDurationSeconds(liveSec)
+				sessionEl.className = 'profile-stats-value profile-stats-value--live'
+			} else {
+				sessionEl.textContent = 'Не в сети'
+				sessionEl.className = 'profile-stats-value'
+			}
+		}
+
+		if (hintEl) {
+			var needHint = !stats || typeof stats.total_play_seconds !== 'number'
+			hintEl.hidden = !needHint
+			if (needHint) {
+				hintEl.textContent =
+					'Время в игре обновляет сервер. Пока данных нет — выполни docs/supabase-player-stats.sql и настрой отправку статистики с Play2GO.'
+			}
+		}
+	}
+
+	function stopPlayerStatsTicker() {
+		if (playerStatsTimer) {
+			clearInterval(playerStatsTimer)
+			playerStatsTimer = null
+		}
+	}
+
+	function startPlayerStatsTicker() {
+		stopPlayerStatsTicker()
+		playerStatsTimer = setInterval(function () {
+			if (!currentProfile || !playerStatsUserId) return
+			renderPlayerStats(currentProfile, playerStats, cachedServerStatus)
+		}, 1000)
+	}
+
+	function scheduleStatsRefresh() {
+		clearTimeout(statsRefreshTimer)
+		statsRefreshTimer = setTimeout(function () {
+			refreshPlayerStats(cachedServerStatus)
+		}, 400)
+	}
+
+	async function refreshPlayerStats(serverStatus) {
+		if (!playerStatsUserId || !window.IsnixAuth) return
+		try {
+			playerStats = await IsnixAuth.getPlayerStats(playerStatsUserId)
+		} catch (_e) {
+			playerStats = null
+		}
+		if (currentProfile) {
+			currentProfile.id = playerStatsUserId
+		}
+		renderPlayerStats(currentProfile, playerStats, serverStatus)
 	}
 
 	function setLoading(form, loading) {
@@ -436,25 +553,6 @@
 		}
 	}
 
-	function ensureSkinview3d() {
-		if (typeof skinview3d !== 'undefined') return Promise.resolve()
-		if (skinview3dLoadPromise) return skinview3dLoadPromise
-		skinview3dLoadPromise = new Promise(function (resolve, reject) {
-			var script = document.createElement('script')
-			script.src =
-				'https://cdn.jsdelivr.net/npm/skinview3d@3.4.2/bundles/skinview3d.bundle.js'
-			script.async = true
-			script.onload = function () {
-				resolve()
-			}
-			script.onerror = function () {
-				reject(new Error('skinview3d load failed'))
-			}
-			document.head.appendChild(script)
-		})
-		return skinview3dLoadPromise
-	}
-
 	function deferAccountTask(fn, delayMs) {
 		var run = function () {
 			try {
@@ -468,117 +566,6 @@
 		} else {
 			setTimeout(run, delayMs || 200)
 		}
-	}
-
-	function disposeSkinViewer() {
-		if (skinViewer) {
-			try {
-				skinViewer.dispose()
-			} catch (_e) {
-				/* ignore */
-			}
-			skinViewer = null
-		}
-		skinViewerLoadedNick = null
-		skinViewerLoading = false
-	}
-
-	async function updateSkinViewer(nick) {
-		var canvas = document.getElementById('profileSkinCanvas')
-		var placeholder = document.getElementById('profileSkinPlaceholder')
-		if (!canvas || !placeholder) return
-		var normalized = nick ? nick.trim() : ''
-		if (
-			normalized &&
-			skinViewer &&
-			skinViewerLoadedNick === normalized &&
-			!skinViewerLoading
-		) {
-			return
-		}
-		try {
-			await ensureSkinview3d()
-		} catch (_e) {
-			canvas.hidden = true
-			placeholder.hidden = false
-			placeholder.textContent =
-				'3D-просмотр недоступен — не загрузилась библиотека skinview3d'
-			return
-		}
-		if (typeof skinview3d === 'undefined') {
-			canvas.hidden = true
-			placeholder.hidden = false
-			placeholder.textContent =
-				'3D-просмотр недоступен — не загрузилась библиотека skinview3d'
-			return
-		}
-		if (!normalized || !IsnixAuth.MC_NICK_RE.test(normalized)) {
-			disposeSkinViewer()
-			canvas.hidden = true
-			placeholder.hidden = false
-			return
-		}
-		if (skinViewerLoading) return
-		var reqId = ++skinRequestId
-		skinViewerLoading = true
-		placeholder.textContent = 'Загрузка скина…'
-		placeholder.hidden = true
-		canvas.hidden = false
-		disposeSkinViewer()
-		try {
-			skinViewer = new skinview3d.SkinViewer({
-				canvas: canvas,
-				width: 220,
-				height: 300,
-				background: 0x0a0f0a,
-				pixelRatio: 1,
-				enableControls: false,
-			})
-			if (skinViewer.fxaaPass) {
-				skinViewer.fxaaPass.enabled = false
-			}
-			resetWebGLPixelStore(skinViewer)
-			skinViewer.autoRotate = true
-			var sources = getSkinSources(normalized)
-			var loaded = false
-			for (var si = 0; si < sources.length; si++) {
-				try {
-					await loadSkinOnViewer(skinViewer, sources[si])
-					loaded = true
-					break
-				} catch (_e) {
-					/* try next source */
-				}
-			}
-			if (reqId !== skinRequestId) return
-			if (!loaded) {
-				throw new Error('skin source unavailable')
-			}
-			skinViewer.animation = new skinview3d.WalkingAnimation()
-			skinViewer.camera.position.y = 8
-			skinViewer.render()
-			skinViewerLoadedNick = normalized
-		} catch (_e) {
-			if (reqId !== skinRequestId) return
-			disposeSkinViewer()
-			canvas.hidden = true
-			placeholder.hidden = false
-			placeholder.textContent = 'Не удалось загрузить скин (включая Ely.by)'
-		} finally {
-			if (reqId === skinRequestId) {
-				skinViewerLoading = false
-			}
-		}
-	}
-
-	function scheduleSkinUpdate() {
-		clearTimeout(skinUpdateTimer)
-		skinUpdateTimer = setTimeout(function () {
-			var nickEl = document.getElementById('profileNick')
-			var next = nickEl ? nickEl.value.trim() : ''
-			if (next === skinViewerLoadedNick && skinViewer) return
-			updateSkinViewer(next)
-		}, 500)
 	}
 
 	function updateProfileMeta(profile, serverStatus) {
@@ -638,7 +625,9 @@
 	async function refreshPlayerStatus(force) {
 		if (!window.IsnixServer) return null
 		var status = await IsnixServer.fetchStatus(!!force)
+		if (status !== undefined) cachedServerStatus = status
 		updateProfileMeta(currentProfile, status === undefined ? null : status)
+		await refreshPlayerStats(status === undefined ? null : status)
 		return status
 	}
 
@@ -859,7 +848,10 @@
 		if (setupNotice) setupNotice.hidden = true
 		if (authPanels) authPanels.hidden = false
 		if (dashboard) dashboard.hidden = true
-		disposeSkinViewer()
+		stopPlayerStatsTicker()
+		playerStats = null
+		playerStatsUserId = null
+		cachedServerStatus = null
 		if (statusRefreshTimer) {
 			clearInterval(statusRefreshTimer)
 			statusRefreshTimer = null
@@ -872,6 +864,10 @@
 		if (authPanels) authPanels.hidden = true
 		if (dashboard) dashboard.hidden = false
 		currentProfile = profile || null
+		if (user && user.id) {
+			playerStatsUserId = user.id
+			if (currentProfile) currentProfile.id = user.id
+		}
 		var isAdmin = IsnixAuth && IsnixAuth.isAdminProfile(profile)
 		var wrap = document.querySelector('.auth-wrap')
 		if (wrap) wrap.classList.toggle('auth-wrap--wide', isAdmin)
@@ -1237,10 +1233,18 @@
 			var wlPromise = loadWhitelist()
 
 			try {
-				profile = await IsnixAuth.getProfile(userId)
+				var profileRes = await Promise.all([
+					IsnixAuth.getProfile(userId),
+					IsnixAuth.getPlayerStats(userId).catch(function () {
+						return null
+					}),
+				])
+				profile = profileRes[0]
+				playerStats = profileRes[1]
 			} catch (e) {
 				profileErr = e
 				profile = null
+				playerStats = null
 			}
 
 			if (profile && session.user.email) {
@@ -1255,8 +1259,12 @@
 			}
 
 			currentProfile = profile
+			playerStatsUserId = userId
+			if (profile) profile.id = userId
 			showDashboard(session.user, profile)
 			showConnectionNotice('')
+			renderPlayerStats(profile, playerStats, null)
+			startPlayerStatsTicker()
 
 			if (profileErr) {
 				showConnectionNotice(
@@ -1305,13 +1313,9 @@
 				}, 400)
 			}
 
-			var skinNick =
-				profile && profile.minecraft_nick ? profile.minecraft_nick.trim() : ''
-			if (skinNick) {
-				deferAccountTask(function () {
-					updateSkinViewer(skinNick)
-				}, 600)
-			}
+			deferAccountTask(function () {
+				refreshPlayerStatus(false)
+			}, 300)
 
 			startStatusPolling()
 		} finally {
@@ -1449,7 +1453,7 @@
 			profileNick.addEventListener('input', function () {
 				updateProfileNickHint()
 				syncWhitelistSectionVisibility(profileNick.value)
-				scheduleSkinUpdate()
+				scheduleStatsRefresh()
 			})
 		}
 		if (profileForm) {
@@ -1470,15 +1474,17 @@
 						display_name: callName,
 					})
 					currentProfile = {
+						id: session.user.id,
 						email: session.user.email,
 						minecraft_nick: nick || null,
 						display_name: callName,
 						role: currentProfile ? currentProfile.role : 'player',
+						created_at: currentProfile ? currentProfile.created_at : null,
 					}
 					await loadWhitelist()
 					updateProfileNickHint()
-					updateSkinViewer(nick)
 					updateDashAvatar(nick)
+					renderPlayerStats(currentProfile, playerStats, cachedServerStatus)
 					await refreshPlayerStatus()
 					var appNickEl = document.getElementById('appNick')
 					var appCallEl = document.getElementById('appCallName')

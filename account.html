@@ -300,17 +300,23 @@
 
 					<div id="playerSections" class="account-sections">
 					<section class="auth-panel profile-hero">
-						<div class="profile-skin-block">
-							<canvas
-								id="profileSkinCanvas"
-								class="profile-skin-canvas"
-								width="220"
-								height="300"
-								aria-hidden="true"
-							></canvas>
-							<p id="profileSkinPlaceholder" class="profile-skin-placeholder">
-								Укажи ник в профиле — появится 3D-модель скина
-							</p>
+						<div class="profile-stats-block" aria-label="Статистика игрока">
+							<p class="profile-stats-eyebrow">Статистика</p>
+							<dl class="profile-stats-list">
+								<div class="profile-stats-row">
+									<dt>На сайте</dt>
+									<dd id="profileStatSite">—</dd>
+								</div>
+								<div class="profile-stats-row">
+									<dt>Всего в игре</dt>
+									<dd id="profileStatTotal">—</dd>
+								</div>
+								<div class="profile-stats-row">
+									<dt>Текущая сессия</dt>
+									<dd id="profileStatSession">—</dd>
+								</div>
+							</dl>
+							<p id="profileStatsHint" class="auth-hint profile-stats-hint" hidden></p>
 						</div>
 						<div class="profile-meta">
 							<p class="profile-meta-eyebrow">Профиль</p>
@@ -523,10 +529,9 @@
 		</script>
 		<script src="assets/js/auth-config.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-		<script src="assets/js/webgl-pixelstore-patch.js"></script>
 		<script src="assets/js/server-status.js?v=5"></script>
-		<script src="assets/js/auth.js?v=12"></script>
+		<script src="assets/js/auth.js?v=13"></script>
 		<script src="assets/js/site-header.js" defer></script>
-		<script src="assets/js/account.js?v=14"></script>
+		<script src="assets/js/account.js?v=16"></script>
 	</body>
 </html>

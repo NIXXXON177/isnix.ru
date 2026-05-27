@@ -637,12 +637,12 @@
 	filter: brightness(1.08);
 }
 
-/* Профиль: 3D-скин и статусы */
+/* Профиль: статистика и статусы */
 .profile-hero.auth-panel {
 	margin-bottom: 1rem;
 	padding: 1.35rem;
 	display: grid;
-	grid-template-columns: minmax(0, 200px) 1fr;
+	grid-template-columns: minmax(0, 11.5rem) 1fr;
 	gap: 1.35rem;
 	align-items: center;
 	background: linear-gradient(
@@ -658,32 +658,58 @@
 	display: none;
 }
 
-.profile-skin-block {
-	position: relative;
-	min-height: 300px;
+.profile-stats-block {
+	padding: 0.85rem 1rem;
 	border-radius: var(--radius-sm);
 	background: rgba(0, 0, 0, 0.35);
 	border: 1px solid var(--border);
-	overflow: hidden;
 }
 
-.profile-skin-canvas {
-	display: block;
-	width: 100%;
-	height: auto;
-	margin: 0 auto;
-}
-
-.profile-skin-placeholder {
-	position: absolute;
-	inset: 0;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	padding: 1rem;
-	text-align: center;
-	font-size: 0.78rem;
+.profile-stats-eyebrow {
+	margin: 0 0 0.65rem;
+	font-size: 0.72rem;
+	font-weight: 600;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
 	color: var(--muted);
+}
+
+.profile-stats-list {
+	margin: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 0.55rem;
+}
+
+.profile-stats-row {
+	display: grid;
+	grid-template-columns: 1fr auto;
+	gap: 0.5rem 0.75rem;
+	align-items: baseline;
+}
+
+.profile-stats-row dt {
+	margin: 0;
+	font-size: 0.8rem;
+	color: var(--muted);
+}
+
+.profile-stats-row dd {
+	margin: 0;
+	font-size: 0.92rem;
+	font-weight: 600;
+	font-variant-numeric: tabular-nums;
+	text-align: right;
+}
+
+.profile-stats-row dd.profile-stats-value--live {
+	color: var(--accent);
+}
+
+.profile-stats-hint {
+	margin: 0.65rem 0 0;
+	font-size: 0.72rem;
+	line-height: 1.4;
 }
 
 .profile-meta-eyebrow {
@@ -867,8 +893,8 @@
 		text-align: center;
 	}
 
-	.profile-skin-block {
-		max-width: 220px;
+	.profile-stats-block {
+		max-width: 18rem;
 		margin: 0 auto;
 	}
 
