@@ -8,7 +8,6 @@ on:
       - 'index.html'
       - 'how-to-play.html'
       - 'account.html'
-      - 'status.html'
       - 'assets/**'
       - 'robots.txt'
       - 'sitemap.xml'
@@ -25,7 +24,6 @@ jobs:
         run: |
           test -f index.html
           test -f account.html
-          test -f status.html
           test -f assets/css/main.css
           test -f assets/css/components.css
           test -f assets/css/auth.css
@@ -34,7 +32,6 @@ jobs:
           test -f assets/js/site-header.js
           test -f assets/js/auth.js
           test -f assets/js/account.js
-          test -f assets/js/status.js
           test -f assets/js/server-status.js
           test -f assets/js/auth-config.js
           test -f assets/js/shop-slider.js

@@ -513,6 +513,7 @@
 		if (appsEl) appsEl.hidden = adminView !== 'applications'
 		if (serverEl) serverEl.hidden = adminView !== 'server'
 		if (usersEl) usersEl.hidden = adminView !== 'users'
+		if (!IsnixAuth || !IsnixAuth.isAdminProfile(currentProfile)) return
 		if (adminView === 'applications') renderAdminApplications()
 		else if (adminView === 'server') renderAdminServerList()
 		else if (adminView === 'users') renderAdminUsersList()
@@ -558,6 +559,10 @@
 	async function renderAdminServerList() {
 		var list = document.getElementById('adminServerList')
 		if (!list) return
+		if (!window.IsnixAuth || !IsnixAuth.isAdminProfile(currentProfile)) {
+			list.innerHTML = ''
+			return
+		}
 		list.innerHTML = '<p class="auth-muted">Загрузка…</p>'
 		if (!window.IsnixServer) {
 			list.innerHTML = '<p class="auth-muted">Статус сервера недоступен</p>'
@@ -606,6 +611,10 @@
 	async function renderAdminUsersList() {
 		var list = document.getElementById('adminUsersList')
 		if (!list) return
+		if (!window.IsnixAuth || !IsnixAuth.isAdminProfile(currentProfile)) {
+			list.innerHTML = ''
+			return
+		}
 		list.innerHTML = '<p class="auth-muted">Загрузка…</p>'
 		try {
 			var profiles = await IsnixAuth.getAdminProfiles()
