@@ -94,10 +94,31 @@
 	function getSkinSources(nick) {
 		var safe = encodeURIComponent(nick)
 		return [
-			'https://ely.by/skins/' + safe + '.png',
-			'https://skinsystem.ely.by/skins/' + safe,
 			'https://mc-heads.net/skin/' + safe,
+			'https://skins.ely.by/textures/' + safe + '.png',
+			'https://skins.ely.by/textures/' + safe,
 		]
+	}
+
+	async function fetchSkinForViewer(url) {
+		var res = await fetch(url, { mode: 'cors', credentials: 'omit' })
+		if (!res.ok) throw new Error('skin fetch failed')
+		return res.blob()
+	}
+
+	async function loadSkinOnViewer(viewer, url) {
+		try {
+			await viewer.loadSkin(url)
+			return
+		} catch (_direct) {
+			var blob = await fetchSkinForViewer(url)
+			var objectUrl = URL.createObjectURL(blob)
+			try {
+				await viewer.loadSkin(objectUrl)
+			} finally {
+				URL.revokeObjectURL(objectUrl)
+			}
+		}
 	}
 
 	function setLoading(form, loading) {
@@ -385,8 +406,12 @@
 	async function updateSkinViewer(nick) {
 		var canvas = document.getElementById('profileSkinCanvas')
 		var placeholder = document.getElementById('profileSkinPlaceholder')
-		if (!canvas || !placeholder || typeof skinview3d === 'undefined') {
-			if (placeholder) placeholder.hidden = false
+		if (!canvas || !placeholder) return
+		if (typeof skinview3d === 'undefined') {
+			canvas.hidden = true
+			placeholder.hidden = false
+			placeholder.textContent =
+				'3D-просмотр недоступен — не загрузилась библиотека skinview3d'
 			return
 		}
 		if (!nick || !IsnixAuth.MC_NICK_RE.test(nick)) {
@@ -405,12 +430,13 @@
 				canvas: canvas,
 				width: 220,
 				height: 300,
+				background: 0x0a0f0a,
 			})
 			var sources = getSkinSources(nick)
 			var loaded = false
 			for (var si = 0; si < sources.length; si++) {
 				try {
-					await skinViewer.loadSkin(sources[si])
+					await loadSkinOnViewer(skinViewer, sources[si])
 					loaded = true
 					break
 				} catch (_e) {
@@ -425,6 +451,7 @@
 			skinViewer.controls.enableZoom = false
 			skinViewer.animation = new skinview3d.WalkingAnimation()
 			skinViewer.camera.position.y = 8
+			skinViewer.render()
 		} catch (_e) {
 			if (reqId !== skinRequestId) return
 			canvas.hidden = true
