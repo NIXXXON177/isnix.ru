@@ -49,6 +49,7 @@ Workflow подставит ключ в `auth-config.js` при деплое. В
 3. Заявки смотри в Supabase → Table Editor → `whitelist_applications`.
 4. Диалог админ ↔ игрок по заявке: выполни **[supabase-whitelist-dialog.sql](supabase-whitelist-dialog.sql)**.
 5. Статистика игрока в кабинете: **[supabase-player-stats.sql](supabase-player-stats.sql)** (таблица `player_stats`).
+6. Устройство на сайте (телефон / ПК): **[supabase-site-presence.sql](supabase-site-presence.sql)**.
 
 **На сайте** сразу видно «На сайте» (дата регистрации из `profiles.created_at`). Поля «Всего в игре» и точная «Текущая сессия» заполняются с **игрового сервера** (пока нет — в кабинете «—», сессия приблизительно, пока открыта страница и ник в онлайне API).
 

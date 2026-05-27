@@ -777,6 +777,18 @@
 	border-color: var(--border);
 }
 
+.profile-badge--site {
+	color: #93c5fd;
+	border-color: rgba(96, 165, 250, 0.45);
+	background: rgba(59, 130, 246, 0.1);
+}
+
+.auth-status--site {
+	color: #93c5fd;
+	border-color: rgba(96, 165, 250, 0.35);
+	background: rgba(59, 130, 246, 0.08);
+}
+
 .auth-password-panel {
 	margin: 1rem 0 0;
 	border: 1px solid var(--border);

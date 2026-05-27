@@ -181,12 +181,69 @@
 		if (res.error) throw res.error
 	}
 
+	var SITE_PRESENCE_ONLINE_MS = 120000
+
+	function detectSiteDevice() {
+		var ua = navigator.userAgent || ''
+		if (
+			/iPad|Tablet|PlayBook|Silk/i.test(ua) ||
+			(navigator.maxTouchPoints > 1 &&
+				global.matchMedia('(min-width: 768px) and (max-width: 1100px)').matches)
+		) {
+			return 'tablet'
+		}
+		if (
+			/Android|iPhone|iPod|Mobile|webOS|BlackBerry|IEMobile|Opera Mini/i.test(ua) ||
+			global.matchMedia('(max-width: 767px)').matches
+		) {
+			return 'mobile'
+		}
+		return 'desktop'
+	}
+
+	function formatSiteDeviceLabel(device) {
+		if (device === 'mobile') return 'Телефон'
+		if (device === 'tablet') return 'Планшет'
+		if (device === 'desktop') return 'ПК'
+		return 'ПК'
+	}
+
+	function isSitePresenceOnline(profileOrSeenAt, device) {
+		var seenAt =
+			profileOrSeenAt && profileOrSeenAt.site_last_seen_at
+				? profileOrSeenAt.site_last_seen_at
+				: profileOrSeenAt
+		if (!seenAt) return false
+		var t = new Date(seenAt).getTime()
+		if (isNaN(t)) return false
+		return Date.now() - t < SITE_PRESENCE_ONLINE_MS
+	}
+
+	async function sitePresenceHeartbeat(device) {
+		var sb = getClient()
+		if (!sb) return
+		var res = await sb.rpc('site_presence_heartbeat', {
+			p_device: device || detectSiteDevice(),
+		})
+		if (res.error) {
+			if (
+				/PGRST202|site_presence_heartbeat/i.test(res.error.message || '') ||
+				res.error.code === 'PGRST202'
+			) {
+				return
+			}
+			throw res.error
+		}
+	}
+
 	async function getProfile(userId) {
 		var sb = getClient()
 		if (!sb) return null
 		var res = await sb
 			.from('profiles')
-			.select('minecraft_nick, display_name, email, role, created_at')
+			.select(
+				'minecraft_nick, display_name, email, role, created_at, site_last_seen_at, site_device',
+			)
 			.eq('id', userId)
 			.maybeSingle()
 		if (res.error) throw res.error
@@ -377,7 +434,9 @@
 		if (!sb) return []
 		var res = await sb
 			.from('profiles')
-			.select('id, email, minecraft_nick, display_name, role, created_at')
+			.select(
+				'id, email, minecraft_nick, display_name, role, created_at, site_last_seen_at, site_device',
+			)
 			.order('created_at', { ascending: false })
 		if (res.error) throw res.error
 		return res.data || []
@@ -622,6 +681,11 @@
 		getAdminProfiles: getAdminProfiles,
 		onAuthStateChange: onAuthStateChange,
 		formatAuthError: formatAuthError,
+		detectSiteDevice: detectSiteDevice,
+		formatSiteDeviceLabel: formatSiteDeviceLabel,
+		isSitePresenceOnline: isSitePresenceOnline,
+		sitePresenceHeartbeat: sitePresenceHeartbeat,
+		SITE_PRESENCE_ONLINE_MS: SITE_PRESENCE_ONLINE_MS,
 		MC_NICK_RE: MC_NICK_RE,
 	}
 })(window)

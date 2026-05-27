@@ -687,11 +687,35 @@
 		}
 	}
 
+	function updateSiteDeviceBadge(profile) {
+		var siteBadge = document.getElementById('profileSiteBadge')
+		if (!siteBadge || !window.IsnixAuth) return
+		var label = IsnixAuth.formatSiteDeviceLabel(IsnixAuth.detectSiteDevice())
+		siteBadge.textContent = 'Сайт: ' + label
+		siteBadge.hidden = false
+		siteBadge.className = 'profile-badge profile-badge--site'
+		if (profile && IsnixAuth.isSitePresenceOnline(profile)) {
+			siteBadge.title = 'Активность на isnix.ru учтена'
+		} else {
+			siteBadge.title = 'Сейчас с ' + label.toLowerCase()
+		}
+	}
+
+	function sitePresenceAdminTag(profile) {
+		if (!window.IsnixAuth || !IsnixAuth.isSitePresenceOnline(profile)) return ''
+		return (
+			'<span class="auth-status auth-status--site">сайт · ' +
+			escapeHtml(IsnixAuth.formatSiteDeviceLabel(profile.site_device)) +
+			'</span>'
+		)
+	}
+
 	function updateProfileMeta(profile, serverStatus) {
 		var nameEl = document.getElementById('profileDisplayName')
 		var nickLine = document.getElementById('profileNickDisplay')
 		var wlBadge = document.getElementById('profileWlBadge')
 		var onlineBadge = document.getElementById('profileOnlineBadge')
+		updateSiteDeviceBadge(profile)
 		var nick =
 			profile && profile.minecraft_nick ? profile.minecraft_nick.trim() : ''
 		var display =
@@ -892,12 +916,13 @@
 						p.role === 'admin' && IsnixAuth.isAdminProfile(p)
 							? '<span class="auth-status auth-status--bad">админ</span>'
 							: ''
-					var online =
+					var mcOnline =
 						p.minecraft_nick &&
 						status &&
 						IsnixServer.isPlayerOnline(p.minecraft_nick, status)
-							? '<span class="auth-status auth-status--ok">онлайн</span>'
+							? '<span class="auth-status auth-status--ok">MC</span>'
 							: ''
+					var siteTag = sitePresenceAdminTag(p)
 					var meta =
 						'<p class="auth-muted">' +
 						escapeHtml(email) +
@@ -905,7 +930,11 @@
 						formatDate(p.created_at) +
 						'</p>'
 					var tags =
-						'<div class="auth-player-tags">' + role + online + '</div>'
+						'<div class="auth-player-tags">' +
+						role +
+						mcOnline +
+						siteTag +
+						'</div>'
 					if (p.minecraft_nick && IsnixAuth.MC_NICK_RE.test(p.minecraft_nick)) {
 						return renderPlayerRow(p.minecraft_nick, meta + tags)
 					}
