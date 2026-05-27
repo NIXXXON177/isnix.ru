@@ -163,13 +163,13 @@
 	}
 
 	function getSessionStartMs(stats, userId, onlineOnServer) {
-		if (!onlineOnServer) {
-			clearLocalSessionStart(userId)
-			return null
-		}
 		if (stats && stats.session_started_at) {
 			var fromDb = new Date(stats.session_started_at).getTime()
 			if (!isNaN(fromDb)) return fromDb
+		}
+		if (!onlineOnServer) {
+			clearLocalSessionStart(userId)
+			return null
 		}
 		var local = readLocalSessionStart(userId)
 		if (!local) {
@@ -177,6 +177,24 @@
 			writeLocalSessionStart(userId, local)
 		}
 		return local
+	}
+
+	function getLiveSessionSeconds(stats, userId, onlineOnServer) {
+		var startMs = getSessionStartMs(stats, userId, onlineOnServer)
+		if (!startMs) return 0
+		return Math.max(0, Math.floor((Date.now() - startMs) / 1000))
+	}
+
+	function getDisplayTotalSeconds(stats, userId, onlineOnServer) {
+		var base =
+			stats && typeof stats.total_play_seconds === 'number'
+				? stats.total_play_seconds
+				: 0
+		var sessionSec = getLiveSessionSeconds(stats, userId, onlineOnServer)
+		if (sessionSec > 0) {
+			return base + sessionSec
+		}
+		return stats && typeof stats.total_play_seconds === 'number' ? base : null
 	}
 
 	function renderPlayerStats(profile, stats, serverStatus) {
@@ -205,11 +223,27 @@
 			}
 		}
 
+		var liveSec = getLiveSessionSeconds(stats, userId, onlineOnServer)
+		var displayTotal = getDisplayTotalSeconds(stats, userId, onlineOnServer)
+
 		if (totalEl) {
-			if (stats && typeof stats.total_play_seconds === 'number') {
-				totalEl.textContent = formatDurationSeconds(stats.total_play_seconds)
+			if (displayTotal != null) {
+				totalEl.textContent = formatDurationSeconds(displayTotal)
+				if (liveSec > 0 && onlineOnServer) {
+					totalEl.title =
+						'Сохранено: ' +
+						formatDurationSeconds(
+							stats && typeof stats.total_play_seconds === 'number'
+								? stats.total_play_seconds
+								: 0,
+						) +
+						' · текущая сессия в сумме'
+				} else {
+					totalEl.removeAttribute('title')
+				}
 			} else {
 				totalEl.textContent = '—'
+				totalEl.removeAttribute('title')
 			}
 		}
 
@@ -218,20 +252,22 @@
 				sessionEl.textContent = 'Укажи ник'
 				sessionEl.className = 'profile-stats-value'
 			} else if (onlineOnServer) {
-				var startMs = getSessionStartMs(stats, userId, true)
-				var liveSec = startMs
-					? Math.floor((Date.now() - startMs) / 1000)
-					: 0
 				sessionEl.textContent = formatDurationSeconds(liveSec)
 				sessionEl.className = 'profile-stats-value profile-stats-value--live'
+			} else if (stats && stats.session_started_at) {
+				sessionEl.textContent = 'Сессия не закрыта'
+				sessionEl.className = 'profile-stats-value'
+				sessionEl.title =
+					'Выйди с сервера нормально — время добавится в «Всего в игре» в базе'
 			} else {
 				sessionEl.textContent = 'Не в сети'
 				sessionEl.className = 'profile-stats-value'
+				sessionEl.removeAttribute('title')
 			}
 		}
 
 		if (hintEl) {
-			var needHint = !stats || typeof stats.total_play_seconds !== 'number'
+			var needHint = !stats
 			hintEl.hidden = !needHint
 			if (needHint) {
 				hintEl.textContent =

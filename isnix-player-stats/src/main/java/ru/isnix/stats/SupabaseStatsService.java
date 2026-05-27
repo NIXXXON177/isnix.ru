@@ -34,6 +34,19 @@ public final class SupabaseStatsService {
 		callRpc("server_record_player_quit", nick);
 	}
 
+	/** Сохранить накопленное время в БД, не выкидывая игрока (quit + join). */
+	public static void flushSession(String nick) {
+		var config = StatsConfig.get();
+		if (!config.isReady() || nick == null || nick.isBlank()) {
+			return;
+		}
+		final String playerNick = nick.trim();
+		EXECUTOR.execute(() -> {
+			invokeRpc(config, "server_record_player_quit", playerNick);
+			invokeRpc(config, "server_record_player_join", playerNick);
+		});
+	}
+
 	private static void callRpc(String functionName, String nick) {
 		var config = StatsConfig.get();
 		if (!config.isReady()) {

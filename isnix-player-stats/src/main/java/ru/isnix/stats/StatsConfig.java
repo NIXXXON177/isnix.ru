@@ -23,6 +23,8 @@ public final class StatsConfig {
 	public boolean enabled = false;
 	public String supabaseUrl = "https://yfrlgeztbaebdapdnefy.supabase.co";
 	public String serviceRoleKey = "";
+	/** Как часто писать накопленное время в Supabase (тики, 20 = 1 сек). 6000 ≈ 5 мин. */
+	public int flushIntervalTicks = 6000;
 
 	public static StatsConfig get() {
 		return INSTANCE;
@@ -75,6 +77,12 @@ public final class StatsConfig {
 			serviceRoleKey = serviceRoleKey.trim();
 		} else {
 			serviceRoleKey = "";
+		}
+		if (flushIntervalTicks < 1200) {
+			flushIntervalTicks = 1200;
+		}
+		if (flushIntervalTicks > 72000) {
+			flushIntervalTicks = 72000;
 		}
 	}
 }

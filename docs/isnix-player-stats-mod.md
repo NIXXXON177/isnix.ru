@@ -21,11 +21,11 @@ cd isnix-player-stats
 .\gradlew.bat build
 ```
 
-Jar: `isnix-player-stats/build/libs/isnix-player-stats-1.0.0.jar`
+Jar: `isnix-player-stats/build/libs/isnix-player-stats-1.0.1.jar`
 
 ## 3. Установка на Play2GO
 
-1. Положи **`isnix-player-stats-1.0.0.jar`** в папку **`mods`** (рядом с Fabric API и остальными модами).
+1. Положи **`isnix-player-stats-1.0.1.jar`** в папку **`mods`** (рядом с Fabric API и остальными модами).
 2. Перезапусти сервер.
 3. Открой **`config/isnix-player-stats.json`** (создаётся при первом запуске):
 
@@ -42,6 +42,9 @@ Jar: `isnix-player-stats/build/libs/isnix-player-stats-1.0.0.jar`
 | `enabled` | `true` — отправка в Supabase |
 | `supabase_url` | Project URL из Supabase → Settings → API |
 | `service_role_key` | **Service role** (секретный), **не** anon и не publishable |
+| `flush_interval_ticks` | Как часто сохранять время в БД (6000 ≈ 5 мин). Пока играешь, в таблице `total_play_seconds` растёт после каждого такого сохранения |
+
+**Важно:** пока сессия открыта, в Supabase `total_play_seconds` может быть **0** — это нормально. Время «висит» в `session_started_at`. После выхода или автосохранения (раз в ~5 мин) секунды попадают в `total_play_seconds`. На сайте в кабинете показывается сумма (сохранённое + текущая сессия).
 
 Ключ бери в Supabase → **Settings → API → service_role**. **Не** публикуй в GitHub, Discord и чаты. Если ключ утёк — **Reset** в Supabase и вставь новый в конфиг.
 
