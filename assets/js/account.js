@@ -64,8 +64,14 @@
 		if (!img || !fallback) return
 		var v = (nick || '').trim()
 		if (v && IsnixAuth && IsnixAuth.MC_NICK_RE.test(v)) {
-			img.src =
-				'https://mc-heads.net/avatar/' + encodeURIComponent(v) + '/48'
+			img.src = 'https://mc-heads.net/avatar/' + encodeURIComponent(v) + '/48'
+			img.onerror = function () {
+				img.onerror = function () {
+					img.onerror = null
+					img.src = 'https://minotar.net/avatar/' + encodeURIComponent(v) + '/48'
+				}
+				img.src = 'https://skinsystem.ely.by/avatars/' + encodeURIComponent(v) + '?size=48'
+			}
 			img.alt = v
 			img.hidden = false
 			fallback.hidden = true
@@ -437,11 +443,16 @@
 
 	function renderPlayerRow(nick, extraHtml) {
 		var safe = escapeHtml(nick)
+		var enc = encodeURIComponent(nick)
 		return (
 			'<div class="auth-player-row">' +
 			'<img class="auth-player-head" src="https://mc-heads.net/avatar/' +
-			encodeURIComponent(nick) +
-			'/32" width="32" height="32" alt="" loading="lazy" decoding="async" />' +
+			enc +
+			'/32" width="32" height="32" alt="" loading="lazy" decoding="async" onerror="this.onerror=function(){this.onerror=null;this.src=\'https://minotar.net/avatar/' +
+			enc +
+			'/32\'};this.src=\'https://skinsystem.ely.by/avatars/' +
+			enc +
+			'?size=32\'" />' +
 			'<div class="auth-player-info"><strong>' +
 			safe +
 			'</strong>' +
