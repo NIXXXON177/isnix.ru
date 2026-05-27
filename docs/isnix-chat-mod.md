@@ -9,7 +9,20 @@
 
 Команды (`/tp`, `/msg` и т.д.) не трогаются.
 
-## Сборка
+## Скачать готовый jar
+
+Мод **не лежит на isnix.ru** — он собирается на GitHub при каждом обновлении.
+
+1. Открой: [Actions → Build ISNIX Chat mod](https://github.com/NIXXXON177/isnix.ru/actions/workflows/build-isnix-chat.yml)
+2. Кликни **последний зелёный** запуск (галочка ✓).
+3. Внизу страницы блок **Artifacts** → скачай **isnix-chat-jar** (внутри `isnix-chat-1.0.0.jar`).
+
+Нужен вход в GitHub (репозиторий публичный, артефакты отдаются через Actions).
+
+Прямая ссылка на последнюю успешную сборку:  
+https://github.com/NIXXXON177/isnix.ru/actions/runs/26491388136
+
+## Сборка самому
 
 Нужны **JDK 21** и интернет.
 
