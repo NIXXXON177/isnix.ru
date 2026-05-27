@@ -52,7 +52,6 @@ cd isnix-chat
   "global_prefix": "!",
   "local_tag": "[рядом]",
   "global_tag": "[все]",
-  "notify_when_alone": true,
   "global_sound": true,
   "global_sound_volume": 0.35,
   "global_sound_pitch": 1.25
@@ -76,4 +75,3 @@ cd isnix-chat
 
 - Пишешь как обычно — слышат рядом.
 - Нужно всем — в начале **`!`**: `!кто на спавне?`
-- Никто рядом — подсказка в чате про `!`.

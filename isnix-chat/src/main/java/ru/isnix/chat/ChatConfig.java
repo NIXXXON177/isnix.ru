@@ -24,7 +24,6 @@ public final class ChatConfig {
 	public String globalPrefix = "!";
 	public String localTag = "[рядом]";
 	public String globalTag = "[все]";
-	public boolean notifyWhenAlone = true;
 	public boolean globalSound = true;
 	public float globalSoundVolume = 0.35f;
 	public float globalSoundPitch = 1.25f;

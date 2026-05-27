@@ -55,14 +55,6 @@ public final class ChatHandler {
 				? server.getPlayerManager().getPlayerList()
 				: nearbyPlayers(sender, cfg.localRadius);
 
-		if (!global && recipients.size() == 1 && cfg.notifyWhenAlone) {
-			sender.sendMessage(
-					Text.literal("Рядом никого нет — тебя слышишь только ты. Для всех: ")
-							.formatted(Formatting.GRAY)
-							.append(Text.literal(cfg.globalPrefix + "сообщение").formatted(Formatting.GOLD)),
-					false);
-		}
-
 		for (ServerPlayerEntity target : recipients) {
 			target.sendMessage(line, false);
 			if (global) {
