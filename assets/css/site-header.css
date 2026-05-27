@@ -89,6 +89,20 @@
 		border-bottom: 1px solid var(--border);
 	}
 
+	.nav-drawer-auth--user .nav-drawer-auth__login {
+		display: none !important;
+	}
+
+	.nav-drawer-auth--guest .nav-drawer-auth__user {
+		display: none !important;
+	}
+
+	.nav-drawer-auth__login[hidden],
+	.nav-drawer-auth__user[hidden],
+	.nav-drawer-auth__logout[hidden] {
+		display: none !important;
+	}
+
 	.nav-drawer-auth__login {
 		display: flex;
 		align-items: center;

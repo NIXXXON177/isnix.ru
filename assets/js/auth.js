@@ -509,6 +509,7 @@
 	}
 
 	function updateNavDrawerAuth(session, profile) {
+		var authWrap = document.getElementById('navDrawerAuth')
 		var loginEl = document.getElementById('navDrawerLogin')
 		var userEl = document.getElementById('navDrawerUser')
 		var logoutBtn = document.getElementById('navDrawerLogout')
@@ -519,15 +520,31 @@
 		if (!loginEl && !userEl) return
 
 		var loggedIn = isReady() && session && session.user
+		if (authWrap) {
+			authWrap.classList.toggle('nav-drawer-auth--user', !!loggedIn)
+			authWrap.classList.toggle('nav-drawer-auth--guest', !loggedIn)
+		}
 		if (!loggedIn) {
-			if (loginEl) loginEl.hidden = false
-			if (userEl) userEl.hidden = true
+			if (loginEl) {
+				loginEl.hidden = false
+				loginEl.style.display = ''
+			}
+			if (userEl) {
+				userEl.hidden = true
+				userEl.style.display = 'none'
+			}
 			if (logoutBtn) logoutBtn.hidden = true
 			return
 		}
 
-		if (loginEl) loginEl.hidden = true
-		if (userEl) userEl.hidden = false
+		if (loginEl) {
+			loginEl.hidden = true
+			loginEl.style.display = 'none'
+		}
+		if (userEl) {
+			userEl.hidden = false
+			userEl.style.display = ''
+		}
 		if (logoutBtn) logoutBtn.hidden = false
 
 		var email =
