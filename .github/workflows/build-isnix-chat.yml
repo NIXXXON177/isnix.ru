@@ -1,0 +1,35 @@
+# Сборка isnix-chat (Fabric 1.21.1) — jar в артефактах workflow
+name: Build ISNIX Chat mod
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'isnix-chat/**'
+      - '.github/workflows/build-isnix-chat.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'isnix-chat/**'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Build mod
+        working-directory: isnix-chat
+        run: chmod +x gradlew && ./gradlew build --no-daemon
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: isnix-chat-jar
+          path: isnix-chat/build/libs/isnix-chat-*.jar
+          if-no-files-found: error

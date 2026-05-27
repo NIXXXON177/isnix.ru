@@ -7,3 +7,9 @@ _index_head.html
 Thumbs.db
 
 # Supabase: anon key в auth-config.js (публичный ключ для фронта при RLS)
+
+# Fabric mod build
+isnix-chat/.gradle/
+isnix-chat/build/
+isnix-chat/run/
+isnix-chat/.idea/

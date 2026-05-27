@@ -1,0 +1,7 @@
+{
+	"local_radius": 80,
+	"global_prefix": "!",
+	"local_tag": "[рядом]",
+	"global_tag": "[все]",
+	"notify_when_alone": true
+}

@@ -1,0 +1,21 @@
+{
+	"schemaVersion": 1,
+	"id": "isnix_chat",
+	"version": "${version}",
+	"name": "ISNIX Chat",
+	"description": "Локальный чат рядом и глобальный через префикс !",
+	"authors": ["ISTHISNIXXXON"],
+	"license": "MIT",
+	"environment": "server",
+	"entrypoints": {
+		"server": [
+			"ru.isnix.chat.IsnixChatMod"
+		]
+	},
+	"depends": {
+		"fabricloader": ">=0.16.0",
+		"minecraft": "~1.21.1",
+		"java": ">=21",
+		"fabric-api": "*"
+	}
+}
