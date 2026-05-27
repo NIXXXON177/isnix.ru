@@ -1,0 +1,55 @@
+# ISNIX Market (Fabric 1.21.1)
+
+Серверный рынок за **ресурсы** (без валюты): аналог `/ah`, оплата только предметами.
+
+## Команды
+
+| Команда | Действие |
+|---------|----------|
+| `/sell` | Открыть рынок (GUI большого сундука) |
+| `/sell list` | Сразу окно «Выставить лот» |
+| `/sell cancel <uuid>` | Снять свой лот (ID в lore или в `config/isnix-market/listings.json`) |
+
+## Как пользоваться
+
+1. **`/sell`** — список лотов, **ЛКМ по лоту** — покупка (если в инвентаре есть цена).
+2. **Изумруд «Выставить предмет»** (центр нижнего ряда) или **`/sell list`**:
+   - левый слот — что продаёте;
+   - правый — **цена** (например 8 алмазов = стак из 8 алмазов в слоте цены);
+   - зелёная панель — подтвердить.
+3. При покупке играет звук (по умолчанию как у опыта — как в `/trade`, настраивается в конфиге).
+
+Оплата офлайн-продавцу копится в `pending-payouts.json` и выдаётся при входе.
+
+## Установка
+
+1. Соберите jar: `isnix-market/gradlew build` или скачайте артефакт из GitHub Actions `build-isnix-market.yml`.
+2. Положите **`isnix-market-1.0.0.jar`** только в `mods/` **сервера** (клиентам мод не нужен — обычный GUI сундука).
+3. Нужны **Fabric Loader**, **Fabric API**, Minecraft **1.21.1**.
+
+Конфиг после первого запуска: `config/isnix-market/isnix-market.json`
+
+```json
+{
+  "maxListingsPerPlayer": 8,
+  "maxListingsTotal": 300,
+  "listingsExpireDays": 30,
+  "purchaseSound": "entity.experience_orb.pickup",
+  "purchaseSoundVolume": 0.7,
+  "purchaseSoundPitch": 1.25
+}
+```
+
+Данные лотов: `config/isnix-market/listings.json`
+
+## Права (LuckPerms, опционально)
+
+Команда доступна всем игрокам. Ограничение через Essential Commands / LP при необходимости:
+
+```
+/lp group default permission set minecraft.command.sell true
+```
+
+## Конфликты
+
+Не ставьте второй плагин с командой `/sell`. Если есть — переименуйте команду в конфиге другого мода или напишите, добавим алиас `/market`.

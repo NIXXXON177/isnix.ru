@@ -1,0 +1,8 @@
+{
+	"maxListingsPerPlayer": 8,
+	"maxListingsTotal": 300,
+	"listingsExpireDays": 30,
+	"purchaseSound": "entity.experience_orb.pickup",
+	"purchaseSoundVolume": 0.7,
+	"purchaseSoundPitch": 1.25
+}

@@ -1,0 +1,21 @@
+{
+	"schemaVersion": 1,
+	"id": "isnix_market",
+	"version": "${version}",
+	"name": "ISNIX Market",
+	"description": "Рынок /sell: бартер предметов за ресурсы, GUI сундука",
+	"authors": ["ISTHISNIXXXON"],
+	"license": "MIT",
+	"environment": "server",
+	"entrypoints": {
+		"server": [
+			"ru.isnix.market.IsnixMarketMod"
+		]
+	},
+	"depends": {
+		"fabricloader": ">=0.16.0",
+		"minecraft": "~1.21.1",
+		"java": ">=21",
+		"fabric-api": "*"
+	}
+}
