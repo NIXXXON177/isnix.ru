@@ -1,7 +1,6 @@
 package ru.isnix.market.util;
 
 import net.minecraft.registry.RegistryKeys;
-import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
@@ -31,12 +30,10 @@ public final class MarketSounds {
 	private static SoundEvent resolveSound(ServerPlayerEntity player, String idString) {
 		try {
 			Identifier id = Identifier.of(idString);
-			RegistryEntry.Reference<SoundEvent> entry = player.getRegistryManager()
-					.getOrThrow(RegistryKeys.SOUND_EVENT)
-					.getEntry(id)
-					.orElse(null);
-			if (entry != null) {
-				return entry.value();
+			var registry = player.getRegistryManager().get(RegistryKeys.SOUND_EVENT);
+			SoundEvent sound = registry.get(id);
+			if (sound != null) {
+				return sound;
 			}
 		} catch (Exception ignored) {
 		}

@@ -31,19 +31,6 @@ public final class PurchaseService {
 		if (!InventoryHelper.hasItems(buyer, price)) {
 			return Result.NOT_ENOUGH_ITEMS;
 		}
-		if (!buyer.getInventory().getEmptySlot() && !InventoryHelper.hasItems(buyer, sale)) {
-			// allow if can stack with existing
-			boolean canFit = false;
-			for (ItemStack stack : buyer.getInventory().main) {
-				if (stack.isEmpty() || ItemStack.areItemsAndComponentsEqual(stack, sale)) {
-					canFit = true;
-					break;
-				}
-			}
-			if (!canFit) {
-				return Result.INVENTORY_FULL;
-			}
-		}
 
 		if (!InventoryHelper.removeItems(buyer, price)) {
 			return Result.NOT_ENOUGH_ITEMS;

@@ -51,7 +51,7 @@ public final class InventoryHelper {
 			return;
 		}
 		ItemStack remaining = stack.copy();
-		player.getInventory().offerStack(remaining);
+		player.getInventory().insertStack(remaining);
 		if (!remaining.isEmpty()) {
 			player.dropItem(remaining, false);
 		}

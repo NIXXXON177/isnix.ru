@@ -26,10 +26,10 @@ public class CreateListingScreenHandler extends GenericContainerScreenHandler {
 
 	public CreateListingScreenHandler(int syncId, PlayerInventory playerInventory) {
 		super(ScreenHandlerType.GENERIC_9X3, syncId, playerInventory, buildInventory(), 3);
-		this.container = (SimpleInventory) this.inventory;
+		this.container = (SimpleInventory) getInventory();
 	}
 
-	private static Inventory buildInventory() {
+	private static SimpleInventory buildInventory() {
 		SimpleInventory inv = new SimpleInventory(27);
 		for (int i = 0; i < 27; i++) {
 			if (i == SLOT_SALE || i == SLOT_PRICE) {

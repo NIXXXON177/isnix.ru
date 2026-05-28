@@ -31,7 +31,7 @@ public class ListingStorage {
 
 	public ListingStorage(MinecraftServer server) {
 		this.server = server;
-		this.file = server.getRunDirectory().toPath().resolve("config/isnix-market/listings.json");
+		this.file = server.getRunDirectory().resolve("config/isnix-market/listings.json");
 	}
 
 	public List<MarketListing> allSorted() {

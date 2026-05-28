@@ -28,7 +28,7 @@ public class PendingPayoutStorage {
 
 	public PendingPayoutStorage(MinecraftServer server) {
 		this.server = server;
-		this.file = server.getRunDirectory().toPath().resolve("config/isnix-market/pending-payouts.json");
+		this.file = server.getRunDirectory().resolve("config/isnix-market/pending-payouts.json");
 	}
 
 	public void add(UUID sellerUuid, ItemStack stack) {
