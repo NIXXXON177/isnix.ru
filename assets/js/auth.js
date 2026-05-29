@@ -143,7 +143,8 @@
 	}
 
 	var APPS_SCHEMA_CACHE_KEY = 'isnix_wl_apps_schema_v1'
-	var SESSION_TIMEOUT_MS = 7000
+	var SESSION_TIMEOUT_MS = 22000
+	var sessionBackgroundRefresh = null
 
 	function readAppsSchemaCache() {
 		try {
@@ -369,6 +370,11 @@
 		if (err.code === '42501' || /permission denied for table/i.test(msg)) {
 			return 'Нет доступа к таблице в Supabase. SQL Editor → запусти docs/supabase-grants-fix.sql, затем перезайди на сайт.'
 		}
+		if (isSessionTimeoutError(err)) {
+			return (
+				'Supabase отвечает слишком долго. Обнови страницу (Ctrl+F5) или нажми «Повторить загрузку». Если ты уже вошёл — подожди 10–20 секунд: сессия подтянется из браузера.'
+			)
+		}
 		if (isNetworkError(err)) {
 			return (
 				'Соединение с Supabase сброшено (ERR_CONNECTION_RESET) — часто блокировщик, VPN или фильтр провайдера. Отключи AdBlock для isnix.ru и *.supabase.co, попробуй другую сеть или VPN. Проект Supabase не должен быть на паузе. Инструкция: github.com/NIXXXON177/isnix.ru/blob/main/docs/supabase-cors-troubleshooting.md'
@@ -447,19 +453,43 @@
 		}
 	}
 
-	async function getSession() {
+	function scheduleSessionBackgroundRefresh() {
+		if (sessionBackgroundRefresh) return
 		var sb = getClient()
-		if (!sb) return readStoredSession()
-		if (sessionInflight) return sessionInflight
+		if (!sb) return
+		sessionBackgroundRefresh = sb.auth
+			.getSession()
+			.then(function (res) {
+				sessionBackgroundRefresh = null
+				if (res.error) return null
+				return res.data.session
+			})
+			.catch(function () {
+				sessionBackgroundRefresh = null
+				return null
+			})
+	}
+
+	async function getSession(opts) {
+		var sb = getClient()
 		var stored = readStoredSession()
-		sessionInflight = new Promise(function (resolve, reject) {
+		if (!sb) return stored
+
+		var preferCache = !opts || opts.preferCache !== false
+		if (preferCache && stored) {
+			scheduleSessionBackgroundRefresh()
+			return stored
+		}
+
+		if (sessionInflight) return sessionInflight
+
+		sessionInflight = new Promise(function (resolve) {
 			var settled = false
 			var tid = setTimeout(function () {
 				if (settled) return
 				settled = true
 				sessionInflight = null
-				if (stored) resolve(stored)
-				else reject(new Error('Таймаут подключения к Supabase'))
+				resolve(readStoredSession())
 			}, SESSION_TIMEOUT_MS)
 			sb.auth
 				.getSession()
@@ -468,7 +498,10 @@
 					settled = true
 					clearTimeout(tid)
 					sessionInflight = null
-					if (res.error) throw res.error
+					if (res.error) {
+						resolve(readStoredSession())
+						return
+					}
 					resolve(res.data.session)
 				})
 				.catch(function (err) {
@@ -476,14 +509,18 @@
 					settled = true
 					clearTimeout(tid)
 					sessionInflight = null
-					if (stored && isNetworkError(err)) {
-						resolve(stored)
+					if (isNetworkError(err) || isSessionTimeoutError(err)) {
+						resolve(readStoredSession())
 						return
 					}
-					reject(err)
+					resolve(readStoredSession())
 				})
 		})
 		return sessionInflight
+	}
+
+	function isSessionTimeoutError(err) {
+		return /таймаут подключения к supabase/i.test(errorText(err))
 	}
 
 	function sitePresenceQueryDisabled() {

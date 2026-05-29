@@ -109,9 +109,13 @@
 			deferAccountTask(pulseOnce, 2000)
 		})
 
-		global.IsnixAuth.getSession().then(function (session) {
-			if (session && session.user) startPulse()
-		})
+		global.IsnixAuth.getSession()
+			.then(function (session) {
+				if (session && session.user) startPulse()
+			})
+			.catch(function () {
+				/* ignore */
+			})
 	}
 
 	if (document.readyState === 'loading') {
