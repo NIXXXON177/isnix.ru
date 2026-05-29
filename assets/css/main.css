@@ -1922,8 +1922,9 @@
 				}
 				.nav-drawer {
 					position: static;
-					flex: 1;
+					flex: 1 1 auto;
 					min-width: 0;
+					max-width: 100%;
 					height: auto;
 					width: auto;
 					padding: 0;
@@ -1942,19 +1943,29 @@
 				}
 				.nav-links {
 					flex-direction: row;
-					flex-wrap: wrap;
+					flex-wrap: nowrap;
+					align-items: center;
 					justify-content: flex-end;
-					gap: clamp(0.5rem, 1.2vw, 1.5rem);
+					gap: clamp(0.4rem, 1vw, 1.25rem);
 				}
 				.nav-links li {
 					border: none;
+					display: flex;
+					align-items: center;
 				}
 				.nav-links a {
-					padding: 0;
+					display: inline-flex;
+					align-items: center;
+					padding: 0.15rem 0;
 					min-height: 0;
-					font-size: 0.68rem;
-					letter-spacing: 0.1em;
+					line-height: 1.2;
+					font-size: clamp(0.58rem, 0.55rem + 0.2vw, 0.68rem);
+					letter-spacing: 0.08em;
 					white-space: nowrap;
+				}
+				.nav-drawer {
+					align-self: stretch;
+					align-items: center;
 				}
 				.nav-btn-menu {
 					flex-shrink: 0;

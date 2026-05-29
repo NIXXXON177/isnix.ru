@@ -133,6 +133,10 @@
 	color: #fcd34d;
 }
 
+.support-quick--social {
+	margin-bottom: 0;
+}
+
 .support-section-title {
 	font-family: 'Cinzel', serif;
 	font-size: 1.1rem;

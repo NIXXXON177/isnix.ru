@@ -8,7 +8,7 @@
 	align-items: center;
 	justify-content: space-between;
 	gap: clamp(0.5rem, 1.5vw, 1.25rem);
-	flex: 1;
+	flex: 1 1 auto;
 	min-width: 0;
 }
 
@@ -59,8 +59,32 @@
 	}
 
 	.nav-links a[data-nav='barter'],
-	.nav-links a[data-nav='links'] {
+	.nav-links a[data-nav='links'],
+	.nav-links a[data-nav='join-server'] {
 		display: none;
+	}
+
+	.nav-drawer {
+		align-self: stretch;
+		align-items: center;
+	}
+
+	.nav-links {
+		flex-wrap: nowrap;
+		align-items: center;
+		row-gap: 0;
+	}
+
+	.nav-links li {
+		display: flex;
+		align-items: center;
+	}
+
+	.nav-links a {
+		display: inline-flex;
+		align-items: center;
+		line-height: 1.2;
+		padding: 0.15rem 0;
 	}
 }
 
