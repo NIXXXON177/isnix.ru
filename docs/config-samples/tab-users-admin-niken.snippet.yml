@@ -1,5 +1,10 @@
-# config/tab/users.yml — префикс [Админ] без LuckPerms (через группу admin в groups.yml).
+# config/tab/users.yml — префикс [Админ] (TAB 5.5: только tabprefix/tagprefix, не group).
 # После правок: /tab reload
 
 ea99bdf6-3eea-3f59-b401-745fb532c1ca:
-  group: admin
+  tabprefix: "&c&l[Админ] &r"
+  tagprefix: "&c&l[Админ] &r"
+
+NikenER999:
+  tabprefix: "&c&l[Админ] &r"
+  tagprefix: "&c&l[Админ] &r"
