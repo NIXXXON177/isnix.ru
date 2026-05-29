@@ -1,0 +1,142 @@
+/* Техподдержка — дополнение к how-to-play.css */
+.support-quick {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+	gap: 0.85rem;
+	margin-bottom: 2.5rem;
+}
+
+.support-quick__card {
+	display: flex;
+	flex-direction: column;
+	gap: 0.35rem;
+	padding: 1rem 1.1rem;
+	border-radius: var(--radius-md);
+	border: 1px solid rgba(74, 222, 128, 0.22);
+	background: rgba(15, 22, 15, 0.85);
+	text-decoration: none;
+	color: inherit;
+	transition:
+		border-color 0.2s,
+		background 0.2s;
+}
+
+.support-quick__card:hover {
+	border-color: rgba(74, 222, 128, 0.45);
+	background: rgba(22, 101, 52, 0.15);
+}
+
+.support-quick__card--primary {
+	border-color: rgba(74, 222, 128, 0.4);
+	background: linear-gradient(
+		135deg,
+		rgba(22, 101, 52, 0.25) 0%,
+		rgba(15, 22, 15, 0.9) 60%
+	);
+}
+
+.support-quick__label {
+	font-size: 0.58rem;
+	font-weight: 700;
+	letter-spacing: 0.2em;
+	text-transform: uppercase;
+	color: var(--green);
+}
+
+.support-quick__title {
+	font-family: 'Cinzel', serif;
+	font-size: 1rem;
+	font-weight: 700;
+	color: #fff;
+}
+
+.support-quick__text {
+	font-size: 0.78rem;
+	line-height: 1.5;
+	color: var(--text-soft);
+}
+
+.support-faq {
+	display: flex;
+	flex-direction: column;
+	gap: 0.55rem;
+	margin-bottom: 2rem;
+}
+
+.support-faq__item {
+	border: 1px solid var(--border);
+	border-radius: var(--radius-md);
+	background: rgba(0, 0, 0, 0.25);
+	overflow: hidden;
+}
+
+.support-faq__item[open] {
+	border-color: rgba(74, 222, 128, 0.3);
+}
+
+.support-faq__q {
+	padding: 0.85rem 1rem;
+	font-size: 0.88rem;
+	font-weight: 600;
+	color: #fff;
+	cursor: pointer;
+	list-style: none;
+}
+
+.support-faq__q::-webkit-details-marker {
+	display: none;
+}
+
+.support-faq__q::after {
+	content: '+';
+	float: right;
+	color: var(--green);
+	font-weight: 700;
+}
+
+.support-faq__item[open] .support-faq__q::after {
+	content: '−';
+}
+
+.support-faq__a {
+	padding: 0 1rem 1rem;
+	font-size: 0.82rem;
+	line-height: 1.65;
+	color: var(--text-soft);
+}
+
+.support-faq__a a {
+	color: var(--green);
+}
+
+.support-faq__a ul {
+	margin: 0.5rem 0 0;
+	padding-left: 1.2rem;
+}
+
+.support-faq__a li {
+	margin-bottom: 0.35rem;
+}
+
+.support-note {
+	padding: 1rem 1.1rem;
+	border-radius: var(--radius-md);
+	border: 1px solid rgba(251, 191, 36, 0.3);
+	background: rgba(251, 191, 36, 0.06);
+	font-size: 0.82rem;
+	line-height: 1.6;
+	color: var(--text-soft);
+	margin-bottom: 2rem;
+}
+
+.support-note strong {
+	color: #fcd34d;
+}
+
+.support-section-title {
+	font-family: 'Cinzel', serif;
+	font-size: 1.1rem;
+	font-weight: 700;
+	color: #fff;
+	margin: 0 0 1rem;
+}

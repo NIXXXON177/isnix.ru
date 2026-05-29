@@ -9,6 +9,7 @@ on:
       - 'how-to-play.html'
       - 'account.html'
       - 'status.html'
+      - 'support.html'
       - 'assets/**'
       - 'robots.txt'
       - 'sitemap.xml'
@@ -27,6 +28,8 @@ jobs:
           test -f account.html
           test -f status.html
           test -f how-to-play.html
+          test -f support.html
+          test -f assets/css/support.css
           test -f assets/css/main.css
           test -f assets/css/components.css
           test -f assets/css/auth.css

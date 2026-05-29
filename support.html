@@ -1,0 +1,307 @@
+<!doctype html>
+<html lang="ru">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+		<title>Техподдержка — ISTHISNIXXXON</title>
+		<meta
+			name="description"
+			content="Помощь по входу на сервер ISTHISNIXXXON: вайтлист, сборка, аккаунт на сайте. FAQ и связь с администрацией."
+		/>
+		<meta name="theme-color" content="#0a0f0a" />
+		<link rel="canonical" href="https://isnix.ru/support.html" />
+		<link rel="icon" href="favicon.svg" type="image/svg+xml" />
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Raleway:wght@400;600;700&display=swap"
+			rel="stylesheet"
+		/>
+		<link rel="stylesheet" href="assets/css/main.css" />
+		<link rel="stylesheet" href="assets/css/components.css" />
+		<link rel="stylesheet" href="assets/css/how-to-play.css" />
+		<link rel="stylesheet" href="assets/css/support.css" />
+		<link rel="stylesheet" href="assets/css/site-header.css" />
+	</head>
+	<body class="htp-page" data-page="support">
+		<div class="site-header" id="siteHeader">
+			<div class="site-header__inner">
+				<header class="site-top" id="siteNav">
+					<a href="index.html" class="nav-logo" id="navLogo">ISTHIS<span>NIXXXON</span></a>
+					<div class="site-top__actions">
+						<button
+							type="button"
+							class="site-top__ip"
+							id="siteCopyIp"
+							title="Скопировать IP сервера"
+						>
+							mc.isnix.ru
+						</button>
+						<a href="index.html#join-server" class="nav-btn nav-btn--top" id="navJoinTop"
+							>На сервер</a
+						>
+						<button
+							type="button"
+							class="nav-toggle"
+							id="navToggle"
+							aria-expanded="false"
+							aria-controls="navMenu"
+							aria-label="Открыть меню"
+						>
+							<span></span><span></span><span></span>
+						</button>
+					</div>
+				</header>
+				<nav class="nav-drawer" id="navMenu" aria-label="Навигация по сайту">
+					<div class="nav-drawer-auth" id="navDrawerAuth">
+						<a href="account.html" class="nav-drawer-auth__login" id="navDrawerLogin"
+							>Вход</a
+						>
+						<a
+							href="account.html"
+							class="nav-drawer-auth__user"
+							id="navDrawerUser"
+							hidden
+						>
+							<span class="nav-drawer-auth__avatar-wrap" aria-hidden="true">
+								<img
+									class="nav-drawer-auth__avatar"
+									id="navDrawerAvatar"
+									width="40"
+									height="40"
+									alt=""
+								/>
+								<span
+									class="nav-drawer-auth__avatar-fallback"
+									id="navDrawerAvatarFb"
+									>?</span
+								>
+							</span>
+							<span class="nav-drawer-auth__meta">
+								<span class="nav-drawer-auth__nick" id="navDrawerNick">—</span>
+								<span class="nav-drawer-auth__email" id="navDrawerEmail">—</span>
+							</span>
+						</a>
+					</div>
+					<ul class="nav-links">
+						<li><a href="index.html#about" data-nav="about">О сервере</a></li>
+						<li><a href="index.html#download" data-nav="download">Скачать</a></li>
+						<li><a href="index.html#barter" data-nav="barter">Бартер</a></li>
+						<li><a href="index.html#shop" data-nav="shop">Магазин</a></li>
+						<li><a href="index.html#rules" data-nav="rules">Правила</a></li>
+						<li><a href="index.html#join-server" data-nav="join-server">На сервер</a></li>
+						<li>
+							<a href="how-to-play.html" data-page-link="how-to-play">Как играть</a>
+						</li>
+						<li>
+							<a href="status.html" data-page-link="status">Статус</a>
+						</li>
+						<li>
+							<a href="support.html" data-page-link="support">Техподдержка</a>
+						</li>
+						<li class="nav-links__account">
+							<a href="account.html" data-page-link="account" id="navAccountBtn"
+								>Аккаунт</a
+							>
+						</li>
+						<li><a href="index.html#links" data-nav="links">Контакты</a></li>
+					</ul>
+					<a href="index.html#join-server" class="nav-btn nav-btn-menu" id="navJoinBtn"
+						>На сервер</a
+					>
+					<div class="nav-drawer__footer">
+						<button
+							type="button"
+							class="nav-drawer-auth__logout"
+							id="navDrawerLogout"
+							hidden
+						>
+							Выход
+						</button>
+					</div>
+				</nav>
+			</div>
+		</div>
+		<button
+			type="button"
+			class="nav-backdrop"
+			id="navBackdrop"
+			aria-hidden="true"
+			tabindex="-1"
+		></button>
+
+		<main class="htp-main">
+			<header class="htp-hero">
+				<p class="htp-hero__eyebrow">Помощь</p>
+				<h1 class="htp-hero__title">Техподдержка</h1>
+				<p class="htp-hero__lead">
+					Ответы на частые вопросы и куда писать, если не получается зайти на сервер
+					или есть вопрос по заявке в вайтлист.
+				</p>
+			</header>
+
+			<div class="support-quick">
+				<a
+					href="https://vk.com/isthisnixxxon"
+					target="_blank"
+					rel="noopener noreferrer"
+					class="support-quick__card support-quick__card--primary"
+				>
+					<span class="support-quick__label">Быстрее всего</span>
+					<span class="support-quick__title">Написать в ВК</span>
+					<span class="support-quick__text"
+						>Поддержка 24/7 — опиши проблему и приложи скрин, если есть.</span
+					>
+				</a>
+				<a href="account.html#whitelist" class="support-quick__card">
+					<span class="support-quick__label">Вайтлист</span>
+					<span class="support-quick__title">Личный кабинет</span>
+					<span class="support-quick__text"
+						>Заявка только на сайте. Статус и ответы админов — в разделе «Мои
+						заявки».</span
+					>
+				</a>
+				<a href="status.html" class="support-quick__card">
+					<span class="support-quick__label">Сервер</span>
+					<span class="support-quick__title">Статус онлайна</span>
+					<span class="support-quick__text"
+						>Работает ли mc.isnix.ru и кто сейчас в игре.</span
+					>
+				</a>
+				<a href="how-to-play.html" class="support-quick__card">
+					<span class="support-quick__label">Установка</span>
+					<span class="support-quick__title">Как играть</span>
+					<span class="support-quick__text"
+						>ElyPrismLauncher, сборка Fabric 1.21.1, IP сервера.</span
+					>
+				</a>
+			</div>
+
+			<p class="support-note">
+				<strong>Важно:</strong> заявку в вайтлист не принимаем в ВК, Telegram и
+				личных сообщениях — только через
+				<a href="account.html#whitelist">account.html</a>. В соцсетях помогаем с
+				входом, модами и багами.
+			</p>
+
+			<h2 class="support-section-title">Частые вопросы</h2>
+			<div class="support-faq">
+				<details class="support-faq__item">
+					<summary class="support-faq__q">Как попасть на сервер? Нужна ли лицензия?</summary>
+					<div class="support-faq__a">
+						<p>
+							Сервер закрытый (<strong>whitelist</strong>). Порядок такой:
+						</p>
+						<ul>
+							<li>
+								<a href="account.html">Регистрация</a> на сайте и
+								<a href="account.html#whitelist">заявка в вайтлист</a> (возраст
+								12+, ник, правила, сборка).
+							</li>
+							<li>Дождись одобрения — обычно в течение часа.</li>
+							<li>
+								Установи <a href="how-to-play.html">сборку</a> (Fabric
+								<strong>1.21.1</strong>), зайди с ником из заявки.
+							</li>
+						</ul>
+						<p>
+							Лицензия Mojang <strong>не обязательна</strong> — у нас
+							offline-mode. Главное — тот же ник, что в заявке.
+						</p>
+					</div>
+				</details>
+
+				<details class="support-faq__item">
+					<summary class="support-faq__q">Заявку одобрили, но не пускает на сервер</summary>
+					<div class="support-faq__a">
+						<ul>
+							<li>
+								В кабинете статус «одобрено» и ник совпадает с тем, что в
+								лаунчере (регистр букв важен).
+							</li>
+							<li>Версия <strong>1.21.1</strong>, загрузчик <strong>Fabric</strong>, моды из <a href="index.html#download">сборки сайта</a>.</li>
+							<li>IP: <strong>mc.isnix.ru</strong> — проверь <a href="status.html">статус сервера</a>.</li>
+							<li>
+								После одобрения ник добавляется на сервер автоматически (до ~5
+								минут). Если прошло больше — напиши в
+								<a href="https://vk.com/isthisnixxxon" target="_blank" rel="noopener">ВК</a>
+								с ником из заявки.
+							</li>
+						</ul>
+					</div>
+				</details>
+
+				<details class="support-faq__item">
+					<summary class="support-faq__q">Где смотреть статус заявки и ответ админа?</summary>
+					<div class="support-faq__a">
+						<p>
+							<a href="account.html">Личный кабинет</a> → «Мои заявки». Если админ
+							задал вопрос — ответь в форме под сообщением. Уведомления — колокольчик
+							вверху кабинета (разреши уведомления браузера по желанию).
+						</p>
+					</div>
+				</details>
+
+				<details class="support-faq__item">
+					<summary class="support-faq__q">Ошибка при входе: версия, моды, disconnected</summary>
+					<div class="support-faq__a">
+						<ul>
+							<li>Переустанови инстанс из <strong>ISTHISNIXXXONmods.zip</strong> — <a href="how-to-play.html">инструкция</a>.</li>
+							<li>Не смешивай моды с других серверов.</li>
+							<li>Выдели игре достаточно RAM (4–6 ГБ для модов).</li>
+							<li>
+								Скрин ошибки из лаунчера или чата — пришли в
+								<a href="https://vk.com/isthisnixxxon" target="_blank" rel="noopener">ВК</a>.
+							</li>
+						</ul>
+					</div>
+				</details>
+
+				<details class="support-faq__item">
+					<summary class="support-faq__q">Не могу войти на сайт / «нет связи с базой»</summary>
+					<div class="support-faq__a">
+						<ul>
+							<li>Обнови страницу (Ctrl+Shift+R), отключи блокировщик рекламы для isnix.ru.</li>
+							<li>Проверь интернет и VPN — иногда мешает Supabase.</li>
+							<li>Попробуй другой браузер или режим инкогнито.</li>
+							<li>Если не помогло — напиши в <a href="https://vk.com/isthisnixxxon" target="_blank" rel="noopener">ВК</a>, укажи браузер и скрин ошибки.</li>
+						</ul>
+					</div>
+				</details>
+
+				<details class="support-faq__item">
+					<summary class="support-faq__q">Жалоба на игрока, баг, потеря вещей</summary>
+					<div class="support-faq__a">
+						<p>
+							Напиши в
+							<a href="https://vk.com/isthisnixxxon" target="_blank" rel="noopener">ВК</a>:
+							ник нарушителя, что произошло, дата и скрины. По правилам сервера
+							рассмотрим в разумные сроки. Откат мира без доказательств обычно не
+							делаем.
+						</p>
+					</div>
+				</details>
+
+				<details class="support-faq__item">
+					<summary class="support-faq__q">Донат, префиксы, магазин</summary>
+					<div class="support-faq__a">
+						<p>
+							Косметика и донат — на <a href="index.html#shop">главной в магазине</a>.
+							Вопросы по оплате или не пришла покупка — в ВК с чеком и ником.
+						</p>
+					</div>
+				</details>
+			</div>
+
+			<p class="htp-bottom">
+				<a href="index.html">На главную</a> ·
+				<a href="how-to-play.html">Как играть</a> ·
+				<a href="account.html">Аккаунт</a> ·
+				<a href="https://t.me/isthisnixxxon" target="_blank" rel="noopener">Telegram</a>
+			</p>
+		</main>
+
+		<script src="assets/js/browser-compat.js?v=1"></script>
+		<script src="assets/js/site-header.js?v=4" defer></script>
+	</body>
+</html>
