@@ -84,11 +84,14 @@ public final class ClanTagCommands {
 			source.sendError(Text.literal("Не удалось определить клан OPAC."));
 			return 0;
 		}
-		String name = OpacBridge.getPartyNameForOwner(ownerId, player.getServer());
+		String name = OpacBridge.getPartyNameForPlayer(player);
+		int members = OpacBridge.getPartyMemberCount(player);
 		ClanTagConfig.ClanStyle style = ClanTagConfig.styleFor(ownerId);
 		String preview = ClanTagFormatter.formatForPlayer(player);
 		source.sendFeedback(() -> Text.literal(
 				"Клан: " + (name == null ? "—" : name)
+						+ " | участников: " + members
+						+ " | в клане: " + OpacBridge.isPlayerInClan(player)
 						+ " | цвет: " + (style != null ? style.color : "7")
 						+ " | жирный: " + (style != null && style.bold)
 						+ " | в TAB: " + preview), false);

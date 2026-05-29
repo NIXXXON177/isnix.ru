@@ -3,4 +3,4 @@
 
 _DEFAULT_:
   tabprefix: "%luckperms:prefix%"
-  tabsuffix: "%luckperms:suffix% %isnix:clan_tag%"
+  tabsuffix: "%luckperms:suffix% %sync:isnix:clan_tag%"

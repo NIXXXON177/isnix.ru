@@ -38,7 +38,7 @@ public final class ClanTagFormatter {
 		if (ownerId == null) {
 			return "";
 		}
-		String rawName = OpacBridge.getPartyNameForOwner(ownerId, player.getServer());
+		String rawName = OpacBridge.getPartyNameForPlayer(player);
 		if (rawName == null || rawName.isEmpty()) {
 			return "";
 		}

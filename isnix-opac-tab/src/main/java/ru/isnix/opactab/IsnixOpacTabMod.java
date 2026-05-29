@@ -14,6 +14,8 @@ public class IsnixOpacTabMod implements DedicatedServerModInitializer {
 	public void onInitializeServer() {
 		ServerLifecycleEvents.SERVER_STARTING.register(server -> ClanTagConfig.load(server));
 
+		ServerLifecycleEvents.SERVER_STARTED.register(server -> TabBridge.register(server));
+
 		ClanTagPlaceholders.register();
 
 		CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) ->

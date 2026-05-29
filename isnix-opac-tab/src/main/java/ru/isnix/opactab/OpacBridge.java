@@ -20,6 +20,7 @@ public final class OpacBridge {
 	private static Method getOwner;
 	private static Method getMemberUuid;
 	private static Method getMemberCount;
+	private static Method getDefaultName;
 	private static Method getPlayerConfigManager;
 	private static Method getLoadedConfig;
 	private static Method getEffective;
@@ -46,6 +47,7 @@ public final class OpacBridge {
 			Class<?> serverPartyClass = Class.forName("xaero.pac.common.server.parties.party.api.IServerPartyAPI");
 			getOwner = serverPartyClass.getMethod("getOwner");
 			getMemberCount = serverPartyClass.getMethod("getMemberCount");
+			getDefaultName = serverPartyClass.getMethod("getDefaultName");
 			Class<?> partyMemberClass = Class.forName("xaero.pac.common.parties.party.member.api.IPartyMemberAPI");
 			getMemberUuid = partyMemberClass.getMethod("getUUID");
 			getPlayerConfigManager = apiClass.getMethod("getPlayerConfigManager");
@@ -65,14 +67,18 @@ public final class OpacBridge {
 	}
 
 	public static boolean isPlayerInClan(ServerPlayerEntity player) {
+		return getPartyMemberCount(player) > 1;
+	}
+
+	public static int getPartyMemberCount(ServerPlayerEntity player) {
 		Object party = getPartyForMember(player);
 		if (party == null) {
-			return false;
+			return 0;
 		}
 		try {
-			return (Integer) getMemberCount.invoke(party) > 1;
+			return (Integer) getMemberCount.invoke(party);
 		} catch (Throwable t) {
-			return false;
+			return 0;
 		}
 	}
 
@@ -100,6 +106,30 @@ public final class OpacBridge {
 			Object api = apiGet.invoke(null, player.getServer());
 			Object partyManager = getPartyManager.invoke(api);
 			return getPartyByMember.invoke(partyManager, player.getUuid());
+		} catch (Throwable t) {
+			return null;
+		}
+	}
+
+	public static String getPartyNameForPlayer(ServerPlayerEntity player) {
+		Object party = getPartyForMember(player);
+		if (party == null) {
+			return null;
+		}
+		UUID ownerId = getPartyOwnerId(player);
+		if (ownerId != null) {
+			String configured = getPartyNameForOwner(ownerId, player.getServer());
+			if (configured != null && !configured.isEmpty()) {
+				return configured;
+			}
+		}
+		try {
+			Object value = getDefaultName.invoke(party);
+			if (value == null) {
+				return null;
+			}
+			String name = value.toString().trim();
+			return name.isEmpty() ? null : name;
 		} catch (Throwable t) {
 			return null;
 		}
