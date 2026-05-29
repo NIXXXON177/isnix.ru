@@ -85,6 +85,77 @@
 		)
 	}
 
+	function isNotificationTriggerError(err) {
+		var msg = errorText(err)
+		return (
+			/insert_user_notification|notify_whitelist|user_notifications|try_insert_user_notification/i.test(
+				msg,
+			) &&
+			/does not exist|42703|42P01|PGRST205|permission denied|function/i.test(msg)
+		)
+	}
+
+	var APPS_SCHEMA_CACHE_KEY = 'isnix_wl_apps_schema_v1'
+	var SESSION_TIMEOUT_MS = 7000
+
+	function readAppsSchemaCache() {
+		try {
+			var v = localStorage.getItem(APPS_SCHEMA_CACHE_KEY)
+			if (v === 'v2+reply' || v === 'fallback+reply' || v === 'fallback') {
+				return v
+			}
+		} catch (_e) {
+			/* ignore */
+		}
+		return null
+	}
+
+	function writeAppsSchemaCache(key) {
+		if (!key) return
+		try {
+			localStorage.setItem(APPS_SCHEMA_CACHE_KEY, key)
+		} catch (_e) {
+			/* ignore */
+		}
+	}
+
+	function applicationQueryCombos() {
+		var cached = readAppsSchemaCache()
+		if (cached === 'v2+reply') {
+			return [{ reply: true, v2: true, key: 'v2+reply' }]
+		}
+		if (cached === 'fallback+reply') {
+			return [{ reply: true, v2: false, key: 'fallback+reply' }]
+		}
+		if (cached === 'fallback') {
+			return [{ reply: false, v2: false, key: 'fallback' }]
+		}
+		return [
+			{ reply: true, v2: true, key: 'v2+reply' },
+			{ reply: true, v2: false, key: 'fallback+reply' },
+			{ reply: false, v2: false, key: 'fallback' },
+		]
+	}
+
+	async function fetchApplicationsWithFallback(queryFn) {
+		var combos = applicationQueryCombos()
+		var lastErr = null
+		for (var i = 0; i < combos.length; i++) {
+			try {
+				var data = await queryFn(combos[i].reply, combos[i].v2)
+				writeAppsSchemaCache(combos[i].key)
+				return data
+			} catch (err) {
+				lastErr = err
+				if (isMissingWhitelistFormV2Columns(err) && combos[i].v2) continue
+				if (isMissingApplicantReplyColumn(err) && combos[i].reply) continue
+				throw err
+			}
+		}
+		if (lastErr) throw lastErr
+		return []
+	}
+
 	function validateWhitelistApplicationData(data) {
 		var nick = (data.minecraft_nick || '').trim()
 		if (!MC_NICK_RE.test(nick)) {
@@ -253,6 +324,11 @@
 		if (/Could not find the function|PGRST202/i.test(msg)) {
 			return 'На сервере не включён диалог по заявкам. Выполни в Supabase SQL из docs/supabase-whitelist-dialog.sql.'
 		}
+		if (isNotificationTriggerError(err)) {
+			return (
+				'Сообщение не сохранилось из‑за уведомлений в Supabase. SQL Editor → выполни docs/supabase-fix-notify-safe.sql (и docs/supabase-whitelist-dialog.sql, если ещё не делал).'
+			)
+		}
 		return msg || 'Ошибка авторизации'
 	}
 
@@ -302,19 +378,40 @@
 
 	async function getSession() {
 		var sb = getClient()
-		if (!sb) return null
+		if (!sb) return readStoredSession()
 		if (sessionInflight) return sessionInflight
-		sessionInflight = sb.auth
-			.getSession()
-			.then(function (res) {
+		var stored = readStoredSession()
+		sessionInflight = new Promise(function (resolve, reject) {
+			var settled = false
+			var tid = setTimeout(function () {
+				if (settled) return
+				settled = true
 				sessionInflight = null
-				if (res.error) throw res.error
-				return res.data.session
-			})
-			.catch(function (err) {
-				sessionInflight = null
-				throw err
-			})
+				if (stored) resolve(stored)
+				else reject(new Error('Таймаут подключения к Supabase'))
+			}, SESSION_TIMEOUT_MS)
+			sb.auth
+				.getSession()
+				.then(function (res) {
+					if (settled) return
+					settled = true
+					clearTimeout(tid)
+					sessionInflight = null
+					if (res.error) throw res.error
+					resolve(res.data.session)
+				})
+				.catch(function (err) {
+					if (settled) return
+					settled = true
+					clearTimeout(tid)
+					sessionInflight = null
+					if (stored && isNetworkError(err)) {
+						resolve(stored)
+						return
+					}
+					reject(err)
+				})
+		})
 		return sessionInflight
 	}
 
@@ -562,24 +659,9 @@
 	async function getApplications(userId) {
 		var sb = getClient()
 		if (!sb) return []
-		var combos = [
-			{ reply: true, v2: true },
-			{ reply: true, v2: false },
-			{ reply: false, v2: false },
-		]
-		var lastErr = null
-		for (var i = 0; i < combos.length; i++) {
-			try {
-				return await queryApplications(sb, userId, combos[i].reply, combos[i].v2)
-			} catch (err) {
-				lastErr = err
-				if (isMissingWhitelistFormV2Columns(err) && combos[i].v2) continue
-				if (isMissingApplicantReplyColumn(err) && combos[i].reply) continue
-				throw err
-			}
-		}
-		if (lastErr) throw lastErr
-		return []
+		return fetchApplicationsWithFallback(function (withReply, withV2) {
+			return queryApplications(sb, userId, withReply, withV2)
+		})
 	}
 
 	async function submitApplication(userId, data) {
@@ -612,29 +694,9 @@
 	async function getAdminApplications(status) {
 		var sb = getClient()
 		if (!sb) return []
-		var combos = [
-			{ reply: true, v2: true },
-			{ reply: true, v2: false },
-			{ reply: false, v2: false },
-		]
-		var lastErr = null
-		for (var i = 0; i < combos.length; i++) {
-			try {
-				return await queryAdminApplications(
-					sb,
-					status,
-					combos[i].reply,
-					combos[i].v2,
-				)
-			} catch (err) {
-				lastErr = err
-				if (isMissingWhitelistFormV2Columns(err) && combos[i].v2) continue
-				if (isMissingApplicantReplyColumn(err) && combos[i].reply) continue
-				throw err
-			}
-		}
-		if (lastErr) throw lastErr
-		return []
+		return fetchApplicationsWithFallback(function (withReply, withV2) {
+			return queryAdminApplications(sb, status, withReply, withV2)
+		})
 	}
 
 	async function getNotifications(userId, limit) {
@@ -674,7 +736,27 @@
 			p_application_id: id,
 			p_message: msg,
 		})
-		if (res.error) throw res.error
+		if (res.error) {
+			var rpcMsg = errorText(res.error)
+			if (
+				/PGRST202|Could not find the function|send_whitelist_admin_message/i.test(
+					rpcMsg,
+				)
+			) {
+				var direct = await sb
+					.from('whitelist_applications')
+					.update({ admin_note: msg })
+					.eq('id', id)
+					.eq('status', 'pending')
+					.select('id')
+				if (direct.error) throw direct.error
+				if (!direct.data || !direct.data.length) {
+					throw new Error('application_not_found_or_not_pending')
+				}
+				return
+			}
+			throw res.error
+		}
 	}
 
 	async function submitApplicantReply(id, reply) {

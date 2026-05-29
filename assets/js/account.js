@@ -887,21 +887,33 @@
 		return apps
 	}
 
-	async function refreshAdminPendingBadge() {
-		if (!window.IsnixAuth || !IsnixAuth.isAdminProfile(currentProfile)) return
+	function setAdminPendingBadgeCount(n) {
 		var badge = document.getElementById('adminAppsTabBadge')
 		if (!badge) return
+		if (n > 0) {
+			badge.hidden = false
+			badge.textContent = n > 9 ? '9+' : String(n)
+		} else {
+			badge.hidden = true
+		}
+	}
+
+	function countPendingApplications(apps) {
+		if (!apps || !apps.length) return 0
+		var n = 0
+		for (var i = 0; i < apps.length; i++) {
+			if (apps[i].status === 'pending') n++
+		}
+		return n
+	}
+
+	async function refreshAdminPendingBadge() {
+		if (!window.IsnixAuth || !IsnixAuth.isAdminProfile(currentProfile)) return
 		try {
 			var apps = await IsnixAuth.getAdminApplications('pending')
-			var n = apps ? apps.length : 0
-			if (n > 0) {
-				badge.hidden = false
-				badge.textContent = n > 9 ? '9+' : String(n)
-			} else {
-				badge.hidden = true
-			}
+			setAdminPendingBadgeCount(apps ? apps.length : 0)
 		} catch (_e) {
-			badge.hidden = true
+			setAdminPendingBadgeCount(0)
 		}
 	}
 
@@ -1571,10 +1583,13 @@
 		try {
 			var fetchStatus =
 				adminFilter === 'all' ? null : 'pending'
-			var apps = filterAdminApplications(
-				await IsnixAuth.getAdminApplications(fetchStatus),
+			var rawApps = await IsnixAuth.getAdminApplications(fetchStatus)
+			setAdminPendingBadgeCount(
+				fetchStatus === 'pending'
+					? rawApps.length
+					: countPendingApplications(rawApps),
 			)
-			refreshAdminPendingBadge()
+			var apps = filterAdminApplications(rawApps)
 			if (!apps.length) {
 				list.innerHTML =
 					'<p class="auth-muted">Нет заявок в этом разделе.</p>'
@@ -1862,13 +1877,15 @@
 
 		cachedServerStatus = null
 		if (window.IsnixServer) {
-			IsnixServer.fetchStatus(false).then(function (status) {
-				if (status !== undefined) {
-					cachedServerStatus = status
-					updateProfileMeta(currentProfile, status)
-					renderPlayerStats(currentProfile, playerStats, status)
-				}
-			})
+			deferAccountTask(function () {
+				IsnixServer.fetchStatus(false).then(function (status) {
+					if (status !== undefined) {
+						cachedServerStatus = status
+						updateProfileMeta(currentProfile, status)
+						renderPlayerStats(currentProfile, playerStats, status)
+					}
+				})
+			}, 1200)
 		}
 		return true
 	}
@@ -2016,11 +2033,11 @@
 				})
 
 			bindNotificationsUi(userId)
-			startNotificationsPoll(userId)
+			deferAccountTask(function () {
+				startNotificationsPoll(userId)
+			}, 400)
 
-			if (IsnixAuth.isAdminProfile(quickProfile)) {
-				startAdminPendingPoll()
-			} else {
+			if (!IsnixAuth.isAdminProfile(quickProfile)) {
 				renderApplications(userId)
 					.then(function () {
 						updateProfileNickHint()
@@ -2372,9 +2389,24 @@
 
 			IsnixAuth.onAuthStateChange(scheduleOnSession)
 
+			if (booted) {
+				IsnixAuth.getSession()
+					.then(function (session) {
+						if (!session) {
+							showGuest()
+							return
+						}
+						return runOnSession(session)
+					})
+					.catch(function (err) {
+						showConnectionNotice(IsnixAuth.formatAuthError(err))
+					})
+				return
+			}
+
 			var session = await IsnixAuth.getSession()
 			if (!session) {
-				if (booted) showGuest()
+				showGuest()
 				return
 			}
 			await runOnSession(session)
