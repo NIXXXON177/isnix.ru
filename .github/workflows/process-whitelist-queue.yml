@@ -1,0 +1,66 @@
+# Обрабатывает очередь одобренных заявок: Mojang UUID → whitelist.json на сервере (SFTP) → коммит в репо.
+#
+# Секреты (Settings → Secrets → Actions):
+#   PLAY2GO_SFTP_HOST, PLAY2GO_SFTP_USER, PLAY2GO_SFTP_PASSWORD  — как в sync-whitelist.yml
+#   PLAY2GO_SFTP_PORT, PLAY2GO_WHITELIST_PATH — опционально
+#   SUPABASE_URL — https://xxxx.supabase.co
+#   SUPABASE_SERVICE_ROLE_KEY — service_role из Supabase → Settings → API (не anon!)
+#
+# В Supabase выполни docs/supabase-whitelist-deploy-queue.sql
+
+name: Process whitelist deploy queue
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: process-whitelist-queue
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install Paramiko
+        run: pip install --quiet paramiko
+
+      - name: Process Supabase queue → SFTP
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          SFTP_HOST: ${{ secrets.PLAY2GO_SFTP_HOST }}
+          SFTP_PORT: ${{ secrets.PLAY2GO_SFTP_PORT }}
+          SFTP_USER: ${{ secrets.PLAY2GO_SFTP_USER }}
+          SFTP_PASSWORD: ${{ secrets.PLAY2GO_SFTP_PASSWORD }}
+          REMOTE_PATH: ${{ secrets.PLAY2GO_WHITELIST_PATH }}
+        run: |
+          set -euo pipefail
+          if [ -z "${SUPABASE_URL:-}" ] || [ -z "${SUPABASE_SERVICE_ROLE_KEY:-}" ]; then
+            echo "Задай секреты SUPABASE_URL и SUPABASE_SERVICE_ROLE_KEY"
+            exit 1
+          fi
+          if [ -z "${SFTP_HOST:-}" ] || [ -z "${SFTP_USER:-}" ] || [ -z "${SFTP_PASSWORD:-}" ]; then
+            echo "Задай секреты PLAY2GO_SFTP_*"
+            exit 1
+          fi
+          export SFTP_PORT="${SFTP_PORT:-2022}"
+          export REMOTE_PATH="${REMOTE_PATH:-whitelist.json}"
+          export PYTHONPATH="${GITHUB_WORKSPACE}/.github/scripts"
+          python "${GITHUB_WORKSPACE}/.github/scripts/process_whitelist_queue.py"
+
+      - name: Commit whitelist.json if changed
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: 'chore: whitelist after approved application'
+          file_pattern: whitelist.json

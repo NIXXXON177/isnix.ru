@@ -19,7 +19,7 @@ assets/css/auth.css     — страница аккаунта
 assets/js/site.js       — магазин, вайтлист, навигация
 assets/js/auth.js       — Supabase: вход и заявки
 assets/js/shop-slider.js — слайдер префиксов
-whitelist.json          — синхронизация с сервера (Actions)
+whitelist.json          — синхронизация с сервера; авто-добавление после одобрения заявки (см. docs/auto-whitelist-deploy-ru.md)
 ```
 
 Публикация: push в `main` → GitHub Pages. После правок обновите страницу с **Ctrl+Shift+R**.

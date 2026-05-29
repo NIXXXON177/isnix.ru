@@ -93,9 +93,7 @@ alter table public.profiles enable trigger profiles_protect_role;
 
 **На сайте** (аккаунт с `role = admin`) или в **Supabase Dashboard** → `whitelist_applications`.
 
-После одобрения добавь ник на сервер вручную (whitelist.json / панель Play2GO).
-
-Автоматическая запись в `whitelist.json` — отдельная задача (webhook / GitHub Action).
+После одобрения ник **автоматически** добавляется на сервер — **[auto-whitelist-deploy-ru.md](auto-whitelist-deploy-ru.md)** (очередь в Supabase + GitHub Actions + SFTP).
 
 ## 8. GitHub Pages
 

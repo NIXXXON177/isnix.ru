@@ -1585,7 +1585,7 @@
 					var onWl = isOnWhitelist(app.minecraft_nick)
 					var wlHint = onWl
 						? '<p class="auth-hint auth-hint--ok">Уже в whitelist.json — проверь перед одобрением</p>'
-						: '<p class="auth-hint">После одобрения добавь ник в whitelist на сервере</p>'
+						: '<p class="auth-hint">После одобрения ник добавится на сервер автоматически (до ~5 мин)</p>'
 					var warns = applicationAdminWarnings(app)
 					var meta =
 						'<p class="auth-muted">' +
@@ -1938,7 +1938,7 @@
 			await IsnixAuth.moderateApplication(id, status, note)
 			showMsg(
 				status === 'approved'
-					? 'Заявка одобрена. Добавь ник в whitelist на сервере.'
+					? 'Заявка одобрена. Ник поставлен в очередь на сервер (обычно до 5 минут).'
 					: 'Заявка отклонена.',
 				true,
 			)

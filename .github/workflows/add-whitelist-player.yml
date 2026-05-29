@@ -1,0 +1,47 @@
+# Ручное добавление ника в whitelist на сервере (если очередь зависла).
+# Actions → Run workflow → введи ник.
+
+name: Add player to whitelist (manual)
+
+on:
+  workflow_dispatch:
+    inputs:
+      minecraft_nick:
+        description: 'Ник Minecraft (3–16, латиница)'
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  add:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - run: pip install --quiet paramiko
+
+      - name: Add to server whitelist
+        env:
+          SFTP_HOST: ${{ secrets.PLAY2GO_SFTP_HOST }}
+          SFTP_PORT: ${{ secrets.PLAY2GO_SFTP_PORT }}
+          SFTP_USER: ${{ secrets.PLAY2GO_SFTP_USER }}
+          SFTP_PASSWORD: ${{ secrets.PLAY2GO_SFTP_PASSWORD }}
+          REMOTE_PATH: ${{ secrets.PLAY2GO_WHITELIST_PATH }}
+        run: |
+          set -euo pipefail
+          export SFTP_PORT="${SFTP_PORT:-2022}"
+          export REMOTE_PATH="${REMOTE_PATH:-whitelist.json}"
+          export PYTHONPATH="${GITHUB_WORKSPACE}/.github/scripts"
+          python "${GITHUB_WORKSPACE}/.github/scripts/add_whitelist_player.py" "${{ inputs.minecraft_nick }}"
+
+      - name: Commit whitelist.json
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: 'chore: add ${{ inputs.minecraft_nick }} to whitelist'
+          file_pattern: whitelist.json
