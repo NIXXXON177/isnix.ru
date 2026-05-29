@@ -1,5 +1,10 @@
 # Выполнить в консоли Play2GO (или в игре от OP), если сервер уже запущен.
 # После перезапуска op-права подхватятся из ops.json автоматически.
+#
+# Префикс [Админ] в TAB уже настроен через config/tab/users.yml + группа admin.
+# Команды LuckPerms ниже — для синхронизации прав LP (по желанию).
+
+/tab reload
 
 op NikenER999
 lp user NikenER999 parent set admin
