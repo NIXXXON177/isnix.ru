@@ -62,6 +62,11 @@ def supabase_request(method: str, path: str, body: dict | None = None) -> object
             return json.loads(raw)
     except urllib.error.HTTPError as e:
         detail = e.read().decode("utf-8", errors="replace")
+        if e.code == 404 and "whitelist_deploy_queue" in detail:
+            raise RuntimeError(
+                "Таблица whitelist_deploy_queue не найдена. "
+                "Supabase → SQL Editor → выполни docs/supabase-whitelist-deploy-queue.sql"
+            ) from e
         raise RuntimeError(f"Supabase {method} {path}: HTTP {e.code} {detail}") from e
 
 
