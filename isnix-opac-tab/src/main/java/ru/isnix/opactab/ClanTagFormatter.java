@@ -31,7 +31,7 @@ public final class ClanTagFormatter {
 	}
 
 	public static String formatForPlayer(ServerPlayerEntity player) {
-		if (player == null || !OpacBridge.isAvailable()) {
+		if (player == null || !OpacBridge.isAvailable() || !OpacBridge.isPlayerInClan(player)) {
 			return "";
 		}
 		UUID ownerId = OpacBridge.getPartyOwnerId(player);

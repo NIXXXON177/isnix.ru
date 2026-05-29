@@ -30,9 +30,13 @@ public final class ClanTagCommands {
 		if (player == null) {
 			return 0;
 		}
+		if (!OpacBridge.isPlayerInClan(player)) {
+			source.sendError(Text.literal("Вы не в клане OPAC."));
+			return 0;
+		}
 		UUID ownerId = OpacBridge.getPartyOwnerId(player);
 		if (ownerId == null) {
-			source.sendError(Text.literal("Вы не в клане OPAC."));
+			source.sendError(Text.literal("Не удалось определить клан OPAC."));
 			return 0;
 		}
 		if (!ownerId.equals(player.getUuid())) {
@@ -71,9 +75,13 @@ public final class ClanTagCommands {
 		if (player == null) {
 			return 0;
 		}
+		if (!OpacBridge.isPlayerInClan(player)) {
+			source.sendError(Text.literal("Вы не в клане."));
+			return 0;
+		}
 		UUID ownerId = OpacBridge.getPartyOwnerId(player);
 		if (ownerId == null) {
-			source.sendError(Text.literal("Вы не в клане."));
+			source.sendError(Text.literal("Не удалось определить клан OPAC."));
 			return 0;
 		}
 		String name = OpacBridge.getPartyNameForOwner(ownerId, player.getServer());

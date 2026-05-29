@@ -18,6 +18,8 @@ public final class OpacBridge {
 	private static Method getPartyManager;
 	private static Method getPartyByMember;
 	private static Method getOwner;
+	private static Method getMemberUuid;
+	private static Method getMemberCount;
 	private static Method getPlayerConfigManager;
 	private static Method getLoadedConfig;
 	private static Method getEffective;
@@ -43,6 +45,9 @@ public final class OpacBridge {
 			getPartyByMember = partyManagerClass.getMethod("getPartyByMember", UUID.class);
 			Class<?> serverPartyClass = Class.forName("xaero.pac.common.server.parties.party.api.IServerPartyAPI");
 			getOwner = serverPartyClass.getMethod("getOwner");
+			getMemberCount = serverPartyClass.getMethod("getMemberCount");
+			Class<?> partyMemberClass = Class.forName("xaero.pac.common.parties.party.member.api.IPartyMemberAPI");
+			getMemberUuid = partyMemberClass.getMethod("getUUID");
 			getPlayerConfigManager = apiClass.getMethod("getPlayerConfigManager");
 			Class<?> configManagerClass = Class.forName("xaero.pac.common.server.player.config.api.IPlayerConfigManagerAPI");
 			getLoadedConfig = configManagerClass.getMethod("getLoadedConfig", UUID.class);
@@ -59,18 +64,42 @@ public final class OpacBridge {
 		}
 	}
 
+	public static boolean isPlayerInClan(ServerPlayerEntity player) {
+		Object party = getPartyForMember(player);
+		if (party == null) {
+			return false;
+		}
+		try {
+			return (Integer) getMemberCount.invoke(party) > 1;
+		} catch (Throwable t) {
+			return false;
+		}
+	}
+
 	public static UUID getPartyOwnerId(ServerPlayerEntity player) {
+		Object party = getPartyForMember(player);
+		if (party == null) {
+			return null;
+		}
+		try {
+			Object owner = getOwner.invoke(party);
+			if (owner == null) {
+				return null;
+			}
+			return (UUID) getMemberUuid.invoke(owner);
+		} catch (Throwable t) {
+			return null;
+		}
+	}
+
+	private static Object getPartyForMember(ServerPlayerEntity player) {
 		if (!isAvailable() || player == null) {
 			return null;
 		}
 		try {
 			Object api = apiGet.invoke(null, player.getServer());
 			Object partyManager = getPartyManager.invoke(api);
-			Object party = getPartyByMember.invoke(partyManager, player.getUuid());
-			if (party == null) {
-				return null;
-			}
-			return (UUID) getOwner.invoke(party);
+			return getPartyByMember.invoke(partyManager, player.getUuid());
 		} catch (Throwable t) {
 			return null;
 		}
