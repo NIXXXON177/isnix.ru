@@ -8,6 +8,7 @@ import net.minecraft.util.Formatting;
 import ru.isnix.market.IsnixMarketMod;
 import ru.isnix.market.listing.MarketListing;
 import ru.isnix.market.util.InventoryHelper;
+import ru.isnix.market.util.ListingMessages;
 import ru.isnix.market.util.MarketSounds;
 
 public final class PurchaseService {
@@ -49,7 +50,9 @@ public final class PurchaseService {
 						.formatted(Formatting.GREEN)
 						.append(sale.toHoverableText())
 						.append(Text.literal(" за ").formatted(Formatting.GRAY))
-						.append(price.toHoverableText()),
+						.append(price.toHoverableText())
+						.append(Text.literal("\n").formatted(Formatting.GRAY))
+						.append(ListingMessages.idLine(listing.id())),
 				false
 		);
 		return Result.SUCCESS;
@@ -59,14 +62,7 @@ public final class PurchaseService {
 		ServerPlayerEntity seller = server.getPlayerManager().getPlayer(listing.sellerUuid());
 		if (seller != null) {
 			InventoryHelper.giveOrDrop(seller, price);
-			seller.sendMessage(
-					Text.literal("Продано: ")
-							.formatted(Formatting.GOLD)
-							.append(listing.saleItem().toHoverableText())
-							.append(Text.literal(" — оплата ").formatted(Formatting.GRAY))
-							.append(price.toHoverableText()),
-					false
-			);
+			seller.sendMessage(ListingMessages.soldToBuyer(listing.id(), listing.saleItem(), price), false);
 		} else {
 			IsnixMarketMod.payouts().add(listing.sellerUuid(), price);
 		}

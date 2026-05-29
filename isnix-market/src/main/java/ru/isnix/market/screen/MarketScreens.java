@@ -13,7 +13,7 @@ public final class MarketScreens {
 
 	public static void openMarket(ServerPlayerEntity player, int page) {
 		player.openHandledScreen(new SimpleNamedScreenHandlerFactory(
-				(syncId, inv, p) -> new MarketScreenHandler(syncId, inv, page),
+				(syncId, inv, p) -> new MarketScreenHandler(syncId, inv, page, player),
 				Text.literal("Рынок ISNIX").formatted(Formatting.DARK_GREEN)
 		));
 	}
@@ -64,11 +64,29 @@ public final class MarketScreens {
 				Text.literal("Подтвердить").formatted(Formatting.GREEN, Formatting.BOLD));
 		stack.set(net.minecraft.component.DataComponentTypes.LORE,
 				new net.minecraft.component.type.LoreComponent(java.util.List.of(
-						Text.literal("Слева — что продаёте").formatted(Formatting.GRAY),
-						Text.literal("Справа — за что продаёте").formatted(Formatting.GRAY),
-						Text.literal("Книги — каталог любых предметов").formatted(Formatting.DARK_GRAY)
+						Text.literal("Слева — товар, справа — цена").formatted(Formatting.GRAY),
+						Text.literal("Книги — каталог · товар из инвентаря").formatted(Formatting.DARK_GRAY),
+						Text.literal("Shift+клик из рюкзака — быстрый выбор").formatted(Formatting.DARK_GRAY)
 				)));
 		return stack;
+	}
+
+	public static boolean isDecorStack(ItemStack stack) {
+		if (stack.isEmpty()) {
+			return false;
+		}
+		var item = stack.getItem();
+		return item == Items.GRAY_STAINED_GLASS_PANE
+				|| item == Items.LIME_STAINED_GLASS_PANE
+				|| item == Items.WRITABLE_BOOK
+				|| item == Items.BOOK
+				|| item == Items.LIME_DYE
+				|| item == Items.RED_DYE
+				|| item == Items.ARROW
+				|| item == Items.SPECTRAL_ARROW
+				|| item == Items.EMERALD
+				|| item == Items.BARRIER
+				|| item == Items.PAPER;
 	}
 
 	public static ItemStack pickSaleButton() {

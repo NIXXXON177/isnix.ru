@@ -10,6 +10,7 @@ import net.minecraft.util.Formatting;
 import ru.isnix.market.IsnixMarketMod;
 import ru.isnix.market.listing.MarketListing;
 import ru.isnix.market.screen.MarketScreens;
+import ru.isnix.market.trade.ListingCancelService;
 import ru.isnix.market.trade.PurchaseService;
 
 import java.util.UUID;
@@ -51,14 +52,7 @@ public final class SellCommand {
 										player.sendMessage(Text.literal("Лот не найден.").formatted(Formatting.RED), false);
 										return 0;
 									}
-									if (!listing.sellerUuid().equals(player.getUuid())
-											&& !ctx.getSource().hasPermissionLevel(2)) {
-										player.sendMessage(Text.literal("Это не ваш лот.").formatted(Formatting.RED), false);
-										return 0;
-									}
-									IsnixMarketMod.listings().remove(id);
-									ru.isnix.market.util.InventoryHelper.giveOrDrop(player, listing.saleItem());
-									player.sendMessage(Text.literal("Лот снят с продажи.").formatted(Formatting.YELLOW), false);
+									ListingCancelService.cancel(player, id);
 									return 1;
 								}))));
 	}

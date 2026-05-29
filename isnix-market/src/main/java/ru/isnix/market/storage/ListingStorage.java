@@ -131,18 +131,26 @@ public class ListingStorage {
 		}
 	}
 
-	public static Text listingLore(MarketListing listing) {
+	public static Text listingLore(MarketListing listing, java.util.UUID viewerUuid) {
 		var price = listing.priceItem();
 		var sale = listing.saleItem();
-		return Text.empty()
-				.append(Text.literal("Продавец: ").formatted(Formatting.GRAY))
+		var lore = Text.empty()
+				.append(Text.literal("ID: ").formatted(Formatting.DARK_GRAY))
+				.append(Text.literal(ru.isnix.market.util.ListingMessages.shortId(listing.id()))
+						.formatted(Formatting.GOLD))
+				.append(Text.literal("\nПродавец: ").formatted(Formatting.GRAY))
 				.append(Text.literal(listing.sellerName()).formatted(Formatting.YELLOW))
 				.append(Text.literal("\nЦена: ").formatted(Formatting.GRAY))
 				.append(Text.literal(price.getCount() + "× ").formatted(Formatting.WHITE))
 				.append(price.getName())
 				.append(Text.literal("\nЛот: ").formatted(Formatting.GRAY))
 				.append(Text.literal(sale.getCount() + "× ").formatted(Formatting.WHITE))
-				.append(sale.getName())
-				.append(Text.literal("\n\nЛКМ — купить").formatted(Formatting.GREEN));
+				.append(sale.getName());
+		if (viewerUuid != null && listing.sellerUuid().equals(viewerUuid)) {
+			lore = lore.append(Text.literal("\n\nShift+ПКМ — снять лот").formatted(Formatting.RED));
+		} else {
+			lore = lore.append(Text.literal("\n\nЛКМ — купить").formatted(Formatting.GREEN));
+		}
+		return lore;
 	}
 }

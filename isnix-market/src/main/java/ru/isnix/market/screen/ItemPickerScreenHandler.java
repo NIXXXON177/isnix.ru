@@ -2,11 +2,11 @@ package ru.isnix.market.screen;
 
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.GenericContainerScreenHandler;
 import net.minecraft.screen.ScreenHandlerType;
+import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
@@ -14,8 +14,9 @@ import net.minecraft.util.Formatting;
 
 import java.util.List;
 
-/** Каталог всех предметов игры — выбор типа для продажи или цены. */
+/** Каталог предметов — только выбор, без переноса стаков. */
 public class ItemPickerScreenHandler extends GenericContainerScreenHandler {
+	public static final int MENU_SIZE = 54;
 	public static final int SLOT_PREV = 45;
 	public static final int SLOT_BACK = 48;
 	public static final int SLOT_INFO = 49;
@@ -38,12 +39,12 @@ public class ItemPickerScreenHandler extends GenericContainerScreenHandler {
 	}
 
 	private static SimpleInventory buildInventory(MarketSession.PickerTarget target, int page) {
-		SimpleInventory inv = new SimpleInventory(54);
+		SimpleInventory inv = new SimpleInventory(MENU_SIZE);
 		List<ItemStack> stacks = ItemCatalog.pageStacks(page);
 		for (int i = 0; i < ItemCatalog.PAGE_SIZE; i++) {
 			inv.setStack(i, stacks.get(i).isEmpty() ? ItemStack.EMPTY : stacks.get(i).copy());
 		}
-		for (int i = ItemCatalog.PAGE_SIZE; i < 54; i++) {
+		for (int i = ItemCatalog.PAGE_SIZE; i < MENU_SIZE; i++) {
 			if (i == SLOT_PREV) {
 				inv.setStack(i, page > 0 ? MarketScreens.navArrow(false) : MarketScreens.fillerPane());
 			} else if (i == SLOT_NEXT) {
@@ -60,11 +61,16 @@ public class ItemPickerScreenHandler extends GenericContainerScreenHandler {
 	}
 
 	@Override
+	public boolean canInsertIntoSlot(ItemStack stack, Slot slot) {
+		return GuiSlotPolicy.isPlayerSlot(this, slot.id);
+	}
+
+	@Override
 	public void onSlotClick(int slotIndex, int button, SlotActionType actionType, PlayerEntity player) {
 		if (!(player instanceof ServerPlayerEntity serverPlayer)) {
 			return;
 		}
-		if (actionType == SlotActionType.QUICK_MOVE) {
+		if (!GuiSlotPolicy.isMenuSlotIndex(slotIndex, MENU_SIZE)) {
 			return;
 		}
 		if (slotIndex == SLOT_PREV && page > 0) {

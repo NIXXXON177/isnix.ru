@@ -112,7 +112,18 @@ lp user <ник> meta clear prefix
 
 ---
 
-## 3. Полезные команды модов (Fabric)
+## 3. Рынок `/sell` (Fabric-мод isnix-market)
+
+| Команда | Действие |
+|---------|----------|
+| `/sell` | Открыть рынок |
+| `/sell list` | Выставить лот |
+| `/sell cancel <uuid>` | Снять свой лот |
+| `/sell buy <uuid>` | Купить по ID |
+
+В GUI: **Shift+ПКМ** по своему лоту — снять. Подробно: [isnix-market-mod.md](isnix-market-mod.md)
+
+## 4. Полезные команды модов (Fabric)
 
 Зависит от установленных модов на сервере.
 
@@ -129,7 +140,7 @@ lp group default permission set essentialcommands.randomteleport true
 
 ---
 
-## 4. Whitelist вручную (если сайт/очередь не сработали)
+## 5. Whitelist вручную (если сайт/очередь не сработали)
 
 1. GitHub → Actions → **Add player to whitelist (manual)** → ник.
 2. Или правка `whitelist.json` на сервере + restart (см. Play2GO SFTP).
@@ -138,7 +149,7 @@ UUID для пиратского клиента: режим **offline** — [aut
 
 ---
 
-## 5. Supabase (редко, для настройки)
+## 6. Supabase (редко, для настройки)
 
 | SQL-файл | Зачем |
 |----------|--------|
@@ -149,7 +160,7 @@ UUID для пиратского клиента: режим **offline** — [aut
 
 ---
 
-## 6. Чего не делать
+## 7. Чего не делать
 
 - Не одобрять/отклонять заявки **только в ВК** — только сайт.
 - Не ставить админу личный `meta setprefix` вместе с группой `admin` (будет два `[Админ]`).
