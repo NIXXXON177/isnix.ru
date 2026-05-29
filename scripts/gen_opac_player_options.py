@@ -9,7 +9,7 @@ JAR = ROOT / "server-remote/mods/open-parties-and-claims-fabric-1.21.1-0.26.3.ja
 CLASS = "xaero/pac/common/server/config/ServerConfig.class"
 
 EXTRA = [
-    "party.name",
+    "parties.name",
     "claims.forceload.offlineForceload",
     "claims.protection.neighborChunksItemUse",
     "claims.protection.overrideMobGriefingRule",

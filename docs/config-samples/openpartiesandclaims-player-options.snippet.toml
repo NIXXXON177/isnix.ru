@@ -100,5 +100,5 @@ playerConfigurablePlayerConfigOptions = [
 	"claims.protection.overrideMobGriefingRule",
 	"claims.protection.pistonBarrier",
 	"claims.protection.playerDeathLoot",
-	"party.name"
+	"parties.name"
 ]

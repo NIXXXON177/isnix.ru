@@ -20,7 +20,7 @@
 
 Раньше список `playerConfigurablePlayerConfigOptions` был слишком коротким (только имя клана и цвет региона) — игроки **не могли** менять защиту приватов в меню `'`.
 
-**Сейчас восстановлен полный заводской список OPAC 0.26.3** (защита чанков, доступ party, сундуки, двери, forceload и т.д.) + `party.name` для кланов.
+**Сейчас восстановлен полный заводской список OPAC 0.26.3** (защита чанков, доступ party, сундуки, двери, forceload и т.д.) + **`parties.name`** для кланов (не `party.name` — в OPAC 0.26 id именно `parties.name`).
 
 Файл-образец: `docs/config-samples/openpartiesandclaims-player-options.snippet.toml`  
 Генерация списка: `python scripts/gen_opac_player_options.py`
