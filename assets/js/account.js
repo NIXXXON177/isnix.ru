@@ -48,24 +48,61 @@
 
 	function showProfileLoadError(err) {
 		var base =
-			'Профиль не загрузился: ' +
-			IsnixAuth.formatAuthError(err) +
-			' Нажми «Повторить загрузку».'
-		showConnectionNotice(base)
-		if (!IsnixAuth.probeSupabaseReachability) return
+			'Профиль не загрузился: ' + IsnixAuth.formatAuthError(err)
+		if (!IsnixAuth.probeSupabaseReachability) {
+			showConnectionNotice(base + '\n\nНажми «Повторить загрузку».')
+			return
+		}
 		IsnixAuth.probeSupabaseReachability().then(function (probe) {
-			if (probe.ok) return
-			if (probe.reason === 'blocked_or_offline') {
+			if (probe.ok) {
 				showConnectionNotice(
 					base +
-						' Проверка: браузер не открывает Supabase (блокировщик, VPN или сеть). Отключи AdBlock для isnix.ru и *.supabase.co.',
+						'\n\nСвязь с Supabase в браузере есть, но профиль не загрузился — обнови страницу или выполни docs/supabase-fix-connection.sql в Supabase.',
 				)
-			} else if (probe.reason === 'no_config') {
+				return
+			}
+			if (probe.reason === 'no_config') {
 				showConnectionNotice(
 					'На сайте не подключён ключ Supabase. Нужен секрет SUPABASE_ANON_KEY и деплой Pages.',
 				)
+				return
 			}
+			var help =
+				window.IsnixAuth && IsnixAuth.networkHelpText
+					? IsnixAuth.networkHelpText()
+					: ''
+			showConnectionNotice(base + '\n\n' + help)
 		})
+	}
+
+	async function runConnectionDiagnostic() {
+		if (!window.IsnixAuth || !IsnixAuth.probeSupabaseReachability) return
+		showConnectionNotice('Проверяем связь с Supabase…')
+		try {
+			var probe = await IsnixAuth.probeSupabaseReachability()
+			if (probe.ok) {
+				showConnectionNotice(
+					'Связь есть (код ' +
+						probe.status +
+						'). Нажми «Повторить загрузку». Если профиль снова не грузится — SQL: docs/supabase-fix-connection.sql',
+				)
+				if (window.IsnixAuth.clearSupabaseBackoff) {
+					IsnixAuth.clearSupabaseBackoff()
+				}
+				return
+			}
+			showConnectionNotice(
+				'Браузер не достучался до Supabase.\n\n' +
+					(IsnixAuth.networkHelpText ? IsnixAuth.networkHelpText() : ''),
+			)
+		} catch (e) {
+			showConnectionNotice(
+				'Ошибка проверки: ' +
+					IsnixAuth.formatAuthError(e) +
+					'\n\n' +
+					(IsnixAuth.networkHelpText ? IsnixAuth.networkHelpText() : ''),
+			)
+		}
 	}
 
 	function showConnectionNotice(text) {
@@ -2370,6 +2407,11 @@
 		document.addEventListener('keydown', function (e) {
 			if (e.key === 'Escape') closeWhitelistModal()
 		})
+
+		var diagBtn = document.getElementById('authDiagBtn')
+		if (diagBtn) {
+			diagBtn.addEventListener('click', runConnectionDiagnostic)
+		}
 
 		var retryBtn = document.getElementById('authRetryBtn')
 		if (retryBtn) {

@@ -298,6 +298,23 @@
 		return client
 	}
 
+	function networkHelpText() {
+		return (
+			'Сеть обрывает связь с Supabase — это не всегда AdBlock.\n\n' +
+			'Без VPN попробуй по порядку:\n' +
+			'1) Раздай интернет с телефона (точка доступа) и открой isnix.ru с ПК.\n' +
+			'2) DNS в Windows: 1.1.1.1 и 1.0.0.1 (или 8.8.8.8).\n' +
+			'3) Chrome/Edge → Настройки → Безопасность → выключи «Использовать безопасный DNS».\n' +
+			'4) Временно отключи антивирус (Kaspersky, Dr.Web и др. рвут HTTPS).\n' +
+			'5) Другой браузер (Firefox / Edge).\n' +
+			'6) Бесплатно: приложение 1.1.1.1 (Cloudflare WARP) — не «VPN-сервис», часто снимает блокировку провайдера.\n\n' +
+			'Проверка: открой в новой вкладке:\n' +
+			(getConfig().supabaseUrl || 'https://ВАШ-ПРОЕКТ.supabase.co') +
+			'/auth/v1/health\n' +
+			'Должен появиться текст про apikey — если вкладка пустая или «сброс соединения», блокирует провайдер или ПК.'
+		)
+	}
+
 	async function probeSupabaseReachability() {
 		var c = getConfig()
 		if (!c.supabaseUrl || !c.supabaseAnonKey) {
@@ -319,7 +336,14 @@
 				cache: 'no-store',
 			})
 			if (tid) clearTimeout(tid)
-			return { ok: res.ok, status: res.status, reason: res.ok ? 'ok' : 'http_' + res.status }
+			/* Любой HTTP-ответ = сеть до Supabase есть (401 без ключа тоже ок для проверки) */
+			var reachable = res.status >= 200 && res.status < 600
+			return {
+				ok: reachable,
+				status: res.status,
+				reason: reachable ? 'ok' : 'http_' + res.status,
+				healthUrl: c.supabaseUrl + '/auth/v1/health',
+			}
 		} catch (err) {
 			if (tid) clearTimeout(tid)
 			return {
@@ -1195,6 +1219,7 @@
 		onAuthStateChange: onAuthStateChange,
 		formatAuthError: formatAuthError,
 		probeSupabaseReachability: probeSupabaseReachability,
+		networkHelpText: networkHelpText,
 		detectSiteDevice: detectSiteDevice,
 		formatSiteDeviceLabel: formatSiteDeviceLabel,
 		isSitePresenceOnline: isSitePresenceOnline,
