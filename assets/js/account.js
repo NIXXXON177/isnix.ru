@@ -39,6 +39,28 @@
 		authMsg.hidden = !text
 	}
 
+	function showProfileLoadError(err) {
+		var base =
+			'Профиль не загрузился: ' +
+			IsnixAuth.formatAuthError(err) +
+			' Нажми «Повторить загрузку».'
+		showConnectionNotice(base)
+		if (!IsnixAuth.probeSupabaseReachability) return
+		IsnixAuth.probeSupabaseReachability().then(function (probe) {
+			if (probe.ok) return
+			if (probe.reason === 'blocked_or_offline') {
+				showConnectionNotice(
+					base +
+						' Проверка: браузер не открывает Supabase (блокировщик, VPN или сеть). Отключи AdBlock для isnix.ru и *.supabase.co.',
+				)
+			} else if (probe.reason === 'no_config') {
+				showConnectionNotice(
+					'На сайте не подключён ключ Supabase. Нужен секрет SUPABASE_ANON_KEY и деплой Pages.',
+				)
+			}
+		})
+	}
+
 	function showConnectionNotice(text) {
 		var box = document.getElementById('authConnectionNotice')
 		var line = document.getElementById('authConnectionText')
@@ -1562,11 +1584,7 @@
 				})
 				.catch(function (e) {
 					profileErr = e
-					showConnectionNotice(
-						'Профиль не загрузился: ' +
-							IsnixAuth.formatAuthError(e) +
-							' Нажми «Повторить загрузку».',
-					)
+					showProfileLoadError(e)
 				})
 
 			renderApplications(userId)

@@ -48,7 +48,17 @@
 
 	function isNetworkError(err) {
 		var msg = errorText(err)
-		return /Failed to fetch|NetworkError|NetworkError when attempting to fetch|CORS|cross-origin|ERR_CONNECTION|ERR_HTTP2|PING_FAILED|Load failed|fetch failed|Network request failed|ERR_NAME_NOT_RESOLVED|ERR_SSL|ERR_TIMED_OUT|CONNECTION_RESET|CONNECTION_TIMED_OUT|HTTP2_PING_FAILED|не удалось выполнить запрос/i.test(
+		if (/UNAUTHORIZED_INVALID_API_KEY|invalid api key|Invalid API key/i.test(msg)) {
+			return false
+		}
+		return /Failed to fetch|NetworkError|NetworkError when attempting to fetch|CORS|cross-origin|ERR_CONNECTION|ERR_HTTP2|PING_FAILED|Load failed|fetch failed|Network request failed|ERR_NAME_NOT_RESOLVED|ERR_SSL|ERR_TIMED_OUT|CONNECTION_RESET|CONNECTION_TIMED_OUT|HTTP2_PING_FAILED|AbortError|aborted|не удалось выполнить запрос|NetworkError when attempting to fetch resource/i.test(
+			msg,
+		)
+	}
+
+	function isInvalidApiKeyError(err) {
+		var msg = errorText(err)
+		return /UNAUTHORIZED_INVALID_API_KEY|invalid api key|Invalid API key|UNAUTHORIZED_MISSING_API_KEY/i.test(
 			msg,
 		)
 	}
@@ -113,6 +123,38 @@
 		return client
 	}
 
+	async function probeSupabaseReachability() {
+		var c = getConfig()
+		if (!c.supabaseUrl || !c.supabaseAnonKey) {
+			return { ok: false, reason: 'no_config' }
+		}
+		var ctrl =
+			typeof AbortController !== 'undefined' ? new AbortController() : null
+		var tid = ctrl
+			? setTimeout(function () {
+					ctrl.abort()
+				}, 10000)
+			: null
+		try {
+			var res = await global.fetch(c.supabaseUrl + '/auth/v1/health', {
+				method: 'GET',
+				headers: { apikey: c.supabaseAnonKey },
+				signal: ctrl ? ctrl.signal : undefined,
+				mode: 'cors',
+				cache: 'no-store',
+			})
+			if (tid) clearTimeout(tid)
+			return { ok: res.ok, status: res.status, reason: res.ok ? 'ok' : 'http_' + res.status }
+		} catch (err) {
+			if (tid) clearTimeout(tid)
+			return {
+				ok: false,
+				reason: isNetworkError(err) ? 'blocked_or_offline' : 'error',
+				err: err,
+			}
+		}
+	}
+
 	function formatAuthError(err) {
 		if (!err) return 'Неизвестная ошибка'
 		if (typeof err === 'string') return err
@@ -120,12 +162,17 @@
 		if (isMissingApplicantReplyColumn(err)) {
 			return 'В Supabase не выполнена миграция диалога. SQL Editor → вставь и запусти docs/supabase-whitelist-dialog.sql (или supabase-grants-fix.sql + dialog).'
 		}
+		if (isInvalidApiKeyError(err)) {
+			return (
+				'Неверный API-ключ Supabase. В GitHub → Settings → Secrets укажи SUPABASE_ANON_KEY: publishable (sb_publishable_…) или anon legacy (eyJ…) из Supabase → Settings → API Keys. Затем Actions → Deploy Pages → Run workflow.'
+			)
+		}
 		if (err.code === '42501' || /permission denied for table/i.test(msg)) {
 			return 'Нет доступа к таблице в Supabase. SQL Editor → запусти docs/supabase-grants-fix.sql, затем перезайди на сайт.'
 		}
 		if (isNetworkError(err)) {
 			return (
-				'Нет связи с Supabase (сеть или CORS). Отключи AdBlock/VPN для isnix.ru, проверь что проект Supabase не на паузе. В Dashboard → Authentication → URL Configuration укажи https://isnix.ru. См. docs/supabase-cors-troubleshooting.md'
+				'Браузер не достучался до Supabase (часто AdBlock, VPN или фильтр провайдера). Отключи блокировщики для isnix.ru и *.supabase.co, проверь что проект не на паузе, в Authentication → URL Configuration укажи https://isnix.ru. Инструкция: github.com/NIXXXON177/isnix.ru/blob/main/docs/supabase-cors-troubleshooting.md'
 			)
 		}
 		if (err.code === 'PGRST301' || /JWT|session/i.test(msg)) {
@@ -852,6 +899,7 @@
 		getAdminProfiles: getAdminProfiles,
 		onAuthStateChange: onAuthStateChange,
 		formatAuthError: formatAuthError,
+		probeSupabaseReachability: probeSupabaseReachability,
 		detectSiteDevice: detectSiteDevice,
 		formatSiteDeviceLabel: formatSiteDeviceLabel,
 		isSitePresenceOnline: isSitePresenceOnline,

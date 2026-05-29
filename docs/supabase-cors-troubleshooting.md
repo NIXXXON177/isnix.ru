@@ -42,12 +42,33 @@ Supabase → Dashboard. Если проект **Paused** — нажми **Restor
 
 ## 5. Ключ API на GitHub Pages
 
-Репозиторий → **Settings → Secrets** → `SUPABASE_ANON_KEY` = **publishable** key из Supabase → **Settings → API Keys**.
+Репозиторий → **Settings → Secrets** → `SUPABASE_ANON_KEY`:
 
-Перезапусти **Actions → Deploy Pages**.
+| Тип в Supabase | Формат | Подходит? |
+|----------------|--------|-----------|
+| **Publishable** | `sb_publishable_...` | Да (сейчас на isnix.ru) |
+| **anon (legacy)** | `eyJ...` (длинный JWT) | Да, если publishable не работает в браузере |
+
+Скопируй ключ из **Settings → API Keys** (не `service_role` / `sb_secret_`).
+
+Перезапусти **Actions → Deploy Pages** → дождись зелёной галочки → Ctrl+F5 на account.html.
+
+Проверка: открой `https://isnix.ru/assets/js/auth-config.js` — в `supabaseAnonKey` не должно быть пустой строки.
 
 ## 6. Проверка
 
 В консоли (F12) → **Сеть** → обнови страницу аккаунта. Запрос к `yfrlgeztbaebdapdnefy.supabase.co` должен быть **200**, не «заблокирован».
 
-Если с одного интернета не работает, а с другого работает — проблема у провайдера или фильтра на устройстве.
+Быстрая проверка в новой вкладке (вставь в адресную строку, подставь свой ключ из auth-config.js):
+
+```
+https://yfrlgeztbaebdapdnefy.supabase.co/auth/v1/health
+```
+
+С заголовком `apikey` в Network не получится из адресной строки — проще открыть **account.html**, F12 → Network, найти `health` или `profiles`.
+
+Если с одного интернета не работает, а с другого работает — проблема у провайдера или фильтра на устройстве (AdBlock, «безопасный DNS», корпоративный Wi‑Fi).
+
+## 7. SQL (если сеть есть, но «permission denied»)
+
+Тогда это не CORS, а права в БД — выполни `docs/supabase-fix-connection.sql` в SQL Editor.
