@@ -7,6 +7,8 @@
 	var profileInflight = {}
 	var profileMemCache = {}
 	var PROFILE_MEM_TTL_MS = 90000
+	var PROFILE_DISK_PREFIX = 'isnix_profile_ls_'
+	var PROFILE_DISK_TTL_MS = 604800000
 	var SUPABASE_BACKOFF_KEY = 'isnix_supabase_backoff_until'
 	var SUPABASE_BACKOFF_MS = 300000
 	var supabaseBackoffUntil = 0
@@ -649,6 +651,8 @@
 		if (isSupabaseBackoffActive()) {
 			var hit = profileMemCache[userId]
 			if (hit && hit.p) return hit.p
+			var diskBackoff = readProfileDiskCache(userId)
+			if (diskBackoff) return diskBackoff
 			throw new Error('ERR_CONNECTION_RESET')
 		}
 		var sb = getClient()
@@ -674,8 +678,19 @@
 		if (!force && cached && Date.now() - cached.t < PROFILE_MEM_TTL_MS) {
 			return cached.p
 		}
-		if (!force && isSupabaseBackoffActive() && cached && cached.p) {
-			return cached.p
+		if (!force && isSupabaseBackoffActive()) {
+			if (cached && cached.p) return cached.p
+			var diskPaused = readProfileDiskCache(userId)
+			if (diskPaused) {
+				profileMemCache[userId] = { p: diskPaused, t: Date.now() }
+				return diskPaused
+			}
+		}
+		if (!force) {
+			var disk = readProfileDiskCache(userId)
+			if (disk) {
+				profileMemCache[userId] = { p: disk, t: Date.now() }
+			}
 		}
 		if (profileInflight[userId]) return profileInflight[userId]
 		profileInflight[userId] = fetchProfileFromServer(userId)
@@ -683,19 +698,62 @@
 				delete profileInflight[userId]
 				if (data) {
 					profileMemCache[userId] = { p: data, t: Date.now() }
+					writeProfileDiskCache(userId, data)
 				}
 				return data
 			})
 			.catch(function (err) {
 				delete profileInflight[userId]
+				if (isNetworkError(err) || isSessionTimeoutError(err)) {
+					var fallback = readProfileDiskCache(userId)
+					if (fallback) {
+						profileMemCache[userId] = { p: fallback, t: Date.now() }
+						return fallback
+					}
+				}
 				throw err
 			})
 		return profileInflight[userId]
 	}
 
+	function profileDiskKey(userId) {
+		return PROFILE_DISK_PREFIX + userId
+	}
+
+	function readProfileDiskCache(userId) {
+		if (!userId) return null
+		try {
+			var raw = localStorage.getItem(profileDiskKey(userId))
+			if (!raw) return null
+			var o = JSON.parse(raw)
+			if (!o || !o.p || Date.now() - o.t > PROFILE_DISK_TTL_MS) return null
+			o.p.id = userId
+			return o.p
+		} catch (_e) {
+			return null
+		}
+	}
+
+	function writeProfileDiskCache(userId, profile) {
+		if (!userId || !profile) return
+		try {
+			localStorage.setItem(
+				profileDiskKey(userId),
+				JSON.stringify({ p: profile, t: Date.now() }),
+			)
+		} catch (_e) {
+			/* ignore */
+		}
+	}
+
 	function clearProfileMemCache(userId) {
 		if (userId) {
 			delete profileMemCache[userId]
+			try {
+				localStorage.removeItem(profileDiskKey(userId))
+			} catch (_e) {
+				/* ignore */
+			}
 			return
 		}
 		profileMemCache = {}
@@ -1238,6 +1296,7 @@
 		signIn: signIn,
 		signOut: signOut,
 		getProfile: getProfile,
+		getProfileDiskCache: readProfileDiskCache,
 		getPlayerStats: getPlayerStats,
 		isAdminProfile: isAdminProfile,
 		isCurrentUserAdmin: isCurrentUserAdmin,

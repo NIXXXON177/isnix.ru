@@ -46,7 +46,25 @@
 		authMsg.hidden = !text
 	}
 
-	function showProfileLoadError(err) {
+	function hasUsableProfileCache(userId) {
+		var p =
+			currentProfile ||
+			(userId && readProfileCache(userId)) ||
+			(userId &&
+				window.IsnixAuth &&
+				IsnixAuth.getProfileDiskCache &&
+				IsnixAuth.getProfileDiskCache(userId))
+		return !!(p && (p.minecraft_nick || p.display_name || p.email))
+	}
+
+	function showProfileLoadError(err, userId) {
+		if (hasUsableProfileCache(userId)) {
+			showConnectionNotice(
+				'Сейчас не удалось обновить профиль с Supabase — на экране сохранённые данные. Заявки и ник могут подтянуться с задержкой.\n\n' +
+					(IsnixAuth.networkHelpText ? IsnixAuth.networkHelpText() : ''),
+			)
+			return
+		}
 		var base =
 			'Профиль не загрузился: ' + IsnixAuth.formatAuthError(err)
 		if (!IsnixAuth.probeSupabaseReachability) {
@@ -435,14 +453,23 @@
 	function readProfileCache(userId) {
 		try {
 			var raw = sessionStorage.getItem('isnix_profile_' + userId)
-			if (!raw) return null
-			var o = JSON.parse(raw)
-			if (!o || !o.p || Date.now() - o.t > PROFILE_CACHE_TTL_MS) return null
-			o.p.id = userId
-			return o.p
+			if (raw) {
+				var o = JSON.parse(raw)
+				if (o && o.p && Date.now() - o.t <= PROFILE_CACHE_TTL_MS) {
+					o.p.id = userId
+					return o.p
+				}
+			}
 		} catch (_e) {
-			return null
+			/* ignore */
 		}
+		if (
+			window.IsnixAuth &&
+			IsnixAuth.getProfileDiskCache
+		) {
+			return IsnixAuth.getProfileDiskCache(userId)
+		}
+		return null
 	}
 
 	function writeProfileCache(userId, profile) {
@@ -1341,10 +1368,16 @@
 	}
 
 	function requestBrowserNotificationPermission() {
-		if (!('Notification' in window)) return
-		if (Notification.permission === 'default') {
-			Notification.requestPermission().catch(function () {})
+		if (!('Notification' in window)) {
+			return Promise.resolve('unsupported')
 		}
+		if (Notification.permission === 'granted') {
+			return Promise.resolve('granted')
+		}
+		if (Notification.permission === 'denied') {
+			return Promise.resolve('denied')
+		}
+		return Notification.requestPermission()
 	}
 
 	function paintNotificationsList(list) {
@@ -1437,7 +1470,6 @@
 	function startNotificationsPoll(userId) {
 		stopNotificationsPoll()
 		if (!userId) return
-		requestBrowserNotificationPermission()
 		refreshNotifications(userId, false)
 		notificationsPollTimer = setInterval(function () {
 			refreshNotifications(userId, true)
@@ -1454,10 +1486,18 @@
 		notificationsUiBound = true
 		btn.addEventListener('click', function (e) {
 			e.stopPropagation()
-			var open = !panel.hidden
-			panel.hidden = open
-			btn.setAttribute('aria-expanded', open ? 'false' : 'true')
-			if (!open) refreshNotifications(userId, false)
+			var wasOpen = !panel.hidden
+			panel.hidden = wasOpen
+			btn.setAttribute('aria-expanded', wasOpen ? 'false' : 'true')
+			if (!wasOpen) {
+				requestBrowserNotificationPermission()
+					.then(function () {
+						return refreshNotifications(userId, true)
+					})
+					.catch(function () {
+						return refreshNotifications(userId, false)
+					})
+			}
 		})
 		if (markAll) {
 			markAll.addEventListener('click', async function () {
@@ -2075,7 +2115,7 @@
 				})
 				.catch(function (e) {
 					profileErr = e
-					showProfileLoadError(e)
+					showProfileLoadError(e, userId)
 				})
 
 			bindNotificationsUi(userId)
