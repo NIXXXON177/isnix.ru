@@ -89,16 +89,18 @@ public class CreateListingScreenHandler extends GenericContainerScreenHandler {
 			super.onSlotClick(slotIndex, button, actionType, player);
 			return;
 		}
-		if (GuiSlotPolicy.isMenuSlotIndex(slotIndex, MENU_SIZE)) {
-			if (actionType == SlotActionType.QUICK_MOVE && GuiSlotPolicy.isPlayerSlot(this, slotIndex)) {
-				handleQuickMoveFromPlayer(serverPlayer, slotIndex);
+		if (GuiSlotPolicy.isPlayerSlot(this, slotIndex)) {
+			if (actionType == SlotActionType.QUICK_MOVE) {
+				handleQuickMoveFromPlayer(serverPlayer, slotIndex, button);
 				return;
 			}
-			handleMenuClick(serverPlayer, slotIndex, button, actionType);
-			return;
+			if (actionType == SlotActionType.PICKUP && (draft.sale.isEmpty() || draft.price.isEmpty())) {
+				handlePlayerInventoryPick(serverPlayer, slotIndex, button);
+				return;
+			}
 		}
-		if (actionType == SlotActionType.QUICK_MOVE) {
-			handleQuickMoveFromPlayer(serverPlayer, slotIndex);
+		if (GuiSlotPolicy.isMenuSlotIndex(slotIndex, MENU_SIZE)) {
+			handleMenuClick(serverPlayer, slotIndex, button, actionType);
 			return;
 		}
 		super.onSlotClick(slotIndex, button, actionType, player);
@@ -116,8 +118,11 @@ public class CreateListingScreenHandler extends GenericContainerScreenHandler {
 			return;
 		}
 		if (slotIndex == SLOT_PICK_SALE) {
-			syncDraftFromContainer();
-			MarketScreens.openItemPicker(serverPlayer, MarketSession.PickerTarget.SALE, 0);
+			serverPlayer.sendMessage(
+					Text.literal("Товар — только из вашего инвентаря внизу: клик по предмету (ЛКМ — 1 шт., ПКМ — стак) или Shift+клик.")
+							.formatted(Formatting.YELLOW),
+					false
+			);
 			return;
 		}
 		if (slotIndex == SLOT_PICK_PRICE) {
@@ -125,45 +130,87 @@ public class CreateListingScreenHandler extends GenericContainerScreenHandler {
 			MarketScreens.openItemPicker(serverPlayer, MarketSession.PickerTarget.PRICE, 0);
 			return;
 		}
-		if (slotIndex == SLOT_SALE || slotIndex == SLOT_PRICE) {
+		if (slotIndex == SLOT_SALE) {
 			if (button == 1) {
-				if (slotIndex == SLOT_SALE) {
-					draft.sale = ItemStack.EMPTY;
-				} else {
-					draft.price = ItemStack.EMPTY;
-				}
+				draft.sale = ItemStack.EMPTY;
+				refreshDisplayStacks();
+				return;
+			}
+			if (tryAssignSaleFromCursor(button)) {
+				return;
+			}
+			serverPlayer.sendMessage(
+					Text.literal("Кликните предмет в инвентаре внизу — это и будет товар на продажу.")
+							.formatted(Formatting.YELLOW),
+					false
+			);
+			return;
+		}
+		if (slotIndex == SLOT_PRICE) {
+			if (button == 1) {
+				draft.price = ItemStack.EMPTY;
 				refreshDisplayStacks();
 				return;
 			}
 			syncDraftFromContainer();
-			MarketSession.PickerTarget target = slotIndex == SLOT_SALE
-					? MarketSession.PickerTarget.SALE
-					: MarketSession.PickerTarget.PRICE;
-			MarketScreens.openItemPicker(serverPlayer, target, 0);
+			MarketScreens.openItemPicker(serverPlayer, MarketSession.PickerTarget.PRICE, 0);
 		}
 	}
 
-	/** Shift+клик только из инвентаря игрока (нижние слоты), не из GUI. */
-	private void handleQuickMoveFromPlayer(ServerPlayerEntity player, int slotIndex) {
-		if (!GuiSlotPolicy.isPlayerSlot(this, slotIndex)) {
-			return;
+	private boolean tryAssignSaleFromCursor(int button) {
+		ItemStack cursor = getCursorStack();
+		if (cursor.isEmpty() || MarketScreens.isDecorStack(cursor)) {
+			return false;
 		}
+		int count = button == 1 ? Math.min(cursor.getCount(), 64) : 1;
+		draft.sale = cursor.copy();
+		draft.sale.setCount(count);
+		refreshDisplayStacks();
+		return true;
+	}
+
+	/** Клик по слоту инвентаря: копия в черновик, предмет в рюкзаке остаётся до «Подтвердить». */
+	private void handlePlayerInventoryPick(ServerPlayerEntity player, int slotIndex, int button) {
 		Slot playerSlot = slots.get(slotIndex);
 		if (playerSlot == null || !playerSlot.hasStack()) {
 			return;
 		}
 		ItemStack stack = playerSlot.getStack();
-		if (draft.sale.isEmpty()) {
-			draft.sale = stack.copy();
-			draft.sale.setCount(Math.min(stack.getCount(), 64));
-			playerSlot.setStack(ItemStack.EMPTY);
-			refreshDisplayStacks();
-		} else if (draft.price.isEmpty()) {
-			draft.price = stack.copy();
-			draft.price.setCount(Math.min(stack.getCount(), 64));
-			playerSlot.setStack(ItemStack.EMPTY);
-			refreshDisplayStacks();
+		if (MarketScreens.isDecorStack(stack)) {
+			return;
 		}
+		int count = button == 1 ? Math.min(stack.getCount(), 64) : 1;
+		ItemStack pick = stack.copy();
+		pick.setCount(count);
+		if (draft.sale.isEmpty()) {
+			draft.sale = pick;
+			player.sendMessage(
+					Text.literal("Товар: ").formatted(Formatting.GREEN).append(pick.toHoverableText()),
+					false
+			);
+		} else if (draft.price.isEmpty()) {
+			draft.price = pick;
+			player.sendMessage(
+					Text.literal("Цена: ").formatted(Formatting.GREEN).append(pick.toHoverableText()),
+					false
+			);
+		} else {
+			player.sendMessage(
+					Text.literal("Товар и цена уже выбраны. ПКМ по слоту в меню — сброс, или «Подтвердить».")
+							.formatted(Formatting.YELLOW),
+					false
+			);
+			return;
+		}
+		refreshDisplayStacks();
+	}
+
+	/** Shift+клик из инвентаря — стак в черновик, предметы остаются до подтверждения. */
+	private void handleQuickMoveFromPlayer(ServerPlayerEntity player, int slotIndex, int button) {
+		if (!GuiSlotPolicy.isPlayerSlot(this, slotIndex)) {
+			return;
+		}
+		handlePlayerInventoryPick(player, slotIndex, 1);
 	}
 
 	private void syncDraftFromContainer() {
@@ -181,7 +228,11 @@ public class CreateListingScreenHandler extends GenericContainerScreenHandler {
 		ItemStack sale = draft.sale.copy();
 		ItemStack price = draft.price.copy();
 		if (sale.isEmpty() || price.isEmpty()) {
-			player.sendMessage(Text.literal("Выберите товар и цену (книги или Shift+клик из инвентаря).").formatted(Formatting.RED), false);
+			player.sendMessage(
+					Text.literal("Выберите товар из инвентаря внизу и цену (книга «Каталог цены» или клик по ресурсу).")
+							.formatted(Formatting.RED),
+					false
+			);
 			return;
 		}
 		if (MarketScreens.isDecorStack(sale) || MarketScreens.isDecorStack(price)) {

@@ -64,9 +64,9 @@ public final class MarketScreens {
 				Text.literal("Подтвердить").formatted(Formatting.GREEN, Formatting.BOLD));
 		stack.set(net.minecraft.component.DataComponentTypes.LORE,
 				new net.minecraft.component.type.LoreComponent(java.util.List.of(
-						Text.literal("Слева — товар, справа — цена").formatted(Formatting.GRAY),
-						Text.literal("Книги — каталог · товар из инвентаря").formatted(Formatting.DARK_GRAY),
-						Text.literal("Shift+клик из рюкзака — быстрый выбор").formatted(Formatting.DARK_GRAY)
+						Text.literal("Товар — только из инвентаря внизу").formatted(Formatting.GRAY),
+						Text.literal("Цена — книга «Каталог цены» или клик по ресурсу").formatted(Formatting.DARK_GRAY),
+						Text.literal("ЛКМ — 1 шт., ПКМ — стак, Shift+клик — быстро").formatted(Formatting.DARK_GRAY)
 				)));
 		return stack;
 	}
@@ -92,11 +92,12 @@ public final class MarketScreens {
 	public static ItemStack pickSaleButton() {
 		ItemStack stack = new ItemStack(Items.WRITABLE_BOOK);
 		stack.set(net.minecraft.component.DataComponentTypes.CUSTOM_NAME,
-				Text.literal("Каталог товара").formatted(Formatting.YELLOW, Formatting.BOLD));
+				Text.literal("Ваш товар").formatted(Formatting.YELLOW, Formatting.BOLD));
 		stack.set(net.minecraft.component.DataComponentTypes.LORE,
 				new net.minecraft.component.type.LoreComponent(java.util.List.of(
-						Text.literal("Любой предмет из игры").formatted(Formatting.GRAY),
-						Text.literal("При выставлении спишется из инвентаря").formatted(Formatting.DARK_GRAY)
+						Text.literal("Только из инвентаря внизу").formatted(Formatting.GRAY),
+						Text.literal("Клик / Shift+клик по предмету").formatted(Formatting.DARK_GRAY),
+						Text.literal("Списание при «Подтвердить»").formatted(Formatting.DARK_GRAY)
 				)));
 		return stack;
 	}
