@@ -1,0 +1,7 @@
+# Выполнить в консоли Play2GO (или в игре от OP), если сервер уже запущен.
+# После перезапуска op-права подхватятся из ops.json автоматически.
+
+op NikenER999
+lp user NikenER999 parent set admin
+lp user NikenER999 meta clear prefix
+lp sync

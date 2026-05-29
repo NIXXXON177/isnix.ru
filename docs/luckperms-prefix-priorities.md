@@ -43,10 +43,12 @@ lp group default permission set essentialcommands.randomteleport true
 lp user afktapochek parent set admin
 lp user daydonik parent set admin
 lp user ISTHISNIXXXON parent set admin
+lp user NikenER999 parent set admin
 
 lp user afktapochek meta clear prefix
 lp user daydonik meta clear prefix
 lp user ISTHISNIXXXON meta clear prefix
+lp user NikenER999 meta clear prefix
 ```
 
 ---
