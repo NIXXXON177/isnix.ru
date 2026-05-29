@@ -383,12 +383,43 @@
 		}
 	}
 
-	function clearProfileCaches() {
-		try {
-			var keys = []
-			for (var i = 0; i < sessionStorage.length; i++) {
-				var k = sessionStorage.key(i)
-				if (k && k.indexOf('isnix_profile_') === 0) keys.push(k)
+function readPlayerStatsCache(userId) {
+	if (!userId) return null
+	try {
+		var raw = sessionStorage.getItem('isnix_player_stats_' + userId)
+		if (!raw) return null
+		var o = JSON.parse(raw)
+		if (!o || !o.s || Date.now() - o.t > PROFILE_CACHE_TTL_MS) return null
+		return o.s
+	} catch (_e) {
+		return null
+	}
+}
+
+function writePlayerStatsCache(userId, stats) {
+	if (!userId || !stats) return
+	try {
+		sessionStorage.setItem(
+			'isnix_player_stats_' + userId,
+			JSON.stringify({ s: stats, t: Date.now() }),
+		)
+	} catch (_e) {
+		/* ignore */
+	}
+}
+
+function clearProfileCaches() {
+	try {
+		var keys = []
+		for (var i = 0; i < sessionStorage.length; i++) {
+			var k = sessionStorage.key(i)
+			if (
+				k &&
+				(k.indexOf('isnix_profile_') === 0 ||
+				k.indexOf('isnix_player_stats_') === 0)
+			) {
+				keys.push(k)
+			}
 			}
 			keys.forEach(function (k) {
 				sessionStorage.removeItem(k)
@@ -1385,37 +1416,39 @@
 			dashboardLoading = true
 
 			var quickProfile = readProfileCache(userId) || profileFromSession(session)
-			playerStats = null
-			showDashboardShell(session, quickProfile)
-			applyDashboardProfile(quickProfile, session)
-			startPlayerStatsTicker()
-			loadWhitelist()
-
-			var profileErr = null
-
-			try {
-				var profileRes = await Promise.all([
-					IsnixAuth.getProfile(userId),
-					IsnixAuth.getPlayerStats(userId).catch(function () {
-						return null
-					}),
-				])
-				var profile = profileRes[0]
-				playerStats = profileRes[1]
-
-				if (profile && session.user.email) {
-					profile.email = profile.email || session.user.email
-				} else if (!profile) {
-					profile = profileFromSession(session)
+				var quickStats = readPlayerStatsCache(userId)
+				playerStats = quickStats
+				showDashboardShell(session, quickProfile)
+				applyDashboardProfile(quickProfile, session)
+				if (quickStats) {
+					renderPlayerStats(quickProfile, quickStats, cachedServerStatus)
 				}
-				writeProfileCache(userId, profile)
-				applyDashboardProfile(profile, session)
+				loadWhitelist()
 
-				if (IsnixAuth.isAdminProfile(profile)) {
-					deferAccountTask(function () {
-						switchAdminView(adminView)
-					}, 150)
-				}
+				var profileErr = null
+				try {
+					var profileRes = await Promise.all([
+						IsnixAuth.getProfile(userId),
+						IsnixAuth.getPlayerStats(userId).catch(function () {
+							return null
+						}),
+					])
+					var profile = profileRes[0]
+					playerStats = profileRes[1]
+					writePlayerStatsCache(userId, playerStats)
+					if (profile && session.user.email) {
+						profile.email = profile.email || session.user.email
+					} else if (!profile) {
+						profile = profileFromSession(session)
+					}
+					writeProfileCache(userId, profile)
+					applyDashboardProfile(profile, session)
+
+					if (IsnixAuth.isAdminProfile(profile)) {
+						deferAccountTask(function () {
+							switchAdminView(adminView)
+						}, 150)
+					}
 				deferAccountTask(function () {
 					refreshPlayerStatus(false)
 				}, 80)
