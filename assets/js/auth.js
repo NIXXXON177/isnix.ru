@@ -13,6 +13,7 @@
 		'kupryuhinsemen@gmail.com',
 		'kudrasovn024@gmail.com',
 		'1511vasilisa@gmail.com',
+		'nikenerdx@gmail.com',
 	]
 
 	function getConfig() {
@@ -66,6 +67,62 @@
 	function isMissingApplicantReplyColumn(err) {
 		var msg = errorText(err)
 		return /applicant_reply/i.test(msg) && /does not exist|42703/i.test(msg)
+	}
+
+	function isMissingWhitelistFormV2Columns(err) {
+		var msg = errorText(err)
+		return (
+			/read_rules|downloaded_modpack|referral_source/i.test(msg) &&
+			/does not exist|42703|PGRST204/i.test(msg)
+		)
+	}
+
+	function isMissingNotificationsTable(err) {
+		var msg = errorText(err)
+		return (
+			/user_notifications|mark_notifications_read/i.test(msg) &&
+			/does not exist|42703|42P01|PGRST205/i.test(msg)
+		)
+	}
+
+	function validateWhitelistApplicationData(data) {
+		var nick = (data.minecraft_nick || '').trim()
+		if (!MC_NICK_RE.test(nick)) {
+			throw new Error('Ник: 3–16 символов, латиница, цифры и _')
+		}
+		var ageNum = parseInt(String(data.age || '').trim(), 10)
+		if (!Number.isFinite(ageNum) || ageNum < 12) {
+			throw new Error('Укажи возраст: от 12 лет')
+		}
+		if (ageNum > 99) {
+			throw new Error('Проверь возраст')
+		}
+		if (!data.read_rules) {
+			throw new Error('Подтверди, что прочитал(а) правила сервера')
+		}
+		if (!data.downloaded_modpack) {
+			throw new Error('Подтверди, что скачал(а) сборку с сайта')
+		}
+		var reason = (data.reason || '').trim()
+		if (reason.length < 10) {
+			throw new Error('Напиши немного о себе (минимум 10 символов)')
+		}
+		if (reason.length > 2000) {
+			throw new Error('Текст «о себе» слишком длинный')
+		}
+		var referral = (data.referral_source || '').trim()
+		if (referral.length > 200) {
+			throw new Error('Поле «откуда узнали» — не больше 200 символов')
+		}
+		return {
+			minecraft_nick: nick,
+			call_name: (data.call_name || '').trim() || null,
+			age: String(ageNum),
+			reason: reason,
+			read_rules: true,
+			downloaded_modpack: true,
+			referral_source: referral || null,
+		}
 	}
 
 	function isMissingSitePresenceColumns(err) {
@@ -451,14 +508,36 @@
 	}
 
 	var APP_SELECT_BASE =
-		'id, minecraft_nick, call_name, age, reason, status, admin_note, created_at'
+		'id, minecraft_nick, call_name, age, reason, read_rules, downloaded_modpack, referral_source, status, admin_note, created_at'
 	var APP_SELECT_WITH_REPLY = APP_SELECT_BASE + ', applicant_reply'
+	var APP_SELECT_FALLBACK =
+		'id, minecraft_nick, call_name, age, reason, status, admin_note, created_at'
+	var APP_SELECT_WITH_REPLY_FALLBACK = APP_SELECT_FALLBACK + ', applicant_reply'
 	var APP_ADMIN_SELECT_BASE =
-		'id, user_id, minecraft_nick, call_name, age, reason, status, admin_note, applicant_email, created_at'
+		'id, user_id, minecraft_nick, call_name, age, reason, read_rules, downloaded_modpack, referral_source, status, admin_note, applicant_email, created_at'
 	var APP_ADMIN_SELECT_WITH_REPLY = APP_ADMIN_SELECT_BASE + ', applicant_reply'
+	var APP_ADMIN_SELECT_FALLBACK =
+		'id, user_id, minecraft_nick, call_name, age, reason, status, admin_note, applicant_email, created_at'
+	var APP_ADMIN_SELECT_WITH_REPLY_FALLBACK =
+		APP_ADMIN_SELECT_FALLBACK + ', applicant_reply'
 
-	async function queryApplications(sb, userId, withReply) {
-		var fields = withReply ? APP_SELECT_WITH_REPLY : APP_SELECT_BASE
+	function applicationSelectFields(withReply, withV2, admin) {
+		if (admin) {
+			if (withV2) {
+				return withReply ? APP_ADMIN_SELECT_WITH_REPLY : APP_ADMIN_SELECT_BASE
+			}
+			return withReply
+				? APP_ADMIN_SELECT_WITH_REPLY_FALLBACK
+				: APP_ADMIN_SELECT_FALLBACK
+		}
+		if (withV2) {
+			return withReply ? APP_SELECT_WITH_REPLY : APP_SELECT_BASE
+		}
+		return withReply ? APP_SELECT_WITH_REPLY_FALLBACK : APP_SELECT_FALLBACK
+	}
+
+	async function queryApplications(sb, userId, withReply, withV2) {
+		var fields = applicationSelectFields(withReply, withV2 !== false, false)
 		var res = await sb
 			.from('whitelist_applications')
 			.select(fields)
@@ -468,8 +547,8 @@
 		return res.data || []
 	}
 
-	async function queryAdminApplications(sb, status, withReply) {
-		var fields = withReply ? APP_ADMIN_SELECT_WITH_REPLY : APP_ADMIN_SELECT_BASE
+	async function queryAdminApplications(sb, status, withReply, withV2) {
+		var fields = applicationSelectFields(withReply, withV2 !== false, true)
 		var q = sb
 			.from('whitelist_applications')
 			.select(fields)
@@ -483,43 +562,104 @@
 	async function getApplications(userId) {
 		var sb = getClient()
 		if (!sb) return []
-		try {
-			return await queryApplications(sb, userId, true)
-		} catch (err) {
-			if (!isMissingApplicantReplyColumn(err)) throw err
-			return await queryApplications(sb, userId, false)
+		var combos = [
+			{ reply: true, v2: true },
+			{ reply: true, v2: false },
+			{ reply: false, v2: false },
+		]
+		var lastErr = null
+		for (var i = 0; i < combos.length; i++) {
+			try {
+				return await queryApplications(sb, userId, combos[i].reply, combos[i].v2)
+			} catch (err) {
+				lastErr = err
+				if (isMissingWhitelistFormV2Columns(err) && combos[i].v2) continue
+				if (isMissingApplicantReplyColumn(err) && combos[i].reply) continue
+				throw err
+			}
 		}
+		if (lastErr) throw lastErr
+		return []
 	}
 
 	async function submitApplication(userId, data) {
 		var sb = getClient()
 		if (!sb) throw new Error('Нет подключения')
-		var nick = (data.minecraft_nick || '').trim()
-		if (!MC_NICK_RE.test(nick)) {
-			throw new Error('Ник: 3–16 символов, латиница, цифры и _')
-		}
-		var reason = (data.reason || '').trim()
-		if (reason.length < 10) {
-			throw new Error('Расскажи подробнее, зачем хочешь на сервер (мин. 10 символов)')
-		}
-		var res = await sb.from('whitelist_applications').insert({
+		var payload = validateWhitelistApplicationData(data)
+		var row = {
 			user_id: userId,
-			minecraft_nick: nick,
-			call_name: (data.call_name || '').trim() || null,
-			age: (data.age || '').trim() || null,
-			reason: reason,
-		})
+			minecraft_nick: payload.minecraft_nick,
+			call_name: payload.call_name,
+			age: payload.age,
+			reason: payload.reason,
+			read_rules: payload.read_rules,
+			downloaded_modpack: payload.downloaded_modpack,
+			referral_source: payload.referral_source,
+		}
+		var res = await sb.from('whitelist_applications').insert(row)
+		if (res.error && isMissingWhitelistFormV2Columns(res.error)) {
+			res = await sb.from('whitelist_applications').insert({
+				user_id: userId,
+				minecraft_nick: payload.minecraft_nick,
+				call_name: payload.call_name,
+				age: payload.age,
+				reason: payload.reason,
+			})
+		}
 		if (res.error) throw res.error
 	}
 
 	async function getAdminApplications(status) {
 		var sb = getClient()
 		if (!sb) return []
-		try {
-			return await queryAdminApplications(sb, status, true)
-		} catch (err) {
-			if (!isMissingApplicantReplyColumn(err)) throw err
-			return await queryAdminApplications(sb, status, false)
+		var combos = [
+			{ reply: true, v2: true },
+			{ reply: true, v2: false },
+			{ reply: false, v2: false },
+		]
+		var lastErr = null
+		for (var i = 0; i < combos.length; i++) {
+			try {
+				return await queryAdminApplications(
+					sb,
+					status,
+					combos[i].reply,
+					combos[i].v2,
+				)
+			} catch (err) {
+				lastErr = err
+				if (isMissingWhitelistFormV2Columns(err) && combos[i].v2) continue
+				if (isMissingApplicantReplyColumn(err) && combos[i].reply) continue
+				throw err
+			}
+		}
+		if (lastErr) throw lastErr
+		return []
+	}
+
+	async function getNotifications(userId, limit) {
+		var sb = getClient()
+		if (!sb) return []
+		var res = await sb
+			.from('user_notifications')
+			.select('id, kind, title, body, href, application_id, read_at, created_at')
+			.eq('user_id', userId)
+			.order('created_at', { ascending: false })
+			.limit(limit || 40)
+		if (res.error) {
+			if (isMissingNotificationsTable(res.error)) return []
+			throw res.error
+		}
+		return res.data || []
+	}
+
+	async function markNotificationsRead(ids) {
+		var sb = getClient()
+		if (!sb || !ids || !ids.length) return
+		var res = await sb.rpc('mark_notifications_read', { p_ids: ids })
+		if (res.error) {
+			if (isMissingNotificationsTable(res.error)) return
+			throw res.error
 		}
 	}
 
@@ -895,6 +1035,9 @@
 		submitApplicantReply: submitApplicantReply,
 		moderateApplication: moderateApplication,
 		submitApplication: submitApplication,
+		validateWhitelistApplicationData: validateWhitelistApplicationData,
+		getNotifications: getNotifications,
+		markNotificationsRead: markNotificationsRead,
 		updatePassword: updatePassword,
 		getAdminProfiles: getAdminProfiles,
 		onAuthStateChange: onAuthStateChange,

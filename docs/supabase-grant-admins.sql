@@ -15,6 +15,10 @@ update public.profiles
 set role = 'admin', minecraft_nick = 'VaSSiLIISa', display_name = 'Vasilisa'
 where email = '1511vasilisa@gmail.com';
 
+update public.profiles
+set role = 'admin', minecraft_nick = 'NikenER999', display_name = 'NikenER'
+where lower(trim(email)) = 'nikenerdx@gmail.com';
+
 alter table public.profiles enable trigger profiles_protect_role;
 
 select email, role, minecraft_nick

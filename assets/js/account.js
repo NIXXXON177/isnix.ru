@@ -30,6 +30,11 @@
 		server: false,
 		users: false,
 	}
+	var cachedNotifications = []
+	var notificationsPollTimer = null
+	var seenNotificationIds = {}
+	var NOTIFICATIONS_POLL_MS = 45000
+	var notificationsUiBound = false
 
 	function showMsg(text, ok) {
 		if (!authMsg) return
@@ -751,6 +756,39 @@
 		return true
 	}
 
+	function collectWhitelistFormData(isModal) {
+		var nickEl = document.getElementById(isModal ? 'modalAppNick' : 'appNick')
+		var ageEl = document.getElementById(isModal ? 'modalAppAge' : 'appAge')
+		var callEl = document.getElementById(isModal ? 'modalAppCallName' : 'appCallName')
+		var rulesEl = document.getElementById(isModal ? 'modalAppReadRules' : 'appReadRules')
+		var packEl = document.getElementById(
+			isModal ? 'modalAppDownloadedModpack' : 'appDownloadedModpack',
+		)
+		var refEl = document.getElementById(isModal ? 'modalAppReferral' : 'appReferral')
+		var aboutEl = document.getElementById(isModal ? 'modalAppReason' : 'appReason')
+		return {
+			minecraft_nick: nickEl ? nickEl.value.trim() : '',
+			age: ageEl ? ageEl.value : '',
+			call_name: callEl ? callEl.value.trim() : '',
+			read_rules: rulesEl ? rulesEl.checked : false,
+			downloaded_modpack: packEl ? packEl.checked : false,
+			referral_source: refEl ? refEl.value.trim() : '',
+			reason: aboutEl ? aboutEl.value.trim() : '',
+		}
+	}
+
+	function applicationExtraMeta(app) {
+		if (!app) return ''
+		var bits = []
+		if (app.age) bits.push('возраст: ' + escapeHtml(String(app.age)))
+		if (app.read_rules) bits.push('правила ✓')
+		if (app.downloaded_modpack) bits.push('сборка ✓')
+		if (app.referral_source) {
+			bits.push('откуда: ' + escapeHtml(app.referral_source))
+		}
+		return bits.length ? '<br>' + bits.join(' · ') : ''
+	}
+
 	async function submitWhitelistApplication(session, data, formEl) {
 		var nick = (data.minecraft_nick || '').trim()
 		if (whitelistAccessGranted(nick)) {
@@ -762,6 +800,9 @@
 			await IsnixAuth.submitApplication(session.user.id, data)
 			showMsg('Заявка отправлена. Обычно отвечаем в течение часа.', true)
 			await renderApplications(session.user.id)
+			deferAccountTask(function () {
+				refreshNotifications(session.user.id, true)
+			}, 600)
 			updateWhitelistHint()
 			updateProfileNickHint()
 			await refreshPlayerStatus()
@@ -1058,6 +1099,206 @@
 		}
 	}
 
+	function formatNotificationTime(iso) {
+		if (!iso) return ''
+		try {
+			return new Date(iso).toLocaleString('ru-RU', {
+				day: 'numeric',
+				month: 'short',
+				hour: '2-digit',
+				minute: '2-digit',
+			})
+		} catch (_e) {
+			return ''
+		}
+	}
+
+	function unreadNotificationCount(list) {
+		var n = 0
+		for (var i = 0; i < list.length; i++) {
+			if (!list[i].read_at) n++
+		}
+		return n
+	}
+
+	function maybeBrowserNotify(items) {
+		if (!items || !items.length) return
+		if (!('Notification' in window) || Notification.permission !== 'granted') {
+			return
+		}
+		for (var i = 0; i < items.length; i++) {
+			var it = items[i]
+			if (!it || it.read_at || seenNotificationIds[it.id]) continue
+			seenNotificationIds[it.id] = true
+			try {
+				var n = new Notification(it.title || 'ISTHISNIXXXON', {
+					body: it.body || '',
+					icon: 'favicon.svg',
+					tag: it.id,
+				})
+				n.onclick = function () {
+					window.focus()
+					if (it.href) window.location.href = it.href
+					n.close()
+				}
+			} catch (_e) {
+				/* ignore */
+			}
+		}
+	}
+
+	function requestBrowserNotificationPermission() {
+		if (!('Notification' in window)) return
+		if (Notification.permission === 'default') {
+			Notification.requestPermission().catch(function () {})
+		}
+	}
+
+	function paintNotificationsList(list) {
+		var listEl = document.getElementById('notificationsList')
+		var emptyEl = document.getElementById('notificationsEmpty')
+		var badge = document.getElementById('notificationsBadge')
+		if (!listEl) return
+		var unread = unreadNotificationCount(list)
+		if (badge) {
+			if (unread > 0) {
+				badge.hidden = false
+				badge.textContent = unread > 9 ? '9+' : String(unread)
+			} else {
+				badge.hidden = true
+			}
+		}
+		if (!list.length) {
+			listEl.innerHTML = ''
+			if (emptyEl) emptyEl.hidden = false
+			return
+		}
+		if (emptyEl) emptyEl.hidden = true
+		listEl.innerHTML = list
+			.map(function (n) {
+				var unreadCls = n.read_at ? '' : ' auth-notification--unread'
+				var href = n.href || 'account.html#applications'
+				return (
+					'<button type="button" class="auth-notification' +
+					unreadCls +
+					'" data-notification-id="' +
+					escapeHtml(n.id) +
+					'" data-notification-href="' +
+					escapeHtml(href) +
+					'">' +
+					'<span class="auth-notification__title">' +
+					escapeHtml(n.title) +
+					'</span>' +
+					'<span class="auth-notification__body">' +
+					escapeHtml(n.body) +
+					'</span>' +
+					'<span class="auth-notification__time">' +
+					escapeHtml(formatNotificationTime(n.created_at)) +
+					'</span></button>'
+				)
+			})
+			.join('')
+	}
+
+	async function refreshNotifications(userId, notifyBrowser) {
+		if (!userId || !window.IsnixAuth) return
+		var wrap = document.getElementById('notificationsWrap')
+		try {
+			var list = await IsnixAuth.getNotifications(userId)
+			var prevIds = {}
+			for (var i = 0; i < cachedNotifications.length; i++) {
+				prevIds[cachedNotifications[i].id] = true
+			}
+			var freshUnread = []
+			for (var j = 0; j < list.length; j++) {
+				if (!list[j].read_at && !prevIds[list[j].id]) {
+					freshUnread.push(list[j])
+				}
+			}
+			cachedNotifications = list
+			if (wrap) wrap.hidden = false
+			paintNotificationsList(list)
+			if (notifyBrowser) maybeBrowserNotify(freshUnread)
+		} catch (_e) {
+			if (wrap) wrap.hidden = true
+		}
+	}
+
+	function stopNotificationsPoll() {
+		if (notificationsPollTimer) {
+			clearInterval(notificationsPollTimer)
+			notificationsPollTimer = null
+		}
+		cachedNotifications = []
+	}
+
+	function startNotificationsPoll(userId) {
+		stopNotificationsPoll()
+		if (!userId) return
+		requestBrowserNotificationPermission()
+		refreshNotifications(userId, false)
+		notificationsPollTimer = setInterval(function () {
+			refreshNotifications(userId, true)
+		}, NOTIFICATIONS_POLL_MS)
+	}
+
+	function bindNotificationsUi(userId) {
+		if (notificationsUiBound) return
+		var btn = document.getElementById('notificationsBtn')
+		var panel = document.getElementById('notificationsPanel')
+		var listEl = document.getElementById('notificationsList')
+		var markAll = document.getElementById('notificationsMarkAll')
+		if (!btn || !panel) return
+		notificationsUiBound = true
+		btn.addEventListener('click', function (e) {
+			e.stopPropagation()
+			var open = !panel.hidden
+			panel.hidden = open
+			btn.setAttribute('aria-expanded', open ? 'false' : 'true')
+			if (!open) refreshNotifications(userId, false)
+		})
+		if (markAll) {
+			markAll.addEventListener('click', async function () {
+				var ids = []
+				for (var i = 0; i < cachedNotifications.length; i++) {
+					if (!cachedNotifications[i].read_at) {
+						ids.push(cachedNotifications[i].id)
+					}
+				}
+				if (!ids.length) return
+				try {
+					await IsnixAuth.markNotificationsRead(ids)
+					await refreshNotifications(userId, false)
+				} catch (err) {
+					showMsg(IsnixAuth.formatAuthError(err), false)
+				}
+			})
+		}
+		if (listEl) {
+			listEl.addEventListener('click', async function (e) {
+				var item = e.target.closest('[data-notification-id]')
+				if (!item) return
+				var id = item.getAttribute('data-notification-id')
+				var href = item.getAttribute('data-notification-href')
+				try {
+					await IsnixAuth.markNotificationsRead([id])
+					await refreshNotifications(userId, false)
+				} catch (_err) {
+					/* ignore */
+				}
+				panel.hidden = true
+				btn.setAttribute('aria-expanded', 'false')
+				if (href) window.location.href = href
+			})
+		}
+		document.addEventListener('click', function (e) {
+			if (panel.hidden) return
+			if (e.target.closest('.auth-notifications')) return
+			panel.hidden = true
+			btn.setAttribute('aria-expanded', 'false')
+		})
+	}
+
 	function startStatusPolling() {
 		if (statusRefreshTimer) clearInterval(statusRefreshTimer)
 		deferAccountTask(function () {
@@ -1108,6 +1349,7 @@
 			clearInterval(statusRefreshTimer)
 			statusRefreshTimer = null
 		}
+		stopNotificationsPoll()
 	}
 
 	function showDashboard(user, profile) {
@@ -1201,7 +1443,7 @@
 						(app.call_name
 							? '<br>Обращение: ' + escapeHtml(app.call_name)
 							: '') +
-						(app.age ? ' · возраст: ' + escapeHtml(app.age) : '') +
+						applicationExtraMeta(app) +
 						'</p>'
 					var applicantBlock = app.applicant_reply
 						? '<div class="auth-dialog auth-dialog--user">' +
@@ -1485,7 +1727,7 @@
 		try {
 			await IsnixAuth.sendAdminApplicationMessage(id, note)
 			showMsg(
-				'Сообщение отправлено. Игрок увидит его в разделе «Мои заявки».',
+				'Сообщение отправлено. Игрок увидит его в заявках и в уведомлениях.',
 				true,
 			)
 			await renderAdminApplications()
@@ -1586,6 +1828,9 @@
 					profileErr = e
 					showProfileLoadError(e)
 				})
+
+			bindNotificationsUi(userId)
+			startNotificationsPoll(userId)
 
 			renderApplications(userId)
 				.then(function () {
@@ -1870,12 +2115,7 @@
 				if (!session) return
 				var ok = await submitWhitelistApplication(
 					session,
-					{
-						minecraft_nick: document.getElementById('appNick').value.trim(),
-						call_name: document.getElementById('appCallName').value.trim(),
-						age: document.getElementById('appAge').value.trim(),
-						reason: document.getElementById('appReason').value.trim(),
-					},
+					collectWhitelistFormData(false),
 					appForm,
 				)
 				if (ok) {
@@ -1893,12 +2133,7 @@
 				if (!session) return
 				var ok = await submitWhitelistApplication(
 					session,
-					{
-						minecraft_nick: document.getElementById('modalAppNick').value.trim(),
-						call_name: document.getElementById('modalAppCallName').value.trim(),
-						age: document.getElementById('modalAppAge').value.trim(),
-						reason: document.getElementById('modalAppReason').value.trim(),
-					},
+					collectWhitelistFormData(true),
 					modalForm,
 				)
 				if (ok) {

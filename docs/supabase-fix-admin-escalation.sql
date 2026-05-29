@@ -26,7 +26,7 @@ create trigger profiles_protect_role
 	before insert or update on public.profiles
 	for each row execute function public.protect_profile_role();
 
--- 2. is_admin — только три разрешённых email
+-- 2. is_admin — только четыре разрешённых email
 create or replace function public.is_admin()
 returns boolean
 language sql
@@ -39,10 +39,11 @@ as $$
 		from public.profiles p
 		where p.id = auth.uid()
 			and p.role = 'admin'
-			and p.email in (
+			and lower(trim(p.email)) in (
 				'kupryuhinsemen@gmail.com',
 				'kudrasovn024@gmail.com',
-				'1511vasilisa@gmail.com'
+				'1511vasilisa@gmail.com',
+				'nikenerdx@gmail.com'
 			)
 	);
 $$;
@@ -53,10 +54,11 @@ alter table public.profiles disable trigger profiles_protect_role;
 update public.profiles
 set role = 'player'
 where email is null
-   or email not in (
+   or lower(trim(email)) not in (
 		'kupryuhinsemen@gmail.com',
 		'kudrasovn024@gmail.com',
-		'1511vasilisa@gmail.com'
+		'1511vasilisa@gmail.com',
+		'nikenerdx@gmail.com'
 	);
 
 alter table public.profiles enable trigger profiles_protect_role;

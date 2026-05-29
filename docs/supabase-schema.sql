@@ -21,6 +21,9 @@ create table if not exists public.whitelist_applications (
 	call_name text,
 	age text,
 	reason text not null,
+	read_rules boolean not null default false,
+	downloaded_modpack boolean not null default false,
+	referral_source text,
 	status text not null default 'pending'
 		check (status in ('pending', 'approved', 'rejected')),
 	admin_note text,
@@ -185,3 +188,35 @@ grant usage on schema public to anon, authenticated;
 grant select, update on table public.profiles to authenticated;
 
 grant select, insert, update on table public.whitelist_applications to authenticated;
+
+-- Уведомления (подробнее: docs/supabase-notifications.sql)
+create table if not exists public.user_notifications (
+	id uuid primary key default gen_random_uuid(),
+	user_id uuid not null references auth.users on delete cascade,
+	kind text not null check (
+		kind in (
+			'whitelist_submitted',
+			'whitelist_approved',
+			'whitelist_rejected',
+			'whitelist_admin_message'
+		)
+	),
+	title text not null,
+	body text not null,
+	href text,
+	application_id uuid references public.whitelist_applications on delete set null,
+	read_at timestamptz,
+	created_at timestamptz not null default now()
+);
+
+create index if not exists user_notifications_user_id_idx
+	on public.user_notifications (user_id, created_at desc);
+
+alter table public.user_notifications enable row level security;
+
+drop policy if exists "notifications_select_own" on public.user_notifications;
+create policy "notifications_select_own"
+	on public.user_notifications for select
+	using (auth.uid() = user_id);
+
+grant select on table public.user_notifications to authenticated;

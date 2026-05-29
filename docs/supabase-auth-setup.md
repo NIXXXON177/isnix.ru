@@ -13,7 +13,7 @@
 
 Если ошибка `permission denied for table profiles` — **[supabase-grants-fix.sql](supabase-grants-fix.sql)**.
 
-Если у всех в таблице `profiles` роль **admin** или игроки видят панель админа — выполни **[supabase-fix-admin-escalation.sql](supabase-fix-admin-escalation.sql)** (или полный **[supabase-fix-connection.sql](supabase-fix-connection.sql)** — там сброс ролей и `is_admin` только для трёх email).
+Если у всех в таблице `profiles` роль **admin** или игроки видят панель админа — выполни **[supabase-fix-admin-escalation.sql](supabase-fix-admin-escalation.sql)** (или полный **[supabase-fix-connection.sql](supabase-fix-connection.sql)** — там сброс ролей и `is_admin` только для четырёх email).
 
 ## 3. Auth (письма)
 
@@ -59,7 +59,11 @@ Workflow подставит ключ в `auth-config.js` при деплое. В
 
 Если база уже была без роли — **[supabase-admin-migration.sql](supabase-admin-migration.sql)**.
 
-Выдать admin трём администраторам — **[supabase-grant-admins.sql](supabase-grant-admins.sql)** (отключает триггер на время update).
+Выдать admin четырём администраторам — **[supabase-grant-admins.sql](supabase-grant-admins.sql)** (включая `nikenerdx@gmail.com`; отключает триггер на время update). Только для Niken — **[supabase-grant-admin-nikener.sql](supabase-grant-admin-nikener.sql)**.
+
+Расширенная заявка (возраст 12+, правила, сборка) — **[supabase-whitelist-form-v2.sql](supabase-whitelist-form-v2.sql)**.
+
+Уведомления в кабинете (заявка, одобрение, сообщение админа) — **[supabase-notifications.sql](supabase-notifications.sql)**.
 
 Или вручную:
 
