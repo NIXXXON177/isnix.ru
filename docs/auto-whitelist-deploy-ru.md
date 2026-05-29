@@ -5,44 +5,57 @@
 1. В Supabase статус заявки → `approved`.
 2. Триггер ставит ник в очередь `whitelist_deploy_queue`.
 3. GitHub Actions (**Process whitelist deploy queue**, каждые 5 минут):
-   - берёт UUID с Mojang API;
+   - считает UUID для ника;
    - дописывает игрока в `whitelist.json` на сервере по SFTP;
-   - коммитит обновлённый `whitelist.json` в репозиторий (сайт на Pages подхватывает список).
+   - коммитит обновлённый `whitelist.json` в репозиторий.
+
+## Пиратские / нелицензионные ники (у нас так почти все)
+
+На сервере **`online-mode=false`** — игроки заходят без лицензии Mojang.  
+Для whitelist нужен **offline UUID** (тот же, что Minecraft даёт по нику при пиратском клиенте).
+
+Скрипт по умолчанию (`WHITELIST_UUID_MODE=auto`):
+
+1. Пробует Mojang API (если ник когда-то был куплен — возьмёт «настоящий» UUID).
+2. Если в Mojang нет (404) — ставит **offline UUID** по нику. **Это нормально для вашего сервера.**
+
+Чтобы **всегда** только offline (быстрее, без запросов к Mojang), в GitHub Secrets или в workflow:
+
+```text
+WHITELIST_UUID_MODE=offline
+```
+
+Режим `mojang` — только лицензия; для ISTHISNIXXXON не подходит.
 
 ## Настройка (один раз)
 
 ### 1. Supabase
 
-SQL Editor → выполни **[supabase-whitelist-deploy-queue.sql](supabase-whitelist-deploy-queue.sql)**.
+SQL Editor → **[supabase-whitelist-deploy-queue.sql](supabase-whitelist-deploy-queue.sql)**.
 
 ### 2. GitHub Secrets
 
-Репозиторий → **Settings → Secrets and variables → Actions**:
-
 | Секрет | Откуда |
 |--------|--------|
-| `SUPABASE_URL` | Supabase → Settings → API → Project URL |
-| `SUPABASE_SERVICE_ROLE_KEY` | Supabase → API → `service_role` (секретный ключ, не anon) |
-| `PLAY2GO_SFTP_HOST` | уже есть для sync-whitelist |
-| `PLAY2GO_SFTP_USER` | уже есть |
-| `PLAY2GO_SFTP_PASSWORD` | уже есть |
+| `SUPABASE_URL` | Supabase → API → Project URL |
+| `SUPABASE_SERVICE_ROLE_KEY` | service_role (не anon) |
+| `PLAY2GO_SFTP_*` | как в sync-whitelist |
 
-Опционально: `PLAY2GO_SFTP_PORT`, `PLAY2GO_WHITELIST_PATH` — как в [sync-whitelist.yml](../.github/workflows/sync-whitelist.yml).
+Опционально: `WHITELIST_UUID_MODE` = `auto` (по умолчанию) или `offline`.
 
 ### 3. Проверка
 
-1. Одобри тестовую заявку на сайте.
-2. Supabase → Table Editor → `whitelist_deploy_queue` — строка `pending`.
-3. Actions → **Process whitelist deploy queue** → **Run workflow** (или подожди до 5 минут).
-4. Статус очереди → `done`, игрок в `whitelist.json` на сервере.
+1. Одобри заявку → `whitelist_deploy_queue` → `pending`.
+2. Actions → **Process whitelist deploy queue** → Run workflow.
+3. В логе: `добавлен Nick (UUID: offline)` — для пиратского ника это ожидаемо.
 
 ## Если не сработало
 
-- **failed** в очереди — смотри `error_message` (часто: ник не найден в Mojang, неверный SFTP).
-- Ручной запуск: Actions → **Add player to whitelist (manual)** → введи ник.
-- Синхронизация с сервера: **Sync whitelist from Play2GO** (раз в 15 мин) подтянет актуальный файл в репо.
+- **failed** в очереди — смотри `error_message` (SFTP, опечатка в нике).
+- Ручной запуск: **Add player to whitelist (manual)**.
+- Игрок должен заходить **тем же ником**, что в заявке (регистр букв важен для offline UUID).
 
 ## Важно
 
-- Ник должен быть **лицензионным** (Mojang API), иначе UUID не получить.
-- Сервер должен быть **перезагружен** или whitelist перечитан, если панель не подхватывает файл сразу (зависит от хостинга).
+- Ник в заявке = ник в лаунчере при входе (латиница, 3–16 символов).
+- После добавления в whitelist иногда нужен **restart** сервера на Play2GO.

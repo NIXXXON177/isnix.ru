@@ -88,13 +88,14 @@ def patch_row(row_id: str, status: str, error_message: str | None = None) -> Non
 def process_nick(nick: str) -> None:
     download_whitelist(str(WHITELIST_FILE))
     entries = load_list(WHITELIST_FILE)
-    if add_player(entries, nick):
+    added, source = add_player(entries, nick)
+    if added:
         WHITELIST_FILE.write_text(
             json.dumps(entries, ensure_ascii=False, indent=2) + "\n",
             encoding="utf-8",
         )
         upload_whitelist(str(WHITELIST_FILE))
-        print(f"OK: добавлен {nick}")
+        print(f"OK: добавлен {nick} (UUID: {source})")
     else:
         print(f"OK: уже в whitelist {nick}")
 
