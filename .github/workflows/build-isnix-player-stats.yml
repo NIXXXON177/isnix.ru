@@ -1,3 +1,5 @@
+# Сборка isnix-player-stats и автозаливка в mods/ на Play2GO (push в main).
+
 name: Build ISNIX Player Stats mod
 
 on:
@@ -6,6 +8,8 @@ on:
     paths:
       - 'isnix-player-stats/**'
       - '.github/workflows/build-isnix-player-stats.yml'
+      - '.github/workflows/reusable-deploy-mod-sftp.yml'
+      - '.github/scripts/push_sftp.py'
   pull_request:
     branches: [main]
     paths:
@@ -27,8 +31,23 @@ jobs:
         working-directory: isnix-player-stats
         run: chmod +x gradlew && ./gradlew build --no-daemon
 
+      - name: Locate release JAR
+        id: jar
+        working-directory: isnix-player-stats
+        run: |
+          JAR=$(ls build/libs/isnix-player-stats-*.jar | grep -v sources | head -1)
+          echo "path=build/libs/$(basename "$JAR")" >> "$GITHUB_OUTPUT"
+
       - uses: actions/upload-artifact@v4
         with:
           name: isnix-player-stats-jar
-          path: isnix-player-stats/build/libs/isnix-player-stats-1.0.1.jar
+          path: isnix-player-stats/${{ steps.jar.outputs.path }}
           if-no-files-found: error
+
+  deploy:
+    needs: build
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    uses: ./.github/workflows/reusable-deploy-mod-sftp.yml
+    secrets: inherit
+    with:
+      artifact-name: isnix-player-stats-jar

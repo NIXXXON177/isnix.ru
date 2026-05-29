@@ -1,0 +1,60 @@
+# Загрузка собранного mod JAR в mods/ на Play2GO (вызывается из build-* workflow).
+# Секреты: PLAY2GO_SFTP_HOST, PLAY2GO_SFTP_USER, PLAY2GO_SFTP_PASSWORD
+# Опционально: PLAY2GO_SFTP_PORT (по умолчанию 2022)
+
+name: Reusable — deploy mod via SFTP
+
+on:
+  workflow_call:
+    inputs:
+      artifact-name:
+        required: true
+        type: string
+      remote-dir:
+        required: false
+        type: string
+        default: mods
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: ${{ inputs.artifact-name }}
+          path: jar
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install Paramiko
+        run: pip install --quiet paramiko
+
+      - name: Upload JAR to Play2GO
+        env:
+          SFTP_HOST: ${{ secrets.PLAY2GO_SFTP_HOST }}
+          SFTP_PORT: ${{ secrets.PLAY2GO_SFTP_PORT }}
+          SFTP_USER: ${{ secrets.PLAY2GO_SFTP_USER }}
+          SFTP_PASSWORD: ${{ secrets.PLAY2GO_SFTP_PASSWORD }}
+        run: |
+          set -euo pipefail
+          if [ -z "${SFTP_HOST:-}" ] || [ -z "${SFTP_USER:-}" ] || [ -z "${SFTP_PASSWORD:-}" ]; then
+            echo "Задай секреты PLAY2GO_SFTP_HOST, PLAY2GO_SFTP_USER, PLAY2GO_SFTP_PASSWORD"
+            exit 1
+          fi
+          export SFTP_PORT="${SFTP_PORT:-2022}"
+          JAR=$(find jar -type f -name '*.jar' ! -name '*-sources.jar' | head -1)
+          if [ -z "${JAR}" ]; then
+            echo "JAR не найден в артефакте"
+            exit 1
+          fi
+          NAME=$(basename "$JAR")
+          REMOTE="${{ inputs.remote-dir }}/${NAME}"
+          export LOCAL_FILE="$JAR"
+          export REMOTE_PATH="$REMOTE"
+          echo "SFTP: ${SFTP_USER}@${SFTP_HOST}:${SFTP_PORT} -> ${REMOTE_PATH}"
+          python3 .github/scripts/push_sftp.py
+          echo "::notice::Залит ${NAME}. Перезапустите сервер в панели Play2GO, чтобы Fabric подхватил jar."

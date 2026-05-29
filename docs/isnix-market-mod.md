@@ -31,9 +31,10 @@
 
 ## Установка
 
-1. Соберите jar: `isnix-market/gradlew build` или скачайте артефакт из GitHub Actions `build-isnix-market.yml`.
-2. Положите **`isnix-market-1.0.0.jar`** только в `mods/` **сервера** (клиентам мод не нужен — обычный GUI сундука).
-3. Нужны **Fabric Loader**, **Fabric API**, Minecraft **1.21.1**.
+1. **Автоматически:** push в `main` с изменениями в `isnix-market/` — workflow `build-isnix-market.yml` соберёт jar и зальёт в `mods/` (секреты `PLAY2GO_SFTP_*`). См. `docs/github-actions-automation.md`.
+2. **Вручную:** `isnix-market/gradlew build` или артефакт из Actions; jar только в `mods/` **сервера** (клиентам мод не нужен).
+3. После обновления jar — **рестарт сервера** в Play2GO.
+4. Нужны **Fabric Loader**, **Fabric API**, Minecraft **1.21.1**.
 
 Конфиг после первого запуска: `config/isnix-market/isnix-market.json`
 

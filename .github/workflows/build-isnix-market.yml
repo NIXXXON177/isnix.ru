@@ -1,3 +1,6 @@
+# Сборка isnix-market и автозаливка в mods/ на Play2GO (push в main).
+# Секреты SFTP: PLAY2GO_SFTP_* (как sync-whitelist.yml). После деплоя — рестарт сервера в панели.
+
 name: Build ISNIX Market mod
 
 on:
@@ -6,6 +9,8 @@ on:
     paths:
       - 'isnix-market/**'
       - '.github/workflows/build-isnix-market.yml'
+      - '.github/workflows/reusable-deploy-mod-sftp.yml'
+      - '.github/scripts/push_sftp.py'
   pull_request:
     branches: [main]
     paths:
@@ -27,8 +32,23 @@ jobs:
         working-directory: isnix-market
         run: chmod +x gradlew && ./gradlew build --no-daemon
 
+      - name: Locate release JAR
+        id: jar
+        working-directory: isnix-market
+        run: |
+          JAR=$(ls build/libs/isnix-market-*.jar | grep -v sources | head -1)
+          echo "path=build/libs/$(basename "$JAR")" >> "$GITHUB_OUTPUT"
+
       - uses: actions/upload-artifact@v4
         with:
           name: isnix-market-jar
-          path: isnix-market/build/libs/isnix-market-*.jar
+          path: isnix-market/${{ steps.jar.outputs.path }}
           if-no-files-found: error
+
+  deploy:
+    needs: build
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    uses: ./.github/workflows/reusable-deploy-mod-sftp.yml
+    secrets: inherit
+    with:
+      artifact-name: isnix-market-jar

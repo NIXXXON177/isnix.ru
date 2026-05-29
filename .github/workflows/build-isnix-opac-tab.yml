@@ -1,11 +1,17 @@
+# Сборка isnix-opac-tab и автозаливка в mods/ на Play2GO (push в main).
+
 name: Build isnix-opac-tab
 
 on:
   push:
+    branches: [main]
     paths:
       - 'isnix-opac-tab/**'
       - '.github/workflows/build-isnix-opac-tab.yml'
+      - '.github/workflows/reusable-deploy-mod-sftp.yml'
+      - '.github/scripts/push_sftp.py'
   pull_request:
+    branches: [main]
     paths:
       - 'isnix-opac-tab/**'
   workflow_dispatch:
@@ -22,7 +28,24 @@ jobs:
       - name: Build mod
         working-directory: isnix-opac-tab
         run: chmod +x gradlew && ./gradlew build --no-daemon
+
+      - name: Locate release JAR
+        id: jar
+        working-directory: isnix-opac-tab
+        run: |
+          JAR=$(ls build/libs/isnix-opac-tab-*.jar | grep -v sources | head -1)
+          echo "path=build/libs/$(basename "$JAR")" >> "$GITHUB_OUTPUT"
+
       - uses: actions/upload-artifact@v4
         with:
           name: isnix-opac-tab-jar
-          path: isnix-opac-tab/build/libs/isnix-opac-tab-*.jar
+          path: isnix-opac-tab/${{ steps.jar.outputs.path }}
+          if-no-files-found: error
+
+  deploy:
+    needs: build
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    uses: ./.github/workflows/reusable-deploy-mod-sftp.yml
+    secrets: inherit
+    with:
+      artifact-name: isnix-opac-tab-jar
