@@ -16,23 +16,16 @@
 
 Файл **`config/openpartiesandclaims-server.toml`** перезаписывается при работе сервера. Редактируйте только при **выключенном** сервере.
 
-### 1.2. Ограничить настройки в «My player config»
+### 1.2. Настройки приватов для игроков
 
-В файле найдите блок **`playerConfigurablePlayerConfigOptions`** (в комментариях выше него описаны правила).
+Раньше список `playerConfigurablePlayerConfigOptions` был слишком коротким (только имя клана и цвет региона) — игроки **не могли** менять защиту приватов в меню `'`.
 
-**Замените** длинный список на короткий — только то, что нужно кланам и регионам:
+**Сейчас восстановлен полный заводской список OPAC 0.26.3** (защита чанков, доступ party, сундуки, двери, forceload и т.д.) + `party.name` для кланов.
 
-```toml
-playerConfigurablePlayerConfigOptions = [
-	"party.name",
-	"claims.name",
-	"claims.color"
-]
-```
+Файл-образец: `docs/config-samples/openpartiesandclaims-player-options.snippet.toml`  
+Генерация списка: `python scripts/gen_opac_player_options.py`
 
-> **Важно:** если после перезапуска сервер не принимает опцию (ошибка в логе), откройте ваш **старый** `openpartiesandclaims-server.toml`, скопируйте **точные** id опций из уже работающего списка (формат вида `claims.forceload.offlineForceload`). В разных версиях OPAC id может отличаться — ориентируйтесь на подписи в GUI: *Party name*, *Claims name*, *Claims color*.
-
-Все остальные пункты (защита чанков, мобы, взрывы и т.д.) игроки **не увидят** — останутся значения из **default player config**, которые задаёт админ.
+> Редактировать `config/openpartiesandclaims-server.toml` только при **выключенном** сервере, иначе OPAC перезапишет файл.
 
 ### 1.3. Что видят обычные игроки в меню `'
 
