@@ -505,6 +505,14 @@
 		}
 	}
 
+	function updatePlayerApplicationSections(profile) {
+		var isAdmin = IsnixAuth && IsnixAuth.isAdminProfile(profile || currentProfile)
+		var appsSection = document.getElementById('applications')
+		var wlSection = document.getElementById('whitelist')
+		if (appsSection) appsSection.hidden = isAdmin
+		if (wlSection && isAdmin) wlSection.hidden = true
+	}
+
 	function applyDashboardProfile(profile, session) {
 		if (!profile || !session || !session.user) return
 		profile.id = session.user.id
@@ -516,6 +524,7 @@
 		updateProfileMeta(profile, cachedServerStatus)
 		renderPlayerStats(profile, playerStats, cachedServerStatus)
 		updateProfileNickHint()
+		updatePlayerApplicationSections(profile)
 		updateWhitelistHint()
 		var isAdmin = IsnixAuth && IsnixAuth.isAdminProfile(profile)
 		var wrap = document.querySelector('.auth-wrap')
@@ -529,8 +538,9 @@
 	function showDashboardShell(session, profile) {
 		showDashboard(session.user, profile)
 		showConnectionNotice('')
+		updatePlayerApplicationSections(profile)
 		var list = document.getElementById('applicationsList')
-		if (list) {
+		if (list && !(IsnixAuth && IsnixAuth.isAdminProfile(profile))) {
 			list.innerHTML = '<p class="auth-muted">Загрузка заявок…</p>'
 		}
 	}
@@ -658,7 +668,7 @@
 		var section = document.getElementById('whitelist')
 		if (!section) return
 		if (IsnixAuth.isAdminProfile(currentProfile)) {
-			section.hidden = false
+			section.hidden = true
 			return
 		}
 		var profileNickEl = document.getElementById('profileNick')
@@ -1369,6 +1379,7 @@
 		if (badge) badge.hidden = !isAdmin
 		var adminPanel = document.getElementById('adminPanel')
 		if (adminPanel) adminPanel.hidden = !isAdmin
+		updatePlayerApplicationSections(profile)
 		var emailEl = document.getElementById('dashEmail')
 		if (emailEl) emailEl.textContent = user.email || '—'
 		syncPasswordFormUsername(user.email || '')
@@ -1376,6 +1387,9 @@
 	}
 
 	async function renderApplications(userId) {
+		if (IsnixAuth && IsnixAuth.isAdminProfile(currentProfile)) {
+			return []
+		}
 		var list = document.getElementById('applicationsList')
 		if (!list || !window.IsnixAuth) return []
 		var cached = readAppsCache(userId)
@@ -1832,25 +1846,27 @@
 			bindNotificationsUi(userId)
 			startNotificationsPoll(userId)
 
-			renderApplications(userId)
-				.then(function () {
-					updateProfileNickHint()
-					updateWhitelistHint()
-				})
-				.catch(function (e) {
-					var list = document.getElementById('applicationsList')
-					if (list) {
-						list.innerHTML =
-							'<p class="auth-message auth-message--err">' +
-							escapeHtml(IsnixAuth.formatAuthError(e)) +
-							'</p>'
-					}
-					if (!profileErr) {
-						showConnectionNotice(
-							'Заявки: ' + IsnixAuth.formatAuthError(e),
-						)
-					}
-				})
+			if (!IsnixAuth.isAdminProfile(quickProfile)) {
+				renderApplications(userId)
+					.then(function () {
+						updateProfileNickHint()
+						updateWhitelistHint()
+					})
+					.catch(function (e) {
+						var list = document.getElementById('applicationsList')
+						if (list) {
+							list.innerHTML =
+								'<p class="auth-message auth-message--err">' +
+								escapeHtml(IsnixAuth.formatAuthError(e)) +
+								'</p>'
+						}
+						if (!profileErr) {
+							showConnectionNotice(
+								'Заявки: ' + IsnixAuth.formatAuthError(e),
+							)
+						}
+					})
+			}
 		})().finally(function () {
 			dashboardLoading = false
 			if (dashboardEnterUserId === userId) {
