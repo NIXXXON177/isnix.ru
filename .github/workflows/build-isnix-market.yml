@@ -30,5 +30,5 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: isnix-market-jar
-          path: isnix-market/build/libs/isnix-market-1.0.0.jar
+          path: isnix-market/build/libs/isnix-market-*.jar
           if-no-files-found: error
