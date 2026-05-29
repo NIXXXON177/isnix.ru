@@ -184,8 +184,14 @@
 				? 'Ссылка на канал и видео о сервере'
 				: 'Ссылка на канал и стримы на сервере'
 		const text = `Заявка на префикс [${prefix}]\nНик: ${nickCanon}\n${contentHint}: `
-		if (navigator.clipboard && navigator.clipboard.writeText) {
-			navigator.clipboard.writeText(text).then(function () {
+		var copyFn =
+			window.IsnixCompat && IsnixCompat.copyText
+				? IsnixCompat.copyText(text)
+				: navigator.clipboard && navigator.clipboard.writeText
+					? navigator.clipboard.writeText(text)
+					: null
+		if (copyFn && typeof copyFn.then === 'function') {
+			copyFn.then(function () {
 				showToast(
 					'Текст заявки скопирован — вставь его в заявку в личном кабинете',
 					true,
@@ -797,22 +803,36 @@
 		})
 	})()
 
-	const obs = new IntersectionObserver(
-		e =>
-			e.forEach(x => x.isIntersecting && x.target.classList.add('visible')),
-		{ threshold: 0.08 },
-	)
-	document.querySelectorAll('.reveal').forEach(el => obs.observe(el))
+	const obs =
+		typeof IntersectionObserver !== 'undefined'
+			? new IntersectionObserver(
+					e =>
+						e.forEach(x => x.isIntersecting && x.target.classList.add('visible')),
+					{ threshold: 0.08 },
+				)
+			: null
+	if (obs) {
+		document.querySelectorAll('.reveal').forEach(el => obs.observe(el))
+	} else {
+		document.querySelectorAll('.reveal').forEach(el => el.classList.add('visible'))
+	}
 ;(function initIpCopy() {
 	document.querySelectorAll('.ip-box, .site-footer__ip').forEach(function (box) {
 		var valEl = box.querySelector(".ip-val")
 		var hintEl = box.querySelector(".ip-hint")
-		if (!valEl || !hintEl || !navigator.clipboard) return
+		if (!valEl || !hintEl) return
 		var originalHint = hintEl.textContent
 		function copyIp() {
 			var ip = (valEl.textContent || "").trim()
 			if (!ip) return
-			navigator.clipboard.writeText(ip).then(function () {
+			var copyFn =
+				window.IsnixCompat && IsnixCompat.copyText
+					? IsnixCompat.copyText(ip)
+					: navigator.clipboard && navigator.clipboard.writeText
+						? navigator.clipboard.writeText(ip)
+						: null
+			if (!copyFn || typeof copyFn.then !== 'function') return
+			copyFn.then(function () {
 				hintEl.textContent = "\u0421\u043a\u043e\u043f\u0438\u0440\u043e\u0432\u0430\u043d\u043e!"
 				setTimeout(function () { hintEl.textContent = originalHint }, 2000)
 			})

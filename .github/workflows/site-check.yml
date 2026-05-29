@@ -28,6 +28,7 @@ jobs:
           test -f assets/css/components.css
           test -f assets/css/auth.css
           test -f assets/css/site-header.css
+          test -f assets/js/browser-compat.js
           test -f assets/js/site.js
           test -f assets/js/site-header.js
           test -f assets/js/auth.js
@@ -44,4 +45,6 @@ jobs:
           grep -q 'assets/js/site.js' index.html
           grep -q 'assets/js/site-header.js' index.html
           grep -q 'assets/js/shop-slider.js' index.html
+          grep -q 'browser-compat.js' account.html
+          grep -q 'browser-compat.js' index.html
           ! grep -q 'cdn.tailwindcss.com' index.html

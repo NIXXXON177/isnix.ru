@@ -20,6 +20,27 @@
 				--shadow-glow: 0 0 24px rgba(74, 222, 128, 0.12);
 				--space-section: clamp(3.5rem, 8vw, 6rem);
 			}
+			html {
+				-webkit-text-size-adjust: 100%;
+				text-size-adjust: 100%;
+				-webkit-tap-highlight-color: transparent;
+			}
+			html.nav-open,
+			body.nav-open {
+				overflow: hidden;
+			}
+			@supports (-webkit-touch-callout: none) {
+				html.nav-open,
+				body.nav-open {
+					height: 100%;
+					position: fixed;
+					width: 100%;
+				}
+			}
+			.no-css-dvh .nav-drawer {
+				height: 100%;
+				max-height: 100%;
+			}
 			.text-strong {
 				color: var(--text);
 				font-weight: 600;

@@ -21,6 +21,7 @@
 	var dashboardEnterPromise = null
 	var dashboardEnterUserId = null
 	var PROFILE_CACHE_TTL_MS = 300000
+	var APPS_CACHE_TTL_MS = 120000
 	var adminActionInFlight = {}
 	var adminListDelegationBound = false
 	var whitelistLoadPromise = null
@@ -101,6 +102,13 @@
 			img.removeAttribute('src')
 			fallback.hidden = false
 			fallback.textContent = v ? v.charAt(0).toUpperCase() : '?'
+		}
+		var wrap = img.closest('.account-user-bar__avatar-wrap')
+		if (wrap) {
+			wrap.classList.toggle(
+				'is-showing-avatar',
+				!img.hidden && !!img.getAttribute('src'),
+			)
 		}
 	}
 
@@ -383,43 +391,84 @@
 		}
 	}
 
-function readPlayerStatsCache(userId) {
-	if (!userId) return null
-	try {
-		var raw = sessionStorage.getItem('isnix_player_stats_' + userId)
-		if (!raw) return null
-		var o = JSON.parse(raw)
-		if (!o || !o.s || Date.now() - o.t > PROFILE_CACHE_TTL_MS) return null
-		return o.s
-	} catch (_e) {
-		return null
+	function readPlayerStatsCache(userId) {
+		if (!userId) return null
+		try {
+			var raw = sessionStorage.getItem('isnix_player_stats_' + userId)
+			if (!raw) return null
+			var o = JSON.parse(raw)
+			if (!o || !o.s || Date.now() - o.t > PROFILE_CACHE_TTL_MS) return null
+			return o.s
+		} catch (_e) {
+			return null
+		}
 	}
-}
 
-function writePlayerStatsCache(userId, stats) {
-	if (!userId || !stats) return
-	try {
-		sessionStorage.setItem(
-			'isnix_player_stats_' + userId,
-			JSON.stringify({ s: stats, t: Date.now() }),
-		)
-	} catch (_e) {
-		/* ignore */
+	function writePlayerStatsCache(userId, stats) {
+		if (!userId || !stats) return
+		try {
+			sessionStorage.setItem(
+				'isnix_player_stats_' + userId,
+				JSON.stringify({ s: stats, t: Date.now() }),
+			)
+		} catch (_e) {
+			/* ignore */
+		}
 	}
-}
 
-function clearProfileCaches() {
-	try {
-		var keys = []
-		for (var i = 0; i < sessionStorage.length; i++) {
-			var k = sessionStorage.key(i)
-			if (
-				k &&
-				(k.indexOf('isnix_profile_') === 0 ||
-				k.indexOf('isnix_player_stats_') === 0)
-			) {
-				keys.push(k)
+	function readAppsCache(userId) {
+		try {
+			var raw = sessionStorage.getItem('isnix_apps_' + userId)
+			if (!raw) return null
+			var o = JSON.parse(raw)
+			if (!o || !Array.isArray(o.a) || Date.now() - o.t > APPS_CACHE_TTL_MS) {
+				return null
 			}
+			return o.a
+		} catch (_e) {
+			return null
+		}
+	}
+
+	function writeAppsCache(userId, apps) {
+		if (!userId || !apps) return
+		try {
+			sessionStorage.setItem(
+				'isnix_apps_' + userId,
+				JSON.stringify({ a: apps, t: Date.now() }),
+			)
+		} catch (_e) {
+			/* ignore */
+		}
+	}
+
+	function clearAppsCaches() {
+		try {
+			var keys = []
+			for (var i = 0; i < sessionStorage.length; i++) {
+				var k = sessionStorage.key(i)
+				if (k && k.indexOf('isnix_apps_') === 0) keys.push(k)
+			}
+			keys.forEach(function (k) {
+				sessionStorage.removeItem(k)
+			})
+		} catch (_e) {
+			/* ignore */
+		}
+	}
+
+	function clearProfileCaches() {
+		try {
+			var keys = []
+			for (var i = 0; i < sessionStorage.length; i++) {
+				var k = sessionStorage.key(i)
+				if (
+					k &&
+					(k.indexOf('isnix_profile_') === 0 ||
+						k.indexOf('isnix_player_stats_') === 0)
+				) {
+					keys.push(k)
+				}
 			}
 			keys.forEach(function (k) {
 				sessionStorage.removeItem(k)
@@ -1065,104 +1114,28 @@ function clearProfileCaches() {
 	async function renderApplications(userId) {
 		var list = document.getElementById('applicationsList')
 		if (!list || !window.IsnixAuth) return []
-		list.innerHTML = '<p class="auth-muted">Загрузка…</p>'
+		var cached = readAppsCache(userId)
+		if (cached) {
+			cachedApplications = cached
+			paintApplicationsList(cached)
+		} else {
+			list.innerHTML = '<p class="auth-muted">Загрузка…</p>'
+		}
 		try {
 			var apps = await IsnixAuth.getApplications(userId)
 			cachedApplications = apps
-			if (!apps.length) {
-				list.innerHTML =
-					'<p class="auth-muted">Заявок пока нет. Заполни форму ниже.</p>'
-				return apps
-			}
-			list.innerHTML = apps
-				.map(function (app) {
-					var decision =
-						app.status === 'approved'
-							? '✅ Одобрено'
-							: app.status === 'rejected'
-								? '❌ Отклонено'
-								: '⏳ На рассмотрении'
-					var adminMsg = app.admin_note
-						? '<div class="auth-dialog auth-dialog--admin">' +
-							'<p class="auth-dialog__label">Сообщение от администрации</p>' +
-							'<p class="auth-dialog__body">' +
-							escapeHtml(app.admin_note) +
-							'</p></div>'
-						: ''
-					var applicantMsg = app.applicant_reply
-						? '<div class="auth-dialog auth-dialog--user">' +
-							'<p class="auth-dialog__label">Твой ответ</p>' +
-							'<p class="auth-dialog__body">' +
-							escapeHtml(app.applicant_reply) +
-							'</p></div>'
-						: ''
-					var replyForm =
-						app.status === 'pending' && app.admin_note && !app.applicant_reply
-							? '<form class="auth-app-reply-form" data-reply-app="' +
-								app.id +
-								'">' +
-								'<label class="auth-dialog__label" for="reply-' +
-								app.id +
-								'">Ответить администрации</label>' +
-								'<textarea id="reply-' +
-								app.id +
-								'" class="auth-admin-note" rows="3" maxlength="2000" required placeholder="Ответь на вопрос админа…"></textarea>' +
-								'<button type="submit" class="auth-submit">Отправить ответ</button>' +
-								'</form>'
-							: ''
-					var note =
-						app.status !== 'pending' && app.admin_note
-							? '<p class="auth-app-note"><strong>Решение:</strong> ' +
-								escapeHtml(app.admin_note) +
-								'</p>'
-							: ''
-					var timeline =
-						'<ul class="auth-muted" style="margin:0.5rem 0 0.75rem;padding-left:1.1rem">' +
-						'<li>Заявка отправлена — ' +
-						escapeHtml(formatDate(app.created_at)) +
-						'</li>' +
-						'<li>Статус: <strong>' +
-						escapeHtml(decision) +
-						'</strong></li>' +
-						'</ul>'
-					return (
-						'<article class="auth-app-card">' +
-						'<div class="auth-app-head">' +
-						'<strong>' +
-						escapeHtml(app.minecraft_nick) +
-						'</strong>' +
-						'<span class="' +
-						statusClass(app.status) +
-						'">' +
-						statusLabel(app.status) +
-						'</span>' +
-						'</div>' +
-						timeline +
-						'<p class="auth-app-reason"><strong>Заявка:</strong> ' +
-						escapeHtml(app.reason) +
-						'</p>' +
-						adminMsg +
-						applicantMsg +
-						replyForm +
-						note +
-						'</article>'
-					)
-				})
-					.join('')
-			bindApplicantReplyForms(list)
-			syncWhitelistSectionVisibility(
-				document.getElementById('profileNick')
-					? document.getElementById('profileNick').value
-					: '',
-			)
+			writeAppsCache(userId, apps)
+			paintApplicationsList(apps)
 			return apps
 		} catch (err) {
-			cachedApplications = []
-			list.innerHTML =
-				'<p class="auth-message auth-message--err">' +
-				escapeHtml(IsnixAuth.formatAuthError(err)) +
-				'</p>'
-			return []
+			if (!cached) {
+				cachedApplications = []
+				list.innerHTML =
+					'<p class="auth-message auth-message--err">' +
+					escapeHtml(IsnixAuth.formatAuthError(err)) +
+					'</p>'
+			}
+			return cached || []
 		}
 	}
 
@@ -1323,6 +1296,136 @@ function clearProfileCaches() {
 		})
 	}
 
+	function renderApplicationsHtml(apps) {
+		if (!apps.length) {
+			return '<p class="auth-muted">Заявок пока нет. Заполни форму ниже.</p>'
+		}
+		return apps
+			.map(function (app) {
+				var decision =
+					app.status === 'approved'
+						? '✅ Одобрено'
+						: app.status === 'rejected'
+							? '❌ Отклонено'
+							: '⏳ На рассмотрении'
+				var adminMsg = app.admin_note
+					? '<div class="auth-dialog auth-dialog--admin">' +
+						'<p class="auth-dialog__label">Сообщение от администрации</p>' +
+						'<p class="auth-dialog__body">' +
+						escapeHtml(app.admin_note) +
+						'</p></div>'
+					: ''
+				var applicantMsg = app.applicant_reply
+					? '<div class="auth-dialog auth-dialog--user">' +
+						'<p class="auth-dialog__label">Твой ответ</p>' +
+						'<p class="auth-dialog__body">' +
+						escapeHtml(app.applicant_reply) +
+						'</p></div>'
+					: ''
+				var replyForm =
+					app.status === 'pending' && app.admin_note && !app.applicant_reply
+						? '<form class="auth-app-reply-form" data-reply-app="' +
+							app.id +
+							'">' +
+							'<label class="auth-dialog__label" for="reply-' +
+							app.id +
+							'">Ответить администрации</label>' +
+							'<textarea id="reply-' +
+							app.id +
+							'" class="auth-admin-note" rows="3" maxlength="2000" required placeholder="Ответь на вопрос админа…"></textarea>' +
+							'<button type="submit" class="auth-submit">Отправить ответ</button>' +
+							'</form>'
+						: ''
+				var note =
+					app.status !== 'pending' && app.admin_note
+						? '<p class="auth-app-note"><strong>Решение:</strong> ' +
+							escapeHtml(app.admin_note) +
+							'</p>'
+						: ''
+				var timeline =
+					'<ul class="auth-muted" style="margin:0.5rem 0 0.75rem;padding-left:1.1rem">' +
+					'<li>Заявка отправлена — ' +
+					escapeHtml(formatDate(app.created_at)) +
+					'</li>' +
+					'<li>Статус: <strong>' +
+					escapeHtml(decision) +
+					'</strong></li>' +
+					'</ul>'
+				return (
+					'<article class="auth-app-card">' +
+					'<div class="auth-app-head">' +
+					'<strong>' +
+					escapeHtml(app.minecraft_nick) +
+					'</strong>' +
+					'<span class="' +
+					statusClass(app.status) +
+					'">' +
+					statusLabel(app.status) +
+					'</span>' +
+					'</div>' +
+					timeline +
+					'<p class="auth-app-reason"><strong>Заявка:</strong> ' +
+					escapeHtml(app.reason) +
+					'</p>' +
+					adminMsg +
+					applicantMsg +
+					replyForm +
+					note +
+					'</article>'
+				)
+			})
+			.join('')
+	}
+
+	function paintApplicationsList(apps) {
+		var list = document.getElementById('applicationsList')
+		if (!list) return
+		list.innerHTML = renderApplicationsHtml(apps)
+		bindApplicantReplyForms(list)
+		syncWhitelistSectionVisibility(
+			document.getElementById('profileNick')
+				? document.getElementById('profileNick').value
+				: '',
+		)
+	}
+
+	function bootstrapFromLocalSession() {
+		if (!window.IsnixAuth || !IsnixAuth.readStoredSession) return false
+		var session = IsnixAuth.readStoredSession()
+		if (!session || !session.user) return false
+
+		var userId = session.user.id
+		var profile = readProfileCache(userId) || profileFromSession(session)
+		var quickStats = readPlayerStatsCache(userId)
+		playerStats = quickStats
+		playerStatsUserId = userId
+		showDashboardShell(session, profile)
+		applyDashboardProfile(profile, session)
+		if (quickStats) {
+			renderPlayerStats(profile, quickStats, cachedServerStatus)
+		}
+		startPlayerStatsTicker()
+		loadWhitelist()
+
+		var cachedApps = readAppsCache(userId)
+		if (cachedApps) {
+			cachedApplications = cachedApps
+			paintApplicationsList(cachedApps)
+		}
+
+		cachedServerStatus = null
+		if (window.IsnixServer) {
+			IsnixServer.fetchStatus(false).then(function (status) {
+				if (status !== undefined) {
+					cachedServerStatus = status
+					updateProfileMeta(currentProfile, status)
+					renderPlayerStats(currentProfile, playerStats, status)
+				}
+			})
+		}
+		return true
+	}
+
 	async function handleApplicantReply(appId, text) {
 		try {
 			await IsnixAuth.submitApplicantReply(appId, text)
@@ -1416,26 +1519,29 @@ function clearProfileCaches() {
 			dashboardLoading = true
 
 			var quickProfile = readProfileCache(userId) || profileFromSession(session)
-				var quickStats = readPlayerStatsCache(userId)
-				playerStats = quickStats
-				showDashboardShell(session, quickProfile)
-				applyDashboardProfile(quickProfile, session)
-				if (quickStats) {
-					renderPlayerStats(quickProfile, quickStats, cachedServerStatus)
-				}
-				loadWhitelist()
+			var quickStats = readPlayerStatsCache(userId)
+			playerStats = quickStats
+			showDashboardShell(session, quickProfile)
+			applyDashboardProfile(quickProfile, session)
+			if (quickStats) {
+				renderPlayerStats(quickProfile, quickStats, cachedServerStatus)
+			}
+			startPlayerStatsTicker()
+			loadWhitelist()
 
-				var profileErr = null
-				try {
-					var profileRes = await Promise.all([
-						IsnixAuth.getProfile(userId),
-						IsnixAuth.getPlayerStats(userId).catch(function () {
-							return null
-						}),
-					])
+			var profileErr = null
+
+			Promise.all([
+				IsnixAuth.getProfile(userId),
+				IsnixAuth.getPlayerStats(userId).catch(function () {
+					return null
+				}),
+			])
+				.then(function (profileRes) {
 					var profile = profileRes[0]
 					playerStats = profileRes[1]
 					writePlayerStatsCache(userId, playerStats)
+
 					if (profile && session.user.email) {
 						profile.email = profile.email || session.user.email
 					} else if (!profile) {
@@ -1449,18 +1555,19 @@ function clearProfileCaches() {
 							switchAdminView(adminView)
 						}, 150)
 					}
-				deferAccountTask(function () {
-					refreshPlayerStatus(false)
-				}, 80)
-				startStatusPolling()
-			} catch (e) {
-				profileErr = e
-				showConnectionNotice(
-					'Профиль не загрузился: ' +
-						IsnixAuth.formatAuthError(e) +
-						' Нажми «Повторить загрузку».',
-				)
-			}
+					deferAccountTask(function () {
+						refreshPlayerStatus(false)
+					}, 80)
+					startStatusPolling()
+				})
+				.catch(function (e) {
+					profileErr = e
+					showConnectionNotice(
+						'Профиль не загрузился: ' +
+							IsnixAuth.formatAuthError(e) +
+							' Нажми «Повторить загрузку».',
+					)
+				})
 
 			renderApplications(userId)
 				.then(function () {
@@ -1627,6 +1734,7 @@ function clearProfileCaches() {
 			logoutBtn.addEventListener('click', async function () {
 				await IsnixAuth.signOut()
 				clearProfileCaches()
+				clearAppsCaches()
 				showMsg('Вы вышли', true)
 				showGuest()
 			})
@@ -1816,14 +1924,21 @@ function clearProfileCaches() {
 		}
 
 		try {
+			var booted = bootstrapFromLocalSession()
+			if (!booted) showGuest()
+
+			IsnixAuth.onAuthStateChange(scheduleOnSession)
+
 			var session = await IsnixAuth.getSession()
+			if (!session) {
+				if (booted) showGuest()
+				return
+			}
 			await runOnSession(session)
 		} catch (err) {
 			showMsg(IsnixAuth.formatAuthError(err), false)
 			showGuest()
 		}
-
-		IsnixAuth.onAuthStateChange(scheduleOnSession)
 	}
 
 	if (document.readyState === 'loading') {

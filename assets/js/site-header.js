@@ -45,7 +45,19 @@
 					btn.textContent = SERVER_IP
 				}, 1600)
 			}
-			if (navigator.clipboard && navigator.clipboard.writeText) {
+			var copyFn =
+				window.IsnixCompat && IsnixCompat.copyText
+					? IsnixCompat.copyText(SERVER_IP)
+					: null
+			if (copyFn && typeof copyFn.then === 'function') {
+				copyFn
+					.then(function () {
+						done(true)
+					})
+					.catch(function () {
+						done(false)
+					})
+			} else if (navigator.clipboard && navigator.clipboard.writeText) {
 				navigator.clipboard.writeText(SERVER_IP).then(function () {
 					done(true)
 				}).catch(function () {
@@ -139,7 +151,11 @@
 				if (href.indexOf('index.html') !== -1) return
 				e.preventDefault()
 				closeMenu()
-				window.scrollTo({ top: 0, behavior: 'smooth' })
+				if (window.IsnixCompat && IsnixCompat.scrollToTop) {
+					IsnixCompat.scrollToTop(true)
+				} else {
+					window.scrollTo({ top: 0, behavior: 'smooth' })
+				}
 			})
 		}
 
@@ -150,9 +166,15 @@
 			}
 		})
 
-		mqMobile.addEventListener('change', function () {
-			if (!mqMobile.matches) closeMenu()
-		})
+		if (window.IsnixCompat && IsnixCompat.onMatchMediaChange) {
+			IsnixCompat.onMatchMediaChange(mqMobile, function () {
+				if (!mqMobile.matches) closeMenu()
+			})
+		} else if (mqMobile.addEventListener) {
+			mqMobile.addEventListener('change', function () {
+				if (!mqMobile.matches) closeMenu()
+			})
+		}
 
 		window.addEventListener('resize', function () {
 			if (!isMobileNav()) closeMenu()
@@ -160,6 +182,7 @@
 	}
 
 	function initNavScrollSpy() {
+		if (typeof IntersectionObserver === 'undefined') return
 		var links = document.querySelectorAll('.nav-links a[data-nav]')
 		if (!links.length) return
 		var map = {}

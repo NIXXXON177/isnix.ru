@@ -3,6 +3,10 @@
 
 	var MC_NICK_RE = /^[a-zA-Z0-9_]{3,16}$/
 	var client = null
+	var sessionInflight = null
+	var profileInflight = {}
+	var profileMemCache = {}
+	var PROFILE_MEM_TTL_MS = 90000
 
 	/** Только эти email могут быть админами сайта (дублирует проверку в Supabase) */
 	var SITE_ADMIN_EMAILS = [
@@ -71,7 +75,7 @@
 	/** Повтор только для GET; PATCH/POST при сбое не дублируем (иначе лавина запросов). */
 	function fetchWithRetry(url, options) {
 		var method = ((options && options.method) || 'GET').toUpperCase()
-		var delays = method === 'GET' || method === 'HEAD' ? [0, 450] : [0]
+		var delays = method === 'GET' || method === 'HEAD' ? [0, 280] : [0]
 		function attempt(i) {
 			return global.fetch(url, options).catch(function (err) {
 				if (!isNetworkError(err) || i >= delays.length - 1) {
@@ -148,12 +152,82 @@
 		return msg || 'Ошибка авторизации'
 	}
 
+	function supabaseStorageKey() {
+		var url = getConfig().supabaseUrl
+		var m = url.match(/https:\/\/([^.]+)\.supabase\.co/)
+		return m ? 'sb-' + m[1] + '-auth-token' : null
+	}
+
+	function parseStoredAuthPayload(raw) {
+		if (!raw) return null
+		try {
+			var data = JSON.parse(raw)
+			if (data && data.user && data.access_token) return data
+			if (data && data.currentSession && data.currentSession.user) {
+				return data.currentSession
+			}
+			if (Array.isArray(data) && data.length && data[0] && data[0].user) {
+				return data[0]
+			}
+		} catch (_e) {
+			return null
+		}
+		return null
+	}
+
+	function isStoredSessionValid(session) {
+		if (!session || !session.user || !session.access_token) return false
+		var exp = session.expires_at
+		if (typeof exp === 'number' && exp * 1000 < Date.now() + 8000) {
+			return false
+		}
+		return true
+	}
+
+	function readStoredSession() {
+		if (!isReady()) return null
+		try {
+			var key = supabaseStorageKey()
+			if (!key) return null
+			var session = parseStoredAuthPayload(localStorage.getItem(key))
+			return isStoredSessionValid(session) ? session : null
+		} catch (_e) {
+			return null
+		}
+	}
+
 	async function getSession() {
 		var sb = getClient()
 		if (!sb) return null
-		var res = await sb.auth.getSession()
-		if (res.error) throw res.error
-		return res.data.session
+		if (sessionInflight) return sessionInflight
+		sessionInflight = sb.auth
+			.getSession()
+			.then(function (res) {
+				sessionInflight = null
+				if (res.error) throw res.error
+				return res.data.session
+			})
+			.catch(function (err) {
+				sessionInflight = null
+				throw err
+			})
+		return sessionInflight
+	}
+
+	function sitePresenceQueryDisabled() {
+		try {
+			return localStorage.getItem('isnix_skip_site_presence_cols') === '1'
+		} catch (_e) {
+			return false
+		}
+	}
+
+	function disableSitePresenceQuery() {
+		try {
+			localStorage.setItem('isnix_skip_site_presence_cols', '1')
+		} catch (_e) {
+			/* ignore */
+		}
 	}
 
 	async function signUp(email, password) {
@@ -185,6 +259,7 @@
 		if (!sb) return
 		var res = await sb.auth.signOut()
 		if (res.error) throw res.error
+		clearProfileMemCache()
 	}
 
 	var SITE_PRESENCE_ONLINE_MS = 120000
@@ -256,15 +331,48 @@
 		return sb.from('profiles').select(fields).eq('id', userId).maybeSingle()
 	}
 
-	async function getProfile(userId) {
+	async function fetchProfileFromServer(userId) {
 		var sb = getClient()
 		if (!sb) return null
-		var res = await queryProfile(sb, userId, true)
+		var withSite = !sitePresenceQueryDisabled()
+		var res = await queryProfile(sb, userId, withSite)
 		if (res.error && isMissingSitePresenceColumns(res.error)) {
+			disableSitePresenceQuery()
 			res = await queryProfile(sb, userId, false)
 		}
 		if (res.error) throw res.error
 		return res.data
+	}
+
+	async function getProfile(userId, opts) {
+		if (!userId) return null
+		var force = opts && opts.force
+		var cached = profileMemCache[userId]
+		if (!force && cached && Date.now() - cached.t < PROFILE_MEM_TTL_MS) {
+			return cached.p
+		}
+		if (profileInflight[userId]) return profileInflight[userId]
+		profileInflight[userId] = fetchProfileFromServer(userId)
+			.then(function (data) {
+				delete profileInflight[userId]
+				if (data) {
+					profileMemCache[userId] = { p: data, t: Date.now() }
+				}
+				return data
+			})
+			.catch(function (err) {
+				delete profileInflight[userId]
+				throw err
+			})
+		return profileInflight[userId]
+	}
+
+	function clearProfileMemCache(userId) {
+		if (userId) {
+			delete profileMemCache[userId]
+			return
+		}
+		profileMemCache = {}
 	}
 
 	function isAdminProfile(profile) {
@@ -292,6 +400,7 @@
 		}
 		var res = await sb.from('profiles').update(payload).eq('id', userId)
 		if (res.error) throw res.error
+		clearProfileMemCache(userId)
 	}
 
 	var APP_SELECT_BASE =
@@ -633,8 +742,10 @@
 	}
 
 	async function refreshNavAccountLink(session) {
-		applyNavAuthUi(null, null)
-		if (!session || !session.user) return
+		if (!session || !session.user) {
+			applyNavAuthUi(null, null)
+			return
+		}
 
 		var quick = readNavProfileCache(session.user.id)
 		if (quick) {
@@ -648,6 +759,14 @@
 			var profile = await getProfile(session.user.id)
 			if (profile && session.user.email) {
 				profile.email = profile.email || session.user.email
+			}
+			try {
+				sessionStorage.setItem(
+					'isnix_profile_' + session.user.id,
+					JSON.stringify({ p: profile, t: Date.now() }),
+				)
+			} catch (_e) {
+				/* ignore */
 			}
 			applyNavAuthUi(session, profile)
 		} catch (_e) {
@@ -680,9 +799,18 @@
 	}
 
 	async function initNavAuth() {
-		applyNavAuthUi(null, null)
 		bindNavDrawerLogout()
-		if (!isReady()) return
+		if (!isReady()) {
+			applyNavAuthUi(null, null)
+			return
+		}
+		var stored = readStoredSession()
+		if (stored && stored.user) {
+			var quick = readNavProfileCache(stored.user.id)
+			applyNavAuthUi(stored, quick || { email: stored.user.email })
+		} else {
+			applyNavAuthUi(null, null)
+		}
 		try {
 			var session = await getSession()
 			await refreshNavAccountLink(session)
@@ -704,6 +832,7 @@
 		getConfig: getConfig,
 		isReady: isReady,
 		getClient: getClient,
+		readStoredSession: readStoredSession,
 		getSession: getSession,
 		signUp: signUp,
 		signIn: signIn,

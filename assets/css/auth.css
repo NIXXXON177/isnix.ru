@@ -342,6 +342,7 @@
 	border-radius: var(--radius-sm);
 }
 
+.account-user-bar__avatar-wrap.is-showing-avatar .account-user-bar__avatar-fallback,
 .account-user-bar__avatar-wrap:has(.account-user-bar__avatar:not([hidden])) .account-user-bar__avatar-fallback {
 	display: none;
 }
