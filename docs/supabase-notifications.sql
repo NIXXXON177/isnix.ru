@@ -9,7 +9,8 @@ create table if not exists public.user_notifications (
 			'whitelist_submitted',
 			'whitelist_approved',
 			'whitelist_rejected',
-			'whitelist_admin_message'
+			'whitelist_admin_message',
+			'admin_new_application'
 		)
 	),
 	title text not null,
@@ -65,6 +66,42 @@ begin
 end;
 $$;
 
+create or replace function public.notify_site_admins_new_application(
+	p_nick text,
+	p_application_id uuid
+)
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+	admin_row record;
+begin
+	for admin_row in
+		select p.id
+		from public.profiles p
+		where p.role = 'admin'
+			and lower(trim(p.email)) in (
+				'kupryuhinsemen@gmail.com',
+				'kudrasovn024@gmail.com',
+				'1511vasilisa@gmail.com',
+				'nikenerdx@gmail.com'
+			)
+	loop
+		perform public.insert_user_notification(
+			admin_row.id,
+			'admin_new_application',
+			'Новая заявка в вайтлист',
+			'Ник «' || coalesce(nullif(trim(p_nick), ''), '?') ||
+				'». Открой панель администрации → Заявки.',
+			'/account.html#admin',
+			p_application_id
+		);
+	end loop;
+end;
+$$;
+
 create or replace function public.notify_whitelist_application_insert()
 returns trigger
 language plpgsql
@@ -81,6 +118,7 @@ begin
 		'/account.html#applications',
 		new.id
 	);
+	perform public.notify_site_admins_new_application(new.minecraft_nick, new.id);
 	return new;
 end;
 $$;

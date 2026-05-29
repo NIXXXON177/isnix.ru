@@ -198,7 +198,8 @@ create table if not exists public.user_notifications (
 			'whitelist_submitted',
 			'whitelist_approved',
 			'whitelist_rejected',
-			'whitelist_admin_message'
+			'whitelist_admin_message',
+			'admin_new_application'
 		)
 	),
 	title text not null,

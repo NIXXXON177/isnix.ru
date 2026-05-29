@@ -65,6 +65,8 @@ Workflow подставит ключ в `auth-config.js` при деплое. В
 
 Уведомления в кабинете (заявка, одобрение, сообщение админа) — **[supabase-notifications.sql](supabase-notifications.sql)**.
 
+Уведомления **админам** о новой заявке (если notifications уже были) — **[supabase-admin-notifications.sql](supabase-admin-notifications.sql)**.
+
 Или вручную:
 
 ```sql

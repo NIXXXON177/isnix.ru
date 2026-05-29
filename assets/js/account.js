@@ -35,6 +35,8 @@
 	var seenNotificationIds = {}
 	var NOTIFICATIONS_POLL_MS = 45000
 	var notificationsUiBound = false
+	var adminPendingPollTimer = null
+	var ADMIN_PENDING_POLL_MS = 60000
 
 	function showMsg(text, ok) {
 		if (!authMsg) return
@@ -787,6 +789,138 @@
 		}
 	}
 
+	function copyTextToClipboard(text) {
+		var value = String(text || '').trim()
+		if (!value) return Promise.reject(new Error('Пусто'))
+		if (navigator.clipboard && navigator.clipboard.writeText) {
+			return navigator.clipboard.writeText(value)
+		}
+		return new Promise(function (resolve, reject) {
+			var ta = document.createElement('textarea')
+			ta.value = value
+			ta.setAttribute('readonly', '')
+			ta.style.position = 'fixed'
+			ta.style.left = '-9999px'
+			document.body.appendChild(ta)
+			ta.select()
+			try {
+				document.execCommand('copy') ? resolve() : reject(new Error('copy failed'))
+			} catch (err) {
+				reject(err)
+			} finally {
+				document.body.removeChild(ta)
+			}
+		})
+	}
+
+	function applicationAdminWarnings(app) {
+		if (!app) return ''
+		var items = []
+		var age = parseInt(String(app.age || '').trim(), 10)
+		if (!Number.isFinite(age) || age < 12) {
+			items.push('Возраст не указан или меньше 12')
+		}
+		if (app.read_rules === false) items.push('Не отметил правила')
+		if (app.downloaded_modpack === false) items.push('Не отметил сборку')
+		if (!items.length) return ''
+		return (
+			'<ul class="auth-admin-warn">' +
+			items
+				.map(function (t) {
+					return '<li>' + escapeHtml(t) + '</li>'
+				})
+				.join('') +
+			'</ul>'
+		)
+	}
+
+	function adminRejectTemplatesHtml(appId) {
+		var templates = [
+			{ label: 'Мало инфо', text: 'Мало информации о себе. Расскажи подробнее и подай заявку снова.' },
+			{
+				label: 'Возраст',
+				text: 'Укажи реальный возраст (от 12 лет) в заявке или ответь в диалоге.',
+			},
+			{
+				label: 'Правила',
+				text: 'Нужно подтвердить, что прочитал правила и скачал сборку с сайта.',
+			},
+		]
+		return (
+			'<div class="auth-admin-templates">' +
+			'<span class="auth-dialog__label">Шаблоны сообщения</span>' +
+			'<div class="auth-admin-template-btns">' +
+			templates
+				.map(function (t) {
+					return (
+						'<button type="button" class="auth-admin-template" data-note-for="' +
+						appId +
+						'" data-template="' +
+						escapeHtml(t.text) +
+						'">' +
+						escapeHtml(t.label) +
+						'</button>'
+					)
+				})
+				.join('') +
+			'</div></div>'
+		)
+	}
+
+	function filterAdminApplications(apps) {
+		if (!apps || !apps.length) return []
+		if (adminFilter === 'awaiting_reply') {
+			return apps.filter(function (app) {
+				return (
+					app.status === 'pending' &&
+					app.admin_note &&
+					String(app.admin_note).trim() &&
+					!app.applicant_reply
+				)
+			})
+		}
+		if (adminFilter === 'pending') {
+			return apps.filter(function (app) {
+				return app.status === 'pending'
+			})
+		}
+		return apps
+	}
+
+	async function refreshAdminPendingBadge() {
+		if (!window.IsnixAuth || !IsnixAuth.isAdminProfile(currentProfile)) return
+		var badge = document.getElementById('adminAppsTabBadge')
+		if (!badge) return
+		try {
+			var apps = await IsnixAuth.getAdminApplications('pending')
+			var n = apps ? apps.length : 0
+			if (n > 0) {
+				badge.hidden = false
+				badge.textContent = n > 9 ? '9+' : String(n)
+			} else {
+				badge.hidden = true
+			}
+		} catch (_e) {
+			badge.hidden = true
+		}
+	}
+
+	function stopAdminPendingPoll() {
+		if (adminPendingPollTimer) {
+			clearInterval(adminPendingPollTimer)
+			adminPendingPollTimer = null
+		}
+		var badge = document.getElementById('adminAppsTabBadge')
+		if (badge) badge.hidden = true
+	}
+
+	function startAdminPendingPoll() {
+		stopAdminPendingPoll()
+		if (!window.IsnixAuth || !IsnixAuth.isAdminProfile(currentProfile)) return
+		refreshAdminPendingBadge()
+		adminPendingPollTimer = setInterval(refreshAdminPendingBadge, ADMIN_PENDING_POLL_MS)
+	}
+
 	function applicationExtraMeta(app) {
 		if (!app) return ''
 		var bits = []
@@ -1360,6 +1494,7 @@
 			statusRefreshTimer = null
 		}
 		stopNotificationsPoll()
+		stopAdminPendingPoll()
 	}
 
 	function showDashboard(user, profile) {
@@ -1434,9 +1569,12 @@
 		if (!list || !window.IsnixAuth || !IsnixAuth.isAdminProfile(currentProfile)) return
 		list.innerHTML = '<p class="auth-muted">Загрузка…</p>'
 		try {
-			var apps = await IsnixAuth.getAdminApplications(
-				adminFilter === 'pending' ? 'pending' : null,
+			var fetchStatus =
+				adminFilter === 'all' ? null : 'pending'
+			var apps = filterAdminApplications(
+				await IsnixAuth.getAdminApplications(fetchStatus),
 			)
+			refreshAdminPendingBadge()
 			if (!apps.length) {
 				list.innerHTML =
 					'<p class="auth-muted">Нет заявок в этом разделе.</p>'
@@ -1446,8 +1584,9 @@
 				.map(function (app) {
 					var onWl = isOnWhitelist(app.minecraft_nick)
 					var wlHint = onWl
-						? '<p class="auth-hint auth-hint--ok">Уже в whitelist.json</p>'
-						: ''
+						? '<p class="auth-hint auth-hint--ok">Уже в whitelist.json — проверь перед одобрением</p>'
+						: '<p class="auth-hint">После одобрения добавь ник в whitelist на сервере</p>'
+					var warns = applicationAdminWarnings(app)
 					var meta =
 						'<p class="auth-muted">' +
 						formatDate(app.created_at) +
@@ -1480,6 +1619,7 @@
 							? '<div class="auth-admin-actions">' +
 								prevAdminMsg +
 								applicantBlock +
+								adminRejectTemplatesHtml(app.id) +
 								'<label class="auth-dialog__label" for="admin-note-' +
 								app.id +
 								'">Сообщение игроку (диалог)</label>' +
@@ -1512,9 +1652,14 @@
 					return (
 						'<article class="auth-app-card auth-app-card--admin">' +
 						'<div class="auth-app-head">' +
+						'<div class="auth-app-head__nick">' +
 						'<strong>' +
 						escapeHtml(app.minecraft_nick) +
 						'</strong>' +
+						'<button type="button" class="auth-copy-nick" data-copy-nick="' +
+						escapeHtml(app.minecraft_nick) +
+						'">Копировать ник</button>' +
+						'</div>' +
 						'<span class="' +
 						statusClass(app.status) +
 						'">' +
@@ -1522,7 +1667,8 @@
 						'</span>' +
 						'</div>' +
 						meta +
-						'<p>' +
+						warns +
+						'<p class="auth-app-reason">' +
 						escapeHtml(app.reason) +
 						'</p>' +
 						wlHint +
@@ -1546,10 +1692,33 @@
 		if (!list) return
 		adminListDelegationBound = true
 		list.addEventListener('click', function (e) {
+			var copyBtn = e.target.closest('.auth-copy-nick')
+			var tplBtn = e.target.closest('.auth-admin-template')
 			var msgBtn = e.target.closest('.auth-admin-message')
 			var okBtn = e.target.closest('.auth-admin-approve')
 			var noBtn = e.target.closest('.auth-admin-reject')
-			if (msgBtn) {
+			if (copyBtn) {
+				e.preventDefault()
+				var nick = copyBtn.getAttribute('data-copy-nick') || ''
+				copyTextToClipboard(nick)
+					.then(function () {
+						showMsg('Ник скопирован: ' + nick, true)
+					})
+					.catch(function () {
+						showMsg('Не удалось скопировать ник', false)
+					})
+			} else if (tplBtn) {
+				e.preventDefault()
+				var noteFor = tplBtn.getAttribute('data-note-for')
+				var text = tplBtn.getAttribute('data-template') || ''
+				var ta = noteFor
+					? document.querySelector('[data-note-for="' + noteFor + '"]')
+					: null
+				if (ta) {
+					ta.value = text
+					ta.focus()
+				}
+			} else if (msgBtn) {
 				e.preventDefault()
 				handleAdminMessage(msgBtn.dataset.id, msgBtn)
 			} else if (okBtn) {
@@ -1745,6 +1914,7 @@
 				true,
 			)
 			await renderAdminApplications()
+			refreshAdminPendingBadge()
 		} catch (err) {
 			showMsg(IsnixAuth.formatAuthError(err), false)
 		} finally {
@@ -1774,6 +1944,7 @@
 			)
 			await loadWhitelist()
 			await renderAdminApplications()
+			refreshAdminPendingBadge()
 			var session = await IsnixAuth.getSession()
 			if (session) await renderApplications(session.user.id)
 		} catch (err) {
@@ -1829,6 +2000,7 @@
 					applyDashboardProfile(profile, session)
 
 					if (IsnixAuth.isAdminProfile(profile)) {
+						startAdminPendingPoll()
 						deferAccountTask(function () {
 							switchAdminView(adminView)
 						}, 150)
@@ -1846,7 +2018,9 @@
 			bindNotificationsUi(userId)
 			startNotificationsPoll(userId)
 
-			if (!IsnixAuth.isAdminProfile(quickProfile)) {
+			if (IsnixAuth.isAdminProfile(quickProfile)) {
+				startAdminPendingPoll()
+			} else {
 				renderApplications(userId)
 					.then(function () {
 						updateProfileNickHint()

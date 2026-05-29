@@ -338,6 +338,12 @@
 								data-admin-view="applications"
 							>
 								Заявки
+								<span
+									id="adminAppsTabBadge"
+									class="auth-admin-tab-badge"
+									hidden
+									>0</span
+								>
 							</button>
 							<button type="button" class="auth-admin-tab" data-admin-view="server">
 								На сервере
@@ -357,6 +363,13 @@
 									data-admin-filter="pending"
 								>
 									Ожидают
+								</button>
+								<button
+									type="button"
+									class="auth-admin-tab auth-admin-tab--sub"
+									data-admin-filter="awaiting_reply"
+								>
+									Ждут ответа
 								</button>
 								<button
 									type="button"
@@ -691,6 +704,6 @@
 		<script src="assets/js/auth.js?v=21"></script>
 		<script src="assets/js/site-presence.js?v=2" defer></script>
 		<script src="assets/js/site-header.js?v=3" defer></script>
-		<script src="assets/js/account.js?v=25"></script>
+		<script src="assets/js/account.js?v=26"></script>
 	</body>
 </html>

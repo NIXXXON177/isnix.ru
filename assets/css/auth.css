@@ -693,6 +693,84 @@
 	color: #fca5a5;
 }
 
+.auth-admin-tab-badge {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 1.15rem;
+	height: 1.15rem;
+	margin-left: 0.35rem;
+	padding: 0 0.3rem;
+	border-radius: 999px;
+	background: #ef4444;
+	color: #fff;
+	font-size: 0.62rem;
+	font-weight: 700;
+	line-height: 1;
+	vertical-align: middle;
+}
+
+.auth-app-head__nick {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.5rem;
+	min-width: 0;
+}
+
+.auth-copy-nick {
+	padding: 0.2rem 0.5rem;
+	border: 1px solid var(--border);
+	border-radius: var(--radius-sm);
+	background: rgba(0, 0, 0, 0.35);
+	color: var(--green);
+	font-family: 'Raleway', sans-serif;
+	font-size: 0.65rem;
+	font-weight: 600;
+	cursor: pointer;
+}
+
+.auth-copy-nick:hover {
+	border-color: rgba(74, 222, 128, 0.45);
+}
+
+.auth-admin-warn {
+	margin: 0.5rem 0;
+	padding: 0.45rem 0.65rem 0.45rem 1.1rem;
+	border-radius: var(--radius-sm);
+	border: 1px solid rgba(251, 191, 36, 0.35);
+	background: rgba(251, 191, 36, 0.08);
+	font-size: 0.75rem;
+	color: #fcd34d;
+}
+
+.auth-admin-templates {
+	margin-top: 0.25rem;
+}
+
+.auth-admin-template-btns {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.35rem;
+	margin-top: 0.35rem;
+}
+
+.auth-admin-template {
+	padding: 0.3rem 0.55rem;
+	border: 1px solid var(--border);
+	border-radius: var(--radius-sm);
+	background: var(--surface2);
+	color: var(--text-soft);
+	font-family: 'Raleway', sans-serif;
+	font-size: 0.68rem;
+	cursor: pointer;
+}
+
+.auth-admin-template:hover {
+	border-color: rgba(248, 113, 113, 0.35);
+	color: #fca5a5;
+}
+
 .auth-app-card--admin {
 	border-color: rgba(248, 113, 113, 0.2);
 }
