@@ -7,6 +7,9 @@
 	var profileInflight = {}
 	var profileMemCache = {}
 	var PROFILE_MEM_TTL_MS = 90000
+	var SUPABASE_BACKOFF_KEY = 'isnix_supabase_backoff_until'
+	var SUPABASE_BACKOFF_MS = 300000
+	var supabaseBackoffUntil = 0
 
 	/** Только эти email могут быть админами сайта (дублирует проверку в Supabase) */
 	var SITE_ADMIN_EMAILS = [
@@ -56,6 +59,50 @@
 			msg,
 		)
 	}
+
+	function readSupabaseBackoffUntil() {
+		try {
+			var t = parseInt(localStorage.getItem(SUPABASE_BACKOFF_KEY), 10)
+			if (Number.isFinite(t) && t > Date.now()) return t
+		} catch (_e) {
+			/* ignore */
+		}
+		return 0
+	}
+
+	function noteSupabaseNetworkFailure(err) {
+		if (!isNetworkError(err)) return
+		supabaseBackoffUntil = Date.now() + SUPABASE_BACKOFF_MS
+		try {
+			localStorage.setItem(
+				SUPABASE_BACKOFF_KEY,
+				String(supabaseBackoffUntil),
+			)
+		} catch (_e) {
+			/* ignore */
+		}
+	}
+
+	function isSupabaseBackoffActive() {
+		if (Date.now() < supabaseBackoffUntil) return true
+		var stored = readSupabaseBackoffUntil()
+		if (stored > Date.now()) {
+			supabaseBackoffUntil = stored
+			return true
+		}
+		return false
+	}
+
+	function clearSupabaseBackoff() {
+		supabaseBackoffUntil = 0
+		try {
+			localStorage.removeItem(SUPABASE_BACKOFF_KEY)
+		} catch (_e) {
+			/* ignore */
+		}
+	}
+
+	supabaseBackoffUntil = readSupabaseBackoffUntil()
 
 	function isInvalidApiKeyError(err) {
 		var msg = errorText(err)
@@ -300,7 +347,7 @@
 		}
 		if (isNetworkError(err)) {
 			return (
-				'Браузер не достучался до Supabase (часто AdBlock, VPN или фильтр провайдера). Отключи блокировщики для isnix.ru и *.supabase.co, проверь что проект не на паузе, в Authentication → URL Configuration укажи https://isnix.ru. Инструкция: github.com/NIXXXON177/isnix.ru/blob/main/docs/supabase-cors-troubleshooting.md'
+				'Соединение с Supabase сброшено (ERR_CONNECTION_RESET) — часто блокировщик, VPN или фильтр провайдера. Отключи AdBlock для isnix.ru и *.supabase.co, попробуй другую сеть или VPN. Проект Supabase не должен быть на паузе. Инструкция: github.com/NIXXXON177/isnix.ru/blob/main/docs/supabase-cors-troubleshooting.md'
 			)
 		}
 		if (err.code === 'PGRST301' || /JWT|session/i.test(msg)) {
@@ -502,6 +549,7 @@
 	}
 
 	async function sitePresenceHeartbeat(device) {
+		if (isSupabaseBackoffActive()) return false
 		var sb = getClient()
 		if (!sb) return false
 		try {
@@ -515,12 +563,16 @@
 				) {
 					return false
 				}
-				if (isNetworkError(res.error)) return false
+				if (isNetworkError(res.error)) {
+					noteSupabaseNetworkFailure(res.error)
+					return false
+				}
 				return false
 			}
+			clearSupabaseBackoff()
 			return true
 		} catch (err) {
-			if (isNetworkError(err)) return false
+			if (isNetworkError(err)) noteSupabaseNetworkFailure(err)
 			return false
 		}
 	}
@@ -533,6 +585,11 @@
 	}
 
 	async function fetchProfileFromServer(userId) {
+		if (isSupabaseBackoffActive()) {
+			var hit = profileMemCache[userId]
+			if (hit && hit.p) return hit.p
+			throw new Error('ERR_CONNECTION_RESET')
+		}
 		var sb = getClient()
 		if (!sb) return null
 		var withSite = !sitePresenceQueryDisabled()
@@ -541,7 +598,11 @@
 			disableSitePresenceQuery()
 			res = await queryProfile(sb, userId, false)
 		}
-		if (res.error) throw res.error
+		if (res.error) {
+			noteSupabaseNetworkFailure(res.error)
+			throw res.error
+		}
+		clearSupabaseBackoff()
 		return res.data
 	}
 
@@ -550,6 +611,9 @@
 		var force = opts && opts.force
 		var cached = profileMemCache[userId]
 		if (!force && cached && Date.now() - cached.t < PROFILE_MEM_TTL_MS) {
+			return cached.p
+		}
+		if (!force && isSupabaseBackoffActive() && cached && cached.p) {
 			return cached.p
 		}
 		if (profileInflight[userId]) return profileInflight[userId]
@@ -700,6 +764,7 @@
 	}
 
 	async function getNotifications(userId, limit) {
+		if (isSupabaseBackoffActive()) return []
 		var sb = getClient()
 		if (!sb) return []
 		var res = await sb
@@ -710,8 +775,10 @@
 			.limit(limit || 40)
 		if (res.error) {
 			if (isMissingNotificationsTable(res.error)) return []
+			noteSupabaseNetworkFailure(res.error)
 			throw res.error
 		}
+		clearSupabaseBackoff()
 		return res.data || []
 	}
 
@@ -804,6 +871,7 @@
 	}
 
 	async function getPlayerStats(userId) {
+		if (isSupabaseBackoffActive()) return null
 		var sb = getClient()
 		if (!sb) return null
 		var res = await sb
@@ -819,8 +887,10 @@
 			) {
 				return null
 			}
+			noteSupabaseNetworkFailure(res.error)
 			throw res.error
 		}
+		clearSupabaseBackoff()
 		return res.data
 	}
 
@@ -1129,6 +1199,8 @@
 		formatSiteDeviceLabel: formatSiteDeviceLabel,
 		isSitePresenceOnline: isSitePresenceOnline,
 		sitePresenceHeartbeat: sitePresenceHeartbeat,
+		isSupabaseBackoffActive: isSupabaseBackoffActive,
+		clearSupabaseBackoff: clearSupabaseBackoff,
 		SITE_PRESENCE_ONLINE_MS: SITE_PRESENCE_ONLINE_MS,
 		MC_NICK_RE: MC_NICK_RE,
 	}

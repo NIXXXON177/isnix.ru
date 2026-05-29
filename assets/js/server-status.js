@@ -2,11 +2,11 @@
 	'use strict'
 
 	var HOST = 'mc.isnix.ru'
-	var FETCH_MS = 4500
-	var CACHE_KEY = 'isnix_server_status_v5'
-	var CACHE_TTL_MS = 90000
-	var STALE_CACHE_MS = 600000
-	var FAIL_BACKOFF_MS = 300000
+	var FETCH_MS = 5000
+	var CACHE_KEY = 'isnix_server_status_v6'
+	var CACHE_TTL_MS = 120000
+	var STALE_CACHE_MS = 900000
+	var FAIL_BACKOFF_MS = 600000
 
 	var inflight = null
 	var lastNetworkFail = 0
@@ -106,8 +106,8 @@
 			ctrl.abort()
 		}, FETCH_MS)
 		var sources = [
-			'https://api.mcsrvstat.us/3/' + HOST,
 			'https://api.mcstatus.io/v2/status/java/' + HOST,
+			'https://api.mcsrvstat.us/3/' + HOST,
 		]
 		try {
 			for (var i = 0; i < sources.length; i++) {

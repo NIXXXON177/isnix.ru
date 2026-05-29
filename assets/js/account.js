@@ -1375,8 +1375,17 @@
 			if (wrap) wrap.hidden = false
 			paintNotificationsList(list)
 			if (notifyBrowser) maybeBrowserNotify(freshUnread)
-		} catch (_e) {
+		} catch (e) {
 			if (wrap) wrap.hidden = true
+			if (
+				window.IsnixAuth &&
+				IsnixAuth.isSupabaseBackoffActive &&
+				IsnixAuth.isSupabaseBackoffActive()
+			) {
+				showConnectionNotice(
+					'Сеть обрывает связь с Supabase (ERR_CONNECTION_RESET). Кабинет работает из кэша; отключи блокировщик или смени сеть/VPN. Повтор через несколько минут.',
+				)
+			}
 		}
 	}
 
