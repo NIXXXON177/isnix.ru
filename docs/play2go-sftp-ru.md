@@ -40,7 +40,14 @@ Play2GO уже открывает chroot в корень сервера.
 
 Скачанные файлы лежат в **`server-remote/`** (тоже в `.gitignore`).
 
-## Как работать со мной (Cursor)
+## LuckPerms (база данных)
+
+На сервере Fabric база H2 лежит **не** в `config/luckperms/`, а здесь:
+
+`mods/luckperms/luckperms-h2-v2.mv.db`
+
+Редактировать только при **выключенном** сервере. Для выдачи группы `admin` проще команды в консоли (`lp user … parent set admin`) или TAB `users.yml` (см. `docs/luckperms-grant-niken-admin.txt`).
+
 
 1. Вы создаёте `server-sftp.env` с паролем **локально** (не в чат).
 2. Пишете: «подключение готово, скачай OPAC и TAB».
