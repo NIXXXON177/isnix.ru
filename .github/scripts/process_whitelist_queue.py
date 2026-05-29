@@ -21,11 +21,27 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 WHITELIST_FILE = REPO_ROOT / "whitelist.json"
 
 
+def normalize_supabase_url(raw: str) -> str:
+    base = (raw or "").strip().strip('"').strip("'")
+    if not base:
+        raise RuntimeError(
+            "SUPABASE_URL пустой. В GitHub Secret укажи: https://yfrlgeztbaebdapdnefy.supabase.co"
+        )
+    if base.startswith("sb_"):
+        raise RuntimeError(
+            "В SUPABASE_URL попал API-ключ (sb_...). Нужен Project URL: "
+            "https://yfrlgeztbaebdapdnefy.supabase.co (Settings → General)"
+        )
+    if not base.startswith("http://") and not base.startswith("https://"):
+        base = "https://" + base.lstrip("/")
+    return base.rstrip("/")
+
+
 def supabase_request(method: str, path: str, body: dict | None = None) -> object:
-    base = os.environ.get("SUPABASE_URL", "").rstrip("/")
+    base = normalize_supabase_url(os.environ.get("SUPABASE_URL", ""))
     key = os.environ.get("SUPABASE_SERVICE_ROLE_KEY", "").strip()
-    if not base or not key:
-        raise RuntimeError("Задай SUPABASE_URL и SUPABASE_SERVICE_ROLE_KEY")
+    if not key:
+        raise RuntimeError("Задай SUPABASE_SERVICE_ROLE_KEY (Secret key или legacy service_role)")
 
     url = f"{base}/rest/v1/{path.lstrip('/')}"
     data = None
@@ -33,6 +49,7 @@ def supabase_request(method: str, path: str, body: dict | None = None) -> object
         "apikey": key,
         "Authorization": f"Bearer {key}",
         "Content-Type": "application/json",
+        "Accept": "application/json",
     }
     if body is not None:
         data = json.dumps(body).encode("utf-8")

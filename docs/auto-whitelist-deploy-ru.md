@@ -37,8 +37,8 @@ SQL Editor → **[supabase-whitelist-deploy-queue.sql](supabase-whitelist-deploy
 
 | Секрет | Откуда |
 |--------|--------|
-| `SUPABASE_URL` | Supabase → API → Project URL |
-| `SUPABASE_SERVICE_ROLE_KEY` | service_role (не anon) |
+| `SUPABASE_URL` | **Settings → General → Project URL** — обязательно с `https://`, например `https://yfrlgeztbaebdapdnefy.supabase.co` (не API-ключ `sb_...`!) |
+| `SUPABASE_SERVICE_ROLE_KEY` | **API Keys → Secret keys → default** (`sb_secret_...`) или legacy **service_role** |
 | `PLAY2GO_SFTP_*` | как в sync-whitelist |
 
 Опционально: `WHITELIST_UUID_MODE` = `auto` (по умолчанию) или `offline`.

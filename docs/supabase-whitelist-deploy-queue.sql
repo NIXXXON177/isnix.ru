@@ -22,6 +22,9 @@ create unique index if not exists whitelist_deploy_queue_one_pending_per_nick
 
 alter table public.whitelist_deploy_queue enable row level security;
 
+-- GitHub Actions (service_role / secret key) обходит RLS; явные права на всякий случай
+grant select, update on table public.whitelist_deploy_queue to service_role;
+
 drop policy if exists "deploy_queue_select_admin" on public.whitelist_deploy_queue;
 create policy "deploy_queue_select_admin"
 	on public.whitelist_deploy_queue for select
