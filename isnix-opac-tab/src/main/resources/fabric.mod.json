@@ -1,0 +1,23 @@
+{
+	"schemaVersion": 1,
+	"id": "isnix_opac_tab",
+	"version": "${version}",
+	"name": "ISNIX OPAC Tab",
+	"description": "Clan tag placeholder for TAB from Open Parties and Claims",
+	"authors": ["ISNIX"],
+	"license": "MIT",
+	"environment": "server",
+	"entrypoints": {
+		"server": ["ru.isnix.opactab.IsnixOpacTabMod"]
+	},
+	"depends": {
+		"fabricloader": ">=0.16.0",
+		"minecraft": "~1.21.1",
+		"java": ">=21",
+		"fabric-api": "*"
+	},
+	"suggests": {
+		"openpartiesandclaims": "*",
+		"placeholder-api": "*"
+	}
+}

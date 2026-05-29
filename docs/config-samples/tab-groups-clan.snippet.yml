@@ -1,0 +1,6 @@
+# Фрагмент для config/tab/groups.yml
+# После правки: /tab reload
+
+_DEFAULT_:
+  tabprefix: "%luckperms:prefix%"
+  tabsuffix: "%luckperms:suffix% %isnix:clan_tag%"

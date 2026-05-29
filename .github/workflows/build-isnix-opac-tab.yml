@@ -1,0 +1,28 @@
+name: Build isnix-opac-tab
+
+on:
+  push:
+    paths:
+      - 'isnix-opac-tab/**'
+      - '.github/workflows/build-isnix-opac-tab.yml'
+  pull_request:
+    paths:
+      - 'isnix-opac-tab/**'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - name: Build mod
+        working-directory: isnix-opac-tab
+        run: chmod +x gradlew && ./gradlew build --no-daemon
+      - uses: actions/upload-artifact@v4
+        with:
+          name: isnix-opac-tab-jar
+          path: isnix-opac-tab/build/libs/isnix-opac-tab-*.jar

@@ -21,3 +21,13 @@ isnix-market/.gradle/
 isnix-market/build/
 isnix-market/run/
 isnix-market/.idea/
+isnix-opac-tab/.gradle/
+isnix-opac-tab/build/
+isnix-opac-tab/run/
+isnix-opac-tab/.idea/
+
+# Play2GO SFTP (пароль и зеркало файлов сервера)
+server-sftp.env
+server-remote/
+build/modpack-fix/
+server-remote/mods-pull/

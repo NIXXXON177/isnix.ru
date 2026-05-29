@@ -8,7 +8,7 @@ LuckPerms показывает **один** префикс — с **наибол
 | Priority | Кому | Префикс |
 |----------|------|---------|
 | **10** | все в группе `default` | `[Игрок]` |
-| **50** | донат / особый (meta на игроке) | `[DEMON]`, `[YouTube]`, … |
+| **50** | донат / особый (meta на игроке) | `[DEMON]`, `[YouTube]`, `[Twitch]`, … |
 | **200** | группа `admin` | `[Админ]` |
 
 Итог: у обычного игрока — `[Игрок]`, у донатера — свой префикс, у админа — `[Админ]` (перекрывает всё).
@@ -75,6 +75,11 @@ lp user SK_Joker meta setprefix 50 "&4&l[DEMON] &r"
 lp user kimshanin121112 parent set default
 lp user kimshanin121112 meta clear prefix
 lp user kimshanin121112 meta setprefix 50 "&c&l[YouTube] &r"
+
+# [Twitch] — фиолетовый + жирный (подставь ник стримера)
+lp user <ник> parent set default
+lp user <ник> meta clear prefix
+lp user <ник> meta setprefix 50 "&5&l[Twitch] &r"
 
 lp user VITALISDI parent set default
 lp user VITALISDI meta clear prefix
@@ -151,6 +156,7 @@ lp user SK_Joker info
 | [Легенда] | `"&6&l[Легенда] &r"` |
 | [DEMON] | `"&4&l[DEMON] &r"` |
 | **[YouTube]** | `"&c&l[YouTube] &r"` — красный, жирный |
+| **[Twitch]** | `"&5&l[Twitch] &r"` — фиолетовый, жирный |
 | [ПВП] | `"&c[ПВП] &r"` |
 | [Механик] | `"&b[Механик] &r"` |
 

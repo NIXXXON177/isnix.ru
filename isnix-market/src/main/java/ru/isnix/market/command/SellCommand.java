@@ -8,7 +8,9 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import ru.isnix.market.IsnixMarketMod;
+import ru.isnix.market.listing.MarketListing;
 import ru.isnix.market.screen.MarketScreens;
+import ru.isnix.market.trade.PurchaseService;
 
 import java.util.UUID;
 
@@ -29,6 +31,9 @@ public final class SellCommand {
 							MarketScreens.openCreate(player);
 							return 1;
 						}))
+				.then(CommandManager.literal("buy")
+						.then(CommandManager.argument("id", StringArgumentType.string())
+								.executes(ctx -> executeBuy(ctx.getSource().getPlayerOrThrow(), StringArgumentType.getString(ctx, "id")))))
 				.then(CommandManager.literal("cancel")
 						.then(CommandManager.argument("id", StringArgumentType.greedyString())
 								.executes(ctx -> {
@@ -56,5 +61,26 @@ public final class SellCommand {
 									player.sendMessage(Text.literal("Лот снят с продажи.").formatted(Formatting.YELLOW), false);
 									return 1;
 								}))));
+	}
+
+	private static int executeBuy(ServerPlayerEntity player, String rawId) {
+		UUID id;
+		try {
+			id = UUID.fromString(rawId.trim());
+		} catch (IllegalArgumentException e) {
+			player.sendMessage(Text.literal("Неверный ID лота.").formatted(Formatting.RED), false);
+			return 0;
+		}
+		MarketListing listing = IsnixMarketMod.listings().find(id).orElse(null);
+		if (listing == null) {
+			player.sendMessage(Text.literal("Лот уже продан или снят.").formatted(Formatting.RED), false);
+			return 0;
+		}
+		PurchaseService.Result result = PurchaseService.tryPurchase(player, listing);
+		if (result != PurchaseService.Result.SUCCESS) {
+			player.sendMessage(PurchaseService.messageFor(result), false);
+			return 0;
+		}
+		return 1;
 	}
 }

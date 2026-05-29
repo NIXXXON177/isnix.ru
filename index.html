@@ -137,6 +137,9 @@
 					<li>
 						<a href="how-to-play.html" data-page-link="how-to-play">Как играть</a>
 					</li>
+					<li>
+						<a href="status.html" data-page-link="status">Статус</a>
+					</li>
 					<li class="nav-links__account">
 						<a href="account.html" data-page-link="account" id="navAccountBtn"
 							>Аккаунт</a
@@ -191,6 +194,7 @@
 				</div>
 				<p class="hero-actions-sub">
 					<a href="how-to-play.html">Как играть и установить ElyPrismLauncher →</a>
+					· <a href="status.html">Статус сервера</a>
 				</p>
 				<div class="hero-ip">
 					<div class="ip-box" id="copyIp" tabindex="0" role="button">
@@ -291,8 +295,8 @@
 						<div class="feat-icon">🌿</div>
 						<div class="feat-title">Vanilla+</div>
 						<div class="feat-text">
-							Чистая ваниль с небольшими улучшениями. FallingTree, Vanilla
-							Tweaks — ничего лишнего.
+							Чистая ваниль с QoL: FallingTree, OPAC (приваты), Xaero's Map,
+							голосовой чат — без лишнего.
 						</div>
 					</div>
 					<div class="feat">
@@ -320,8 +324,8 @@
 						<div class="feat-icon">🤝</div>
 						<div class="feat-title">Бартер</div>
 						<div class="feat-text">
-							Игровой валюты нет — торговля через
-							<code>/trade &lt;ник&gt;</code> с другими игроками.
+							Игровой валюты нет — <code>/trade &lt;ник&gt;</code> с игроком
+							или рынок <code>/sell</code> за ресурсы.
 						</div>
 					</div>
 					<div class="feat">
@@ -357,7 +361,7 @@
 						и импортируй в ElyPrismLauncher или скопируй содержимое в папку
 						инстанса Fabric 1.21.1.
 					</p>
-					<span class="download-meta">Fabric 1.21.1 · ~35 МБ</span>
+					<span class="download-meta">Fabric 1.21.1 · ~39 МБ</span>
 					<div class="download-actions">
 						<a
 							href="downloads/ISTHISNIXXXONmods.zip"
@@ -404,13 +408,22 @@
 				<div class="s-eyebrow">Торговля</div>
 				<h2 class="s-title">Бартер</h2>
 				<p class="s-desc">
-					На сервере нет игровой валюты и Центробанка — обмен между игроками
-					через команду <code>/trade &lt;ник_игрока&gt;</code> в чате. Условия
-					сделки вы согласуете сами, соблюдайте общие правила торговли.
+					На сервере нет игровой валюты — обмен между игроками через
+					<code>/trade &lt;ник&gt;</code> или рынок лотов
+					<code>/sell</code> (оплата только ресурсами). Условия сделки
+					согласуете сами.
 				</p>
 			</div>
 			<div class="barter-layout">
 				<div class="barter-info">
+					<div class="info-card">
+						<div class="info-title">🛒 Рынок /sell</div>
+						<div class="info-text">
+							Команда <code>/sell</code> открывает рынок: выставляйте лоты и
+							покупайте за ресурсы (алмазы, железо и т.д.). Монет и аукциона за
+							валюту нет — только бартер через интерфейс.
+						</div>
+					</div>
 					<div class="info-card">
 						<div class="info-title">🤝 Как торговать?</div>
 						<div class="info-text">
@@ -629,7 +642,11 @@
 							<div class="shop-card-body">
 								<div
 									class="shop-prefix"
-									style="color: #9146ff; text-shadow: 0 0 18px #9146ff"
+									style="
+										color: #9146ff;
+										text-shadow: 0 0 18px #9146ff;
+										font-weight: 700;
+									"
 								>
 									[Twitch]
 								</div>
@@ -1631,6 +1648,7 @@
 							<li><a href="#about">О сервере</a></li>
 							<li><a href="#download">Скачать сборку</a></li>
 							<li><a href="how-to-play.html">Как играть</a></li>
+							<li><a href="status.html">Статус сервера</a></li>
 							<li><a href="#shop">Магазин</a></li>
 							<li><a href="#rules">Правила</a></li>
 							<li><a href="account.html">Аккаунт</a></li>
@@ -1846,5 +1864,5 @@
 		<script src="assets/js/auth.js?v=20"></script>
 		<script src="assets/js/site-presence.js?v=2" defer></script>
 		<script src="assets/js/shop-slider.js" defer></script>
-		<script src="assets/js/site-header.js?v=2" defer></script>
-		<script src="assets/js/site.js?v=6" defer></script>
+		<script src="assets/js/site-header.js?v=3" defer></script>
+		<script src="assets/js/site.js?v=7" defer></script>

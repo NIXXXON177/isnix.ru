@@ -93,6 +93,9 @@
 					<li>
 						<a href="how-to-play.html" data-page-link="how-to-play">Как играть</a>
 					</li>
+					<li>
+						<a href="status.html" data-page-link="status">Статус</a>
+					</li>
 					<li class="nav-links__account">
 						<a href="account.html" data-page-link="account" id="navAccountBtn"
 							>Аккаунт</a
@@ -137,7 +140,7 @@
 						href="downloads/ISTHISNIXXXONmods.zip"
 						download="ISTHISNIXXXONmods.zip"
 						class="htp-btn htp-btn--primary"
-						>Скачать сборку (~35 МБ)</a
+						>Скачать сборку (~39 МБ)</a
 					>
 					<a
 						href="https://github.com/ElyPrismLauncher/Launcher/releases"
@@ -216,9 +219,10 @@
 						<h2 class="htp-step__title">Проверь моды и запусти игру</h2>
 						<p class="htp-step__text">
 							В сборке уже есть обязательный
-							<strong>Simple Voice Chat</strong> и остальные моды сервера. Если
-							ставишь вручную — убедись, что в папке <code>mods</code> лежат
-							jar-файлы для <strong>Fabric 1.21.1</strong>.
+							<strong>Simple Voice Chat</strong>, карта Xaero's, OPAC (приваты и
+							кланы), FallingTree, trade и другие моды сервера. Если ставишь
+							вручную — убедись, что в папке <code>mods</code> лежат jar-файлы
+							для <strong>Fabric 1.21.1</strong>.
 						</p>
 						<ul class="htp-step__list">
 							<li>
@@ -243,25 +247,100 @@
 							<li>
 								<strong>IP:</strong>
 								<span class="htp-step__ip">mc.isnix.ru</span>
+								(<a href="status.html">статус и онлайн</a>)
 							</li>
 							<li>
-								Подай заявку в вайтлист в
-								<a href="account.html#whitelist">личном кабинете на сайте</a>
-								(ник, как обращаться, зачем хочешь на сервер) или в разделе
-								<a href="index.html#join-server">«На сервер»</a> на главной.
+								Вайтлист — <strong>только на сайте</strong>:
+								<a href="account.html#whitelist">личный кабинет</a> (ник, как
+								обращаться, зачем на сервер). В ВК заявку не принимаем.
 							</li>
 							<li>
-								Заходи только после одобрения вайтлиста — иначе сервер не
-								пустит.
+								Заходи только после одобрения — иначе сервер не пустит.
+							</li>
+						</ul>
+					</div>
+				</article>
+
+				<article class="htp-step">
+					<div class="htp-step__icon" aria-hidden="true">🛡️</div>
+					<div class="htp-step__body">
+						<span class="htp-step__badge">После входа</span>
+						<h2 class="htp-step__title">Кланы и приваты (OPAC)</h2>
+						<ul class="htp-step__list">
+							<li>
+								Меню мода: клавиша <strong>'</strong> (апостроф) → приваты и
+								настройки.
+							</li>
+							<li>
+								Клан: <code>/openpac-parties create</code> →
+								<code>invite &lt;ник&gt;</code> → друг:
+								<code>/openpac-parties join &lt;ник_лидера&gt;</code>
+							</li>
+							<li>
+								Чат клана: <code>/opm &lt;текст&gt;</code>
+							</li>
+							<li>
+								Тег клана в TAB: <strong>'</strong> → My player config →
+								<strong>Party name</strong> (например <code>[Wolves]</code>).
+								Цвет/жирность — <code>/clantag color green</code>,
+								<code>/clantag bold on</code> (только владелец клана).
+							</li>
+						</ul>
+					</div>
+				</article>
+
+				<article class="htp-step">
+					<div class="htp-step__icon" aria-hidden="true">🤝</div>
+					<div class="htp-step__body">
+						<span class="htp-step__badge">После входа</span>
+						<h2 class="htp-step__title">Торговля без валюты</h2>
+						<ul class="htp-step__list">
+							<li>
+								Прямой обмен: <code>/trade &lt;ник&gt;</code> — окно обмена с
+								игроком.
+							</li>
+							<li>
+								Рынок лотов: <code>/sell</code> — выставить предмет, оплата
+								<strong>только ресурсами</strong> (без монет).
+							</li>
+							<li>
+								Чат: локально рядом; глобально — сообщение с префиксом
+								<code>!</code> в начале (см. правила на главной).
 							</li>
 						</ul>
 					</div>
 				</article>
 			</div>
 
+			<section class="htp-step" style="margin-top: 2rem">
+				<div class="htp-step__body">
+					<h2 class="htp-step__title">Что в сборке ISTHISNIXXXONmods.zip</h2>
+					<p class="htp-step__text">
+						Клиентские моды для игры на сервере (обновляй ZIP с
+						<a href="index.html#download">главной</a> после крупных апдейтов):
+					</p>
+					<ul class="htp-step__list">
+						<li>
+							<strong>Обязательно:</strong> Fabric API, Simple Voice Chat, OPAC,
+							styled-chat, Xaero's World Map, Sodium/Lithium (оптимизация FPS)
+						</li>
+						<li>
+							<strong>QoL:</strong> FallingTree, trade, doubledoors, fsit,
+							rightclickharvest, FastRTP, ItemFrament, Female Gender Mod
+						</li>
+						<li>
+							<strong>Только на сервере</strong> (в ZIP не нужны): EasyAuth,
+							LuckPerms, TAB, GrimAC, isnix-market (<code>/sell</code>),
+							админ-моды
+						</li>
+					</ul>
+				</div>
+			</section>
+
 			<p class="htp-bottom">
-				<a href="index.html">На главную</a><br />
-				ElyPrismLauncher · Fabric 1.21.1 · сборка с сайта · mc.isnix.ru
+				<a href="index.html">На главную</a> ·
+				<a href="status.html">Статус сервера</a><br />
+				ElyPrismLauncher · Fabric 1.21.1 · mc.isnix.ru
 			</p>
 		</main>
 
@@ -438,7 +517,7 @@
 		<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 		<script src="assets/js/auth.js?v=20"></script>
 		<script src="assets/js/site-presence.js?v=2" defer></script>
-		<script src="assets/js/site-header.js?v=2" defer></script>
+		<script src="assets/js/site-header.js?v=3" defer></script>
 		<script src="assets/js/site.js?v=6" defer></script>
 	</body>
 </html>

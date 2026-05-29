@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="ru">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+		<title>Статус сервера — ISTHISNIXXXON</title>
+		<meta
+			name="description"
+			content="Онлайн, IP и список игроков Minecraft-сервера ISTHISNIXXXON (mc.isnix.ru)."
+		/>
+		<meta name="theme-color" content="#0a0f0a" />
+		<link rel="canonical" href="https://isnix.ru/status.html" />
+		<link rel="icon" href="favicon.svg" type="image/svg+xml" />
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Raleway:wght@400;600;700&display=swap"
+			rel="stylesheet"
+		/>
+		<link rel="stylesheet" href="assets/css/main.css" />
+		<link rel="stylesheet" href="assets/css/components.css" />
+		<link rel="stylesheet" href="assets/css/how-to-play.css" />
+		<link rel="stylesheet" href="assets/css/site-header.css" />
+	</head>
+	<body class="htp-page" data-page="status">
+		<div class="site-header" id="siteHeader">
+			<div class="site-header__inner">
+				<header class="site-top" id="siteNav">
+					<a href="index.html" class="nav-logo" id="navLogo">ISTHIS<span>NIXXXON</span></a>
+					<div class="site-top__actions">
+						<button
+							type="button"
+							class="site-top__ip"
+							id="siteCopyIp"
+							title="Скопировать IP сервера"
+						>
+							mc.isnix.ru
+						</button>
+						<a href="index.html#join-server" class="nav-btn nav-btn--top" id="navJoinTop"
+							>На сервер</a
+						>
+						<button
+							type="button"
+							class="nav-toggle"
+							id="navToggle"
+							aria-expanded="false"
+							aria-controls="navMenu"
+							aria-label="Открыть меню"
+						>
+							<span></span><span></span><span></span>
+						</button>
+					</div>
+				</header>
+				<nav class="nav-drawer" id="navMenu" aria-label="Навигация по сайту">
+					<div class="nav-drawer-auth" id="navDrawerAuth">
+						<a href="account.html" class="nav-drawer-auth__login" id="navDrawerLogin"
+							>Вход</a
+						>
+						<a
+							href="account.html"
+							class="nav-drawer-auth__user"
+							id="navDrawerUser"
+							hidden
+						>
+							<span class="nav-drawer-auth__avatar-wrap" aria-hidden="true">
+								<img
+									class="nav-drawer-auth__avatar"
+									id="navDrawerAvatar"
+									width="40"
+									height="40"
+									alt=""
+								/>
+								<span
+									class="nav-drawer-auth__avatar-fallback"
+									id="navDrawerAvatarFb"
+									>?</span
+								>
+							</span>
+							<span class="nav-drawer-auth__meta">
+								<span class="nav-drawer-auth__nick" id="navDrawerNick">—</span>
+								<span class="nav-drawer-auth__email" id="navDrawerEmail">—</span>
+							</span>
+						</a>
+					</div>
+					<ul class="nav-links">
+						<li><a href="#about" data-nav="about">О сервере</a></li>
+						<li><a href="#download" data-nav="download">Скачать</a></li>
+						<li><a href="#barter" data-nav="barter">Бартер</a></li>
+						<li><a href="#shop" data-nav="shop">Магазин</a></li>
+						<li><a href="#rules" data-nav="rules">Правила</a></li>
+						<li><a href="#join-server" data-nav="join-server">На сервер</a></li>
+						<li>
+							<a href="how-to-play.html" data-page-link="how-to-play">Как играть</a>
+						</li>
+						<li>
+							<a href="status.html" data-page-link="status">Статус</a>
+						</li>
+						<li class="nav-links__account">
+							<a href="account.html" data-page-link="account" id="navAccountBtn"
+								>Аккаунт</a
+							>
+						</li>
+						<li><a href="#links" data-nav="links">Контакты</a></li>
+					</ul>
+					<a href="index.html#join-server" class="nav-btn nav-btn-menu" id="navJoinBtn"
+						>На сервер</a
+					>
+					<div class="nav-drawer__footer">
+						<button
+							type="button"
+							class="nav-drawer-auth__logout"
+							id="navDrawerLogout"
+							hidden
+						>
+							Выход
+						</button>
+					</div>
+				</nav>
+			</div>
+		</div>
+		<button
+			type="button"
+			class="nav-backdrop"
+			id="navBackdrop"
+			aria-hidden="true"
+			tabindex="-1"
+		></button>
+
+		<main class="htp-main">
+			<header class="htp-hero">
+				<p class="htp-hero__eyebrow">Сервер</p>
+				<h1 class="htp-hero__title">Статус ISTHISNIXXXON</h1>
+				<p class="htp-hero__lead">
+					Онлайн, IP и список игроков. Вайтлист — только в
+					<a href="account.html#whitelist">личном кабинете</a>.
+				</p>
+			</header>
+
+			<div class="status-card">
+				<div id="statusBadge" class="status-badge status-badge--off">Загрузка…</div>
+				<p class="status-meta">IP сервера</p>
+				<p class="status-ip" id="statusHost">mc.isnix.ru</p>
+				<p class="status-meta">Игроков онлайн</p>
+				<p class="status-count">
+					<span id="statusCount">—</span><span id="statusMax"></span>
+				</p>
+				<p class="status-meta" id="statusUpdated">Обновление…</p>
+				<div class="status-actions">
+					<button type="button" class="htp-btn htp-btn--primary" id="statusCopyIp">
+						Скопировать IP
+					</button>
+					<button type="button" class="htp-btn htp-btn--ghost" id="statusRefresh">
+						Обновить
+					</button>
+					<a href="account.html#whitelist" class="htp-btn htp-btn--ghost">Вайтлист</a>
+				</div>
+				<div class="status-players">
+					<div class="status-players__title">Игроки на сервере</div>
+					<div class="status-players__list" id="statusPlayers"></div>
+				</div>
+			</div>
+
+			<p class="status-note">
+				Данные с публичного API (может отставать на 1–2 минуты). Не получается
+				зайти? Смотри
+				<a href="how-to-play.html">инструкцию</a> и блок «Проблемы со входом» на
+				<a href="index.html#start">главной</a>.
+			</p>
+
+			<p class="htp-bottom">
+				<a href="index.html">На главную</a> ·
+				<a href="how-to-play.html">Как играть</a>
+			</p>
+		</main>
+
+		<script src="assets/js/browser-compat.js?v=1"></script>
+		<script src="assets/js/server-status.js?v=5"></script>
+		<script src="assets/js/status-page.js?v=1" defer></script>
+		<script src="assets/js/site-header.js?v=3" defer></script>
+	</body>
+</html>

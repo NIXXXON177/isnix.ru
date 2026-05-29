@@ -1,0 +1,8 @@
+# Вставить в config/openpartiesandclaims-server.toml при ВЫКЛЮЧЕННОМ сервере.
+# Заменить существующий playerConfigurablePlayerConfigOptions.
+
+playerConfigurablePlayerConfigOptions = [
+	"party.name",
+	"claims.name",
+	"claims.color"
+]

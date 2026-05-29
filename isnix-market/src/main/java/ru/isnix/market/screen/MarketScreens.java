@@ -25,6 +25,16 @@ public final class MarketScreens {
 		));
 	}
 
+	public static void openItemPicker(ServerPlayerEntity player, MarketSession.PickerTarget target, int page) {
+		String title = target == MarketSession.PickerTarget.SALE
+				? "Выберите товар"
+				: "Выберите цену (ресурс)";
+		player.openHandledScreen(new SimpleNamedScreenHandlerFactory(
+				(syncId, inv, p) -> new ItemPickerScreenHandler(syncId, inv, target, page),
+				Text.literal(title).formatted(Formatting.AQUA)
+		));
+	}
+
 	public static ItemStack navArrow(boolean next) {
 		ItemStack stack = new ItemStack(next ? Items.ARROW : Items.SPECTRAL_ARROW);
 		stack.set(net.minecraft.component.DataComponentTypes.CUSTOM_NAME,
@@ -55,7 +65,60 @@ public final class MarketScreens {
 		stack.set(net.minecraft.component.DataComponentTypes.LORE,
 				new net.minecraft.component.type.LoreComponent(java.util.List.of(
 						Text.literal("Слева — что продаёте").formatted(Formatting.GRAY),
-						Text.literal("Справа — цена (ресурсы)").formatted(Formatting.GRAY)
+						Text.literal("Справа — за что продаёте").formatted(Formatting.GRAY),
+						Text.literal("Книги — каталог любых предметов").formatted(Formatting.DARK_GRAY)
+				)));
+		return stack;
+	}
+
+	public static ItemStack pickSaleButton() {
+		ItemStack stack = new ItemStack(Items.WRITABLE_BOOK);
+		stack.set(net.minecraft.component.DataComponentTypes.CUSTOM_NAME,
+				Text.literal("Каталог товара").formatted(Formatting.YELLOW, Formatting.BOLD));
+		stack.set(net.minecraft.component.DataComponentTypes.LORE,
+				new net.minecraft.component.type.LoreComponent(java.util.List.of(
+						Text.literal("Любой предмет из игры").formatted(Formatting.GRAY),
+						Text.literal("При выставлении спишется из инвентаря").formatted(Formatting.DARK_GRAY)
+				)));
+		return stack;
+	}
+
+	public static ItemStack pickPriceButton() {
+		ItemStack stack = new ItemStack(Items.BOOK);
+		stack.set(net.minecraft.component.DataComponentTypes.CUSTOM_NAME,
+				Text.literal("Каталог цены").formatted(Formatting.LIGHT_PURPLE, Formatting.BOLD));
+		stack.set(net.minecraft.component.DataComponentTypes.LORE,
+				new net.minecraft.component.type.LoreComponent(java.util.List.of(
+						Text.literal("Любой ресурс за который продаёте").formatted(Formatting.GRAY),
+						Text.literal("Из инвентаря не забирается").formatted(Formatting.DARK_GRAY)
+				)));
+		return stack;
+	}
+
+	public static ItemStack countButton(boolean plus) {
+		ItemStack stack = new ItemStack(plus ? Items.LIME_DYE : Items.RED_DYE);
+		stack.set(net.minecraft.component.DataComponentTypes.CUSTOM_NAME,
+				Text.literal(plus ? "+1" : "−1").formatted(plus ? Formatting.GREEN : Formatting.RED, Formatting.BOLD));
+		return stack;
+	}
+
+	public static ItemStack backButton() {
+		ItemStack stack = new ItemStack(Items.BARRIER);
+		stack.set(net.minecraft.component.DataComponentTypes.CUSTOM_NAME,
+				Text.literal("Назад").formatted(Formatting.RED));
+		return stack;
+	}
+
+	public static ItemStack pickerInfo(MarketSession.PickerTarget target, int page) {
+		ItemStack stack = new ItemStack(Items.PAPER);
+		int total = ItemCatalog.totalPages();
+		stack.set(net.minecraft.component.DataComponentTypes.CUSTOM_NAME,
+				Text.literal((target == MarketSession.PickerTarget.SALE ? "Товар" : "Цена")
+						+ " · стр. " + (page + 1) + "/" + total).formatted(Formatting.WHITE));
+		stack.set(net.minecraft.component.DataComponentTypes.LORE,
+				new net.minecraft.component.type.LoreComponent(java.util.List.of(
+						Text.literal("ЛКМ — 1 шт., ПКМ — стак").formatted(Formatting.GRAY),
+						Text.literal("Стрелки — листать").formatted(Formatting.DARK_GRAY)
 				)));
 		return stack;
 	}
