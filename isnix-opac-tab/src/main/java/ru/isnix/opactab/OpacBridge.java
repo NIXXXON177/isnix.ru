@@ -24,6 +24,9 @@ public final class OpacBridge {
 	private static Method getPlayerConfigManager;
 	private static Method getLoadedConfig;
 	private static Method getEffective;
+	private static Method getRaw;
+	private static Method getFromEffectiveConfig;
+	private static Class<?> optionSpecClass;
 	private static Object partyNameOption;
 
 	private OpacBridge() {
@@ -54,8 +57,11 @@ public final class OpacBridge {
 			Class<?> configManagerClass = Class.forName("xaero.pac.common.server.player.config.api.IPlayerConfigManagerAPI");
 			getLoadedConfig = configManagerClass.getMethod("getLoadedConfig", UUID.class);
 			Class<?> playerConfigClass = Class.forName("xaero.pac.common.server.player.config.api.IPlayerConfigAPI");
-			getEffective = playerConfigClass.getMethod("getEffective", Class.forName(
-					"xaero.pac.common.server.player.config.api.IPlayerConfigOptionSpecAPI"));
+			optionSpecClass = Class.forName(
+					"xaero.pac.common.server.player.config.api.IPlayerConfigOptionSpecAPI");
+			getEffective = playerConfigClass.getMethod("getEffective", optionSpecClass);
+			getRaw = playerConfigClass.getMethod("getRaw", optionSpecClass);
+			getFromEffectiveConfig = playerConfigClass.getMethod("getFromEffectiveConfig", optionSpecClass);
 			Class<?> optionsClass = Class.forName("xaero.pac.common.server.player.config.api.v2.PlayerConfigOptions");
 			Field partyNameField = optionsClass.getField("PARTY_NAME");
 			partyNameOption = partyNameField.get(null);
@@ -146,7 +152,24 @@ public final class OpacBridge {
 			if (playerConfig == null) {
 				return null;
 			}
-			Object value = getEffective.invoke(playerConfig, partyNameOption);
+			String name = readOptionString(playerConfig, getRaw);
+			if (name != null) {
+				return name;
+			}
+			name = readOptionString(playerConfig, getFromEffectiveConfig);
+			if (name != null) {
+				return name;
+			}
+			name = readOptionString(playerConfig, getEffective);
+			return name;
+		} catch (Throwable t) {
+			return null;
+		}
+	}
+
+	private static String readOptionString(Object playerConfig, Method reader) {
+		try {
+			Object value = reader.invoke(playerConfig, partyNameOption);
 			if (value == null) {
 				return null;
 			}
@@ -168,9 +191,7 @@ public final class OpacBridge {
 			if (playerConfig == null) {
 				return false;
 			}
-			Method tryToSet = playerConfig.getClass().getMethod("tryToSet",
-					Class.forName("xaero.pac.common.server.player.config.api.IPlayerConfigOptionSpecAPI"),
-					Object.class);
+			Method tryToSet = playerConfig.getClass().getMethod("tryToSet", optionSpecClass, Object.class);
 			Object result = tryToSet.invoke(playerConfig, partyNameOption, name);
 			if (result == null) {
 				return false;

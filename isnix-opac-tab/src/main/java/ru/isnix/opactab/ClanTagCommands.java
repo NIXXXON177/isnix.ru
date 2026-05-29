@@ -21,6 +21,9 @@ public final class ClanTagCommands {
 				.then(CommandManager.literal("bold")
 						.then(CommandManager.literal("on").executes(ctx -> setBold(ctx.getSource(), true)))
 						.then(CommandManager.literal("off").executes(ctx -> setBold(ctx.getSource(), false))))
+				.then(CommandManager.literal("name")
+						.then(CommandManager.argument("value", StringArgumentType.greedyString())
+								.executes(ctx -> setName(ctx.getSource(), StringArgumentType.getString(ctx, "value")))))
 				.then(CommandManager.literal("show").executes(ctx -> show(ctx.getSource())))
 				.then(CommandManager.literal("sync").executes(ctx -> sync(ctx.getSource()))));
 	}
@@ -70,6 +73,25 @@ public final class ClanTagCommands {
 		return 1;
 	}
 
+	private static int setName(ServerCommandSource source, String value) {
+		if (requireOwner(source) == 0) {
+			return 0;
+		}
+		String trimmed = value.trim();
+		if (trimmed.isEmpty() || trimmed.length() > 32) {
+			source.sendError(Text.literal("Имя клана: 1–32 символа."));
+			return 0;
+		}
+		ServerPlayerEntity player = source.getPlayer();
+		if (!OpacBridge.setPartyNameForOwner(player.getUuid(), player.getServer(), trimmed)) {
+			source.sendError(Text.literal("Не удалось сохранить Party name в OPAC."));
+			return 0;
+		}
+		String preview = ClanTagFormatter.formatForPlayer(player);
+		source.sendFeedback(() -> Text.literal("Party name: " + trimmed + " | в TAB: " + preview), false);
+		return 1;
+	}
+
 	private static int show(ServerCommandSource source) {
 		ServerPlayerEntity player = source.getPlayer();
 		if (player == null) {
@@ -94,7 +116,10 @@ public final class ClanTagCommands {
 						+ " | в клане: " + OpacBridge.isPlayerInClan(player)
 						+ " | цвет: " + (style != null ? style.color : "7")
 						+ " | жирный: " + (style != null && style.bold)
-						+ " | в TAB: " + preview), false);
+						+ " | в TAB: " + preview
+						+ (name == null && ownerId.equals(player.getUuid())
+								? " | подсказка: /clantag name NIXXXON"
+								: "")), false);
 		return 1;
 	}
 
