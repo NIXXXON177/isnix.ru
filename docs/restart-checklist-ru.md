@@ -21,7 +21,8 @@
 ## Проверка в игре (5 мин)
 
 - [ ] Вход (EasyAuth)
-- [ ] TAB: `config/tab/groups.yml` — `%isnix:clan_tag%` в `tabsuffix`/`tagsuffix` (см. `docs/config-samples/tab/`)
+- [ ] TAB: `%luckperms:prefix%` и `%isnix:clan_tag%` в `groups.yml`, `users.yml` пустой (см. `docs/config-samples/`)
+- [ ] OPAC: в логе нет `prometheus isn't registered` — `permissionSystem = "luck_perms"`
 - [ ] `/clantag help` у владельца клана — превью тега
 - [ ] `isnix-server-messages` в `mods/` — тексты вайтлиста и перезапуска (`config/isnix-server-messages.json`)
 - [ ] `'` → My player config — только party name, claims name/color

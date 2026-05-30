@@ -1,0 +1,8 @@
+# Вставить в config/openpartiesandclaims-server.toml при ВЫКЛЮЧЕННОМ сервере.
+# Остальные секции файла не трогайте.
+
+# Было prometheus — в логе «isn't registered», OPAC падает на luck_perms:
+permissionSystem = "luck_perms"
+
+# Полный список опций для меню игрока — см. openpartiesandclaims-player-options.snippet.toml
+# Обязательно: "parties.name" в playerConfigurablePlayerConfigOptions

@@ -1,0 +1,3 @@
+# config/tab/users.yml — оставьте пустым (или только комментарии).
+# Префиксы [Админ], [YouTube] и т.д. — только LuckPerms (meta setprefix / группа admin).
+# Запись tabprefix здесь даёт двойной префикс в TAB.

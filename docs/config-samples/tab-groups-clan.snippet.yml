@@ -1,7 +1,1 @@
-# Устарело: используйте docs/config-samples/tab/groups.yml и tab/config.yml
-
-_DEFAULT_:
-  tabprefix: "%luckperms:prefix%"
-  tabsuffix: "%luckperms:suffix% %isnix:clan_tag%"
-  tagprefix: "%luckperms:prefix%"
-  tagsuffix: "%luckperms:suffix% %isnix:clan_tag%"
+# УСТАРЕЛО → docs/config-samples/tab/groups.yml

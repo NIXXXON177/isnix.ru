@@ -27,6 +27,16 @@
 
 > Редактировать `config/openpartiesandclaims-server.toml` только при **выключенном** сервере, иначе OPAC перезапишет файл.
 
+### 1.2.1. Permission system
+
+В `openpartiesandclaims-server.toml` должно быть:
+
+```toml
+permissionSystem = "luck_perms"
+```
+
+Не `prometheus` — иначе в логе предупреждение и OPAC не использует LuckPerms.
+
 ### 1.3. Что видят обычные игроки в меню `'
 
 | Раздел | Кто видит | Зачем |
@@ -64,7 +74,7 @@ OPAC **не отдаёт** готовый placeholder в TAB. Мод **`isnix-op
 - [config-samples/tab/config.yml](config-samples/tab/config.yml) → фрагмент в `config/tab/config.yml`
 - [config-samples/tab/README.md](config-samples/tab/README.md) — чеклист
 
-Минимум в **`groups.yml`** для `_DEFAULT_`:
+Минимум в **`groups.yml`** для `_DEFAULT_` (в **`users.yml`** ничего не добавляйте — префиксы только LuckPerms):
 
 ```yaml
 tabprefix: "%luckperms:prefix%"

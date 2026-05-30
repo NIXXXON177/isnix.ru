@@ -1,10 +1,1 @@
-# Устарело: используйте docs/config-samples/tab/config.yml
-
-tablist-name-format:
-  enabled: true
-  anti-override: true
-  format: "%tabprefix%&f%player%%tabsuffix%"
-
-above-name-format:
-  enabled: true
-  format: "%tagprefix%%player%%tagsuffix%"
+# УСТАРЕЛО → docs/config-samples/tab/config.yml

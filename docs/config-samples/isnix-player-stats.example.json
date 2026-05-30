@@ -1,0 +1,5 @@
+{
+  "enabled": true,
+  "supabase_url": "https://yfrlgeztbaebdapdnefy.supabase.co",
+  "service_role_key": "ВСТАВЬ_СЮДА_service_role_ИЗ_SUPABASE_SETTINGS_API"
+}
