@@ -1,0 +1,78 @@
+КОМАНДЫ ДЛЯ АДМИНИСТРАЦИИ ISTHISNIXXXON
+(краткая шпаргалка, plain text)
+
+--- САЙТ (не консоль) ---
+
+Кабинет:        https://isnix.ru/account.html
+Заявки:         https://isnix.ru/account.html#admin  → вкладка «Заявки»
+Поддержка:      https://isnix.ru/support.html
+
+На сайте: «Отправить сообщение» | «Одобрить» | «Отклонить»
+После одобрения whitelist ~5 мин (GitHub Actions).
+
+--- farmila52: [Гл. Админ] (красный, жирный только префикс) ---
+lp user farmila52 parent set admin
+lp user farmila52 meta clear prefix
+lp user farmila52 meta setprefix 250 "&c&l[Гл. Админ] &r"
+lp user farmila52 permission unset isthis.boldnick
+lp sync
+
+--- LUCKPERMS (после любых правок) ---
+
+lp sync
+
+--- Админ-группа на сервере ---
+
+lp user <ник> parent set admin
+lp user <ник> meta clear prefix
+
+op <ник>
+
+--- Обычный игрок (сброс доната/префикса) ---
+
+lp user <ник> parent set default
+lp user <ник> meta clear prefix
+
+--- Донат / особый префикс (priority 50) ---
+
+lp user <ник> parent set default
+lp user <ник> meta clear prefix
+lp user <ник> meta setprefix 50 "&4&l[DEMON] &r"
+
+Примеры:  &c&l[YouTube]   &5[Twitch]   &6&l[Легенда]   &c[ПВП]
+
+--- Права RTP для всех ---
+
+lp group default permission set essentialcommands.randomteleport true
+
+--- TAB / чат ---
+
+/tab reload
+/styledchat reload
+
+--- РЫНОК (мод isnix-market) ---
+
+/sell
+/sell list
+/sell cancel <uuid>
+/sell buy <uuid>
+
+В GUI: Shift+ПКМ по своему лоту — снять с продажи.
+
+--- ИГРОКИ (моды, если стоят) ---
+
+/rtp
+
+--- WHITELIST ВРУЧНУЮ ---
+
+GitHub → Actions → «Add player to whitelist (manual)» → ввести ник.
+Или правка whitelist.json на сервере + restart.
+
+--- АДМИНЫ САЙТА (email) ---
+
+kupryuhinsemen@gmail.com   → afktapochek
+kudrasovn024@gmail.com     → ISTHISNIXXXON
+1511vasilisa@gmail.com     → VaSSiLIISa
+nikenerdx@gmail.com        → NikenER999
+
+Подробнее: docs/admin-commands-ru.md

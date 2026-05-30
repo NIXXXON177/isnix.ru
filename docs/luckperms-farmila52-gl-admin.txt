@@ -1,0 +1,13 @@
+# farmila52 — префикс [Гл. Админ]: красный, жирный только префикс (ник обычный)
+# Выполни в консоли сервера (после входа игрока хотя бы раз):
+
+lp user farmila52 parent set admin
+lp user farmila52 meta clear prefix
+lp user farmila52 meta setprefix 250 "&c&l[Гл. Админ] &r"
+lp user farmila52 permission unset isthis.boldnick
+lp sync
+lp user farmila52 info
+
+# priority 250 > admin (200) — перекрывает [Админ]
+# &c — красный, &l — жирный префикс, &r — сброс до ника (ник не жирный)
+# Если ник всё ещё жирный: lp user farmila52 permission unset isthis.boldnick

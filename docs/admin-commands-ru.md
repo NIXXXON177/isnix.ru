@@ -73,6 +73,20 @@ op ISTHISNIXXXON
 op NikenER999
 ```
 
+### LuckPerms — farmila52: [Гл. Админ] (priority 250)
+
+Красный жирный префикс, **ник обычный** (без `isthis.boldnick`):
+
+```text
+lp user farmila52 parent set admin
+lp user farmila52 meta clear prefix
+lp user farmila52 meta setprefix 250 "&c&l[Гл. Админ] &r"
+lp user farmila52 permission unset isthis.boldnick
+lp sync
+```
+
+Файл: [luckperms-farmila52-gl-admin.txt](luckperms-farmila52-gl-admin.txt)
+
 ### LuckPerms — донат / особый префикс (priority 50)
 
 Игрок **должен хотя бы раз зайти** после установки LP, иначе — по UUID из whitelist.
