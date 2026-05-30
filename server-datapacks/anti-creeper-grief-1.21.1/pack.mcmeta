@@ -1,0 +1,21 @@
+{
+	"pack": {
+		"pack_format": 48,
+		"supported_formats": {
+			"min_inclusive": 48,
+			"max_inclusive": 94
+		},
+		"description": [
+			{
+				"text": "Anti Creeper Grief",
+				"color": "gold"
+			},
+			{
+				"text": "\nvanillatweaks.net · 1.21.1",
+				"color": "yellow"
+			}
+		],
+		"min_format": 48,
+		"max_format": 94
+	}
+}
