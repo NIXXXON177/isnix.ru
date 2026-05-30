@@ -1122,32 +1122,65 @@
 		img.style.marginTop = -8 * scale + 'px'
 	}
 
-	/** Сначала mc-heads, затем Ely.by только если скин есть (без NS_BINDING_ABORTED) */
+	var elySkinHasCache = Object.create(null)
+	var elySkinProbeInflight = Object.create(null)
+
+	function probeElySkinHas(nick) {
+		var key = (nick || '').trim().toLowerCase()
+		if (!key) return Promise.resolve(false)
+		if (Object.prototype.hasOwnProperty.call(elySkinHasCache, key)) {
+			return Promise.resolve(elySkinHasCache[key])
+		}
+		if (elySkinProbeInflight[key]) return elySkinProbeInflight[key]
+		elySkinProbeInflight[key] = fetch(elySkinUrl(nick), {
+			method: 'HEAD',
+			mode: 'cors',
+			cache: 'no-store',
+		})
+			.then(function (res) {
+				var has = res.ok
+				elySkinHasCache[key] = has
+				delete elySkinProbeInflight[key]
+				return has
+			})
+			.catch(function () {
+				elySkinHasCache[key] = false
+				delete elySkinProbeInflight[key]
+				return false
+			})
+		return elySkinProbeInflight[key]
+	}
+
+	function applyMcHeadFallback(img, nickTrim, sizePx) {
+		var s = Math.max(8, Number(sizePx) || 48)
+		clearElyHeadCrop(img, s)
+		img.onerror = null
+		img.src = mcHeadAvatarFallbackUrl(nickTrim, s)
+	}
+
+	/** Ely.by если скин есть, иначе mc-heads (без лишних отменённых запросов) */
 	function applyElyHeadToImg(img, nick, sizePx) {
 		if (!img) return
 		var s = Math.max(8, Number(sizePx) || 48)
 		var nickTrim = (nick || '').trim()
 		var wrap = img.parentElement
 		if (wrap) wrap.classList.add('ely-head-wrap')
-		var fb = mcHeadAvatarFallbackUrl(nickTrim, s)
 		var elyUrl = elySkinUrl(nickTrim)
 		img.onerror = null
 		clearElyHeadCrop(img, s)
-		img.src = fb
-		fetch(elyUrl, { method: 'HEAD', mode: 'cors', cache: 'no-store' })
-			.then(function (res) {
-				if (!res.ok || !img.isConnected) return
+		probeElySkinHas(nickTrim).then(function (has) {
+			if (!img.isConnected) return
+			if (has) {
 				applyElyHeadCrop(img, s)
 				img.onerror = function () {
 					img.onerror = null
-					clearElyHeadCrop(img, s)
-					img.src = fb
+					applyMcHeadFallback(img, nickTrim, s)
 				}
 				img.src = elyUrl
-			})
-			.catch(function () {
-				/* остаётся mc-heads */
-			})
+			} else {
+				applyMcHeadFallback(img, nickTrim, s)
+			}
+		})
 	}
 
 	function mcHeadAvatarUrl(nick, size) {

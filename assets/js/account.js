@@ -185,7 +185,6 @@
 
 	function playerHeadHtml(name, size) {
 		var s = size || 32
-		var fb = avatarFallbackUrl(name, s)
 		var safe = escapeHtml(name)
 		return (
 			'<span class="ely-head-wrap auth-player-head-wrap" style="width:' +
@@ -193,9 +192,7 @@
 			'px;height:' +
 			s +
 			'px">' +
-			'<img class="auth-player-head" src="' +
-			fb +
-			'" width="' +
+			'<img class="auth-player-head" width="' +
 			s +
 			'" height="' +
 			s +
