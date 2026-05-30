@@ -39,6 +39,7 @@ isnix-sell-test/.idea/
 
 # Play2GO SFTP (пароль и зеркало файлов сервера)
 server-sftp.env
+social-publish.env
 server-remote/
 build/modpack-fix/
 server-remote/mods-pull/

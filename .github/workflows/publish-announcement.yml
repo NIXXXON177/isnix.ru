@@ -1,0 +1,36 @@
+# Публикация поста из posts/*.txt в Discord, Telegram и ВК.
+# Запуск: Actions → Publish announcement → Run workflow → имя файла.
+
+name: Publish announcement
+
+on:
+  workflow_dispatch:
+    inputs:
+      post_file:
+        description: "Файл поста (от корня репо), например posts/sell-update.txt"
+        required: true
+        default: posts/sell-update.txt
+      dry_run:
+        description: "Только показать текст, не публиковать"
+        type: boolean
+        default: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Publish to Discord, Telegram, VK
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          VK_ACCESS_TOKEN: ${{ secrets.VK_ACCESS_TOKEN }}
+          VK_GROUP_ID: ${{ secrets.VK_GROUP_ID }}
+        run: |
+          ARGS="scripts/publish_announcement.py ${{ inputs.post_file }}"
+          if [ "${{ inputs.dry_run }}" = "true" ]; then
+            ARGS="$ARGS --dry-run"
+          fi
+          python3 $ARGS
