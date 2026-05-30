@@ -74,7 +74,7 @@ tablist-name-formatting:
   format: "%luckperms:prefix%%player%%luckperms:suffix% %isnix:clan_tag%"
 ```
 
-После правок: **`/tab reload`**.
+После правок: **рестарт** или **`/tab reload`** из консоли / с OP и правом `tab.admin` (см. [admin-commands-ru.md](admin-commands-ru.md)).
 
 ---
 
@@ -146,7 +146,7 @@ tablist-name-formatting:
 | Проблема | Решение |
 |----------|---------|
 | В TAB нет тега | Установлен ли `isnix-opac-tab`? Есть ли `%isnix:clan_tag%` в groups.yml? `/tab reload` |
-| `%isnix:clan_tag%` виден текстом | Нет Placeholder API или мод не загрузился — смотрите `latest.log` |
+| `%isnix:clan_tag%` или `%synced:isnix:clan_tag%` виден текстом | В `groups.yml` должно быть **`%isnix:clan_tag%`**, не `%sync:...%`. Мод не загрузился — `latest.log` |
 | В GUI OPAC снова куча опций | Сервер правили при **включённом** сервере — toml перезаписался; правьте снова **офлайн** |
 | «Нет прав» на `/clantag` | Команды только **владельцу** клана OPAC |
 | Тег не обновился | `/clantag sync` или перезайти; OPAC Party name должен быть у **лидера** |

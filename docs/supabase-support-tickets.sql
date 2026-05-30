@@ -176,7 +176,7 @@ begin
 	returning id into tid;
 
 	insert into public.support_messages (ticket_id, author_id, body, is_staff)
-	values (uid, uid, msg, false);
+	values (tid, uid, msg, false);
 
 	perform public.notify_site_admins_new_support_ticket(tid, subj);
 

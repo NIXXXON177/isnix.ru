@@ -22,6 +22,7 @@
 
 - [ ] Вход (EasyAuth)
 - [ ] TAB: префикс LuckPerms + тег клана (`%isnix:clan_tag%`)
+- [ ] `isnix-server-messages` в `mods/` — тексты вайтлиста и перезапуска (`config/isnix-server-messages.json`)
 - [ ] `'` → My player config — только party name, claims name/color
 - [ ] `/sell`, `/trade`
 - [ ] Голосовой чат (Voice Chat)

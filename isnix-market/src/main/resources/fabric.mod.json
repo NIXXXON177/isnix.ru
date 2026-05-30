@@ -6,9 +6,9 @@
 	"description": "Рынок /sell: бартер предметов за ресурсы, GUI сундука",
 	"authors": ["ISTHISNIXXXON"],
 	"license": "MIT",
-	"environment": "server",
+	"environment": "*",
 	"entrypoints": {
-		"server": [
+		"main": [
 			"ru.isnix.market.IsnixMarketMod"
 		]
 	},

@@ -1,0 +1,6 @@
+{
+	"key.category.isnix_sell_test": "ISNIX /sell (тест)",
+	"key.isnix_sell_test.open_market": "Открыть рынок (/sell)",
+	"key.isnix_sell_test.open_list": "Выставить лот (/sell list)",
+	"key.isnix_sell_test.open_help": "Справка (/sell help)"
+}

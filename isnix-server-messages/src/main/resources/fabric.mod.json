@@ -1,0 +1,24 @@
+{
+	"schemaVersion": 1,
+	"id": "isnix_server_messages",
+	"version": "${version}",
+	"name": "ISNIX Server Messages",
+	"description": "Сообщения при отказе в вайтлисте и при перезапуске сервера",
+	"authors": ["ISTHISNIXXXON"],
+	"license": "MIT",
+	"environment": "server",
+	"entrypoints": {
+		"server": [
+			"ru.isnix.messages.IsnixServerMessagesMod"
+		]
+	},
+	"mixins": [
+		"isnix-server-messages.mixins.json"
+	],
+	"depends": {
+		"fabricloader": ">=0.16.0",
+		"minecraft": "~1.21.1",
+		"java": ">=21",
+		"fabric-api": "*"
+	}
+}

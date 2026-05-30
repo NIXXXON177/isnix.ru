@@ -18,6 +18,7 @@
 | `build-isnix-chat.yml` | `mods/isnix-chat-<версия>.jar` |
 | `build-isnix-player-stats.yml` | `mods/isnix-player-stats-<версия>.jar` |
 | `build-isnix-opac-tab.yml` | `mods/isnix-opac-tab-<версия>.jar` |
+| `build-isnix-server-messages.yml` | `mods/isnix-server-messages-<версия>.jar` |
 
 Секреты (те же, что для whitelist):
 

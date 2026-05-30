@@ -4,7 +4,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.screen.GenericContainerScreenHandler;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.screen.slot.Slot;
@@ -14,17 +13,17 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import ru.isnix.market.IsnixMarketMod;
 import ru.isnix.market.MarketConfig;
+import ru.isnix.market.MarketItemRules;
 import ru.isnix.market.listing.MarketListing;
 import ru.isnix.market.util.InventoryHelper;
 import ru.isnix.market.util.ListingAnnouncements;
 import ru.isnix.market.util.ListingMessages;
 
 /**
- * Окно «Выставить лот»: предметы только из инвентаря игрока, без +/-, центр сетки.
+ * Окно «Выставить лот»: товар и цена — из инвентаря игрока (списание только товара при подтверждении).
  */
 public class CreateListingScreenHandler extends GenericContainerScreenHandler {
 	public static final int MENU_SIZE = 27;
-	/** Центр среднего ряда (9×3). */
 	public static final int SLOT_PICK_SALE = 10;
 	public static final int SLOT_SALE = 11;
 	public static final int SLOT_PICK_PRICE = 12;
@@ -79,31 +78,36 @@ public class CreateListingScreenHandler extends GenericContainerScreenHandler {
 
 	@Override
 	public boolean canInsertIntoSlot(ItemStack stack, Slot slot) {
-		// Запрет класть предметы в слоты меню — только нижний инвентарь игрока
-		return GuiSlotPolicy.isPlayerSlot(this, slot.id);
+		return false;
 	}
 
 	@Override
 	public void onSlotClick(int slotIndex, int button, SlotActionType actionType, PlayerEntity player) {
 		if (!(player instanceof ServerPlayerEntity serverPlayer)) {
-			super.onSlotClick(slotIndex, button, actionType, player);
 			return;
 		}
 		if (GuiSlotPolicy.isPlayerSlot(this, slotIndex)) {
 			if (actionType == SlotActionType.QUICK_MOVE) {
-				handleQuickMoveFromPlayer(serverPlayer, slotIndex, button);
+				if (draft.sale.isEmpty()) {
+					handleSaleFromPlayerInventory(serverPlayer, slotIndex, 1);
+				} else {
+					handlePriceFromPlayerInventory(serverPlayer, slotIndex, 1);
+				}
 				return;
 			}
-			if (actionType == SlotActionType.PICKUP && (draft.sale.isEmpty() || draft.price.isEmpty())) {
-				handlePlayerInventoryPick(serverPlayer, slotIndex, button);
+			if (actionType == SlotActionType.PICKUP) {
+				if (draft.sale.isEmpty()) {
+					handleSaleFromPlayerInventory(serverPlayer, slotIndex, button);
+				} else {
+					handlePriceFromPlayerInventory(serverPlayer, slotIndex, button);
+				}
 				return;
 			}
+			return;
 		}
 		if (GuiSlotPolicy.isMenuSlotIndex(slotIndex, MENU_SIZE)) {
 			handleMenuClick(serverPlayer, slotIndex, button, actionType);
-			return;
 		}
-		super.onSlotClick(slotIndex, button, actionType, player);
 	}
 
 	private void handleMenuClick(
@@ -113,115 +117,84 @@ public class CreateListingScreenHandler extends GenericContainerScreenHandler {
 			SlotActionType actionType
 	) {
 		if (slotIndex == SLOT_CONFIRM && actionType != SlotActionType.QUICK_MOVE) {
-			syncDraftFromContainer();
 			tryConfirm(serverPlayer);
 			return;
 		}
 		if (slotIndex == SLOT_PICK_SALE) {
 			serverPlayer.sendMessage(
-					Text.literal("Товар — только из вашего инвентаря внизу: клик по предмету (ЛКМ — 1 шт., ПКМ — стак) или Shift+клик.")
+					Text.literal("Товар — только из вашего инвентаря внизу: клик по предмету (ЛКМ — 1, ПКМ — стак).")
 							.formatted(Formatting.YELLOW),
 					false
 			);
 			return;
 		}
 		if (slotIndex == SLOT_PICK_PRICE) {
-			syncDraftFromContainer();
-			MarketScreens.openItemPicker(serverPlayer, MarketSession.PickerTarget.PRICE, 0);
-			return;
-		}
-		if (slotIndex == SLOT_SALE) {
-			if (button == 1) {
-				draft.sale = ItemStack.EMPTY;
-				refreshDisplayStacks();
-				return;
-			}
-			if (tryAssignSaleFromCursor(button)) {
-				return;
-			}
 			serverPlayer.sendMessage(
-					Text.literal("Кликните предмет в инвентаре внизу — это и будет товар на продажу.")
+					Text.literal("Цена — из инвентаря внизу: клик по предмету (ЛКМ — 1, ПКМ — стак). С инвентаря не снимается.")
 							.formatted(Formatting.YELLOW),
 					false
 			);
 			return;
 		}
-		if (slotIndex == SLOT_PRICE) {
-			if (button == 1) {
-				draft.price = ItemStack.EMPTY;
-				refreshDisplayStacks();
-				return;
-			}
-			syncDraftFromContainer();
-			MarketScreens.openItemPicker(serverPlayer, MarketSession.PickerTarget.PRICE, 0);
+		if (slotIndex == SLOT_PRICE && button == 1) {
+			draft.price = ItemStack.EMPTY;
+			refreshDisplayStacks();
+			return;
+		}
+		if (slotIndex == SLOT_SALE && button == 1) {
+			draft.sale = ItemStack.EMPTY;
+			refreshDisplayStacks();
 		}
 	}
 
-	private boolean tryAssignSaleFromCursor(int button) {
-		ItemStack cursor = getCursorStack();
-		if (cursor.isEmpty() || MarketScreens.isDecorStack(cursor)) {
-			return false;
-		}
-		int count = button == 1 ? Math.min(cursor.getCount(), 64) : 1;
-		draft.sale = cursor.copy();
-		draft.sale.setCount(count);
-		refreshDisplayStacks();
-		return true;
-	}
-
-	/** Клик по слоту инвентаря: копия в черновик, предмет в рюкзаке остаётся до «Подтвердить». */
-	private void handlePlayerInventoryPick(ServerPlayerEntity player, int slotIndex, int button) {
+	/** Только товар: копия в черновик, списание при «Подтвердить». */
+	private void handleSaleFromPlayerInventory(ServerPlayerEntity player, int slotIndex, int button) {
 		Slot playerSlot = slots.get(slotIndex);
 		if (playerSlot == null || !playerSlot.hasStack()) {
 			return;
 		}
 		ItemStack stack = playerSlot.getStack();
-		if (MarketScreens.isDecorStack(stack)) {
+		if (MarketScreens.isDecorStack(stack) || MarketItemRules.isBanned(stack)) {
+			player.sendMessage(MarketItemRules.banMessage(stack), false);
 			return;
 		}
 		int count = button == 1 ? Math.min(stack.getCount(), 64) : 1;
 		ItemStack pick = stack.copy();
 		pick.setCount(count);
-		if (draft.sale.isEmpty()) {
-			draft.sale = pick;
-			player.sendMessage(
-					Text.literal("Товар: ").formatted(Formatting.GREEN).append(pick.toHoverableText()),
-					false
-			);
-		} else if (draft.price.isEmpty()) {
-			draft.price = pick;
-			player.sendMessage(
-					Text.literal("Цена: ").formatted(Formatting.GREEN).append(pick.toHoverableText()),
-					false
-			);
-		} else {
-			player.sendMessage(
-					Text.literal("Товар и цена уже выбраны. ПКМ по слоту в меню — сброс, или «Подтвердить».")
-							.formatted(Formatting.YELLOW),
-					false
-			);
-			return;
-		}
+		draft.sale = pick;
+		player.sendMessage(
+				Text.literal("Товар: ").formatted(Formatting.GREEN).append(pick.toHoverableText()),
+				false
+		);
 		refreshDisplayStacks();
 	}
 
-	/** Shift+клик из инвентаря — стак в черновик, предметы остаются до подтверждения. */
-	private void handleQuickMoveFromPlayer(ServerPlayerEntity player, int slotIndex, int button) {
-		if (!GuiSlotPolicy.isPlayerSlot(this, slotIndex)) {
+	/** Цена: только шаблон для покупателя, предметы из инвентаря не забираются. */
+	private void handlePriceFromPlayerInventory(ServerPlayerEntity player, int slotIndex, int button) {
+		Slot playerSlot = slots.get(slotIndex);
+		if (playerSlot == null || !playerSlot.hasStack()) {
 			return;
 		}
-		handlePlayerInventoryPick(player, slotIndex, 1);
-	}
-
-	private void syncDraftFromContainer() {
-		ItemStack sale = container.getStack(SLOT_SALE);
-		ItemStack price = container.getStack(SLOT_PRICE);
-		if (!sale.isEmpty() && !MarketScreens.isDecorStack(sale)) {
-			draft.sale = sale.copy();
+		ItemStack stack = playerSlot.getStack();
+		if (MarketScreens.isDecorStack(stack) || MarketItemRules.isBanned(stack)) {
+			player.sendMessage(MarketItemRules.banMessage(stack), false);
+			return;
 		}
-		if (!price.isEmpty() && !MarketScreens.isDecorStack(price)) {
-			draft.price = price.copy();
+		int count = button == 1 ? Math.min(stack.getCount(), 64) : 1;
+		ItemStack pick = stack.copy();
+		pick.setCount(count);
+		if (!draft.sale.isEmpty()
+				&& ItemStack.areItemsAndComponentsEqual(draft.sale, pick)
+				&& draft.sale.getCount() == pick.getCount()) {
+			player.sendMessage(Text.literal("Товар и цена не могут совпадать.").formatted(Formatting.RED), false);
+			return;
 		}
+		draft.price = pick;
+		player.sendMessage(
+				Text.literal("Цена: ").formatted(Formatting.AQUA).append(pick.toHoverableText()),
+				false
+		);
+		refreshDisplayStacks();
 	}
 
 	private void tryConfirm(ServerPlayerEntity player) {
@@ -229,7 +202,7 @@ public class CreateListingScreenHandler extends GenericContainerScreenHandler {
 		ItemStack price = draft.price.copy();
 		if (sale.isEmpty() || price.isEmpty()) {
 			player.sendMessage(
-					Text.literal("Выберите товар из инвентаря внизу и цену (книга «Каталог цены» или клик по ресурсу).")
+					Text.literal("Выберите товар и цену из инвентаря внизу (ЛКМ — 1, ПКМ — стак).")
 							.formatted(Formatting.RED),
 					false
 			);
@@ -243,12 +216,19 @@ public class CreateListingScreenHandler extends GenericContainerScreenHandler {
 			player.sendMessage(Text.literal("Товар и цена не могут совпадать.").formatted(Formatting.RED), false);
 			return;
 		}
+		if (MarketItemRules.isBanned(sale)) {
+			player.sendMessage(MarketItemRules.banMessage(sale), false);
+			return;
+		}
+		if (MarketItemRules.isBanned(price)) {
+			player.sendMessage(MarketItemRules.banMessage(price), false);
+			return;
+		}
 		MarketConfig.MarketConfigData cfg = MarketConfig.get();
 		if (IsnixMarketMod.listings().countBySeller(player.getUuid()) >= cfg.maxListingsPerPlayer) {
 			player.sendMessage(Text.literal("Лимит ваших лотов: " + cfg.maxListingsPerPlayer).formatted(Formatting.RED), false);
 			return;
 		}
-		// Товар списывается только из основного инвентаря игрока
 		if (!InventoryHelper.removeItems(player, sale)) {
 			player.sendMessage(
 					Text.literal("Нет в инвентаре: ").formatted(Formatting.RED).append(sale.toHoverableText()),
@@ -275,11 +255,6 @@ public class CreateListingScreenHandler extends GenericContainerScreenHandler {
 	@Override
 	public ItemStack quickMove(PlayerEntity player, int slot) {
 		return ItemStack.EMPTY;
-	}
-
-	@Override
-	public void onClosed(PlayerEntity player) {
-		super.onClosed(player);
 	}
 
 	@Override

@@ -1,0 +1,24 @@
+{
+	"schemaVersion": 1,
+	"id": "isnix_sell_test",
+	"version": "${version}",
+	"name": "ISNIX Sell Test (client)",
+	"description": "Клиентский тест /sell: горячие клавиши и подсказки в GUI рынка. Только для проверки, на сервер не ставить.",
+	"authors": ["ISTHISNIXXXON"],
+	"license": "MIT",
+	"environment": "client",
+	"entrypoints": {
+		"client": [
+			"ru.isnix.selltest.IsnixSellTestClient"
+		]
+	},
+	"depends": {
+		"fabricloader": ">=0.16.0",
+		"minecraft": "~1.21.1",
+		"java": ">=21",
+		"fabric-api": "*"
+	},
+	"suggests": {
+		"isnix_market": "*"
+	}
+}

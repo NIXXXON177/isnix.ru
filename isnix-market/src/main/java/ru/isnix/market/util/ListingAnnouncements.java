@@ -8,6 +8,7 @@ import net.minecraft.text.HoverEvent;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import ru.isnix.market.MarketConfig;
 import ru.isnix.market.listing.MarketListing;
 
 import java.util.UUID;
@@ -17,7 +18,7 @@ public final class ListingAnnouncements {
 	}
 
 	public static void broadcastNewListing(MinecraftServer server, MarketListing listing) {
-		if (server == null) {
+		if (server == null || !MarketConfig.get().broadcastNewListings) {
 			return;
 		}
 		Text message = buildNewListingMessage(listing);

@@ -1,0 +1,15 @@
+# Восстановить админа daydonik (Play2GO — консоль сервера или OP в игре)
+# UUID: e898d339-44bd-3fce-9147-eedf25258bd4 (whitelist.json)
+#
+# ops.json и config/tab/users.yml уже залиты через SFTP.
+# После рестарта — OP из ops.json. LuckPerms — выполни команды ниже (или сразу, если сервер онлайн):
+
+op daydonik
+lp user daydonik parent set admin
+lp user daydonik meta clear prefix
+lp sync
+
+# Проверка:
+lp user daydonik info
+
+# Префикс в TAB: [Админ] (users.yml + группа admin в LP)

@@ -11,48 +11,42 @@ import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import ru.isnix.market.PricePresets;
 
 import java.util.List;
 
-/** Каталог предметов — только выбор, без переноса стаков. */
-public class ItemPickerScreenHandler extends GenericContainerScreenHandler {
+/** Список кнопок-цен из конфига. Предметы нельзя забрать — только выбор. */
+public class PricePresetScreenHandler extends GenericContainerScreenHandler {
 	public static final int MENU_SIZE = 54;
 	public static final int SLOT_PREV = 45;
 	public static final int SLOT_BACK = 48;
 	public static final int SLOT_INFO = 49;
 	public static final int SLOT_NEXT = 53;
 
-	private final MarketSession.PickerTarget target;
 	private final int page;
 	private final List<ItemStack> pageItems;
 
-	public ItemPickerScreenHandler(
-			int syncId,
-			PlayerInventory playerInventory,
-			MarketSession.PickerTarget target,
-			int page
-	) {
-		super(ScreenHandlerType.GENERIC_9X6, syncId, playerInventory, buildInventory(target, page), 6);
-		this.target = target;
+	public PricePresetScreenHandler(int syncId, PlayerInventory playerInventory, int page) {
+		super(ScreenHandlerType.GENERIC_9X6, syncId, playerInventory, buildInventory(page), 6);
 		this.page = page;
-		this.pageItems = ItemCatalog.pageStacks(page);
+		this.pageItems = PricePresets.pageStacks(page);
 	}
 
-	private static SimpleInventory buildInventory(MarketSession.PickerTarget target, int page) {
+	private static SimpleInventory buildInventory(int page) {
 		SimpleInventory inv = new SimpleInventory(MENU_SIZE);
-		List<ItemStack> stacks = ItemCatalog.pageStacks(page);
-		for (int i = 0; i < ItemCatalog.PAGE_SIZE; i++) {
+		List<ItemStack> stacks = PricePresets.pageStacks(page);
+		for (int i = 0; i < PricePresets.PAGE_SIZE; i++) {
 			inv.setStack(i, stacks.get(i).isEmpty() ? ItemStack.EMPTY : stacks.get(i).copy());
 		}
-		for (int i = ItemCatalog.PAGE_SIZE; i < MENU_SIZE; i++) {
+		for (int i = PricePresets.PAGE_SIZE; i < MENU_SIZE; i++) {
 			if (i == SLOT_PREV) {
 				inv.setStack(i, page > 0 ? MarketScreens.navArrow(false) : MarketScreens.fillerPane());
 			} else if (i == SLOT_NEXT) {
-				inv.setStack(i, page < ItemCatalog.totalPages() - 1 ? MarketScreens.navArrow(true) : MarketScreens.fillerPane());
+				inv.setStack(i, page < PricePresets.totalPages() - 1 ? MarketScreens.navArrow(true) : MarketScreens.fillerPane());
 			} else if (i == SLOT_BACK) {
 				inv.setStack(i, MarketScreens.backButton());
 			} else if (i == SLOT_INFO) {
-				inv.setStack(i, MarketScreens.pickerInfo(target, page));
+				inv.setStack(i, MarketScreens.pricePresetInfo(page));
 			} else {
 				inv.setStack(i, MarketScreens.fillerPane());
 			}
@@ -62,7 +56,7 @@ public class ItemPickerScreenHandler extends GenericContainerScreenHandler {
 
 	@Override
 	public boolean canInsertIntoSlot(ItemStack stack, Slot slot) {
-		return GuiSlotPolicy.isPlayerSlot(this, slot.id);
+		return false;
 	}
 
 	@Override
@@ -74,30 +68,23 @@ public class ItemPickerScreenHandler extends GenericContainerScreenHandler {
 			return;
 		}
 		if (slotIndex == SLOT_PREV && page > 0) {
-			MarketScreens.openItemPicker(serverPlayer, target, page - 1);
+			MarketScreens.openPricePresets(serverPlayer, page - 1);
 			return;
 		}
-		if (slotIndex == SLOT_NEXT && page < ItemCatalog.totalPages() - 1) {
-			MarketScreens.openItemPicker(serverPlayer, target, page + 1);
+		if (slotIndex == SLOT_NEXT && page < PricePresets.totalPages() - 1) {
+			MarketScreens.openPricePresets(serverPlayer, page + 1);
 			return;
 		}
 		if (slotIndex == SLOT_BACK) {
 			MarketScreens.openCreate(serverPlayer);
 			return;
 		}
-		if (slotIndex >= 0 && slotIndex < ItemCatalog.PAGE_SIZE && slotIndex < pageItems.size()) {
+		if (slotIndex >= 0 && slotIndex < PricePresets.PAGE_SIZE && slotIndex < pageItems.size()) {
 			ItemStack chosen = pageItems.get(slotIndex);
 			if (!chosen.isEmpty()) {
-				ItemStack pick = chosen.copy();
-				pick.setCount(1);
-				if (button == 1) {
-					pick.setCount(Math.min(64, pick.getMaxCount()));
-				}
-				MarketSession.applyPickerChoice(serverPlayer, target, pick);
+				MarketSession.applyPricePreset(serverPlayer, chosen);
 				serverPlayer.sendMessage(
-						Text.literal(target == MarketSession.PickerTarget.SALE ? "Товар: " : "Цена: ")
-								.formatted(Formatting.GREEN)
-								.append(pick.toHoverableText()),
+						Text.literal("Цена: ").formatted(Formatting.GREEN).append(chosen.toHoverableText()),
 						false
 				);
 				MarketScreens.openCreate(serverPlayer);

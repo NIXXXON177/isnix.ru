@@ -2,6 +2,9 @@
 ISTHISNIXXXON FABRIC 1.21.1.zip
 
 # Локальные артефакты
+.github/scripts/__pycache__/
+**/__pycache__/
+test.png
 _index_head.html
 .DS_Store
 Thumbs.db
@@ -25,6 +28,14 @@ isnix-opac-tab/.gradle/
 isnix-opac-tab/build/
 isnix-opac-tab/run/
 isnix-opac-tab/.idea/
+isnix-server-messages/.gradle/
+isnix-server-messages/build/
+isnix-server-messages/run/
+isnix-server-messages/.idea/
+isnix-sell-test/.gradle/
+isnix-sell-test/build/
+isnix-sell-test/run/
+isnix-sell-test/.idea/
 
 # Play2GO SFTP (пароль и зеркало файлов сервера)
 server-sftp.env

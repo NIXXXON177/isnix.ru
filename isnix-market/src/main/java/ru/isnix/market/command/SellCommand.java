@@ -8,6 +8,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import ru.isnix.market.IsnixMarketMod;
+import ru.isnix.market.MarketConfig;
 import ru.isnix.market.listing.MarketListing;
 import ru.isnix.market.screen.MarketScreens;
 import ru.isnix.market.trade.ListingCancelService;
@@ -26,6 +27,11 @@ public final class SellCommand {
 					MarketScreens.openMarket(player, 0);
 					return 1;
 				})
+				.then(CommandManager.literal("help")
+						.executes(ctx -> {
+							sendHelp(ctx.getSource().getPlayerOrThrow());
+							return 1;
+						}))
 				.then(CommandManager.literal("list")
 						.executes(ctx -> {
 							ServerPlayerEntity player = ctx.getSource().getPlayerOrThrow();
@@ -34,7 +40,9 @@ public final class SellCommand {
 						}))
 				.then(CommandManager.literal("buy")
 						.then(CommandManager.argument("id", StringArgumentType.string())
-								.executes(ctx -> executeBuy(ctx.getSource().getPlayerOrThrow(), StringArgumentType.getString(ctx, "id")))))
+								.executes(ctx -> executeBuy(
+										ctx.getSource().getPlayerOrThrow(),
+										StringArgumentType.getString(ctx, "id")))))
 				.then(CommandManager.literal("cancel")
 						.then(CommandManager.argument("id", StringArgumentType.greedyString())
 								.executes(ctx -> {
@@ -44,7 +52,9 @@ public final class SellCommand {
 									try {
 										id = UUID.fromString(raw.trim());
 									} catch (IllegalArgumentException e) {
-										player.sendMessage(Text.literal("Неверный ID лота (UUID).").formatted(Formatting.RED), false);
+										player.sendMessage(
+												Text.literal("Неверный ID лота (UUID).").formatted(Formatting.RED),
+												false);
 										return 0;
 									}
 									var listing = IsnixMarketMod.listings().find(id).orElse(null);
@@ -55,6 +65,33 @@ public final class SellCommand {
 									ListingCancelService.cancel(player, id);
 									return 1;
 								}))));
+	}
+
+	private static void sendHelp(ServerPlayerEntity player) {
+		MarketConfig.MarketConfigData cfg = MarketConfig.get();
+		player.sendMessage(
+				Text.literal("═══ Рынок ISNIX (/sell) ═══").formatted(Formatting.DARK_GREEN, Formatting.BOLD),
+				false);
+		player.sendMessage(
+				Text.literal("/sell").formatted(Formatting.GREEN)
+						.append(Text.literal(" — открыть рынок (ЛКМ купить, Shift+ПКМ снять свой лот)")
+								.formatted(Formatting.GRAY)),
+				false);
+		player.sendMessage(
+				Text.literal("/sell list").formatted(Formatting.GREEN)
+						.append(Text.literal(" — выставить лот: товар и цена из инвентаря")
+								.formatted(Formatting.GRAY)),
+				false);
+		player.sendMessage(
+				Text.literal("Лимит: ").formatted(Formatting.GRAY)
+						.append(Text.literal(cfg.maxListingsPerPlayer + " лотов на игрока, срок "
+								+ cfg.listingsExpireDays + " дн.")
+								.formatted(Formatting.WHITE)),
+				false);
+		player.sendMessage(
+				Text.literal("Оплата только предметами — монет на сервере нет.")
+						.formatted(Formatting.YELLOW),
+				false);
 	}
 
 	private static int executeBuy(ServerPlayerEntity player, String rawId) {

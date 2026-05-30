@@ -54,6 +54,7 @@ lp group default permission set essentialcommands.randomteleport true
 
 /sell
 /sell list
+/sell help
 /sell cancel <uuid>
 /sell buy <uuid>
 
