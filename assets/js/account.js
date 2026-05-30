@@ -158,11 +158,63 @@
 	}
 
 	function avatarUrl(nick, size) {
+		if (window.IsnixAuth && IsnixAuth.elySkinUrl) {
+			return IsnixAuth.elySkinUrl(nick)
+		}
+		return (
+			'https://skinsystem.ely.by/skins/' +
+			encodeURIComponent((nick || '').trim()) +
+			'.png'
+		)
+	}
+
+	function avatarFallbackUrl(nick, size) {
+		if (window.IsnixAuth && IsnixAuth.mcHeadAvatarFallbackUrl) {
+			return IsnixAuth.mcHeadAvatarFallbackUrl(nick, size)
+		}
 		return (
 			'https://mc-heads.net/avatar/' +
-			encodeURIComponent(nick) +
+			encodeURIComponent((nick || '').trim()) +
 			'/' +
 			(size || 48)
+		)
+	}
+
+	function playerHeadHtml(name, size) {
+		var s = size || 32
+		var enc = encodeURIComponent(name)
+		var skin = avatarUrl(name, s)
+		var fb = avatarFallbackUrl(name, s)
+		var scale = s / 8
+		var skinDim = 64 * scale
+		return (
+			'<span class="ely-head-wrap auth-player-head-wrap" style="width:' +
+			s +
+			'px;height:' +
+			s +
+			'px">' +
+			'<img class="auth-player-head ely-head-from-skin" src="' +
+			skin +
+			'" width="' +
+			s +
+			'" height="' +
+			s +
+			'" alt="" loading="lazy" decoding="async" style="width:' +
+			skinDim +
+			'px;height:' +
+			skinDim +
+			'px;margin-left:' +
+			-8 * scale +
+			'px;margin-top:' +
+			-8 * scale +
+			'px" onerror="this.onerror=null;this.classList.remove(\'ely-head-from-skin\');this.style.width=\'' +
+			s +
+			'px\';this.style.height=\'' +
+			s +
+			'px\';this.style.marginLeft=\'\';this.style.marginTop=\'\';this.src=\'' +
+			fb +
+			'\'" />' +
+			'</span>'
 		)
 	}
 
@@ -172,11 +224,10 @@
 		if (!img || !fallback) return
 		var v = (nick || '').trim()
 		if (v && IsnixAuth && IsnixAuth.MC_NICK_RE.test(v)) {
-			img.src = avatarUrl(v, 48)
-			img.onerror = function () {
-				img.onerror = null
-				img.src =
-					'https://mc-heads.net/avatar/' + encodeURIComponent(v) + '/48'
+			if (IsnixAuth.applyElyHeadToImg) {
+				IsnixAuth.applyElyHeadToImg(img, v, 48)
+			} else {
+				img.src = avatarUrl(v, 48)
 			}
 			img.alt = v
 			img.hidden = false
@@ -1188,14 +1239,9 @@
 		var name = playerNick(nick)
 		if (!name) return ''
 		var safe = escapeHtml(name)
-		var enc = encodeURIComponent(name)
 		return (
 			'<div class="auth-player-row">' +
-			'<img class="auth-player-head" src="' +
-			avatarUrl(name, 32) +
-			'" width="32" height="32" alt="" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=\'https://mc-heads.net/avatar/' +
-			enc +
-			'/32\'" />' +
+			playerHeadHtml(name, 32) +
 			'<div class="auth-player-info"><strong>' +
 			safe +
 			'</strong>' +

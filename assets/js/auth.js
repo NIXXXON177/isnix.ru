@@ -1075,13 +1075,49 @@
 		}
 	}
 
-	function mcHeadAvatarUrl(nick, size) {
+	var ELY_SKIN_BASE = 'https://skinsystem.ely.by/skins/'
+
+	function elySkinUrl(nick) {
+		return ELY_SKIN_BASE + encodeURIComponent((nick || '').trim()) + '.png'
+	}
+
+	function mcHeadAvatarFallbackUrl(nick, size) {
 		return (
 			'https://mc-heads.net/avatar/' +
-			encodeURIComponent(nick) +
+			encodeURIComponent((nick || '').trim()) +
 			'/' +
-			(size || 40)
+			(size || 48)
 		)
+	}
+
+	/** Обрезка лица из PNG скина Ely.by (64×64) в контейнере .ely-head-wrap */
+	function applyElyHeadToImg(img, nick, sizePx) {
+		if (!img) return
+		var s = Math.max(8, Number(sizePx) || 48)
+		var nickTrim = (nick || '').trim()
+		var wrap = img.parentElement
+		if (wrap) wrap.classList.add('ely-head-wrap')
+		var scale = s / 8
+		var skinDim = 64 * scale
+		img.classList.add('ely-head-from-skin')
+		img.src = elySkinUrl(nickTrim)
+		img.style.width = skinDim + 'px'
+		img.style.height = skinDim + 'px'
+		img.style.marginLeft = -8 * scale + 'px'
+		img.style.marginTop = -8 * scale + 'px'
+		img.onerror = function () {
+			img.onerror = null
+			img.classList.remove('ely-head-from-skin')
+			img.style.width = s + 'px'
+			img.style.height = s + 'px'
+			img.style.marginLeft = ''
+			img.style.marginTop = ''
+			img.src = mcHeadAvatarFallbackUrl(nickTrim, s)
+		}
+	}
+
+	function mcHeadAvatarUrl(nick, size) {
+		return elySkinUrl(nick)
 	}
 
 	function closeMobileNavMenu() {
@@ -1159,7 +1195,7 @@
 
 		if (avatarImg && avatarFb) {
 			if (nick && MC_NICK_RE.test(nick)) {
-				avatarImg.src = mcHeadAvatarUrl(nick, 40)
+				applyElyHeadToImg(avatarImg, nick, 40)
 				avatarImg.alt = nick
 				avatarImg.hidden = false
 				avatarFb.hidden = true
@@ -1324,5 +1360,9 @@
 		clearSupabaseBackoff: clearSupabaseBackoff,
 		SITE_PRESENCE_ONLINE_MS: SITE_PRESENCE_ONLINE_MS,
 		MC_NICK_RE: MC_NICK_RE,
+		elySkinUrl: elySkinUrl,
+		applyElyHeadToImg: applyElyHeadToImg,
+		mcHeadAvatarFallbackUrl: mcHeadAvatarFallbackUrl,
+		mcHeadAvatarUrl: mcHeadAvatarUrl,
 	}
 })(window)

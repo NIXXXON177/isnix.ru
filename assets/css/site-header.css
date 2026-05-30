@@ -184,6 +184,13 @@
 		image-rendering: pixelated;
 	}
 
+	.nav-drawer-auth__avatar.ely-head-from-skin {
+		width: auto;
+		height: auto;
+		max-width: none;
+		object-fit: none;
+	}
+
 	.nav-drawer-auth__avatar-fallback {
 		display: flex;
 		align-items: center;

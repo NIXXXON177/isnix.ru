@@ -314,11 +314,25 @@
 	flex: 1 1 auto;
 }
 
+.ely-head-wrap {
+	overflow: hidden;
+	flex-shrink: 0;
+	border-radius: var(--radius-sm);
+}
+
+.ely-head-wrap > .ely-head-from-skin {
+	display: block;
+	max-width: none;
+	object-fit: none;
+	image-rendering: pixelated;
+}
+
 .account-user-bar__avatar-wrap {
 	position: relative;
 	width: 48px;
 	height: 48px;
 	flex-shrink: 0;
+	overflow: hidden;
 }
 
 .account-user-bar__avatar {
@@ -328,6 +342,11 @@
 	image-rendering: pixelated;
 	border: 2px solid rgba(74, 222, 128, 0.35);
 	display: block;
+}
+
+.account-user-bar__avatar.ely-head-from-skin {
+	max-width: none;
+	object-fit: none;
 }
 
 .account-user-bar__avatar-fallback {
@@ -1128,12 +1147,14 @@
 	background: var(--surface2);
 }
 
-.auth-player-head {
-	width: 32px;
-	height: 32px;
+.auth-player-head-wrap {
 	border-radius: 4px;
+	border: 1px solid var(--border);
+}
+
+.auth-player-head {
+	border-radius: 0;
 	image-rendering: pixelated;
-	flex-shrink: 0;
 }
 
 .auth-player-info {
