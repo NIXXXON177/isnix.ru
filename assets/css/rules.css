@@ -1,0 +1,79 @@
+.rules-page main {
+	max-width: 52rem;
+	margin: 0 auto;
+	padding: 2rem 1.25rem 4rem;
+}
+
+.rules-page .rules-doc__meta {
+	font-size: 0.85rem;
+	color: var(--muted);
+	margin-bottom: 2rem;
+	line-height: 1.6;
+}
+
+.rules-page .rules-doc__lead {
+	font-size: 1rem;
+	color: var(--text);
+	line-height: 1.7;
+	margin-bottom: 2.5rem;
+	padding: 1.25rem 1.5rem;
+	background: var(--surface);
+	border: 1px solid var(--border);
+	border-left: 3px solid var(--green);
+}
+
+.rules-page .rules-doc h2 {
+	font-family: 'Cinzel', serif;
+	font-size: 1.15rem;
+	color: var(--green);
+	margin: 2.25rem 0 1rem;
+}
+
+.rules-page .rules-doc h3 {
+	font-size: 0.95rem;
+	color: var(--text);
+	margin: 1.25rem 0 0.5rem;
+	font-weight: 700;
+}
+
+.rules-page .rules-doc p,
+.rules-page .rules-doc li {
+	font-size: 0.9rem;
+	color: var(--muted);
+	line-height: 1.65;
+}
+
+.rules-page .rules-doc ul {
+	margin: 0.5rem 0 1rem;
+	padding-left: 1.25rem;
+}
+
+.rules-page .rules-doc__back {
+	display: inline-block;
+	margin-bottom: 1.5rem;
+	font-size: 0.85rem;
+	color: var(--green);
+}
+
+.rules-page .rules-doc__back:hover {
+	text-decoration: underline;
+}
+
+.rules-page .rules-doc__table {
+	width: 100%;
+	font-size: 0.85rem;
+	margin-top: 1.5rem;
+	border-collapse: collapse;
+}
+
+.rules-page .rules-doc__table td {
+	padding: 0.5rem 0.75rem;
+	border: 1px solid var(--border);
+	color: var(--muted);
+}
+
+.rules-page .rules-doc__table td:first-child {
+	color: var(--green);
+	font-weight: 600;
+	white-space: nowrap;
+}
