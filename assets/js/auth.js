@@ -1102,24 +1102,48 @@
 		)
 	}
 
-	function clearElyHeadCrop(img, sizePx) {
-		var s = Math.max(8, Number(sizePx) || 48)
-		img.classList.remove('ely-head-from-skin')
-		img.style.width = s + 'px'
-		img.style.height = s + 'px'
-		img.style.marginLeft = ''
-		img.style.marginTop = ''
+	function clearElyHeadBg(wrap) {
+		if (!wrap) return
+		wrap.classList.remove('ely-head-wrap--skin')
+		wrap.style.backgroundImage = ''
+		wrap.style.backgroundSize = ''
+		wrap.style.backgroundPosition = ''
+		wrap.style.backgroundRepeat = ''
+		wrap.style.imageRendering = ''
 	}
 
-	function applyElyHeadCrop(img, sizePx) {
+	function clearElyHeadCrop(img, sizePx) {
 		var s = Math.max(8, Number(sizePx) || 48)
+		var wrap = img.parentElement
+		clearElyHeadBg(wrap)
+		img.classList.remove('ely-head-from-skin')
+		img.style.display = ''
+		img.style.width = ''
+		img.style.height = ''
+		img.style.marginLeft = ''
+		img.style.marginTop = ''
+		img.removeAttribute('width')
+		img.removeAttribute('height')
+	}
+
+	/** Лицо 8×8 из текстуры 64×64 через background (img width/height ломали кроп) */
+	function applyElyHeadBg(wrap, img, url, sizePx, sheetSize) {
+		var s = Math.max(8, Number(sizePx) || 48)
+		var sheet = sheetSize >= 128 ? 128 : 64
 		var scale = s / 8
-		var skinDim = 64 * scale
-		img.classList.add('ely-head-from-skin')
-		img.style.width = skinDim + 'px'
-		img.style.height = skinDim + 'px'
-		img.style.marginLeft = -8 * scale + 'px'
-		img.style.marginTop = -8 * scale + 'px'
+		var dim = sheet * scale
+		var offset = 8 * scale
+		if (wrap) {
+			wrap.classList.add('ely-head-wrap', 'ely-head-wrap--skin')
+			wrap.style.backgroundImage = 'url(' + JSON.stringify(String(url)) + ')'
+			wrap.style.backgroundSize = dim + 'px ' + dim + 'px'
+			wrap.style.backgroundPosition = -offset + 'px ' + -offset + 'px'
+			wrap.style.backgroundRepeat = 'no-repeat'
+			wrap.style.imageRendering = 'pixelated'
+		}
+		img.classList.remove('ely-head-from-skin')
+		img.style.display = 'none'
+		img.removeAttribute('src')
 	}
 
 	var elySkinHasCache = Object.create(null)
@@ -1170,16 +1194,21 @@
 		clearElyHeadCrop(img, s)
 		probeElySkinHas(nickTrim).then(function (has) {
 			if (!img.isConnected) return
-			if (has) {
-				applyElyHeadCrop(img, s)
-				img.onerror = function () {
-					img.onerror = null
-					applyMcHeadFallback(img, nickTrim, s)
-				}
-				img.src = elyUrl
-			} else {
+			if (!has) {
+				applyMcHeadFallback(img, nickTrim, s)
+				return
+			}
+			var probe = new Image()
+			probe.onload = function () {
+				if (!img.isConnected) return
+				var sheet =
+					probe.naturalWidth >= 128 || probe.naturalHeight >= 128 ? 128 : 64
+				applyElyHeadBg(wrap, img, elyUrl, s, sheet)
+			}
+			probe.onerror = function () {
 				applyMcHeadFallback(img, nickTrim, s)
 			}
+			probe.src = elyUrl
 		})
 	}
 

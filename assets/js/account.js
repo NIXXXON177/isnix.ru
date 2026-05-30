@@ -192,11 +192,7 @@
 			'px;height:' +
 			s +
 			'px">' +
-			'<img class="auth-player-head" width="' +
-			s +
-			'" height="' +
-			s +
-			'" alt="" loading="eager" decoding="async" data-ely-nick="' +
+			'<img class="auth-player-head" alt="" loading="eager" decoding="async" data-ely-nick="' +
 			safe +
 			'" data-ely-size="' +
 			s +

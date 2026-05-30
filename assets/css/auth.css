@@ -318,6 +318,17 @@
 	overflow: hidden;
 	flex-shrink: 0;
 	border-radius: var(--radius-sm);
+	position: relative;
+	display: block;
+}
+
+.ely-head-wrap--skin {
+	background-color: rgba(0, 0, 0, 0.25);
+}
+
+.ely-head-wrap--skin > img,
+.ely-head-wrap--skin > .auth-player-head {
+	display: none !important;
 }
 
 .ely-head-wrap > .ely-head-from-skin {
@@ -325,6 +336,10 @@
 	max-width: none;
 	object-fit: none;
 	image-rendering: pixelated;
+}
+
+.auth-player-head-wrap.ely-head-wrap {
+	overflow: hidden;
 }
 
 .account-user-bar__avatar-wrap {
