@@ -1,0 +1,19 @@
+{
+	"name": "ISTHISNIXXXON — isnix.ru",
+	"short_name": "ISNIX",
+	"description": "Ванильный Minecraft-сервер: кабинет, вайтлист, обращения и новости.",
+	"start_url": "/",
+	"scope": "/",
+	"display": "standalone",
+	"background_color": "#0a0f0a",
+	"theme_color": "#0a0f0a",
+	"lang": "ru",
+	"icons": [
+		{
+			"src": "/favicon.svg",
+			"sizes": "any",
+			"type": "image/svg+xml",
+			"purpose": "any"
+		}
+	]
+}

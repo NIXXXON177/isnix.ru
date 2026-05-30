@@ -9,8 +9,14 @@
 			content="ISTHISNIXXXON — уютный ванильный Minecraft сервер без доната. Java 1.21.1, Fabric, whitelist."
 		/>
 		<meta name="theme-color" content="#0a0f0a" />
+		<meta name="mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-title" content="ISNIX" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 		<link rel="canonical" href="https://isnix.ru/" />
+		<link rel="manifest" href="manifest.webmanifest" />
 		<link rel="icon" href="favicon.svg" type="image/svg+xml" />
+		<link rel="apple-touch-icon" href="favicon.svg" />
 		<link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
 		<meta property="og:type" content="website" />
 		<meta property="og:url" content="https://isnix.ru/" />
@@ -31,7 +37,7 @@
 			rel="stylesheet"
 		/>
 		<link rel="stylesheet" href="assets/css/main.css?v=2" />
-		<link rel="stylesheet" href="assets/css/components.css" />
+		<link rel="stylesheet" href="assets/css/components.css?v=2" />
 		<link rel="stylesheet" href="assets/css/site-header.css?v=2" />
 		<link rel="stylesheet" href="assets/css/rules.css?v=2" />
 	</head>
@@ -1692,6 +1698,78 @@
 		<div class="divider"></div>
 
 		<section
+			id="install-app"
+			class="section reveal install-app-section"
+			aria-labelledby="install-app-title"
+		>
+			<div class="s-header">
+				<div class="s-eyebrow">Удобство</div>
+				<h2 id="install-app-title" class="s-title">Сайт как приложение</h2>
+				<p class="s-desc">
+					Добавь <strong class="text-strong">isnix.ru</strong> на главный экран телефона
+					или в панель задач — откроется как отдельное приложение: кабинет, заявка в
+					вайтлист и обращения без лишних вкладок браузера.
+				</p>
+			</div>
+			<div class="install-app-grid">
+				<article class="install-app-card panel-card">
+					<div class="install-app-card__head">
+						<span class="install-app-card__icon" aria-hidden="true">📱</span>
+						<h3 class="install-app-card__title">iPhone и iPad</h3>
+					</div>
+					<p class="install-app-card__browser">Safari</p>
+					<ol class="install-app-steps">
+						<li>Открой <strong>isnix.ru</strong> в Safari.</li>
+						<li>
+							Нажми <strong>Поделиться</strong>
+							<span class="install-app-steps__glyph" aria-hidden="true">□↑</span>.
+						</li>
+						<li>Выбери <strong>«На экран „Домой“»</strong> → <strong>Добавить</strong>.</li>
+					</ol>
+				</article>
+				<article class="install-app-card panel-card">
+					<div class="install-app-card__head">
+						<span class="install-app-card__icon" aria-hidden="true">🤖</span>
+						<h3 class="install-app-card__title">Android</h3>
+					</div>
+					<p class="install-app-card__browser">Chrome или Яндекс Браузер</p>
+					<ol class="install-app-steps">
+						<li>Открой <strong>isnix.ru</strong>.</li>
+						<li>
+							Меню <strong>⋮</strong> (три точки) →
+							<strong>«Установить приложение»</strong> или
+							<strong>«Добавить на главный экран»</strong>.
+						</li>
+						<li>Подтверди установку — появится иконка <strong>ISNIX</strong>.</li>
+					</ol>
+				</article>
+				<article class="install-app-card panel-card install-app-card--wide">
+					<div class="install-app-card__head">
+						<span class="install-app-card__icon" aria-hidden="true">🖥</span>
+						<h3 class="install-app-card__title">Компьютер</h3>
+					</div>
+					<p class="install-app-card__browser">Chrome, Edge, Яндекс Браузер</p>
+					<ol class="install-app-steps">
+						<li>Открой <strong>isnix.ru</strong>.</li>
+						<li>
+							В адресной строке нажми иконку
+							<strong>«Установить»</strong> или меню →
+							<strong>«Установить isnix.ru…»</strong>.
+						</li>
+						<li>Сайт откроется в отдельном окне, как программа.</li>
+					</ol>
+				</article>
+			</div>
+			<p class="install-app-note">
+				Это не App Store и не Google Play — ярлык на сайт. Обновления подтягиваются сами при
+				открытии. Для игры в Minecraft по-прежнему нужен
+				<a href="how-to-play.html">клиент и сборка</a>.
+			</p>
+		</section>
+
+		<div class="divider"></div>
+
+		<section
 			id="join-server"
 			class="section reveal join-section"
 			aria-labelledby="join-server-title"
@@ -1760,6 +1838,7 @@
 							<li><a href="#shop">Магазин</a></li>
 							<li><a href="rules.html">Правила</a></li>
 							<li><a href="account.html">Аккаунт</a></li>
+							<li><a href="#install-app">Сайт как приложение</a></li>
 							<li><a href="#join-server">Как попасть</a></li>
 						</ul>
 					</nav>
