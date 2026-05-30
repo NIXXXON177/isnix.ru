@@ -73,29 +73,25 @@ async function proxyElySkin(url, allowOrigin, method) {
 	const texRes = await fetch(
 		`https://skinsystem.ely.by/textures/${encodeURIComponent(nick)}?version=2`,
 	)
-	if (!texRes.ok) {
-		return new Response(null, {
-			status: texRes.status === 204 ? 404 : texRes.status,
-			headers: { 'Access-Control-Allow-Origin': allowOrigin },
-		})
+	if (!texRes.ok || texRes.status === 204) {
+		return elySkinMiss(allowOrigin)
+	}
+
+	const texBody = await texRes.text()
+	if (!texBody || !texBody.trim()) {
+		return elySkinMiss(allowOrigin)
 	}
 
 	let data
 	try {
-		data = await texRes.json()
+		data = JSON.parse(texBody)
 	} catch (_e) {
-		return new Response(null, {
-			status: 502,
-			headers: { 'Access-Control-Allow-Origin': allowOrigin },
-		})
+		return elySkinMiss(allowOrigin)
 	}
 
 	const raw = data && data.SKIN && data.SKIN.url
 	if (!raw) {
-		return new Response(null, {
-			status: 404,
-			headers: { 'Access-Control-Allow-Origin': allowOrigin },
-		})
+		return elySkinMiss(allowOrigin)
 	}
 
 	if (method === 'HEAD') {
@@ -127,6 +123,16 @@ async function proxyElySkin(url, allowOrigin, method) {
 
 const DEFAULT_ALLOW_HEADERS =
 	'accept-profile, apikey, authorization, content-profile, content-type, prefer, range, x-client-info, x-retry-count, x-supabase-api-version, x-upsert'
+
+function elySkinMiss(allowOrigin) {
+	return new Response(null, {
+		status: 404,
+		headers: {
+			'Access-Control-Allow-Origin': allowOrigin,
+			'Cache-Control': 'public, max-age=300',
+		},
+	})
+}
 
 function corsHeaders(allowOrigin, requestHeaders) {
 	return {
