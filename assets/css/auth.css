@@ -117,6 +117,24 @@
 	background: linear-gradient(165deg, rgba(20, 28, 20, 0.95), rgba(15, 22, 15, 0.85));
 }
 
+.auth-panel__subtitle {
+	font-size: 0.95rem;
+	font-weight: 700;
+	color: var(--text);
+	margin: 1.5rem 0 0.75rem;
+}
+
+.auth-form select {
+	width: 100%;
+	padding: 0.65rem 0.75rem;
+	border-radius: var(--radius-sm);
+	border: 1px solid var(--border2);
+	background: rgba(0, 0, 0, 0.25);
+	color: var(--text);
+	font-family: inherit;
+	font-size: 0.9rem;
+}
+
 .auth-panel__title {
 	font-family: 'Cinzel', serif;
 	font-size: 0.92rem;

@@ -10,7 +10,8 @@
 |----------|-----|
 | Вход | https://isnix.ru/account.html |
 | Панель заявок | https://isnix.ru/account.html#admin → вкладка **Заявки** |
-| Техподдержка игрокам | https://isnix.ru/support.html — направляй сюда, **не в ВК/TG** |
+| Техподдержка игрокам | https://isnix.ru/support.html — направляй в [кабинет → Обращения](https://isnix.ru/account.html#support), **не в ВК/TG** |
+| Жалобы / баги | https://isnix.ru/account.html#support — вкладка **Обращения** у админов |
 
 ### Заявки в вайтлист
 
@@ -71,6 +72,7 @@ OP (если нужно):
 op afktapochek
 op ISTHISNIXXXON
 op NikenER999
+op daydonik
 ```
 
 ### LuckPerms — farmila52: [Гл. Админ] (priority 250)
@@ -112,9 +114,20 @@ lp user <ник> meta clear prefix
 
 ### TAB
 
+После правки `config/tab/*.yml` достаточно **рестарта** сервера. Reload:
+
 ```text
 /tab reload
 ```
+
+Только из **консоли панели** или у **OP (уровень 4)**. Если в чате «Unknown command» на `reload` — выдай право:
+
+```text
+lp group admin permission set tab.admin true
+lp sync
+```
+
+В игре без OP: `/tab reload` не сработает (Fabric + LuckPerms).
 
 ### Styled Chat (если дубли префикса в чате)
 
@@ -132,6 +145,7 @@ lp user <ник> meta clear prefix
 |---------|----------|
 | `/sell` | Открыть рынок |
 | `/sell list` | Выставить лот |
+| `/sell help` | Подсказка в чат |
 | `/sell cancel <uuid>` | Снять свой лот |
 | `/sell buy <uuid>` | Купить по ID |
 

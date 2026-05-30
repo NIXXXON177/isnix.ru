@@ -415,7 +415,25 @@
 			return 'Ответ слишком короткий (минимум 3 символа).'
 		}
 		if (/Could not find the function|PGRST202/i.test(msg)) {
-			return 'На сервере не включён диалог по заявкам. Выполни в Supabase SQL из docs/supabase-whitelist-dialog.sql.'
+			return 'Обращения на сайте ещё не включены. В Supabase SQL Editor выполни docs/supabase-support-tickets.sql (и docs/supabase-whitelist-dialog.sql для заявок).'
+		}
+		if (/support_tickets|PGRST205.*support/i.test(msg)) {
+			return 'Таблица обращений не создана. Выполни в Supabase: docs/supabase-support-tickets.sql'
+		}
+		if (/subject_too_short/i.test(msg)) {
+			return 'Тема обращения слишком короткая (минимум 3 символа).'
+		}
+		if (/body_too_short/i.test(msg)) {
+			return 'Текст слишком короткий.'
+		}
+		if (/ticket_closed/i.test(msg)) {
+			return 'Обращение уже закрыто.'
+		}
+		if (/wait_for_admin/i.test(msg)) {
+			return 'Дождись ответа администрации.'
+		}
+		if (/invalid_category/i.test(msg)) {
+			return 'Выбери тип обращения из списка.'
 		}
 		if (isNotificationTriggerError(err)) {
 			return (
@@ -1027,6 +1045,99 @@
 		return res.data
 	}
 
+	function isMissingSupportTables(err) {
+		var msg = errorText(err)
+		return (
+			err &&
+			(err.code === 'PGRST205' ||
+				err.code === '42P01' ||
+				/support_tickets|support_messages/i.test(msg))
+		)
+	}
+
+	async function getSupportTickets(asAdmin) {
+		var sb = getClient()
+		if (!sb) throw new Error('Нет подключения')
+		var q = sb
+			.from('support_tickets')
+			.select(
+				'id, user_id, category, subject, offender_nick, evidence_url, status, created_at, updated_at',
+			)
+			.order('updated_at', { ascending: false })
+			.limit(asAdmin ? 200 : 50)
+		if (!asAdmin) {
+			var session = await getSession()
+			if (!session) throw new Error('not_authenticated')
+			q = q.eq('user_id', session.user.id)
+		}
+		var res = await q
+		if (res.error) {
+			if (isMissingSupportTables(res.error)) {
+				return []
+			}
+			throw res.error
+		}
+		return res.data || []
+	}
+
+	async function getSupportMessages(ticketId) {
+		var sb = getClient()
+		if (!sb) throw new Error('Нет подключения')
+		var res = await sb
+			.from('support_messages')
+			.select('id, ticket_id, author_id, body, is_staff, created_at')
+			.eq('ticket_id', ticketId)
+			.order('created_at', { ascending: true })
+		if (res.error) {
+			if (isMissingSupportTables(res.error)) return []
+			throw res.error
+		}
+		return res.data || []
+	}
+
+	async function createSupportTicket(payload) {
+		var sb = getClient()
+		if (!sb) throw new Error('Нет подключения')
+		var res = await sb.rpc('create_support_ticket', {
+			p_category: payload.category,
+			p_subject: payload.subject,
+			p_body: payload.body,
+			p_offender_nick: payload.offender_nick || null,
+			p_evidence_url: payload.evidence_url || null,
+		})
+		if (res.error) throw res.error
+		return res.data
+	}
+
+	async function addSupportMessage(ticketId, body) {
+		var sb = getClient()
+		if (!sb) throw new Error('Нет подключения')
+		var res = await sb.rpc('add_support_message', {
+			p_ticket_id: ticketId,
+			p_body: (body || '').trim(),
+		})
+		if (res.error) throw res.error
+	}
+
+	async function adminReplySupportTicket(ticketId, body) {
+		var sb = getClient()
+		if (!sb) throw new Error('Нет подключения')
+		var res = await sb.rpc('admin_reply_support_ticket', {
+			p_ticket_id: ticketId,
+			p_body: (body || '').trim(),
+		})
+		if (res.error) throw res.error
+	}
+
+	async function closeSupportTicket(ticketId) {
+		var sb = getClient()
+		if (!sb) throw new Error('Нет подключения')
+		var res = await sb.rpc('close_support_ticket', {
+			p_ticket_id: ticketId,
+		})
+		if (res.error) throw res.error
+	}
+
 	async function getAdminProfiles() {
 		var sb = getClient()
 		if (!sb) return []
@@ -1438,6 +1549,12 @@
 		sendAdminApplicationMessage: sendAdminApplicationMessage,
 		submitApplicantReply: submitApplicantReply,
 		moderateApplication: moderateApplication,
+		getSupportTickets: getSupportTickets,
+		getSupportMessages: getSupportMessages,
+		createSupportTicket: createSupportTicket,
+		addSupportMessage: addSupportMessage,
+		adminReplySupportTicket: adminReplySupportTicket,
+		closeSupportTicket: closeSupportTicket,
 		submitApplication: submitApplication,
 		validateWhitelistApplicationData: validateWhitelistApplicationData,
 		getNotifications: getNotifications,

@@ -1192,10 +1192,16 @@
 		var appsEl = document.getElementById('adminViewApplications')
 		var serverEl = document.getElementById('adminViewServer')
 		var usersEl = document.getElementById('adminViewUsers')
+		var supportEl = document.getElementById('adminViewSupport')
 		if (appsEl) appsEl.hidden = adminView !== 'applications'
 		if (serverEl) serverEl.hidden = adminView !== 'server'
 		if (usersEl) usersEl.hidden = adminView !== 'users'
+		if (supportEl) supportEl.hidden = adminView !== 'support'
 		if (!IsnixAuth || !IsnixAuth.isAdminProfile(currentProfile)) return
+		if (adminView === 'support' && window.IsnixSupportTickets) {
+			IsnixSupportTickets.onAdminView('support')
+			return
+		}
 		if (adminView === 'applications') {
 			if (!adminListsLoaded.applications) {
 				adminListsLoaded.applications = true
@@ -1621,6 +1627,7 @@
 
 	function showGuest() {
 		setAccountPageMode(false)
+		if (window.IsnixSupportTickets) IsnixSupportTickets.onGuest()
 		if (setupNotice) setupNotice.hidden = true
 		if (authPanels) authPanels.hidden = false
 		if (dashboard) dashboard.hidden = true
@@ -2149,8 +2156,15 @@
 					if (IsnixAuth.isAdminProfile(profile)) {
 						startAdminPendingPoll()
 						deferAccountTask(function () {
-							switchAdminView(adminView)
+							if (window.location.hash === '#admin-support') {
+								switchAdminView('support')
+							} else {
+								switchAdminView(adminView)
+							}
 						}, 150)
+					}
+					if (window.IsnixSupportTickets) {
+						IsnixSupportTickets.onDashboard(userId, profile)
 					}
 					deferAccountTask(function () {
 						refreshPlayerStatus(false)
@@ -2166,6 +2180,10 @@
 			deferAccountTask(function () {
 				startNotificationsPoll(userId)
 			}, 400)
+
+			if (window.IsnixSupportTickets) {
+				IsnixSupportTickets.onDashboard(userId, quickProfile)
+			}
 
 			if (!IsnixAuth.isAdminProfile(quickProfile)) {
 				renderApplications(userId)

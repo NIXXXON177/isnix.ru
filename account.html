@@ -136,8 +136,8 @@
 					<p class="account-hero__eyebrow">Личный кабинет</p>
 					<h1 class="account-hero__title" id="accountHeroTitle">Аккаунт</h1>
 					<p class="account-hero__lead" id="accountHeroLead">
-						Войди или зарегистрируйся, чтобы подать заявку в вайтлист и следить за
-						статусом.
+						Войди или зарегистрируйся: вайтлист, личные обращения к администрации
+						(жалобы, баги) и уведомления — только на сайте.
 					</p>
 					<ul class="account-hero__hints" id="accountHeroHints" hidden>
 						<li>Обычный чат слышат рядом</li>
@@ -343,7 +343,7 @@
 					</div>
 
 					<section id="adminPanel" class="auth-admin-panel" hidden>
-						<h2 class="auth-section-title" id="admin">Панель администрации</h2>
+						<h2 class="auth-section-title" id="admin-support">Панель администрации</h2>
 						<div class="auth-admin-tabs auth-admin-tabs--main" role="tablist">
 							<button
 								type="button"
@@ -363,6 +363,9 @@
 							</button>
 							<button type="button" class="auth-admin-tab" data-admin-view="users">
 								Аккаунты
+							</button>
+							<button type="button" class="auth-admin-tab" data-admin-view="support">
+								Обращения
 							</button>
 						</div>
 						<div id="adminViewApplications">
@@ -408,6 +411,29 @@
 								на isnix.ru в последние 2 мин.
 							</p>
 							<div id="adminUsersList"></div>
+						</div>
+						<div id="adminViewSupport" hidden>
+							<p class="auth-muted auth-admin-lead">
+								Жалобы на игроков, баги и вопросы — личный диалог с игроком. Не в ВК и
+								не в Telegram.
+							</p>
+							<div class="auth-admin-tabs" role="tablist">
+								<button
+									type="button"
+									class="auth-admin-tab auth-admin-tab--sub active"
+									data-support-filter="open"
+								>
+									Открытые
+								</button>
+								<button
+									type="button"
+									class="auth-admin-tab auth-admin-tab--sub"
+									data-support-filter="all"
+								>
+									Все
+								</button>
+							</div>
+							<div id="adminSupportList"></div>
 						</div>
 					</section>
 
@@ -517,6 +543,70 @@
 					<section class="auth-panel" id="applications">
 						<h2 class="auth-panel__title">Мои заявки</h2>
 					<div id="applicationsList"></div>
+					</section>
+
+					<section class="auth-panel" id="support" hidden>
+						<h2 class="auth-panel__title">Мои обращения</h2>
+						<p class="auth-muted auth-whitelist-lead">
+							Жалоба на игрока, баг, вопрос по аккаунту — только здесь, в личном
+							диалоге с администрацией. По возможности приложи ссылку на скрин или
+							видео (Replay Mod, NVIDIA App, OBS).
+							<a href="rules.html#rules-players">Правила §9.1</a>.
+						</p>
+						<div id="supportTicketsList"></div>
+						<h3 class="auth-panel__subtitle">Новое обращение</h3>
+						<form id="supportTicketForm" class="auth-form">
+							<div class="auth-field">
+								<label for="supportCategory">Тип</label>
+								<select id="supportCategory" required>
+									<option value="player_report">Жалоба на игрока</option>
+									<option value="bug">Баг / дюп</option>
+									<option value="account">Аккаунт / вход на сайт</option>
+									<option value="other">Другое</option>
+								</select>
+							</div>
+							<div class="auth-field">
+								<label for="supportSubject">Тема</label>
+								<input
+									id="supportSubject"
+									type="text"
+									maxlength="200"
+									required
+									placeholder="Кратко: что случилось"
+								/>
+							</div>
+							<div class="auth-field">
+								<label for="supportOffender">Ник нарушителя (если жалоба)</label>
+								<input
+									id="supportOffender"
+									type="text"
+									maxlength="16"
+									placeholder="Steve123"
+									pattern="[A-Za-z0-9_]{3,16}"
+								/>
+							</div>
+							<div class="auth-field">
+								<label for="supportEvidence">Ссылка на скрин / видео</label>
+								<input
+									id="supportEvidence"
+									type="url"
+									maxlength="500"
+									placeholder="https://… (необязательно)"
+								/>
+							</div>
+							<div class="auth-field">
+								<label for="supportBody">Описание *</label>
+								<textarea
+									id="supportBody"
+									required
+									minlength="10"
+									maxlength="4000"
+									rows="5"
+									placeholder="Что произошло, когда, ники, что нарушено…"
+								></textarea>
+							</div>
+							<button type="submit" class="auth-submit">Отправить обращение</button>
+						</form>
 					</section>
 
 					<section class="auth-panel" id="whitelist">
@@ -719,6 +809,7 @@
 		<script src="assets/js/auth.js?v=32"></script>
 		<script src="assets/js/site-presence.js?v=4" defer></script>
 		<script src="assets/js/site-header.js?v=5" defer></script>
-		<script src="assets/js/account.js?v=38"></script>
+		<script src="assets/js/support-tickets.js?v=1" defer></script>
+		<script src="assets/js/account.js?v=39"></script>
 	</body>
 </html>
