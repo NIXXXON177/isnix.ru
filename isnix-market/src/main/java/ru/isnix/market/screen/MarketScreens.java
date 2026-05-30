@@ -68,22 +68,26 @@ public final class MarketScreens {
 		return stack;
 	}
 
+	/** Кнопки GUI с CUSTOM_NAME; обычные изумруды/книги/стрелы в инвентаре не блокируем. */
 	public static boolean isDecorStack(ItemStack stack) {
 		if (stack.isEmpty()) {
 			return false;
 		}
-		var item = stack.getItem();
-		return item == Items.GRAY_STAINED_GLASS_PANE
-				|| item == Items.LIME_STAINED_GLASS_PANE
-				|| item == Items.WRITABLE_BOOK
-				|| item == Items.BOOK
-				|| item == Items.LIME_DYE
-				|| item == Items.RED_DYE
-				|| item == Items.ARROW
-				|| item == Items.SPECTRAL_ARROW
-				|| item == Items.EMERALD
-				|| item == Items.BARRIER
-				|| item == Items.PAPER;
+		var name = stack.get(net.minecraft.component.DataComponentTypes.CUSTOM_NAME);
+		if (name == null) {
+			return false;
+		}
+		String text = name.getString();
+		return text.equals("Выставить предмет")
+				|| text.equals("Подтвердить")
+				|| text.equals("Ваш товар")
+				|| text.equals("Ваша цена")
+				|| text.equals("Назад")
+				|| text.equals("След. страница")
+				|| text.equals("Пред. страница")
+				|| text.startsWith("Цена · стр. ")
+				|| text.equals("+1")
+				|| text.equals("−1");
 	}
 
 	public static ItemStack pickSaleButton() {
