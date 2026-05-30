@@ -183,7 +183,7 @@
 				meta += renderAttachmentsHtml(attachments)
 				var replyForm =
 					t.status === 'waiting_user'
-						? '<form class="auth-support-reply" data-ticket-id="' +
+						? '<form class="auth-app-reply-form" data-ticket-id="' +
 							t.id +
 							'">' +
 							'<label class="auth-dialog__label" for="support-reply-' +
@@ -191,7 +191,7 @@
 							'">Твой ответ администрации</label>' +
 							'<textarea id="support-reply-' +
 							t.id +
-							'" rows="3" maxlength="4000" required placeholder="Ответь на вопрос…"></textarea>' +
+							'" class="auth-admin-note" rows="4" maxlength="4000" required placeholder="Ответь на вопрос…"></textarea>' +
 							'<button type="submit" class="auth-submit">Отправить</button></form>'
 						: t.status === 'open'
 							? '<p class="auth-hint">Ожидай первого ответа администрации.</p>'
@@ -220,7 +220,7 @@
 					'</article>'
 			}
 			list.innerHTML = html
-			list.querySelectorAll('.auth-support-reply').forEach(function (form) {
+			list.querySelectorAll('.auth-app-reply-form[data-ticket-id]').forEach(function (form) {
 				form.addEventListener('submit', async function (e) {
 					e.preventDefault()
 					var tid = form.getAttribute('data-ticket-id')

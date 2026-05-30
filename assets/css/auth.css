@@ -1000,10 +1000,28 @@
 }
 
 .auth-app-reply-form {
-	margin-top: 0.75rem;
+	margin-top: 1rem;
+	padding-top: 1rem;
+	border-top: 1px solid var(--border);
 	display: flex;
 	flex-direction: column;
-	gap: 0.5rem;
+	gap: 0.65rem;
+}
+
+.auth-app-reply-form .auth-dialog__label {
+	display: block;
+	margin: 0;
+}
+
+.auth-app-reply-form .auth-submit {
+	margin-top: 0.15rem;
+	width: 100%;
+}
+
+.auth-admin-note:focus {
+	outline: none;
+	border-color: rgba(74, 222, 128, 0.5);
+	box-shadow: 0 0 0 2px rgba(74, 222, 128, 0.12);
 }
 
 .auth-app-reason {
