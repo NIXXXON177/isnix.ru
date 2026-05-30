@@ -131,26 +131,33 @@ public class ListingStorage {
 		}
 	}
 
-	public static Text listingLore(MarketListing listing, java.util.UUID viewerUuid) {
+	/** Отдельная строка на каждый элемент — иначе клиент показывает \\n как [LF]. */
+	public static List<Text> listingLore(MarketListing listing, java.util.UUID viewerUuid) {
 		var price = listing.priceItem();
 		var sale = listing.saleItem();
-		var lore = Text.empty()
+		List<Text> lines = new ArrayList<>();
+		lines.add(Text.empty()
 				.append(Text.literal("ID: ").formatted(Formatting.DARK_GRAY))
 				.append(Text.literal(ru.isnix.market.util.ListingMessages.shortId(listing.id()))
-						.formatted(Formatting.GOLD))
-				.append(Text.literal("\nПродавец: ").formatted(Formatting.GRAY))
-				.append(Text.literal(listing.sellerName()).formatted(Formatting.YELLOW))
-				.append(Text.literal("\nЦена: ").formatted(Formatting.GRAY))
+						.formatted(Formatting.GOLD)));
+		lines.add(Text.empty()
+				.append(Text.literal("Продавец: ").formatted(Formatting.GRAY))
+				.append(Text.literal(listing.sellerName()).formatted(Formatting.YELLOW)));
+		lines.add(Text.empty()
+				.append(Text.literal("Цена: ").formatted(Formatting.GRAY))
 				.append(Text.literal(price.getCount() + "× ").formatted(Formatting.WHITE))
-				.append(price.getName())
-				.append(Text.literal("\nЛот: ").formatted(Formatting.GRAY))
+				.append(price.getName()));
+		lines.add(Text.empty()
+				.append(Text.literal("Лот: ").formatted(Formatting.GRAY))
 				.append(Text.literal(sale.getCount() + "× ").formatted(Formatting.WHITE))
-				.append(sale.getName());
+				.append(sale.getName()));
 		if (viewerUuid != null && listing.sellerUuid().equals(viewerUuid)) {
-			lore = lore.append(Text.literal("\n\nShift+ПКМ — снять лот").formatted(Formatting.RED));
+			lines.add(Text.empty());
+			lines.add(Text.literal("Shift+ПКМ — снять лот").formatted(Formatting.RED));
 		} else {
-			lore = lore.append(Text.literal("\n\nЛКМ — купить").formatted(Formatting.GREEN));
+			lines.add(Text.empty());
+			lines.add(Text.literal("ЛКМ — купить").formatted(Formatting.GREEN));
 		}
-		return lore;
+		return lines;
 	}
 }

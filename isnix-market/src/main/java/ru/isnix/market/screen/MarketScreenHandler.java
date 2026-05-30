@@ -102,7 +102,7 @@ public class MarketScreenHandler extends GenericContainerScreenHandler {
 			ItemStack display = listing.saleItem().copy();
 			display.set(net.minecraft.component.DataComponentTypes.LORE,
 					new net.minecraft.component.type.LoreComponent(
-							java.util.List.of(ListingStorage.listingLore(listing, viewerUuid))));
+							ListingStorage.listingLore(listing, viewerUuid)));
 			inv.setStack(entry.getKey(), display);
 		}
 		for (int i = PAGE_SIZE; i < MENU_SIZE; i++) {
