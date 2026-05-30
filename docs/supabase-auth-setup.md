@@ -35,10 +35,12 @@ Authentication → Providers → **Email** — включён.
 1. Репозиторий **NIXXXON177/isnix.ru** → **Settings → Secrets and variables → Actions** → **New repository secret**:
    - Name: `SUPABASE_ANON_KEY`
    - Value: publishable key из Supabase
+   - *(опционально)* Name: `SUPABASE_URL`
+   - Value: `https://yfrlgeztbaebdapdnefy.supabase.co` или `https://api.isnix.ru` после настройки прокси (см. **[supabase-cors-proxy-ru.md](supabase-cors-proxy-ru.md)** и `cloudflare-worker/supabase-proxy.example.js`)
 2. **Settings → Pages** → **Build and deployment** → Source: **GitHub Actions**
 3. **Actions → Deploy Pages → Run workflow** (или push в `main`)
 
-Workflow подставит ключ в `auth-config.js` при деплое. В репозитории ключ не хранится.
+Workflow подставит URL и ключ в `auth-config.js` при деплое. Без `SUPABASE_URL` используется прямой адрес `*.supabase.co`.
 
 Файл **`assets/js/auth-config.js`** в git — заглушка для локальной разработки (вставь ключ вручную при тесте offline).
 

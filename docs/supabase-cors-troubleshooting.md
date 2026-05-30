@@ -6,6 +6,8 @@
 
 Чаще всего это **не баг сайта**, а сеть или настройки проекта Supabase.
 
+**Обход блокировки `*.supabase.co`:** прокси на `api.isnix.ru` + секрет `SUPABASE_URL` — **[supabase-cors-proxy-ru.md](supabase-cors-proxy-ru.md)**.
+
 ## 1. Supabase Dashboard → Authentication → URL Configuration
 
 | Поле | Значение |
