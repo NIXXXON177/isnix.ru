@@ -19,9 +19,10 @@ export default {
 			: ALLOWED_ORIGINS[0]
 
 		if (request.method === 'OPTIONS') {
+			const requested = request.headers.get('Access-Control-Request-Headers')
 			return new Response(null, {
 				status: 204,
-				headers: corsHeaders(allowOrigin),
+				headers: corsHeaders(allowOrigin, requested),
 			})
 		}
 
@@ -45,7 +46,7 @@ export default {
 
 		const response = await fetch(proxied)
 		const out = new Headers(response.headers)
-		for (const [k, v] of Object.entries(corsHeaders(allowOrigin))) {
+		for (const [k, v] of Object.entries(corsHeaders(allowOrigin, null))) {
 			out.set(k, v)
 		}
 
@@ -57,11 +58,13 @@ export default {
 	},
 }
 
-function corsHeaders(allowOrigin) {
+const DEFAULT_ALLOW_HEADERS =
+	'accept-profile, apikey, authorization, content-profile, content-type, prefer, range, x-client-info, x-retry-count, x-supabase-api-version, x-upsert'
+
+function corsHeaders(allowOrigin, requestHeaders) {
 	return {
 		'Access-Control-Allow-Origin': allowOrigin,
-		'Access-Control-Allow-Headers':
-			'apikey, authorization, content-type, x-client-info, x-supabase-api-version',
+		'Access-Control-Allow-Headers': requestHeaders || DEFAULT_ALLOW_HEADERS,
 		'Access-Control-Allow-Methods': 'GET, POST, PUT, PATCH, DELETE, OPTIONS',
 		'Access-Control-Max-Age': '86400',
 	}

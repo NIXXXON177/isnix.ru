@@ -302,7 +302,8 @@
 		rgba(22, 101, 52, 0.2) 0%,
 		rgba(15, 22, 15, 0.9) 55%
 	);
-	overflow: hidden;
+	/* overflow: visible — иначе выпадающий список уведомлений обрезается */
+	overflow: visible;
 }
 
 .account-user-bar__identity {
@@ -491,7 +492,7 @@
 	position: absolute;
 	top: calc(100% + 0.45rem);
 	right: 0;
-	z-index: 40;
+	z-index: 200;
 	width: min(20rem, calc(100vw - 2rem));
 	max-height: 18rem;
 	overflow: auto;

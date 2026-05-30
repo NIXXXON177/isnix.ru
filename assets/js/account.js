@@ -1486,10 +1486,10 @@
 		notificationsUiBound = true
 		btn.addEventListener('click', function (e) {
 			e.stopPropagation()
-			var wasOpen = !panel.hidden
-			panel.hidden = wasOpen
-			btn.setAttribute('aria-expanded', wasOpen ? 'false' : 'true')
-			if (!wasOpen) {
+			var opening = panel.hidden
+			panel.hidden = !opening
+			btn.setAttribute('aria-expanded', opening ? 'true' : 'false')
+			if (opening) {
 				requestBrowserNotificationPermission()
 					.then(function () {
 						return refreshNotifications(userId, true)
