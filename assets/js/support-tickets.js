@@ -1,5 +1,8 @@
-;(function () {
+;(function (window) {
 	'use strict'
+
+	var MAX_EVIDENCE_FILES = 5
+	var MAX_EVIDENCE_BYTES = 25 * 1024 * 1024
 
 	var supportReady = false
 	var adminSupportLoaded = false
@@ -67,6 +70,53 @@
 		return 'auth-badge auth-badge--pending'
 	}
 
+	function renderAttachmentsHtml(attachments) {
+		if (!attachments || !attachments.length) return ''
+		return (
+			'<div class="support-attachments">' +
+			'<p class="auth-dialog__label">Доказательства</p>' +
+			'<ul class="support-attachments__list">' +
+			attachments
+				.map(function (a) {
+					var name = escapeHtml(a.file_name || 'файл')
+					var url = a.signed_url || a.evidence_url || ''
+					if (!url) {
+						return '<li>' + name + '</li>'
+					}
+					var safeUrl = escapeHtml(url)
+					var isImg = (a.mime_type || '').indexOf('image/') === 0
+					var isVid = (a.mime_type || '').indexOf('video/') === 0
+					var preview = isImg
+						? '<a href="' +
+							safeUrl +
+							'" target="_blank" rel="noopener"><img class="support-attachments__thumb" src="' +
+							safeUrl +
+							'" alt="" loading="lazy" /></a>'
+						: isVid
+							? '<video class="support-attachments__video" src="' +
+								safeUrl +
+								'" controls preload="metadata"></video>'
+							: ''
+					return (
+						'<li class="support-attachments__item">' +
+						preview +
+						'<a href="' +
+						safeUrl +
+						'" target="_blank" rel="noopener noreferrer">' +
+						name +
+						'</a></li>'
+					)
+				})
+				.join('') +
+			'</ul></div>'
+		)
+	}
+
+	async function loadAttachmentsForTicket(ticketId) {
+		if (!window.IsnixAuth || !IsnixAuth.getSupportAttachments) return []
+		return IsnixAuth.getSupportAttachments(ticketId)
+	}
+
 	function renderMessages(messages) {
 		if (!messages.length) return ''
 		return messages
@@ -119,16 +169,18 @@
 			for (var i = 0; i < tickets.length; i++) {
 				var t = tickets[i]
 				var msgs = await loadMessages(t.id)
+				var attachments = await loadAttachmentsForTicket(t.id)
 				var meta = ''
 				if (t.offender_nick) {
 					meta += '<p class="auth-muted">Нарушитель: <strong>' + escapeHtml(t.offender_nick) + '</strong></p>'
 				}
 				if (t.evidence_url) {
 					meta +=
-						'<p class="auth-muted">Доказательства: <a href="' +
+						'<p class="auth-muted">Доп. ссылка: <a href="' +
 						escapeHtml(t.evidence_url) +
-						'" target="_blank" rel="noopener noreferrer">ссылка</a></p>'
+						'" target="_blank" rel="noopener noreferrer">открыть</a></p>'
 				}
+				meta += renderAttachmentsHtml(attachments)
 				var replyForm =
 					t.status === 'waiting_user'
 						? '<form class="auth-support-reply" data-ticket-id="' +
@@ -208,6 +260,7 @@
 			for (var i = 0; i < filtered.length; i++) {
 				var t = filtered[i]
 				var msgs = await loadMessages(t.id)
+				var attachments = await loadAttachmentsForTicket(t.id)
 				var meta =
 					'<p class="auth-muted">ID: ' +
 					escapeHtml(t.id.slice(0, 8)) +
@@ -219,10 +272,11 @@
 				}
 				if (t.evidence_url) {
 					meta +=
-						'<p class="auth-muted"><a href="' +
+						'<p class="auth-muted">Доп. ссылка: <a href="' +
 						escapeHtml(t.evidence_url) +
-						'" target="_blank" rel="noopener">Доказательства</a></p>'
+						'" target="_blank" rel="noopener">открыть</a></p>'
 				}
+				meta += renderAttachmentsHtml(attachments)
 				var actions =
 					t.status !== 'closed'
 						? '<div class="auth-admin-actions">' +
@@ -306,14 +360,42 @@
 			var btn = form.querySelector('button[type="submit"]')
 			if (btn) btn.disabled = true
 			try {
-				await IsnixAuth.createSupportTicket({
+				var ticketId = await IsnixAuth.createSupportTicket({
 					category: document.getElementById('supportCategory').value,
 					subject: document.getElementById('supportSubject').value,
 					body: document.getElementById('supportBody').value,
 					offender_nick: document.getElementById('supportOffender').value,
 					evidence_url: document.getElementById('supportEvidence').value,
 				})
-				showMsg('Обращение отправлено. Ожидай ответа в этом разделе.', true)
+				var fileInput = document.getElementById('supportEvidenceFiles')
+				if (
+					ticketId &&
+					fileInput &&
+					fileInput.files &&
+					fileInput.files.length &&
+					IsnixAuth.uploadSupportEvidenceFiles
+				) {
+					var up = await IsnixAuth.uploadSupportEvidenceFiles(
+						ticketId,
+						fileInput.files,
+					)
+					if (up.failed && up.failed.length) {
+						showMsg(
+							'Обращение создано, но часть файлов не загрузилась: ' +
+								up.failed.join('; '),
+							false,
+						)
+					} else if (up.uploaded > 0) {
+						showMsg(
+							'Обращение отправлено с ' + up.uploaded + ' файл(ами). Ожидай ответа.',
+							true,
+						)
+					} else {
+						showMsg('Обращение отправлено. Ожидай ответа в этом разделе.', true)
+					}
+				} else {
+					showMsg('Обращение отправлено. Ожидай ответа в этом разделе.', true)
+				}
 				form.reset()
 				await renderPlayerSupport()
 				var section = document.getElementById('support')
@@ -366,10 +448,10 @@
 		if (section) section.hidden = true
 	}
 
-	global.IsnixSupportTickets = {
+	window.IsnixSupportTickets = {
 		onDashboard: onDashboard,
 		onAdminView: onAdminView,
 		onGuest: onGuest,
 		refresh: renderPlayerSupport,
 	}
-})()
+})(window)

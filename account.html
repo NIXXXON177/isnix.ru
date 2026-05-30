@@ -549,8 +549,8 @@
 						<h2 class="auth-panel__title">Мои обращения</h2>
 						<p class="auth-muted auth-whitelist-lead">
 							Жалоба на игрока, баг, вопрос по аккаунту — только здесь, в личном
-							диалоге с администрацией. По возможности приложи ссылку на скрин или
-							видео (Replay Mod, NVIDIA App, OBS).
+							диалоге с администрацией. Приложи фото или видео (файлы ниже) и/или
+							ссылку на запись (Replay Mod, NVIDIA App, OBS).
 							<a href="rules.html#rules-players">Правила §9.1</a>.
 						</p>
 						<div id="supportTicketsList"></div>
@@ -586,7 +586,19 @@
 								/>
 							</div>
 							<div class="auth-field">
-								<label for="supportEvidence">Ссылка на скрин / видео</label>
+								<label for="supportEvidenceFiles">Фото или видео (файлы)</label>
+								<input
+									id="supportEvidenceFiles"
+									type="file"
+									accept="image/jpeg,image/png,image/webp,image/gif,video/mp4,video/webm,video/quicktime"
+									multiple
+								/>
+								<p class="auth-hint">
+									До 5 файлов, каждый до 25 МБ: JPG, PNG, WebP, GIF, MP4, WebM.
+								</p>
+							</div>
+							<div class="auth-field">
+								<label for="supportEvidence">Или ссылка на скрин / видео</label>
 								<input
 									id="supportEvidence"
 									type="url"
@@ -809,7 +821,7 @@
 		<script src="assets/js/auth.js?v=32"></script>
 		<script src="assets/js/site-presence.js?v=4" defer></script>
 		<script src="assets/js/site-header.js?v=5" defer></script>
-		<script src="assets/js/support-tickets.js?v=1" defer></script>
+		<script src="assets/js/support-tickets.js?v=2" defer></script>
 		<script src="assets/js/account.js?v=39"></script>
 	</body>
 </html>

@@ -435,6 +435,12 @@
 		if (/invalid_category/i.test(msg)) {
 			return 'Выбери тип обращения из списка.'
 		}
+		if (/invalid_storage_path|support-evidence|Bucket not found/i.test(msg)) {
+			return 'Загрузка файлов не настроена. В Supabase выполни docs/supabase-support-storage.sql'
+		}
+		if (/payload too large|413|file_size_limit/i.test(msg)) {
+			return 'Файл слишком большой (максимум 25 МБ на файл).'
+		}
 		if (isNotificationTriggerError(err)) {
 			return (
 				'Сообщение не сохранилось из‑за уведомлений в Supabase. SQL Editor → выполни docs/supabase-fix-notify-safe.sql (и docs/supabase-whitelist-dialog.sql, если ещё не делал).'
@@ -1051,7 +1057,7 @@
 			err &&
 			(err.code === 'PGRST205' ||
 				err.code === '42P01' ||
-				/support_tickets|support_messages/i.test(msg))
+				/support_tickets|support_messages|support_attachments/i.test(msg))
 		)
 	}
 
@@ -1136,6 +1142,114 @@
 			p_ticket_id: ticketId,
 		})
 		if (res.error) throw res.error
+	}
+
+	var SUPPORT_EVIDENCE_BUCKET = 'support-evidence'
+	var SUPPORT_EVIDENCE_MAX_FILES = 5
+	var SUPPORT_EVIDENCE_MAX_BYTES = 25 * 1024 * 1024
+	var SUPPORT_EVIDENCE_MIMES = {
+		'image/jpeg': true,
+		'image/png': true,
+		'image/webp': true,
+		'image/gif': true,
+		'video/mp4': true,
+		'video/webm': true,
+		'video/quicktime': true,
+	}
+
+	function sanitizeEvidenceFileName(name) {
+		var base = String(name || 'file')
+			.replace(/[/\\?%*:|"<>]/g, '_')
+			.replace(/\s+/g, '_')
+		if (base.length > 80) base = base.slice(-80)
+		return base || 'file'
+	}
+
+	async function getSupportAttachments(ticketId) {
+		var sb = getClient()
+		if (!sb) throw new Error('Нет подключения')
+		var res = await sb
+			.from('support_attachments')
+			.select('id, ticket_id, storage_path, file_name, mime_type, size_bytes, created_at')
+			.eq('ticket_id', ticketId)
+			.order('created_at', { ascending: true })
+		if (res.error) {
+			if (isMissingSupportTables(res.error)) return []
+			throw res.error
+		}
+		var rows = res.data || []
+		for (var i = 0; i < rows.length; i++) {
+			var row = rows[i]
+			if (!row.storage_path) continue
+			try {
+				var signed = await sb.storage
+					.from(SUPPORT_EVIDENCE_BUCKET)
+					.createSignedUrl(row.storage_path, 3600)
+				if (signed.data && signed.data.signedUrl) {
+					row.signed_url = signed.data.signedUrl
+				}
+			} catch (_e) {
+				/* ignore */
+			}
+		}
+		return rows
+	}
+
+	async function uploadSupportEvidenceFiles(ticketId, fileList) {
+		var sb = getClient()
+		if (!sb) throw new Error('Нет подключения')
+		var session = await getSession()
+		if (!session) throw new Error('not_authenticated')
+		var uid = session.user.id
+		var uploaded = 0
+		var failed = []
+		var files = []
+		var i
+		for (i = 0; i < fileList.length && files.length < SUPPORT_EVIDENCE_MAX_FILES; i++) {
+			files.push(fileList[i])
+		}
+		for (i = 0; i < files.length; i++) {
+			var file = files[i]
+			if (!file) continue
+			if (file.size > SUPPORT_EVIDENCE_MAX_BYTES) {
+				failed.push(file.name + ': больше 25 МБ')
+				continue
+			}
+			if (file.type && !SUPPORT_EVIDENCE_MIMES[file.type]) {
+				failed.push(file.name + ': недопустимый тип')
+				continue
+			}
+			var path =
+				uid +
+				'/' +
+				ticketId +
+				'/' +
+				Date.now() +
+				'-' +
+				sanitizeEvidenceFileName(file.name)
+			var up = await sb.storage.from(SUPPORT_EVIDENCE_BUCKET).upload(path, file, {
+				cacheControl: '3600',
+				upsert: false,
+				contentType: file.type || undefined,
+			})
+			if (up.error) {
+				failed.push(file.name + ': ' + errorText(up.error))
+				continue
+			}
+			var reg = await sb.rpc('register_support_attachment', {
+				p_ticket_id: ticketId,
+				p_storage_path: path,
+				p_file_name: file.name,
+				p_mime_type: file.type || null,
+				p_size_bytes: file.size,
+			})
+			if (reg.error) {
+				failed.push(file.name + ': ' + errorText(reg.error))
+				continue
+			}
+			uploaded++
+		}
+		return { uploaded: uploaded, failed: failed }
 	}
 
 	async function getAdminProfiles() {
@@ -1555,6 +1669,8 @@
 		addSupportMessage: addSupportMessage,
 		adminReplySupportTicket: adminReplySupportTicket,
 		closeSupportTicket: closeSupportTicket,
+		getSupportAttachments: getSupportAttachments,
+		uploadSupportEvidenceFiles: uploadSupportEvidenceFiles,
 		submitApplication: submitApplication,
 		validateWhitelistApplicationData: validateWhitelistApplicationData,
 		getNotifications: getNotifications,
