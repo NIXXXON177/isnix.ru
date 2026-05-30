@@ -72,6 +72,18 @@ create policy "support_evidence_select"
 		)
 	);
 
+drop policy if exists "support_evidence_delete" on storage.objects;
+create policy "support_evidence_delete"
+	on storage.objects for delete
+	to authenticated
+	using (
+		bucket_id = 'support-evidence'
+		and (
+			(storage.foldername(name))[1] = auth.uid()::text
+			or public.is_admin()
+		)
+	);
+
 create or replace function public.register_support_attachment(
 	p_ticket_id uuid,
 	p_storage_path text,

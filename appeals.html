@@ -22,7 +22,7 @@
 		<link rel="stylesheet" href="assets/css/components.css" />
 		<link rel="stylesheet" href="assets/css/how-to-play.css" />
 		<link rel="stylesheet" href="assets/css/auth.css?v=4" />
-		<link rel="stylesheet" href="assets/css/support.css?v=2" />
+		<link rel="stylesheet" href="assets/css/support.css?v=3" />
 		<link rel="stylesheet" href="assets/css/site-header.css" />
 	</head>
 	<body class="htp-page appeals-page" data-page="appeals">
@@ -171,6 +171,24 @@
 					<a href="support.html">Справка</a>
 				</p>
 				<p id="supportSetupNotice" class="auth-hint" hidden></p>
+				<div class="support-tickets-toolbar">
+					<div class="auth-admin-tabs" role="tablist" aria-label="Фильтр обращений">
+						<button
+							type="button"
+							class="auth-admin-tab auth-admin-tab--sub active"
+							data-support-player-filter="active"
+						>
+							Активные
+						</button>
+						<button
+							type="button"
+							class="auth-admin-tab auth-admin-tab--sub"
+							data-support-player-filter="closed"
+						>
+							Закрытые
+						</button>
+					</div>
+				</div>
 				<div id="supportTicketsList"></div>
 				<h2 class="auth-panel__subtitle">Новое обращение</h2>
 				<form id="supportTicketForm" class="auth-form">
@@ -260,10 +278,10 @@
 		</script>
 		<script src="assets/js/auth-config.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-		<script src="assets/js/auth.js?v=32"></script>
+		<script src="assets/js/auth.js?v=33"></script>
 		<script src="assets/js/site-presence.js?v=4" defer></script>
 		<script src="assets/js/site-header.js?v=5" defer></script>
-		<script src="assets/js/support-tickets.js?v=4" defer></script>
+		<script src="assets/js/support-tickets.js?v=5" defer></script>
 		<script src="assets/js/appeals-page.js?v=1" defer></script>
 	</body>
 </html>

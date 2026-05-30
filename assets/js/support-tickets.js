@@ -4,9 +4,14 @@
 	var MAX_EVIDENCE_FILES = 5
 	var MAX_EVIDENCE_BYTES = 25 * 1024 * 1024
 
+	var TICKETS_PAGE_SIZE = 5
+
 	var supportReady = false
 	var adminSupportLoaded = false
 	var adminSupportFilter = 'open'
+	var adminSupportPage = 1
+	var playerSupportFilter = 'active'
+	var playerSupportPage = 1
 
 	function escapeHtml(s) {
 		if (s == null) return ''
@@ -147,6 +152,203 @@
 		return IsnixAuth.getSupportMessages(ticketId)
 	}
 
+	function deleteTicketButtonHtml(ticketId, label) {
+		if (!window.IsnixAuth || !IsnixAuth.deleteSupportTicket) return ''
+		return (
+			'<button type="button" class="auth-submit auth-submit--ghost auth-support-delete" data-id="' +
+			escapeHtml(ticketId) +
+			'" title="Удалить обращение навсегда">' +
+			escapeHtml(label || 'Удалить') +
+			'</button>'
+		)
+	}
+
+	function renderPaginationHtml(scope, page, pageSize, total) {
+		var pages = Math.max(1, Math.ceil(total / pageSize))
+		if (total <= pageSize) return ''
+		var prev = page > 1 ? page - 1 : null
+		var next = page < pages ? page + 1 : null
+		var html =
+			'<nav class="support-pagination" aria-label="Страницы обращений" data-pagination-scope="' +
+			escapeHtml(scope) +
+			'">'
+		html +=
+			'<button type="button" class="support-pagination__btn" data-page="' +
+			(prev || page) +
+			'" data-scope="' +
+			escapeHtml(scope) +
+			'"' +
+			(prev ? '' : ' disabled') +
+			'>Назад</button>'
+		html +=
+			'<span class="support-pagination__info">Стр. ' +
+			page +
+			' из ' +
+			pages +
+			' · всего ' +
+			total +
+			'</span>'
+		html +=
+			'<button type="button" class="support-pagination__btn" data-page="' +
+			(next || page) +
+			'" data-scope="' +
+			escapeHtml(scope) +
+			'"' +
+			(next ? '' : ' disabled') +
+			'>Вперёд</button></nav>'
+		return html
+	}
+
+	function bindPagination(container, scope) {
+		if (!container) return
+		container.querySelectorAll('.support-pagination__btn[data-scope]:not([disabled])').forEach(function (btn) {
+			if (btn.dataset.bound) return
+			btn.dataset.bound = '1'
+			btn.addEventListener('click', function () {
+				var p = parseInt(btn.getAttribute('data-page'), 10)
+				if (!p || p < 1) return
+				if (scope === 'admin') {
+					adminSupportPage = p
+					renderAdminSupport()
+				} else {
+					playerSupportPage = p
+					renderPlayerSupport()
+				}
+			})
+		})
+	}
+
+	function bindDeleteButtons(root) {
+		if (!root) return
+		root.querySelectorAll('.auth-support-delete').forEach(function (btn) {
+			if (btn.dataset.bound) return
+			btn.dataset.bound = '1'
+			btn.addEventListener('click', async function () {
+				var id = btn.getAttribute('data-id')
+				if (
+					!confirm(
+						'Удалить это закрытое обращение? Сообщения и файлы будут удалены без восстановления.',
+					)
+				) {
+					return
+				}
+				try {
+					await IsnixAuth.deleteSupportTicket(id)
+					showMsg('Обращение удалено.', true)
+					if (btn.closest('#adminSupportList')) {
+						await renderAdminSupport()
+					} else {
+						await renderPlayerSupport()
+					}
+				} catch (err) {
+					showMsg(IsnixAuth.formatAuthError(err), false)
+				}
+			})
+		})
+	}
+
+	async function renderTicketCard(t, options) {
+		options = options || {}
+		var msgs = await loadMessages(t.id)
+		var attachments = await loadAttachmentsForTicket(t.id)
+		var meta = ''
+		if (options.showId) {
+			meta +=
+				'<p class="auth-muted">ID: ' +
+				escapeHtml(t.id.slice(0, 8)) +
+				'… · ' +
+				escapeHtml(formatDate(t.created_at)) +
+				'</p>'
+		}
+		if (t.offender_nick) {
+			meta += '<p class="auth-muted">Нарушитель: <strong>' + escapeHtml(t.offender_nick) + '</strong></p>'
+		}
+		if (t.evidence_url) {
+			meta +=
+				'<p class="auth-muted">Доп. ссылка: <a href="' +
+				escapeHtml(t.evidence_url) +
+				'" target="_blank" rel="noopener noreferrer">открыть</a></p>'
+		}
+		meta += renderAttachmentsHtml(attachments)
+		var footer = ''
+		if (options.admin) {
+			if (t.status !== 'closed') {
+				footer =
+					'<div class="auth-admin-actions">' +
+					renderMessages(msgs) +
+					'<label class="auth-dialog__label" for="admin-support-' +
+					t.id +
+					'">Ответ игроку</label>' +
+					'<textarea id="admin-support-' +
+					t.id +
+					'" class="auth-admin-note" rows="4" maxlength="4000" placeholder="Ответ по правилам, пункт нарушения…"></textarea>' +
+					'<div class="auth-admin-btns">' +
+					'<button type="button" class="auth-submit auth-admin-support-reply" data-id="' +
+					t.id +
+					'">Отправить ответ</button>' +
+					'<button type="button" class="auth-submit auth-submit--ghost auth-admin-support-close" data-id="' +
+					t.id +
+					'">Закрыть обращение</button>' +
+					'</div></div>'
+			} else {
+				footer =
+					renderMessages(msgs) +
+					'<div class="auth-admin-btns auth-admin-btns--end">' +
+					deleteTicketButtonHtml(t.id, 'Удалить обращение') +
+					'</div>'
+			}
+		} else {
+			var replyForm =
+				t.status === 'waiting_user'
+					? '<form class="auth-app-reply-form" data-ticket-id="' +
+						t.id +
+						'">' +
+						'<label class="auth-dialog__label" for="support-reply-' +
+						t.id +
+						'">Твой ответ администрации</label>' +
+						'<textarea id="support-reply-' +
+						t.id +
+						'" class="auth-admin-note" rows="4" maxlength="4000" required placeholder="Ответь на вопрос…"></textarea>' +
+						'<button type="submit" class="auth-submit">Отправить</button></form>'
+					: t.status === 'open'
+						? '<p class="auth-hint">Ожидай первого ответа администрации.</p>'
+						: ''
+			if (t.status === 'closed') {
+				footer =
+					renderMessages(msgs) +
+					'<div class="auth-admin-btns auth-admin-btns--end">' +
+					deleteTicketButtonHtml(t.id, 'Удалить из истории') +
+					'</div>'
+			} else {
+				footer = renderMessages(msgs) + replyForm
+			}
+		}
+		var cardClass = options.admin ? 'auth-app-card auth-app-card--admin' : 'auth-app-card'
+		return (
+			'<article class="' +
+			cardClass +
+			'" id="support-ticket-' +
+			t.id +
+			'">' +
+			'<div class="auth-app-head">' +
+			'<strong>' +
+			escapeHtml(t.subject) +
+			'</strong>' +
+			'<span class="' +
+			statusClass(t.status) +
+			'">' +
+			escapeHtml(statusLabel(t.status)) +
+			'</span></div>' +
+			'<p class="auth-muted">' +
+			escapeHtml(categoryLabel(t.category)) +
+			(options.showId ? '' : ' · ' + escapeHtml(formatDate(t.updated_at))) +
+			'</p>' +
+			meta +
+			footer +
+			'</article>'
+		)
+	}
+
 	async function renderPlayerSupport() {
 		var list = document.getElementById('supportTicketsList')
 		var setup = document.getElementById('supportSetupNotice')
@@ -160,67 +362,39 @@
 
 		list.innerHTML = '<p class="auth-muted">Загрузка…</p>'
 		try {
-			var tickets = await IsnixAuth.getSupportTickets(false)
-			if (setup) setup.hidden = tickets.length > 0 || true
+			var result = await IsnixAuth.getSupportTickets({
+				asAdmin: false,
+				filter: playerSupportFilter,
+				page: playerSupportPage,
+				pageSize: TICKETS_PAGE_SIZE,
+			})
+			var tickets = result.tickets
+			var total = result.total
+			var pages = Math.max(1, Math.ceil(total / TICKETS_PAGE_SIZE))
+			if (playerSupportPage > pages) {
+				playerSupportPage = pages
+				return renderPlayerSupport()
+			}
+			if (setup) setup.hidden = true
+			if (!total && playerSupportFilter === 'active') {
+				list.innerHTML =
+					'<p class="auth-muted">Активных обращений нет. Создай новое ниже — администрация ответит в этом же диалоге.</p>'
+				return
+			}
 			if (!tickets.length) {
 				list.innerHTML =
-					'<p class="auth-muted">Обращений пока нет. Создай новое ниже — администрация ответит в этом же диалоге.</p>'
+					'<p class="auth-muted">' +
+					(playerSupportFilter === 'closed'
+						? 'Закрытых обращений нет.'
+						: 'Обращений в этом разделе нет.') +
+					'</p>'
 				return
 			}
 			var html = ''
 			for (var i = 0; i < tickets.length; i++) {
-				var t = tickets[i]
-				var msgs = await loadMessages(t.id)
-				var attachments = await loadAttachmentsForTicket(t.id)
-				var meta = ''
-				if (t.offender_nick) {
-					meta += '<p class="auth-muted">Нарушитель: <strong>' + escapeHtml(t.offender_nick) + '</strong></p>'
-				}
-				if (t.evidence_url) {
-					meta +=
-						'<p class="auth-muted">Доп. ссылка: <a href="' +
-						escapeHtml(t.evidence_url) +
-						'" target="_blank" rel="noopener noreferrer">открыть</a></p>'
-				}
-				meta += renderAttachmentsHtml(attachments)
-				var replyForm =
-					t.status === 'waiting_user'
-						? '<form class="auth-app-reply-form" data-ticket-id="' +
-							t.id +
-							'">' +
-							'<label class="auth-dialog__label" for="support-reply-' +
-							t.id +
-							'">Твой ответ администрации</label>' +
-							'<textarea id="support-reply-' +
-							t.id +
-							'" class="auth-admin-note" rows="4" maxlength="4000" required placeholder="Ответь на вопрос…"></textarea>' +
-							'<button type="submit" class="auth-submit">Отправить</button></form>'
-						: t.status === 'open'
-							? '<p class="auth-hint">Ожидай первого ответа администрации.</p>'
-							: ''
-				html +=
-					'<article class="auth-app-card" id="support-ticket-' +
-					t.id +
-					'">' +
-					'<div class="auth-app-head">' +
-					'<strong>' +
-					escapeHtml(t.subject) +
-					'</strong>' +
-					'<span class="' +
-					statusClass(t.status) +
-					'">' +
-					escapeHtml(statusLabel(t.status)) +
-					'</span></div>' +
-					'<p class="auth-muted">' +
-					escapeHtml(categoryLabel(t.category)) +
-					' · ' +
-					escapeHtml(formatDate(t.updated_at)) +
-					'</p>' +
-					meta +
-					renderMessages(msgs) +
-					replyForm +
-					'</article>'
+				html += await renderTicketCard(tickets[i], { admin: false })
 			}
+			html += renderPaginationHtml('player', playerSupportPage, TICKETS_PAGE_SIZE, total)
 			list.innerHTML = html
 			list.querySelectorAll('.auth-app-reply-form[data-ticket-id]').forEach(function (form) {
 				form.addEventListener('submit', async function (e) {
@@ -236,6 +410,8 @@
 					}
 				})
 			})
+			bindDeleteButtons(list)
+			bindPagination(list, 'player')
 		} catch (err) {
 			list.innerHTML =
 				'<p class="auth-message auth-message--err">' +
@@ -249,71 +425,29 @@
 		if (!list || !window.IsnixAuth) return
 		list.innerHTML = '<p class="auth-muted">Загрузка…</p>'
 		try {
-			var tickets = await IsnixAuth.getSupportTickets(true)
-			var filtered = tickets.filter(function (t) {
-				if (adminSupportFilter === 'all') return true
-				return t.status !== 'closed'
+			var filter = adminSupportFilter === 'open' ? 'open' : adminSupportFilter
+			var result = await IsnixAuth.getSupportTickets({
+				asAdmin: true,
+				filter: filter,
+				page: adminSupportPage,
+				pageSize: TICKETS_PAGE_SIZE,
 			})
-			if (!filtered.length) {
+			var tickets = result.tickets
+			var total = result.total
+			var pages = Math.max(1, Math.ceil(total / TICKETS_PAGE_SIZE))
+			if (adminSupportPage > pages) {
+				adminSupportPage = pages
+				return renderAdminSupport()
+			}
+			if (!tickets.length) {
 				list.innerHTML = '<p class="auth-muted">Нет обращений в этом разделе.</p>'
 				return
 			}
 			var html = ''
-			for (var i = 0; i < filtered.length; i++) {
-				var t = filtered[i]
-				var msgs = await loadMessages(t.id)
-				var attachments = await loadAttachmentsForTicket(t.id)
-				var meta =
-					'<p class="auth-muted">ID: ' +
-					escapeHtml(t.id.slice(0, 8)) +
-					'… · ' +
-					escapeHtml(formatDate(t.created_at)) +
-					'</p>'
-				if (t.offender_nick) {
-					meta += '<p class="auth-muted">Нарушитель: ' + escapeHtml(t.offender_nick) + '</p>'
-				}
-				if (t.evidence_url) {
-					meta +=
-						'<p class="auth-muted">Доп. ссылка: <a href="' +
-						escapeHtml(t.evidence_url) +
-						'" target="_blank" rel="noopener">открыть</a></p>'
-				}
-				meta += renderAttachmentsHtml(attachments)
-				var actions =
-					t.status !== 'closed'
-						? '<div class="auth-admin-actions">' +
-							renderMessages(msgs) +
-							'<label class="auth-dialog__label" for="admin-support-' +
-							t.id +
-							'">Ответ игроку</label>' +
-							'<textarea id="admin-support-' +
-							t.id +
-							'" class="auth-admin-note" rows="4" maxlength="4000" placeholder="Ответ по правилам, пункт нарушения…"></textarea>' +
-							'<div class="auth-admin-btns">' +
-							'<button type="button" class="auth-submit auth-admin-support-reply" data-id="' +
-							t.id +
-							'">Отправить ответ</button>' +
-							'<button type="button" class="auth-submit auth-submit--ghost auth-admin-support-close" data-id="' +
-							t.id +
-							'">Закрыть обращение</button>' +
-							'</div></div>'
-						: renderMessages(msgs)
-				html +=
-					'<article class="auth-app-card auth-app-card--admin">' +
-					'<div class="auth-app-head"><strong>' +
-					escapeHtml(t.subject) +
-					'</strong><span class="' +
-					statusClass(t.status) +
-					'">' +
-					escapeHtml(statusLabel(t.status)) +
-					'</span></div>' +
-					'<p class="auth-muted">' +
-					escapeHtml(categoryLabel(t.category)) +
-					'</p>' +
-					meta +
-					actions +
-					'</article>'
+			for (var i = 0; i < tickets.length; i++) {
+				html += await renderTicketCard(tickets[i], { admin: true, showId: true })
 			}
+			html += renderPaginationHtml('admin', adminSupportPage, TICKETS_PAGE_SIZE, total)
 			list.innerHTML = html
 			list.querySelectorAll('.auth-admin-support-reply').forEach(function (btn) {
 				btn.addEventListener('click', async function () {
@@ -341,6 +475,8 @@
 					}
 				})
 			})
+			bindDeleteButtons(list)
+			bindPagination(list, 'admin')
 		} catch (err) {
 			list.innerHTML =
 				'<p class="auth-message auth-message--err">' +
@@ -399,6 +535,14 @@
 					showMsg('Обращение отправлено. Ожидай ответа в этом разделе.', true)
 				}
 				form.reset()
+				playerSupportFilter = 'active'
+				playerSupportPage = 1
+				document.querySelectorAll('[data-support-player-filter]').forEach(function (b) {
+					b.classList.toggle(
+						'active',
+						b.getAttribute('data-support-player-filter') === 'active',
+					)
+				})
 				await renderPlayerSupport()
 				var scrollRoot =
 					document.getElementById('appealsMain') ||
@@ -420,6 +564,7 @@
 			btn.dataset.supportBound = '1'
 			btn.addEventListener('click', function () {
 				adminSupportFilter = btn.getAttribute('data-support-filter') || 'open'
+				adminSupportPage = 1
 				document.querySelectorAll('[data-support-filter]').forEach(function (b) {
 					b.classList.toggle('active', b === btn)
 				})
@@ -428,9 +573,25 @@
 		})
 	}
 
+	function bindPlayerFilters() {
+		document.querySelectorAll('[data-support-player-filter]').forEach(function (btn) {
+			if (btn.dataset.supportPlayerBound) return
+			btn.dataset.supportPlayerBound = '1'
+			btn.addEventListener('click', function () {
+				playerSupportFilter = btn.getAttribute('data-support-player-filter') || 'active'
+				playerSupportPage = 1
+				document.querySelectorAll('[data-support-player-filter]').forEach(function (b) {
+					b.classList.toggle('active', b === btn)
+				})
+				renderPlayerSupport()
+			})
+		})
+	}
+
 	function initPlayerSupport() {
 		if (!document.getElementById('supportTicketsList')) return false
 		bindCreateForm()
+		bindPlayerFilters()
 		renderPlayerSupport()
 		supportReady = true
 		return true

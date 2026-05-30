@@ -317,7 +317,39 @@ begin
 end;
 $$;
 
+create or replace function public.delete_support_ticket(p_ticket_id uuid)
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+	t public.support_tickets%rowtype;
+	uid uuid := auth.uid();
+begin
+	if uid is null then
+		raise exception 'not_authenticated';
+	end if;
+
+	select * into t from public.support_tickets where id = p_ticket_id;
+	if not found then
+		raise exception 'ticket_not_found';
+	end if;
+
+	if t.status <> 'closed' then
+		raise exception 'ticket_not_closed';
+	end if;
+
+	if t.user_id <> uid and not public.is_admin() then
+		raise exception 'forbidden';
+	end if;
+
+	delete from public.support_tickets where id = p_ticket_id;
+end;
+$$;
+
 grant execute on function public.create_support_ticket(text, text, text, text, text) to authenticated;
 grant execute on function public.add_support_message(uuid, text) to authenticated;
 grant execute on function public.admin_reply_support_ticket(uuid, text) to authenticated;
 grant execute on function public.close_support_ticket(uuid) to authenticated;
+grant execute on function public.delete_support_ticket(uuid) to authenticated;

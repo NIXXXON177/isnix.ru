@@ -429,6 +429,9 @@
 		if (/ticket_closed/i.test(msg)) {
 			return 'Обращение уже закрыто.'
 		}
+		if (/ticket_not_closed/i.test(msg)) {
+			return 'Удалить можно только закрытое обращение.'
+		}
 		if (/wait_for_admin/i.test(msg)) {
 			return 'Дождись ответа администрации.'
 		}
@@ -1061,29 +1064,55 @@
 		)
 	}
 
-	async function getSupportTickets(asAdmin) {
+	async function getSupportTickets(opts) {
+		var asAdmin = false
+		var filter = 'active'
+		var page = 1
+		var pageSize = 5
+		if (typeof opts === 'boolean') {
+			asAdmin = opts
+			filter = asAdmin ? 'open' : 'active'
+		} else if (opts && typeof opts === 'object') {
+			asAdmin = !!opts.asAdmin
+			filter = opts.filter || (asAdmin ? 'open' : 'active')
+			page = Math.max(1, parseInt(opts.page, 10) || 1)
+			pageSize = Math.min(20, Math.max(1, parseInt(opts.pageSize, 10) || 5))
+		}
 		var sb = getClient()
 		if (!sb) throw new Error('Нет подключения')
+		var from = (page - 1) * pageSize
+		var to = from + pageSize - 1
 		var q = sb
 			.from('support_tickets')
 			.select(
 				'id, user_id, category, subject, offender_nick, evidence_url, status, created_at, updated_at',
+				{ count: 'exact' },
 			)
 			.order('updated_at', { ascending: false })
-			.limit(asAdmin ? 200 : 50)
+			.range(from, to)
 		if (!asAdmin) {
 			var session = await getSession()
 			if (!session) throw new Error('not_authenticated')
 			q = q.eq('user_id', session.user.id)
 		}
+		if (filter === 'active' || filter === 'open') {
+			q = q.neq('status', 'closed')
+		} else if (filter === 'closed') {
+			q = q.eq('status', 'closed')
+		}
 		var res = await q
 		if (res.error) {
 			if (isMissingSupportTables(res.error)) {
-				return []
+				return { tickets: [], total: 0, page: page, pageSize: pageSize }
 			}
 			throw res.error
 		}
-		return res.data || []
+		return {
+			tickets: res.data || [],
+			total: res.count == null ? (res.data || []).length : res.count,
+			page: page,
+			pageSize: pageSize,
+		}
 	}
 
 	async function getSupportMessages(ticketId) {
@@ -1139,6 +1168,27 @@
 		var sb = getClient()
 		if (!sb) throw new Error('Нет подключения')
 		var res = await sb.rpc('close_support_ticket', {
+			p_ticket_id: ticketId,
+		})
+		if (res.error) throw res.error
+	}
+
+	async function deleteSupportTicket(ticketId) {
+		var sb = getClient()
+		if (!sb) throw new Error('Нет подключения')
+		var attachments = await getSupportAttachments(ticketId)
+		var paths = (attachments || [])
+			.map(function (a) {
+				return a.storage_path
+			})
+			.filter(Boolean)
+		if (paths.length) {
+			var rm = await sb.storage.from(SUPPORT_EVIDENCE_BUCKET).remove(paths)
+			if (rm.error && !/not found|404/i.test(errorText(rm.error))) {
+				console.warn('support evidence remove:', rm.error)
+			}
+		}
+		var res = await sb.rpc('delete_support_ticket', {
 			p_ticket_id: ticketId,
 		})
 		if (res.error) throw res.error
@@ -1669,6 +1719,7 @@
 		addSupportMessage: addSupportMessage,
 		adminReplySupportTicket: adminReplySupportTicket,
 		closeSupportTicket: closeSupportTicket,
+		deleteSupportTicket: deleteSupportTicket,
 		getSupportAttachments: getSupportAttachments,
 		uploadSupportEvidenceFiles: uploadSupportEvidenceFiles,
 		submitApplication: submitApplication,
