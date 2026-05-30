@@ -22,7 +22,7 @@
 		<link rel="stylesheet" href="assets/css/components.css" />
 		<link rel="stylesheet" href="assets/css/how-to-play.css" />
 		<link rel="stylesheet" href="assets/css/auth.css?v=4" />
-		<link rel="stylesheet" href="assets/css/support.css?v=3" />
+		<link rel="stylesheet" href="assets/css/support.css?v=4" />
 		<link rel="stylesheet" href="assets/css/site-header.css" />
 	</head>
 	<body class="htp-page appeals-page" data-page="appeals">
@@ -223,13 +223,39 @@
 					</div>
 					<div class="auth-field">
 						<label for="supportEvidenceFiles">Фото или видео (файлы)</label>
-						<input
-							id="supportEvidenceFiles"
-							type="file"
-							accept="image/jpeg,image/png,image/webp,image/gif,video/mp4,video/webm,video/quicktime"
-							multiple
-						/>
-						<p class="auth-hint">
+						<div
+							class="support-evidence-dropzone"
+							id="supportEvidenceDropzone"
+							role="button"
+							tabindex="0"
+							aria-describedby="supportEvidenceHint"
+						>
+							<input
+								id="supportEvidenceFiles"
+								class="support-evidence-dropzone__input"
+								type="file"
+								accept="image/jpeg,image/png,image/webp,image/gif,video/mp4,video/webm,video/quicktime"
+								multiple
+								tabindex="-1"
+							/>
+							<div class="support-evidence-dropzone__inner">
+								<span class="support-evidence-dropzone__icon" aria-hidden="true"
+									>↑</span
+								>
+								<p class="support-evidence-dropzone__title">
+									Перенесите фото или видео сюда
+								</p>
+								<p class="support-evidence-dropzone__sub">
+									или нажмите, чтобы выбрать файлы
+								</p>
+							</div>
+							<ul
+								class="support-evidence-dropzone__list"
+								id="supportEvidenceFileList"
+								hidden
+							></ul>
+						</div>
+						<p class="auth-hint" id="supportEvidenceHint">
 							До 5 файлов, каждый до 25 МБ: JPG, PNG, WebP, GIF, MP4, WebM.
 						</p>
 					</div>
@@ -282,6 +308,6 @@
 		<script src="assets/js/site-presence.js?v=4" defer></script>
 		<script src="assets/js/site-header.js?v=5" defer></script>
 		<script src="assets/js/support-tickets.js?v=6" defer></script>
-		<script src="assets/js/appeals-page.js?v=1" defer></script>
+		<script src="assets/js/appeals-page.js?v=2" defer></script>
 	</body>
 </html>

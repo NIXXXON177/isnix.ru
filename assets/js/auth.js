@@ -31,17 +31,18 @@
 		}
 	}
 
-	/** HTTPS-прокси скина (тот же Worker, что и Supabase) — без редиректа на http://ely.by */
+	/** HTTPS-прокси скина (Worker / api.isnix.ru) — не *.supabase.co */
 	function elySkinProxyBase() {
 		var cfg = getConfig()
-		if (cfg.elySkinProxyUrl) {
-			return cfg.elySkinProxyUrl.replace(/\/?$/, '/')
+		var proxy = (cfg.elySkinProxyUrl || '').trim()
+		if (proxy && !/\.supabase\.co/i.test(proxy)) {
+			return proxy.replace(/\/?$/, '/')
 		}
 		var sup = cfg.supabaseUrl.replace(/\/$/, '')
 		if (/\.workers\.dev$/i.test(sup) || /api\.isnix\.ru$/i.test(sup)) {
 			return sup + '/ely/skin/'
 		}
-		return 'https://sparkling-river-2d30.kudrasovn024.workers.dev/ely/skin/'
+		return 'https://api.isnix.ru/ely/skin/'
 	}
 
 	function isReady() {
