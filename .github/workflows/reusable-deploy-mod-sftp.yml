@@ -53,8 +53,10 @@ jobs:
           fi
           NAME=$(basename "$JAR")
           REMOTE="${{ inputs.remote-dir }}/${NAME}"
+          MOD_BASE=$(echo "$NAME" | sed -E 's/-[0-9]+(\.[0-9]+)*\.jar$//')
           export LOCAL_FILE="$JAR"
           export REMOTE_PATH="$REMOTE"
+          export CLEANUP_MOD_PREFIX="$MOD_BASE"
           echo "SFTP: ${SFTP_USER}@${SFTP_HOST}:${SFTP_PORT} -> ${REMOTE_PATH}"
           python3 .github/scripts/push_sftp.py
           echo "::notice::Залит ${NAME}. Перезапустите сервер в панели Play2GO, чтобы Fabric подхватил jar."

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Загружает один файл на SFTP Play2GO (секреты PLAY2GO_SFTP_* в GitHub Actions)."""
 import os
+import stat
 import sys
 
 try:
@@ -17,6 +18,7 @@ def main() -> None:
     port_s = (os.environ.get("SFTP_PORT") or "2022").strip()
     local = (os.environ.get("LOCAL_FILE") or "").strip()
     remote = (os.environ.get("REMOTE_PATH") or "").strip()
+    cleanup_prefix = os.environ.get("CLEANUP_MOD_PREFIX", "").strip()
 
     if not host or not user:
         print("Задай SFTP_HOST и SFTP_USER", file=sys.stderr)
@@ -68,6 +70,23 @@ def main() -> None:
                         sftp.mkdir(acc)
                     except OSError:
                         pass
+        if cleanup_prefix:
+            list_dir = remote_dir if remote_dir else "."
+            try:
+                for entry in sftp.listdir_attr(list_dir):
+                    if not stat.S_ISREG(entry.st_mode):
+                        continue
+                    name = entry.filename
+                    if not (
+                        name.startswith(cleanup_prefix + "-")
+                        and name.endswith(".jar")
+                    ):
+                        continue
+                    old_path = f"{list_dir}/{name}" if list_dir not in (".", "") else name
+                    sftp.remove(old_path)
+                    print(f"Removed old jar {old_path}")
+            except OSError as e:
+                print(f"Cleanup warning ({list_dir}): {e}")
         sftp.put(local, remote)
         sftp.close()
         print(f"OK upload {local} -> {remote}")
