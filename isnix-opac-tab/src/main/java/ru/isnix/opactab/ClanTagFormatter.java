@@ -46,28 +46,40 @@ public final class ClanTagFormatter {
 			return rawName + ClanTagConfig.get().suffixReset;
 		}
 		ClanTagConfig.ClanStyle style = ClanTagConfig.styleFor(ownerId);
-		String colorCode = "7";
-		boolean bold = false;
-		if (style != null) {
-			if (style.color != null && !style.color.isBlank()) {
-				colorCode = normalizeColor(style.color);
-			}
-			bold = style.bold;
+		if (style == null) {
+			style = ClanTagConfig.ClanStyle.defaults();
 		}
 		String display = rawName;
 		if (ClanTagConfig.get().wrapBrackets && !display.startsWith("[")) {
 			display = "[" + display + "]";
 		}
 		StringBuilder out = new StringBuilder();
-		out.append('&').append(colorCode);
-		if (bold) {
-			out.append("&l");
-		}
+		appendStyleCodes(out, style);
 		out.append(display);
 		if (ClanTagConfig.get().suffixReset != null && !ClanTagConfig.get().suffixReset.isEmpty()) {
 			out.append(ClanTagConfig.get().suffixReset);
 		}
 		return out.toString();
+	}
+
+	static void appendStyleCodes(StringBuilder out, ClanTagConfig.ClanStyle style) {
+		String colorCode = "7";
+		if (style.color != null && !style.color.isBlank()) {
+			colorCode = normalizeColor(style.color);
+		}
+		out.append('&').append(colorCode);
+		if (style.bold) {
+			out.append("&l");
+		}
+		if (style.italic) {
+			out.append("&o");
+		}
+		if (style.underline) {
+			out.append("&n");
+		}
+		if (style.strikethrough) {
+			out.append("&m");
+		}
 	}
 
 	private static String normalizeColor(String input) {

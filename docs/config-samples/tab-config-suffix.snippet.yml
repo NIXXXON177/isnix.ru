@@ -1,15 +1,10 @@
-# Фрагмент config/tab/config.yml — суффиксы в TAB и над головой.
-# groups.yml _DEFAULT_ задаёт tabsuffix/tagsuffix; format должен их включать.
+# Устарело: используйте docs/config-samples/tab/config.yml
 
 tablist-name-format:
   enabled: true
   anti-override: true
-  format: '%tabprefix%&f%player%%tabsuffix%'
+  format: "%tabprefix%&f%player%%tabsuffix%"
 
 above-name-format:
   enabled: true
-  format: '%tagprefix%%player%%tagsuffix%'
-
-# groups.yml (_DEFAULT_):
-#   tabsuffix: "%luckperms-suffix% %isnix:clan_tag%"
-#   tagsuffix: "%luckperms-suffix% %isnix:clan_tag%"
+  format: "%tagprefix%%player%%tagsuffix%"

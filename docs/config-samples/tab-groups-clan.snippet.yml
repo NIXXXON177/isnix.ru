@@ -1,7 +1,7 @@
-# Фрагмент для config/tab/groups.yml
-# После правки: /tab reload
+# Устарело: используйте docs/config-samples/tab/groups.yml и tab/config.yml
 
 _DEFAULT_:
   tabprefix: "%luckperms:prefix%"
   tabsuffix: "%luckperms:suffix% %isnix:clan_tag%"
+  tagprefix: "%luckperms:prefix%"
   tagsuffix: "%luckperms:suffix% %isnix:clan_tag%"

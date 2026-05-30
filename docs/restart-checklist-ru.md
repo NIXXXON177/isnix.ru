@@ -21,7 +21,8 @@
 ## Проверка в игре (5 мин)
 
 - [ ] Вход (EasyAuth)
-- [ ] TAB: префикс LuckPerms + тег клана (`%isnix:clan_tag%`)
+- [ ] TAB: `config/tab/groups.yml` — `%isnix:clan_tag%` в `tabsuffix`/`tagsuffix` (см. `docs/config-samples/tab/`)
+- [ ] `/clantag help` у владельца клана — превью тега
 - [ ] `isnix-server-messages` в `mods/` — тексты вайтлиста и перезапуска (`config/isnix-server-messages.json`)
 - [ ] `'` → My player config — только party name, claims name/color
 - [ ] `/sell`, `/trade`

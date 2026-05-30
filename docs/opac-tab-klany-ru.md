@@ -58,23 +58,24 @@ OPAC **не отдаёт** готовый placeholder в TAB. Мод **`isnix-op
 
 ### 2.2. Placeholder для TAB
 
-В **`config/tab/groups.yml`** у группы **`_DEFAULT_`** (или у каждой группы) добавьте к суффиксу:
+**Эталонные файлы в репозитории** (проверены под TAB 5.5 + isnix-opac-tab):
+
+- [config-samples/tab/groups.yml](config-samples/tab/groups.yml) → `config/tab/groups.yml`
+- [config-samples/tab/config.yml](config-samples/tab/config.yml) → фрагмент в `config/tab/config.yml`
+- [config-samples/tab/README.md](config-samples/tab/README.md) — чеклист
+
+Минимум в **`groups.yml`** для `_DEFAULT_`:
 
 ```yaml
-_DEFAULT_:
-  tabprefix: "%luckperms:prefix%"
-  tabsuffix: "%luckperms:suffix% %isnix:clan_tag%"
+tabprefix: "%luckperms:prefix%"
+tabsuffix: "%luckperms:suffix% %isnix:clan_tag%"
+tagprefix: "%luckperms:prefix%"
+tagsuffix: "%luckperms:suffix% %isnix:clan_tag%"
 ```
 
-Если префикс/суффикс LuckPerms уже заданы в `config.yml` в `tablist-name-formatting`, можно там:
+В **`config.yml`** должны быть включены форматы с `%tabsuffix%` / `%tagsuffix%` (см. образец).
 
-```yaml
-tablist-name-formatting:
-  enabled: true
-  format: "%luckperms:prefix%%player%%luckperms:suffix% %isnix:clan_tag%"
-```
-
-После правок: **рестарт** или **`/tab reload`** из консоли / с OP и правом `tab.admin` (см. [admin-commands-ru.md](admin-commands-ru.md)).
+После правок: **рестарт** или **`/tab reload`** (см. [admin-commands-ru.md](admin-commands-ru.md)).
 
 ---
 
@@ -108,20 +109,27 @@ tablist-name-formatting:
 
 Это имя видят все участники клана в TAB (через placeholder).
 
-### 3.3. Цвет и жирность — команды (только владелец клана)
+### 3.3. Оформление тега — команды (только владелец клана)
 
-| Команда | Пример | Эффект в TAB |
-|---------|--------|----------------|
-| `/clantag color <цвет>` | `/clantag color green` | Зелёный тег |
-| `/clantag color <0-9,a-f>` | `/clantag color 2` | Код цвета Minecraft |
-| `/clantag bold on` | — | Жирный тег |
-| `/clantag bold off` | — | Обычный |
-| `/clantag show` | — | Показать текущие настройки |
-| `/clantag sync` | — | Взять текст из Party name в OPAC |
+| Команда | Пример | Эффект |
+|---------|--------|--------|
+| `/clantag help` | — | Список команд |
+| `/clantag name <текст>` | `/clantag name GKSAS` | Текст тега (Party name OPAC) |
+| `/clantag color <цвет>` | `/clantag color gold` | Цвет |
+| `/clantag bold on` / `off` | — | Жирный |
+| `/clantag italic on` / `off` | — | Курсив |
+| `/clantag underline on` / `off` | — | Подчёркивание |
+| `/clantag strike on` / `off` | — | Зачёркнутый |
+| `/clantag reset` | — | Сброс стиля (текст клана не трогает) |
+| `/clantag preview` | — | Превью как в TAB |
+| `/clantag show` | — | Настройки (видят все в клане) |
+| `/clantag sync` | — | Обновить из Party name |
 
-Цвета по имени: `black`, `dark_blue`, `dark_green`, `dark_aqua`, `dark_red`, `dark_purple`, `gold`, `gray`, `dark_gray`, `blue`, `green`, `aqua`, `red`, `light_purple`, `yellow`, `white`.
+Цвета: `black`, `dark_blue`, `dark_green`, `dark_aqua`, `dark_red`, `dark_purple`, `gold`, `gray`, `dark_gray`, `blue`, `green`, `aqua`, `red`, `light_purple`, `yellow`, `white` или код `0`–`f`, `&6`.
 
-**Альтернатива без команд:** в поле **Party name** можно сразу писать коды: `&2&l[Wolves]` — тогда цвет/жирность из OPAC; команды `/clantag` не обязательны.
+Стили сохраняются в **`config/isnix-opac-tab.json`** по UUID владельца клана (образец: [config-samples/isnix-opac-tab.json](config-samples/isnix-opac-tab.json)).
+
+**Альтернатива:** в **Party name** сразу `&6&l[GKSAS]` — тогда команды цвета/жирности не нужны (коды в имени важнее).
 
 ### 3.4. Регионы (приваты)
 

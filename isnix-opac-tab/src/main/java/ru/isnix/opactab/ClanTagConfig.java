@@ -82,5 +82,18 @@ public final class ClanTagConfig {
 
 		@SerializedName("bold")
 		public boolean bold = false;
+
+		@SerializedName("italic")
+		public boolean italic = false;
+
+		@SerializedName("underline")
+		public boolean underline = false;
+
+		@SerializedName("strikethrough")
+		public boolean strikethrough = false;
+
+		public static ClanStyle defaults() {
+			return new ClanStyle();
+		}
 	}
 }

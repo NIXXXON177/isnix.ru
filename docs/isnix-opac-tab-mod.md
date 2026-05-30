@@ -22,15 +22,17 @@ Jar: `isnix-opac-tab/build/libs/isnix-opac-tab-1.0.0.jar`
 
 `config/isnix-opac-tab.json` — стили по UUID владельца клана (`color`, `bold`).
 
-## Команды
+## Команды (владелец клана)
 
-- `/clantag color <имя или 0-f>`
-- `/clantag bold on|off`
-- `/clantag show`
-- `/clantag sync`
+`/clantag help` — полный список. Кратко: `name`, `color`, `bold`, `italic`, `underline`, `strike`, `reset`, `preview`, `show`, `sync`.
+
+## TAB на сервере
+
+См. [config-samples/tab/README.md](config-samples/tab/README.md).
 
 ## Версии
 
-- **1.0.4** — кэш `%isnix:clan_tag%` (меньше ошибок TAB); сообщения OPAC «joined the party» с префиксом LP и тегом **после** ника.
+- **1.0.5** — `/clantag` italic, underline, strike, reset, preview; эталонные конфиги TAB в `docs/config-samples/tab/`.
+- **1.0.4** — кэш `%isnix:clan_tag%`; сообщения пати с префиксом LP и тегом после ника.
 
 Инструкция для игроков: [opac-tab-klany-ru.md](opac-tab-klany-ru.md)

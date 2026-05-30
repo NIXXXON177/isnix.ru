@@ -1,0 +1,17 @@
+# config/tab/config.yml — фрагмент (остальное оставьте как в TAB по умолчанию)
+# TAB 5.5: ключ может называться tablist-name-formatting — если не сработает,
+# замените tablist-name-format → tablist-name-formatting в вашем файле.
+
+tablist-name-format:
+  enabled: true
+  anti-override: true
+  format: "%tabprefix%&f%player%%tabsuffix%"
+
+above-name-format:
+  enabled: true
+  format: "%tagprefix%%player%%tagsuffix%"
+
+# Альтернатива (если groups.yml не подхватывается), можно задать формат здесь:
+# tablist-name-formatting:
+#   enabled: true
+#   format: "%luckperms:prefix%%player%%luckperms:suffix% %isnix:clan_tag%"
