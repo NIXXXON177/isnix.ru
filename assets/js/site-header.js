@@ -120,8 +120,12 @@
 
 		var siteHeader = document.getElementById('siteHeader')
 		if (nav || siteHeader) {
+			var headerScrolled = false
 			function onNavScroll() {
-				var scrolled = window.scrollY > 12
+				var y = window.scrollY
+				var scrolled = headerScrolled ? y > 8 : y > 20
+				if (scrolled === headerScrolled) return
+				headerScrolled = scrolled
 				if (nav) nav.classList.toggle('is-scrolled', scrolled)
 				if (siteHeader) siteHeader.classList.toggle('is-scrolled', scrolled)
 			}
