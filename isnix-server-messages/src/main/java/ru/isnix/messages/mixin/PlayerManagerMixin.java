@@ -14,7 +14,6 @@ import ru.isnix.messages.MessagesConfig;
 import ru.isnix.messages.TextUtil;
 
 import java.net.SocketAddress;
-import java.util.Optional;
 
 @Mixin(PlayerManager.class)
 public class PlayerManagerMixin {
@@ -22,19 +21,19 @@ public class PlayerManagerMixin {
 	@Final
 	private MinecraftServer server;
 
+	/** 1.21.1: null = вход разрешён, Text = причина отказа (не Optional). */
 	@Inject(method = "checkCanJoin", at = @At("RETURN"), cancellable = true)
 	private void isnix$customWhitelistKick(
 			SocketAddress address,
 			GameProfile profile,
-			CallbackInfoReturnable<Optional<Text>> cir) {
-		Optional<Text> result = cir.getReturnValue();
-		if (result == null || result.isEmpty()) {
+			CallbackInfoReturnable<Text> cir) {
+		Text deny = cir.getReturnValue();
+		if (deny == null) {
 			return;
 		}
-		Text deny = result.get();
 		if (!TextUtil.isNotWhitelistedMessage(deny)) {
 			return;
 		}
-		cir.setReturnValue(Optional.of(MessagesConfig.get().whitelistKick(server)));
+		cir.setReturnValue(MessagesConfig.get().whitelistKick(server));
 	}
 }
