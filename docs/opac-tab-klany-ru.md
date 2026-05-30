@@ -146,6 +146,8 @@ tablist-name-formatting:
 | Проблема | Решение |
 |----------|---------|
 | В TAB нет тега | Установлен ли `isnix-opac-tab`? Есть ли `%isnix:clan_tag%` в groups.yml? `/tab reload` |
+| В пати только `[Клан] Ник`, без `[Админ]` и тега после ника | Обновите `isnix-opac-tab` **1.0.4+**, рестарт; в `groups.yml`: `tabsuffix: "%luckperms:suffix% %isnix:clan_tag%"` |
+| `ConcurrentModificationException` + TAB в логе | Тот же **1.0.4** (кэш тега, без OPAC из Netty) |
 | `%isnix:clan_tag%` или `%synced:isnix:clan_tag%` виден текстом | В `groups.yml` должно быть **`%isnix:clan_tag%`**, не `%sync:...%`. Мод не загрузился — `latest.log` |
 | В GUI OPAC снова куча опций | Сервер правили при **включённом** сервере — toml перезаписался; правьте снова **офлайн** |
 | «Нет прав» на `/clantag` | Команды только **владельцу** клана OPAC |

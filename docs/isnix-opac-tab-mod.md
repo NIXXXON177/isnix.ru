@@ -29,4 +29,8 @@ Jar: `isnix-opac-tab/build/libs/isnix-opac-tab-1.0.0.jar`
 - `/clantag show`
 - `/clantag sync`
 
+## Версии
+
+- **1.0.4** — кэш `%isnix:clan_tag%` (меньше ошибок TAB); сообщения OPAC «joined the party» с префиксом LP и тегом **после** ника.
+
 Инструкция для игроков: [opac-tab-klany-ru.md](opac-tab-klany-ru.md)

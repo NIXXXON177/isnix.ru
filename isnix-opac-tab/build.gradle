@@ -10,6 +10,12 @@ base {
 	archivesName = project.archives_base_name
 }
 
+loom {
+	mixin {
+		defaultRefmapName = "isnix-opac-tab-refmap.json"
+	}
+}
+
 repositories {
 	mavenCentral()
 	maven { url = 'https://maven.fabricmc.net/' }

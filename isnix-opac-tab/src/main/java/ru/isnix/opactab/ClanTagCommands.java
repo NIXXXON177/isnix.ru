@@ -57,6 +57,7 @@ public final class ClanTagCommands {
 		ClanTagConfig.ClanStyle style = getOrCreate(player.getUuid());
 		style.color = value;
 		ClanTagConfig.putStyle(player.getUuid(), style);
+		ClanTagCache.refreshAll(player.getServer());
 		source.sendFeedback(() -> Text.literal("Цвет тега клана: " + value), false);
 		return 1;
 	}
@@ -69,6 +70,7 @@ public final class ClanTagCommands {
 		ClanTagConfig.ClanStyle style = getOrCreate(player.getUuid());
 		style.bold = bold;
 		ClanTagConfig.putStyle(player.getUuid(), style);
+		ClanTagCache.refreshAll(player.getServer());
 		source.sendFeedback(() -> Text.literal("Жирность тега: " + (bold ? "вкл" : "выкл")), false);
 		return 1;
 	}
@@ -87,6 +89,7 @@ public final class ClanTagCommands {
 			source.sendError(Text.literal("Не удалось сохранить Party name в OPAC."));
 			return 0;
 		}
+		ClanTagCache.refreshAll(player.getServer());
 		String preview = ClanTagFormatter.formatForPlayer(player);
 		source.sendFeedback(() -> Text.literal("Party name: " + trimmed + " | в TAB: " + preview), false);
 		return 1;

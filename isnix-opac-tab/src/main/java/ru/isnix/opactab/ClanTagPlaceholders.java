@@ -19,8 +19,8 @@ public final class ClanTagPlaceholders {
 			if (!(player instanceof net.minecraft.server.network.ServerPlayerEntity serverPlayer)) {
 				return PlaceholderResult.value("");
 			}
-			String tag = ClanTagFormatter.formatForPlayer(serverPlayer);
-			return PlaceholderResult.value(tag == null ? "" : tag);
+			ClanTagCache.put(serverPlayer);
+			return PlaceholderResult.value(ClanTagCache.get(serverPlayer.getUuid()));
 		});
 	}
 }
