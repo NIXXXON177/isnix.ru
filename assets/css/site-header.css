@@ -12,6 +12,13 @@
 	min-width: 0;
 }
 
+/* Ширина контейнера шапки — на десктопе не сжимаем меню в 72rem */
+@media (min-width: 1281px) {
+	.site-header__inner {
+		max-width: min(100%, 96rem);
+	}
+}
+
 .site-top__actions {
 	display: flex;
 	align-items: center;
@@ -35,7 +42,7 @@
 	display: none;
 }
 
-@media (min-width: 1101px) {
+@media (min-width: 1281px) {
 	.site-header {
 		justify-content: center;
 	}
@@ -60,7 +67,15 @@
 
 	.nav-links a[data-nav='barter'],
 	.nav-links a[data-nav='links'],
-	.nav-links a[data-nav='join-server'] {
+	.nav-links a[data-nav='join-server'],
+	.nav-links a[href*='#barter'],
+	.nav-links a[href*='#links'],
+	.nav-links a[href*='join-server'] {
+		display: none;
+	}
+
+	/* Дубль «На сервер» только в кнопке справа */
+	.nav-links > li:has(> a[href*='join-server']) {
 		display: none;
 	}
 
@@ -73,11 +88,13 @@
 		flex-wrap: nowrap;
 		align-items: center;
 		row-gap: 0;
+		flex-shrink: 0;
 	}
 
 	.nav-links li {
 		display: flex;
 		align-items: center;
+		flex-shrink: 0;
 	}
 
 	.nav-links a {
@@ -85,10 +102,11 @@
 		align-items: center;
 		line-height: 1.2;
 		padding: 0.15rem 0;
+		flex-shrink: 0;
 	}
 }
 
-@media (max-width: 1100px) {
+@media (max-width: 1280px) {
 	.site-header {
 		display: contents;
 	}

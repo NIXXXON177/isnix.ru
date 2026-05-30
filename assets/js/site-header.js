@@ -75,7 +75,7 @@
 		var menu = document.getElementById('navMenu')
 		var backdrop = document.getElementById('navBackdrop')
 		var logo = document.getElementById('navLogo')
-		var mqMobile = window.matchMedia('(max-width: 1100px)')
+		var mqMobile = window.matchMedia('(max-width: 1280px)')
 		if (!toggle || !menu) return
 
 		function isMobileNav() {

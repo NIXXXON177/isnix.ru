@@ -20,7 +20,7 @@
 		<link rel="stylesheet" href="assets/css/main.css?v=2" />
 		<link rel="stylesheet" href="assets/css/components.css" />
 		<link rel="stylesheet" href="assets/css/how-to-play.css" />
-		<link rel="stylesheet" href="assets/css/site-header.css" />
+		<link rel="stylesheet" href="assets/css/site-header.css?v=2" />
 		<link rel="stylesheet" href="assets/css/rules.css?v=2" />
 	</head>
 	<body class="htp-page rules-page" data-page="rules">
@@ -84,19 +84,27 @@
 						</a>
 					</div>
 					<ul class="nav-links">
-						<li><a href="index.html#about">О сервере</a></li>
-						<li><a href="index.html#download">Скачать</a></li>
-						<li><a href="index.html#barter">Бартер</a></li>
-						<li><a href="index.html#shop">Магазин</a></li>
+						<li><a href="index.html#about" data-nav="about">О сервере</a></li>
+						<li><a href="index.html#download" data-nav="download">Скачать</a></li>
+						<li><a href="index.html#barter" data-nav="barter">Бартер</a></li>
+						<li><a href="index.html#shop" data-nav="shop">Магазин</a></li>
 						<li><a href="rules.html" data-page-link="rules">Правила</a></li>
-						<li><a href="index.html#join-server">На сервер</a></li>
-						<li><a href="how-to-play.html">Как играть</a></li>
-						<li><a href="status.html">Статус</a></li>
-						<li><a href="support.html">Техподдержка</a></li>
-						<li class="nav-links__account">
-							<a href="account.html" id="navAccountBtn">Аккаунт</a>
+						<li><a href="index.html#join-server" data-nav="join-server">На сервер</a></li>
+						<li>
+							<a href="how-to-play.html" data-page-link="how-to-play">Как играть</a>
 						</li>
-						<li><a href="index.html#links">Контакты</a></li>
+						<li>
+							<a href="status.html" data-page-link="status">Статус</a>
+						</li>
+						<li>
+							<a href="support.html" data-page-link="support">Техподдержка</a>
+						</li>
+						<li class="nav-links__account">
+							<a href="account.html" data-page-link="account" id="navAccountBtn"
+								>Аккаунт</a
+							>
+						</li>
+						<li><a href="index.html#links" data-nav="links">Контакты</a></li>
 					</ul>
 					<a href="index.html#join-server" class="nav-btn nav-btn-menu" id="navJoinBtn"
 						>На сервер</a
@@ -114,6 +122,13 @@
 				</nav>
 			</div>
 		</div>
+		<button
+			type="button"
+			class="nav-backdrop"
+			id="navBackdrop"
+			aria-hidden="true"
+			tabindex="-1"
+		></button>
 
 		<main class="rules-doc">
 			<a href="index.html#rules" class="rules-doc__back">← Краткая версия на главной</a>
@@ -320,6 +335,7 @@
 			</table>
 		</main>
 
+		<script src="assets/js/site-header.js?v=6" defer></script>
 		<script src="assets/js/site.js" defer></script>
 	</body>
 </html>

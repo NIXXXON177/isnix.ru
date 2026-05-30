@@ -229,10 +229,17 @@
 
 /* ─── Страница rules.html ─── */
 
-.rules-page main {
+.rules-page main,
+.rules-page .rules-doc {
 	max-width: 52rem;
 	margin: 0 auto;
 	padding: 2rem 1.25rem 4rem;
+}
+
+@media (min-width: 1281px) {
+	.rules-page .rules-doc {
+		padding-top: calc(var(--nav-h) + env(safe-area-inset-top, 0px) + 1.5rem);
+	}
 }
 
 .rules-page .rules-doc__meta {
