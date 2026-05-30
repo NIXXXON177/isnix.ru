@@ -77,6 +77,10 @@ public final class ClanTagConfig {
 	}
 
 	public static final class ClanStyle {
+		/** Текст тега в TAB (если пусто — из OPAC Party name). */
+		@SerializedName("tag_text")
+		public String tagText = "";
+
 		@SerializedName("color")
 		public String color = "7";
 

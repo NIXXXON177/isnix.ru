@@ -1,5 +1,14 @@
 {
 	"wrap_brackets": true,
 	"suffix_reset": "&r",
-	"styles": {}
+	"styles": {
+		"ПРИМЕР-uuid-владельца-клана": {
+			"tag_text": "GKSAS",
+			"color": "6",
+			"bold": true,
+			"italic": false,
+			"underline": false,
+			"strikethrough": false
+		}
+	}
 }

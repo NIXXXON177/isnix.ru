@@ -32,6 +32,7 @@ Jar: `isnix-opac-tab/build/libs/isnix-opac-tab-1.0.0.jar`
 
 ## Версии
 
+- **1.0.6** — `/clantag name` сохраняет текст в `isnix-opac-tab.json` (OPAC опционально); владелец одного клана тоже может настроить тег.
 - **1.0.5** — `/clantag` italic, underline, strike, reset, preview; эталонные конфиги TAB в `docs/config-samples/tab/`.
 - **1.0.4** — кэш `%isnix:clan_tag%`; сообщения пати с префиксом LP и тегом после ника.
 

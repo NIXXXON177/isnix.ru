@@ -114,7 +114,7 @@ tagsuffix: "%luckperms:suffix% %isnix:clan_tag%"
 | Команда | Пример | Эффект |
 |---------|--------|--------|
 | `/clantag help` | — | Список команд |
-| `/clantag name <текст>` | `/clantag name GKSAS` | Текст тега (Party name OPAC) |
+| `/clantag name <текст>` | `/clantag name GKSAS` | Текст в TAB (в `isnix-opac-tab.json`); OPAC Party name — по возможности |
 | `/clantag color <цвет>` | `/clantag color gold` | Цвет |
 | `/clantag bold on` / `off` | — | Жирный |
 | `/clantag italic on` / `off` | — | Курсив |
@@ -159,6 +159,8 @@ tagsuffix: "%luckperms:suffix% %isnix:clan_tag%"
 | `%isnix:clan_tag%` или `%synced:isnix:clan_tag%` виден текстом | В `groups.yml` должно быть **`%isnix:clan_tag%`**, не `%sync:...%`. Мод не загрузился — `latest.log` |
 | В GUI OPAC снова куча опций | Сервер правили при **включённом** сервере — toml перезаписался; правьте снова **офлайн** |
 | «Нет прав» на `/clantag` | Команды только **владельцу** клана OPAC |
+| «Не удалось сохранить Party name» (старый мод) | Обновите **isnix-opac-tab 1.0.6+**: `/clantag name` всё равно сохраняет тег в TAB |
+| OPAC не принимает имя | В `openpartiesandclaims-server.toml` должно быть `"parties.name"` в `playerConfigurablePlayerConfigOptions` |
 | Тег не обновился | `/clantag sync` или перезайти; OPAC Party name должен быть у **лидера** |
 
 ---

@@ -31,14 +31,14 @@ public final class ClanTagFormatter {
 	}
 
 	public static String formatForPlayer(ServerPlayerEntity player) {
-		if (player == null || !OpacBridge.isAvailable() || !OpacBridge.isPlayerInClan(player)) {
+		if (player == null || !OpacBridge.isAvailable() || !OpacBridge.hasParty(player)) {
 			return "";
 		}
 		UUID ownerId = OpacBridge.getPartyOwnerId(player);
 		if (ownerId == null) {
 			return "";
 		}
-		String rawName = OpacBridge.getPartyNameForPlayer(player);
+		String rawName = resolveTagText(player, ownerId);
 		if (rawName == null || rawName.isEmpty()) {
 			return "";
 		}
@@ -60,6 +60,14 @@ public final class ClanTagFormatter {
 			out.append(ClanTagConfig.get().suffixReset);
 		}
 		return out.toString();
+	}
+
+	private static String resolveTagText(ServerPlayerEntity player, UUID ownerId) {
+		ClanTagConfig.ClanStyle style = ClanTagConfig.styleFor(ownerId);
+		if (style != null && style.tagText != null && !style.tagText.isBlank()) {
+			return style.tagText.trim();
+		}
+		return OpacBridge.getPartyNameForPlayer(player);
 	}
 
 	static void appendStyleCodes(StringBuilder out, ClanTagConfig.ClanStyle style) {

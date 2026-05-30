@@ -68,17 +68,12 @@ public final class ClanTagCommands {
 		if (player == null) {
 			return null;
 		}
-		if (!OpacBridge.isPlayerInClan(player)) {
-			source.sendError(Text.literal("Вы не в клане OPAC."));
+		if (!OpacBridge.hasParty(player)) {
+			source.sendError(Text.literal("Сначала создайте клан: /openpac-parties create"));
 			return null;
 		}
-		UUID ownerId = OpacBridge.getPartyOwnerId(player);
-		if (ownerId == null) {
-			source.sendError(Text.literal("Не удалось определить клан OPAC."));
-			return null;
-		}
-		if (!ownerId.equals(player.getUuid())) {
-			source.sendError(Text.literal("Только владелец клана может менять оформление тега."));
+		if (!OpacBridge.isPartyOwner(player)) {
+			source.sendError(Text.literal("Только владелец клана может менять тег и оформление."));
 			return null;
 		}
 		return player;
@@ -166,9 +161,24 @@ public final class ClanTagCommands {
 			source.sendError(Text.literal("Имя клана: 1–32 символа."));
 			return 0;
 		}
-		if (!OpacBridge.setPartyNameForOwner(player.getUuid(), player.getServer(), trimmed)) {
-			source.sendError(Text.literal("Не удалось сохранить Party name в OPAC."));
-			return 0;
+		ClanTagConfig.ClanStyle style = getOrCreate(player.getUuid());
+		style.tagText = trimmed;
+		ClanTagConfig.putStyle(player.getUuid(), style);
+		ClanTagCache.refreshAll(player.getServer());
+
+		OpacBridge.SetPartyNameResult opac = OpacBridge.setPartyNameForOwner(
+				player.getUuid(), player.getServer(), trimmed);
+		if (opac.success()) {
+			source.sendFeedback(() -> Text.literal("Тег сохранён (TAB + OPAC Party name)."), false);
+		} else {
+			source.sendFeedback(
+					() -> Text.literal("Тег сохранён для TAB. OPAC Party name: ")
+							.formatted(Formatting.GREEN)
+							.append(Text.literal(
+									"задайте вручную в меню ' → My player config → Party name"
+											+ (opac.message().isEmpty() ? "." : " (" + opac.message() + ")"))
+									.formatted(Formatting.GRAY)),
+					false);
 		}
 		refreshAndPreview(source, player);
 		return 1;
@@ -188,8 +198,8 @@ public final class ClanTagCommands {
 		if (player == null) {
 			return 0;
 		}
-		if (!OpacBridge.isPlayerInClan(player)) {
-			source.sendError(Text.literal("Вы не в клане."));
+		if (!OpacBridge.hasParty(player)) {
+			source.sendError(Text.literal("Вы не в клане OPAC."));
 			return 0;
 		}
 		UUID ownerId = OpacBridge.getPartyOwnerId(player);
@@ -214,6 +224,14 @@ public final class ClanTagCommands {
 		source.sendFeedback(
 				() -> Text.literal("Владелец: ").formatted(Formatting.GRAY)
 						.append(Text.literal(isOwner ? "вы" : ownerId.toString()).formatted(Formatting.WHITE)),
+				false);
+		source.sendFeedback(
+				() -> Text.literal("Текст тега: ").formatted(Formatting.GRAY)
+						.append(Text.literal(
+								style.tagText == null || style.tagText.isBlank()
+										? "(из OPAC Party name)"
+										: style.tagText)
+								.formatted(Formatting.WHITE)),
 				false);
 		source.sendFeedback(
 				() -> Text.literal("Стиль: цвет=").formatted(Formatting.GRAY)

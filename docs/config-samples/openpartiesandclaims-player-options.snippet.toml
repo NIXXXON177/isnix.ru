@@ -1,6 +1,7 @@
 # Вставить в config/openpartiesandclaims-server.toml при ВЫКЛЮЧЕННОМ сервере.
 # Заменить существующий playerConfigurablePlayerConfigOptions.
-# Полный список (заводской OPAC 0.26.3 + party.name для кланов).
+# Полный список (заводской OPAC 0.26.3). Обязательно parties.name — иначе /clantag name
+# не синхронизирует OPAC (тег в TAB всё равно работает через isnix-opac-tab.json).
 # Сгенерировано: python scripts/gen_opac_player_options.py
 
 playerConfigurablePlayerConfigOptions = [
