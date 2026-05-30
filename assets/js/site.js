@@ -386,23 +386,6 @@
 		btn.disabled = !prefix || !nick || !isNickVerifiedForPurchase()
 	}
 
-	;(function rulesSliderA11y() {
-		const viewports = document.querySelectorAll('.rules-slider-viewport')
-		if (!viewports.length) return
-		const mqReduce = window.matchMedia('(prefers-reduced-motion: reduce)')
-		viewports.forEach(vp => {
-			vp.addEventListener('keydown', e => {
-				if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return
-				const step = Math.max(240, Math.round(vp.clientWidth * 0.82))
-				vp.scrollBy({
-					left: e.key === 'ArrowLeft' ? -step : step,
-					behavior: mqReduce.matches ? 'auto' : 'smooth',
-				})
-				e.preventDefault()
-			})
-		})
-	})()
-
 	const navBarEl =
 		document.querySelector('.site-header') ||
 		document.getElementById('siteNav') ||
