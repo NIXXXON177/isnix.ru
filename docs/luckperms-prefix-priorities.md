@@ -10,7 +10,7 @@ LuckPerms показывает **один** префикс — с **наибол
 | **10** | все в группе `default` | `[Игрок]` |
 | **50** | донат / особый (meta на игроке) | `[DEMON]`, `[YouTube]`, `[Twitch]`, … |
 | **200** | группа `admin` | `[Админ]` |
-| **250** | личный meta (главный админ) | `[Гл. Админ]` — см. [luckperms-farmila52-gl-admin.txt](luckperms-farmila52-gl-admin.txt) |
+| **250** | личный meta (без группы admin) | `[Гл. Админ]` для farmila52 — [luckperms-farmila52-gl-admin.txt](luckperms-farmila52-gl-admin.txt) |
 
 Итог: у обычного игрока — `[Игрок]`, у донатера — свой префикс, у админа — `[Админ]` (перекрывает всё).
 

@@ -10,8 +10,8 @@
 На сайте: «Отправить сообщение» | «Одобрить» | «Отклонить»
 После одобрения whitelist ~5 мин (GitHub Actions).
 
---- farmila52: [Гл. Админ] (красный, жирный только префикс) ---
-lp user farmila52 parent set admin
+--- farmila52: [Гл. Админ] (только префикс, НЕ admin) ---
+lp user farmila52 parent set default
 lp user farmila52 meta clear prefix
 lp user farmila52 meta setprefix 250 "&c&l[Гл. Админ] &r"
 lp user farmila52 permission unset isthis.boldnick

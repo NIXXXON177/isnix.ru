@@ -75,10 +75,10 @@ op NikenER999
 
 ### LuckPerms — farmila52: [Гл. Админ] (priority 250)
 
-Красный жирный префикс, **ник обычный** (без `isthis.boldnick`):
+Только префикс, **без** группы `admin` и прав админа. Красный жирный префикс, ник обычный:
 
 ```text
-lp user farmila52 parent set admin
+lp user farmila52 parent set default
 lp user farmila52 meta clear prefix
 lp user farmila52 meta setprefix 250 "&c&l[Гл. Админ] &r"
 lp user farmila52 permission unset isthis.boldnick
