@@ -1134,7 +1134,7 @@
 		img.onerror = null
 		clearElyHeadCrop(img, s)
 		img.src = fb
-		fetch(elyUrl, { method: 'HEAD', mode: 'cors', cache: 'force-cache' })
+		fetch(elyUrl, { method: 'HEAD', mode: 'cors', cache: 'no-store' })
 			.then(function (res) {
 				if (!res.ok || !img.isConnected) return
 				applyElyHeadCrop(img, s)
