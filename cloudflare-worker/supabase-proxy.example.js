@@ -28,7 +28,7 @@ export default {
 
 		const url = new URL(request.url)
 		if (url.pathname.startsWith('/ely/skin/')) {
-			return proxyElySkin(url, allowOrigin)
+			return proxyElySkin(url, allowOrigin, request.method)
 		}
 
 		const target = new URL(request.url)
@@ -62,7 +62,7 @@ export default {
 	},
 }
 
-async function proxyElySkin(url, allowOrigin) {
+async function proxyElySkin(url, allowOrigin, method) {
 	if (url.pathname.length <= '/ely/skin/'.length) {
 		return new Response('Missing nickname', { status: 400 })
 	}
@@ -99,6 +99,16 @@ async function proxyElySkin(url, allowOrigin) {
 		return new Response(null, {
 			status: 404,
 			headers: { 'Access-Control-Allow-Origin': allowOrigin },
+		})
+	}
+
+	if (method === 'HEAD') {
+		return new Response(null, {
+			status: 200,
+			headers: {
+				'Access-Control-Allow-Origin': allowOrigin,
+				'Cache-Control': 'public, max-age=3600',
+			},
 		})
 	}
 

@@ -185,40 +185,40 @@
 
 	function playerHeadHtml(name, size) {
 		var s = size || 32
-		var enc = encodeURIComponent(name)
-		var skin = avatarUrl(name, s)
 		var fb = avatarFallbackUrl(name, s)
-		var scale = s / 8
-		var skinDim = 64 * scale
+		var safe = escapeHtml(name)
 		return (
 			'<span class="ely-head-wrap auth-player-head-wrap" style="width:' +
 			s +
 			'px;height:' +
 			s +
 			'px">' +
-			'<img class="auth-player-head ely-head-from-skin" src="' +
-			skin +
+			'<img class="auth-player-head" src="' +
+			fb +
 			'" width="' +
 			s +
 			'" height="' +
 			s +
-			'" alt="" loading="lazy" decoding="async" style="width:' +
-			skinDim +
-			'px;height:' +
-			skinDim +
-			'px;margin-left:' +
-			-8 * scale +
-			'px;margin-top:' +
-			-8 * scale +
-			'px" onerror="this.onerror=null;this.classList.remove(\'ely-head-from-skin\');this.style.width=\'' +
+			'" alt="" loading="eager" decoding="async" data-ely-nick="' +
+			safe +
+			'" data-ely-size="' +
 			s +
-			'px\';this.style.height=\'' +
-			s +
-			'px\';this.style.marginLeft=\'\';this.style.marginTop=\'\';this.src=\'' +
-			fb +
-			'\'" />' +
+			'" />' +
 			'</span>'
 		)
+	}
+
+	function hydratePlayerHeads(root) {
+		if (!root || !window.IsnixAuth || !IsnixAuth.applyElyHeadToImg) return
+		root.querySelectorAll('img[data-ely-nick]').forEach(function (img) {
+			if (img.dataset.elyHydrated === '1') return
+			img.dataset.elyHydrated = '1'
+			IsnixAuth.applyElyHeadToImg(
+				img,
+				img.getAttribute('data-ely-nick'),
+				Number(img.getAttribute('data-ely-size')) || 32,
+			)
+		})
 	}
 
 	function updateDashAvatar(nick) {
@@ -1297,6 +1297,7 @@
 					})
 					.filter(Boolean)
 					.join('')
+			hydratePlayerHeads(list)
 		} catch (err) {
 			list.innerHTML =
 				'<p class="auth-message auth-message--err">' +
@@ -1360,6 +1361,7 @@
 					)
 				})
 				.join('')
+			hydratePlayerHeads(list)
 		} catch (err) {
 			list.innerHTML =
 				'<p class="auth-message auth-message--err">' +

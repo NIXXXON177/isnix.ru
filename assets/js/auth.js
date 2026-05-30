@@ -1102,30 +1102,52 @@
 		)
 	}
 
-	/** Обрезка лица из PNG скина Ely.by (64×64) в контейнере .ely-head-wrap */
+	function clearElyHeadCrop(img, sizePx) {
+		var s = Math.max(8, Number(sizePx) || 48)
+		img.classList.remove('ely-head-from-skin')
+		img.style.width = s + 'px'
+		img.style.height = s + 'px'
+		img.style.marginLeft = ''
+		img.style.marginTop = ''
+	}
+
+	function applyElyHeadCrop(img, sizePx) {
+		var s = Math.max(8, Number(sizePx) || 48)
+		var scale = s / 8
+		var skinDim = 64 * scale
+		img.classList.add('ely-head-from-skin')
+		img.style.width = skinDim + 'px'
+		img.style.height = skinDim + 'px'
+		img.style.marginLeft = -8 * scale + 'px'
+		img.style.marginTop = -8 * scale + 'px'
+	}
+
+	/** Сначала mc-heads, затем Ely.by только если скин есть (без NS_BINDING_ABORTED) */
 	function applyElyHeadToImg(img, nick, sizePx) {
 		if (!img) return
 		var s = Math.max(8, Number(sizePx) || 48)
 		var nickTrim = (nick || '').trim()
 		var wrap = img.parentElement
 		if (wrap) wrap.classList.add('ely-head-wrap')
-		var scale = s / 8
-		var skinDim = 64 * scale
-		img.classList.add('ely-head-from-skin')
-		img.src = elySkinUrl(nickTrim)
-		img.style.width = skinDim + 'px'
-		img.style.height = skinDim + 'px'
-		img.style.marginLeft = -8 * scale + 'px'
-		img.style.marginTop = -8 * scale + 'px'
-		img.onerror = function () {
-			img.onerror = null
-			img.classList.remove('ely-head-from-skin')
-			img.style.width = s + 'px'
-			img.style.height = s + 'px'
-			img.style.marginLeft = ''
-			img.style.marginTop = ''
-			img.src = mcHeadAvatarFallbackUrl(nickTrim, s)
-		}
+		var fb = mcHeadAvatarFallbackUrl(nickTrim, s)
+		var elyUrl = elySkinUrl(nickTrim)
+		img.onerror = null
+		clearElyHeadCrop(img, s)
+		img.src = fb
+		fetch(elyUrl, { method: 'HEAD', mode: 'cors', cache: 'force-cache' })
+			.then(function (res) {
+				if (!res.ok || !img.isConnected) return
+				applyElyHeadCrop(img, s)
+				img.onerror = function () {
+					img.onerror = null
+					clearElyHeadCrop(img, s)
+					img.src = fb
+				}
+				img.src = elyUrl
+			})
+			.catch(function () {
+				/* остаётся mc-heads */
+			})
 	}
 
 	function mcHeadAvatarUrl(nick, size) {
