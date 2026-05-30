@@ -1,6 +1,7 @@
 /**
- * Прокси Supabase: api.isnix.ru → yfrlgeztbaebdapdnefy.supabase.co
- * Деплой: см. README-ru.md (редактор в панели или wrangler deploy)
+ * api.isnix.ru (или *.workers.dev):
+ *   /ely/skin/{nick}.png — PNG скина Ely.by по HTTPS (без mixed content)
+ *   /* — прокси Supabase → yfrlgeztbaebdapdnefy.supabase.co
  */
 const SUPABASE_HOST = 'yfrlgeztbaebdapdnefy.supabase.co'
 const ALLOWED_ORIGINS = ['https://isnix.ru', 'https://www.isnix.ru']
@@ -19,6 +20,11 @@ export default {
 				status: 204,
 				headers: corsHeaders(allowOrigin, requested),
 			})
+		}
+
+		const url = new URL(request.url)
+		if (url.pathname.startsWith('/ely/skin/')) {
+			return proxyElySkin(url, allowOrigin)
 		}
 
 		const target = new URL(request.url)
@@ -50,6 +56,63 @@ export default {
 			headers: out,
 		})
 	},
+}
+
+async function proxyElySkin(url, allowOrigin) {
+	if (url.pathname.length <= '/ely/skin/'.length) {
+		return new Response('Missing nickname', { status: 400 })
+	}
+
+	const nick = decodeURIComponent(
+		url.pathname.slice('/ely/skin/'.length).replace(/\.png$/i, ''),
+	).trim()
+	if (!nick) {
+		return new Response('Missing nickname', { status: 400 })
+	}
+
+	const texRes = await fetch(
+		`https://skinsystem.ely.by/textures/${encodeURIComponent(nick)}?version=2`,
+	)
+	if (!texRes.ok) {
+		return new Response(null, {
+			status: texRes.status === 204 ? 404 : texRes.status,
+			headers: { 'Access-Control-Allow-Origin': allowOrigin },
+		})
+	}
+
+	let data
+	try {
+		data = await texRes.json()
+	} catch (_e) {
+		return new Response(null, {
+			status: 502,
+			headers: { 'Access-Control-Allow-Origin': allowOrigin },
+		})
+	}
+
+	const raw = data && data.SKIN && data.SKIN.url
+	if (!raw) {
+		return new Response(null, {
+			status: 404,
+			headers: { 'Access-Control-Allow-Origin': allowOrigin },
+		})
+	}
+
+	const skinUrl = String(raw).replace(/^http:\/\//i, 'https://')
+	const skinRes = await fetch(skinUrl)
+	if (!skinRes.ok) {
+		return new Response(null, {
+			status: skinRes.status,
+			headers: { 'Access-Control-Allow-Origin': allowOrigin },
+		})
+	}
+
+	const out = new Headers(skinRes.headers)
+	out.set('Content-Type', 'image/png')
+	out.set('Cache-Control', 'public, max-age=3600')
+	out.set('Access-Control-Allow-Origin', allowOrigin)
+
+	return new Response(skinRes.body, { status: 200, headers: out })
 }
 
 const DEFAULT_ALLOW_HEADERS =

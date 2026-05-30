@@ -161,8 +161,11 @@
 		if (window.IsnixAuth && IsnixAuth.elySkinUrl) {
 			return IsnixAuth.elySkinUrl(nick)
 		}
+		if (window.IsnixAuth && IsnixAuth.elySkinProxyBase) {
+			return IsnixAuth.elySkinProxyBase() + encodeURIComponent((nick || '').trim()) + '.png'
+		}
 		return (
-			'https://skinsystem.ely.by/skins/' +
+			'https://sparkling-river-2d30.kudrasovn024.workers.dev/ely/skin/' +
 			encodeURIComponent((nick || '').trim()) +
 			'.png'
 		)

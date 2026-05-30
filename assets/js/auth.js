@@ -27,7 +27,21 @@
 			enabled: !!c.enabled,
 			supabaseUrl: (c.supabaseUrl || '').trim(),
 			supabaseAnonKey: (c.supabaseAnonKey || '').trim(),
+			elySkinProxyUrl: (c.elySkinProxyUrl || '').trim(),
 		}
+	}
+
+	/** HTTPS-прокси скина (тот же Worker, что и Supabase) — без редиректа на http://ely.by */
+	function elySkinProxyBase() {
+		var cfg = getConfig()
+		if (cfg.elySkinProxyUrl) {
+			return cfg.elySkinProxyUrl.replace(/\/?$/, '/')
+		}
+		var sup = cfg.supabaseUrl.replace(/\/$/, '')
+		if (/\.workers\.dev$/i.test(sup) || /api\.isnix\.ru$/i.test(sup)) {
+			return sup + '/ely/skin/'
+		}
+		return 'https://sparkling-river-2d30.kudrasovn024.workers.dev/ely/skin/'
 	}
 
 	function isReady() {
@@ -1075,10 +1089,8 @@
 		}
 	}
 
-	var ELY_SKIN_BASE = 'https://skinsystem.ely.by/skins/'
-
 	function elySkinUrl(nick) {
-		return ELY_SKIN_BASE + encodeURIComponent((nick || '').trim()) + '.png'
+		return elySkinProxyBase() + encodeURIComponent((nick || '').trim()) + '.png'
 	}
 
 	function mcHeadAvatarFallbackUrl(nick, size) {
@@ -1361,6 +1373,7 @@
 		SITE_PRESENCE_ONLINE_MS: SITE_PRESENCE_ONLINE_MS,
 		MC_NICK_RE: MC_NICK_RE,
 		elySkinUrl: elySkinUrl,
+		elySkinProxyBase: elySkinProxyBase,
 		applyElyHeadToImg: applyElyHeadToImg,
 		mcHeadAvatarFallbackUrl: mcHeadAvatarFallbackUrl,
 		mcHeadAvatarUrl: mcHeadAvatarUrl,

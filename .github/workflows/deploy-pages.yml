@@ -50,6 +50,7 @@ jobs:
             '	enabled: true,' \
             "	supabaseUrl: '${BASE_URL}'," \
             "	supabaseAnonKey: '${SUPABASE_ANON_KEY}'," \
+            "	elySkinProxyUrl: '${BASE_URL}/ely/skin/'," \
             '}' \
             > assets/js/auth-config.js
 
