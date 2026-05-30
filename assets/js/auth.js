@@ -1207,6 +1207,25 @@
 		'video/quicktime': true,
 	}
 
+	/** Подписанные URL Storage через api.isnix.ru — меньше предупреждений __cf_bm в консоли */
+	function rewriteStorageSignedUrl(signedUrl) {
+		if (!signedUrl) return signedUrl
+		var proxyBase = (getConfig().supabaseUrl || '').replace(/\/$/, '')
+		if (!proxyBase) return signedUrl
+		try {
+			var proxyHost = new URL(proxyBase).hostname
+			if (/\.supabase\.co$/i.test(proxyHost)) return signedUrl
+			var u = new URL(signedUrl)
+			if (!/\.supabase\.co$/i.test(u.hostname)) return signedUrl
+			var p = new URL(proxyBase)
+			u.protocol = p.protocol
+			u.host = p.host
+			return u.toString()
+		} catch (_e) {
+			return signedUrl
+		}
+	}
+
 	function sanitizeEvidenceFileName(name) {
 		var base = String(name || 'file')
 			.replace(/[/\\?%*:|"<>]/g, '_')
@@ -1236,7 +1255,7 @@
 					.from(SUPPORT_EVIDENCE_BUCKET)
 					.createSignedUrl(row.storage_path, 3600)
 				if (signed.data && signed.data.signedUrl) {
-					row.signed_url = signed.data.signedUrl
+					row.signed_url = rewriteStorageSignedUrl(signed.data.signedUrl)
 				}
 			} catch (_e) {
 				/* ignore */

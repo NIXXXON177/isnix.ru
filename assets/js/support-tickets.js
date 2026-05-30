@@ -96,13 +96,13 @@
 					var preview = isImg
 						? '<a href="' +
 							safeUrl +
-							'" target="_blank" rel="noopener"><img class="support-attachments__thumb" src="' +
+							'" target="_blank" rel="noopener noreferrer"><img class="support-attachments__thumb" src="' +
 							safeUrl +
-							'" alt="" loading="lazy" /></a>'
+							'" alt="" loading="lazy" decoding="async" crossorigin="anonymous" referrerpolicy="no-referrer" /></a>'
 						: isVid
 							? '<video class="support-attachments__video" src="' +
 								safeUrl +
-								'" controls preload="metadata"></video>'
+								'" controls preload="metadata" crossorigin="anonymous"></video>'
 							: ''
 					return (
 						'<li class="support-attachments__item">' +
