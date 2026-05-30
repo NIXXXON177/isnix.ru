@@ -13,6 +13,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import ru.isnix.messages.MessagesConfig;
 import ru.isnix.messages.TextUtil;
 
+import java.net.SocketAddress;
 import java.util.Optional;
 
 @Mixin(PlayerManager.class)
@@ -22,7 +23,10 @@ public class PlayerManagerMixin {
 	private MinecraftServer server;
 
 	@Inject(method = "checkCanJoin", at = @At("RETURN"), cancellable = true)
-	private void isnix$customWhitelistKick(GameProfile profile, CallbackInfoReturnable<Optional<Text>> cir) {
+	private void isnix$customWhitelistKick(
+			SocketAddress address,
+			GameProfile profile,
+			CallbackInfoReturnable<Optional<Text>> cir) {
 		Optional<Text> result = cir.getReturnValue();
 		if (result == null || result.isEmpty()) {
 			return;
