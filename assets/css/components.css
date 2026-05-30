@@ -693,3 +693,75 @@
 		grid-column: auto;
 	}
 }
+
+/* Запрос push-уведомлений в PWA (site-push-prompt.js) */
+.isnix-push-prompt {
+	position: fixed;
+	left: max(0.65rem, env(safe-area-inset-left, 0px));
+	right: max(0.65rem, env(safe-area-inset-right, 0px));
+	bottom: max(0.85rem, env(safe-area-inset-bottom, 0px));
+	z-index: 10045;
+}
+
+.isnix-push-prompt__inner {
+	padding: 1rem 1.1rem;
+	border-radius: var(--radius-md);
+	border: 1px solid rgba(74, 222, 128, 0.35);
+	background: rgba(10, 15, 10, 0.97);
+	box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5);
+	backdrop-filter: blur(10px);
+}
+
+.isnix-push-prompt__title {
+	margin: 0 0 0.35rem;
+	font-family: 'Cinzel', serif;
+	font-size: 1rem;
+	font-weight: 700;
+	color: #fff;
+}
+
+.isnix-push-prompt__text {
+	margin: 0 0 0.85rem;
+	font-size: 0.82rem;
+	line-height: 1.5;
+	color: var(--text-soft);
+}
+
+.isnix-push-prompt__actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+}
+
+.isnix-push-prompt__btn {
+	flex: 1 1 7rem;
+	min-height: 2.65rem;
+	padding: 0.5rem 0.85rem;
+	border-radius: var(--radius-sm);
+	font-family: 'Raleway', sans-serif;
+	font-size: 0.72rem;
+	font-weight: 700;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	cursor: pointer;
+	transition:
+		background 0.2s,
+		border-color 0.2s;
+}
+
+.isnix-push-prompt__btn--primary {
+	border: 1px solid rgba(74, 222, 128, 0.5);
+	background: linear-gradient(90deg, #10b981, #16a34a);
+	color: #0a0f0a;
+}
+
+.isnix-push-prompt__btn--ghost {
+	border: 1px solid var(--border);
+	background: transparent;
+	color: var(--text-soft);
+}
+
+.isnix-push-prompt__btn--ghost:hover {
+	border-color: rgba(74, 222, 128, 0.35);
+	color: var(--green);
+}

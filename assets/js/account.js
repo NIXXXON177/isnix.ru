@@ -1616,6 +1616,22 @@
 		startNotificationsPoll(userId)
 	}
 
+	function bindPushPermissionListener() {
+		if (window.__isnixPushPermBound) return
+		window.__isnixPushPermBound = true
+		window.addEventListener('isnix-push-permission', function (ev) {
+			var state = ev && ev.detail && ev.detail.state
+			if (state !== 'granted' || !window.IsnixAuth) return
+			IsnixAuth.getSession()
+				.then(function (session) {
+					if (session && session.user) {
+						return refreshNotifications(session.user.id, true)
+					}
+				})
+				.catch(function () {})
+		})
+	}
+
 	function bindNotificationsUi(userId) {
 		if (notificationsUiBound) return
 		var btn = document.getElementById('notificationsBtn')
@@ -2268,6 +2284,7 @@
 				})
 
 			bindNotificationsUi(userId)
+			bindPushPermissionListener()
 			deferAccountTask(function () {
 				startNotifications(userId)
 			}, 400)
