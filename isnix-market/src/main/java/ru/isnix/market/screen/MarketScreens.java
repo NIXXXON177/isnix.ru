@@ -62,8 +62,8 @@ public final class MarketScreens {
 		stack.set(net.minecraft.component.DataComponentTypes.LORE,
 				new net.minecraft.component.type.LoreComponent(java.util.List.of(
 						Text.literal("1) Товар — клик по инвентарю внизу").formatted(Formatting.GRAY),
-						Text.literal("2) Цена — ещё клик по инвентарю").formatted(Formatting.DARK_GRAY),
-						Text.literal("ЛКМ — 1 шт., ПКМ — стак, ПКМ по слоту — сброс").formatted(Formatting.DARK_GRAY)
+						Text.literal("2) Цена — книга или 1 шт. в инвентаре, ±1").formatted(Formatting.DARK_GRAY),
+						Text.literal("ПКМ по слоту цены/товара — сброс").formatted(Formatting.DARK_GRAY)
 				)));
 		return stack;
 	}
@@ -105,9 +105,9 @@ public final class MarketScreens {
 				Text.literal("Ваша цена").formatted(Formatting.LIGHT_PURPLE, Formatting.BOLD));
 		stack.set(net.minecraft.component.DataComponentTypes.LORE,
 				new net.minecraft.component.type.LoreComponent(java.util.List.of(
-						Text.literal("После товара — клик по инвентарю").formatted(Formatting.GRAY),
-						Text.literal("С инвентаря не снимается").formatted(Formatting.DARK_GRAY),
-						Text.literal("Покупатель принесёт это при покупке").formatted(Formatting.DARK_GRAY)
+						Text.literal("ЛКМ — каталог цен (без предметов у вас)").formatted(Formatting.GRAY),
+						Text.literal("Или 1 шт. в инвентаре + зелёный/красный ±1").formatted(Formatting.DARK_GRAY),
+						Text.literal("С вашего инвентаря ничего не снимается").formatted(Formatting.DARK_GRAY)
 				)));
 		return stack;
 	}

@@ -28,6 +28,8 @@ public class CreateListingScreenHandler extends GenericContainerScreenHandler {
 	public static final int SLOT_SALE = 11;
 	public static final int SLOT_PICK_PRICE = 12;
 	public static final int SLOT_PRICE = 13;
+	public static final int SLOT_PRICE_MINUS = 14;
+	public static final int SLOT_PRICE_PLUS = 15;
 	public static final int SLOT_CONFIRM = 22;
 
 	private final SimpleInventory container;
@@ -55,6 +57,10 @@ public class CreateListingScreenHandler extends GenericContainerScreenHandler {
 				inv.setStack(i, MarketScreens.pickPriceButton());
 			} else if (i == SLOT_SALE || i == SLOT_PRICE) {
 				inv.setStack(i, ItemStack.EMPTY);
+			} else if (i == SLOT_PRICE_MINUS) {
+				inv.setStack(i, MarketScreens.countButton(false));
+			} else if (i == SLOT_PRICE_PLUS) {
+				inv.setStack(i, MarketScreens.countButton(true));
 			} else {
 				inv.setStack(i, MarketScreens.fillerPane());
 			}
@@ -129,11 +135,15 @@ public class CreateListingScreenHandler extends GenericContainerScreenHandler {
 			return;
 		}
 		if (slotIndex == SLOT_PICK_PRICE) {
-			serverPlayer.sendMessage(
-					Text.literal("Цена — из инвентаря внизу: клик по предмету (ЛКМ — 1, ПКМ — стак). С инвентаря не снимается.")
-							.formatted(Formatting.YELLOW),
-					false
-			);
+			MarketScreens.openPricePresets(serverPlayer, 0);
+			return;
+		}
+		if (slotIndex == SLOT_PRICE_MINUS) {
+			adjustPriceCount(serverPlayer, -1);
+			return;
+		}
+		if (slotIndex == SLOT_PRICE_PLUS) {
+			adjustPriceCount(serverPlayer, 1);
 			return;
 		}
 		if (slotIndex == SLOT_PRICE && button == 1) {
@@ -169,7 +179,7 @@ public class CreateListingScreenHandler extends GenericContainerScreenHandler {
 		refreshDisplayStacks();
 	}
 
-	/** Цена: только шаблон для покупателя, предметы из инвентаря не забираются. */
+	/** Цена: шаблон для покупателя; с инвентаря не снимается. Достаточно 1 шт. для типа, количество — +/- или ПКМ. */
 	private void handlePriceFromPlayerInventory(ServerPlayerEntity player, int slotIndex, int button) {
 		Slot playerSlot = slots.get(slotIndex);
 		if (playerSlot == null || !playerSlot.hasStack()) {
@@ -181,8 +191,7 @@ public class CreateListingScreenHandler extends GenericContainerScreenHandler {
 			return;
 		}
 		int count = button == 1 ? Math.min(stack.getCount(), 64) : 1;
-		ItemStack pick = stack.copy();
-		pick.setCount(count);
+		ItemStack pick = stack.copyWithCount(count);
 		if (!draft.sale.isEmpty()
 				&& ItemStack.areItemsAndComponentsEqual(draft.sale, pick)
 				&& draft.sale.getCount() == pick.getCount()) {
@@ -191,7 +200,32 @@ public class CreateListingScreenHandler extends GenericContainerScreenHandler {
 		}
 		draft.price = pick;
 		player.sendMessage(
-				Text.literal("Цена: ").formatted(Formatting.AQUA).append(pick.toHoverableText()),
+				Text.literal("Цена (тип из инвентаря): ")
+						.formatted(Formatting.AQUA)
+						.append(pick.toHoverableText())
+						.append(Text.literal(" — ±1 для другого количества").formatted(Formatting.DARK_GRAY)),
+				false
+		);
+		refreshDisplayStacks();
+	}
+
+	private void adjustPriceCount(ServerPlayerEntity player, int delta) {
+		if (draft.price.isEmpty()) {
+			player.sendMessage(
+					Text.literal("Сначала выберите цену: книга «Ваша цена» или клик по инвентарю.")
+							.formatted(Formatting.YELLOW),
+					false
+			);
+			return;
+		}
+		int next = draft.price.getCount() + delta;
+		if (next < 1 || next > 64) {
+			player.sendMessage(Text.literal("Количество цены: от 1 до 64.").formatted(Formatting.RED), false);
+			return;
+		}
+		draft.price = draft.price.copyWithCount(next);
+		player.sendMessage(
+				Text.literal("Цена: ").formatted(Formatting.AQUA).append(draft.price.toHoverableText()),
 				false
 		);
 		refreshDisplayStacks();
@@ -202,7 +236,7 @@ public class CreateListingScreenHandler extends GenericContainerScreenHandler {
 		ItemStack price = draft.price.copy();
 		if (sale.isEmpty() || price.isEmpty()) {
 			player.sendMessage(
-					Text.literal("Выберите товар и цену из инвентаря внизу (ЛКМ — 1, ПКМ — стак).")
+					Text.literal("Выберите товар из инвентаря и цену (книга «Ваша цена» или инвентарь).")
 							.formatted(Formatting.RED),
 					false
 			);

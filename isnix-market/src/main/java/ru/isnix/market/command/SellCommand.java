@@ -79,7 +79,7 @@ public final class SellCommand {
 				false);
 		player.sendMessage(
 				Text.literal("/sell list").formatted(Formatting.GREEN)
-						.append(Text.literal(" — выставить лот: товар и цена из инвентаря")
+						.append(Text.literal(" — лот: товар из инвентаря, цена — каталог или ±1")
 								.formatted(Formatting.GRAY)),
 				false);
 		player.sendMessage(

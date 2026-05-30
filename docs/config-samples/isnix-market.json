@@ -10,6 +10,7 @@
 		"minecraft:command_block"
 	],
 	"pricePresets": [
+		{ "id": "minecraft:cobblestone", "count": 32 },
 		{ "id": "minecraft:emerald", "count": 16 },
 		{ "id": "minecraft:diamond", "count": 4 },
 		{ "id": "minecraft:iron_ingot", "count": 64 }

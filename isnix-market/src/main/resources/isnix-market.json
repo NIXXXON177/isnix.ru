@@ -19,6 +19,14 @@
 		"minecraft:writable_book"
 	],
 	"pricePresets": [
+		{ "id": "minecraft:cobblestone", "count": 32 },
+		{ "id": "minecraft:cobblestone", "count": 64 },
+		{ "id": "minecraft:oak_log", "count": 32 },
+		{ "id": "minecraft:oak_log", "count": 64 },
+		{ "id": "minecraft:oak_planks", "count": 32 },
+		{ "id": "minecraft:oak_planks", "count": 64 },
+		{ "id": "minecraft:deepslate", "count": 32 },
+		{ "id": "minecraft:deepslate", "count": 64 },
 		{ "id": "minecraft:emerald", "count": 1 },
 		{ "id": "minecraft:emerald", "count": 8 },
 		{ "id": "minecraft:emerald", "count": 16 },
