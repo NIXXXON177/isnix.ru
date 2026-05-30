@@ -10,6 +10,10 @@
 	var loginBtn = document.getElementById('appealsLoginBtn')
 
 	function showMsg(text, ok) {
+		if (window.IsnixToast) {
+			if (!text) IsnixToast.hideAll()
+			else IsnixToast.show(text, ok ? 'ok' : 'err')
+		}
 		var el = document.getElementById('appealsMessage')
 		if (!el) return
 		el.textContent = text

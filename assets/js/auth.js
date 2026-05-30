@@ -1207,6 +1207,127 @@
 		'video/webm': true,
 		'video/quicktime': true,
 	}
+	var SUPPORT_EVIDENCE_EXT_MIME = {
+		jpg: 'image/jpeg',
+		jpeg: 'image/jpeg',
+		png: 'image/png',
+		webp: 'image/webp',
+		gif: 'image/gif',
+		mp4: 'video/mp4',
+		m4v: 'video/mp4',
+		webm: 'video/webm',
+		mov: 'video/quicktime',
+		qt: 'video/quicktime',
+	}
+
+	function inferEvidenceMime(file) {
+		if (!file) return ''
+		if (file.type && SUPPORT_EVIDENCE_MIMES[file.type]) return file.type
+		var parts = String(file.name || '').split('.')
+		var ext = parts.length > 1 ? parts.pop().toLowerCase() : ''
+		return SUPPORT_EVIDENCE_EXT_MIME[ext] || file.type || ''
+	}
+
+	function isAllowedEvidenceFile(file) {
+		var mime = inferEvidenceMime(file)
+		return !!mime && SUPPORT_EVIDENCE_MIMES[mime]
+	}
+
+	function encodeStorageObjectPath(path) {
+		return String(path || '')
+			.split('/')
+			.map(function (seg) {
+				return encodeURIComponent(seg)
+			})
+			.join('/')
+	}
+
+	function xhrStorageUpload(url, file, headers, timeoutMs) {
+		return new Promise(function (resolve, reject) {
+			var xhr = new XMLHttpRequest()
+			xhr.open('POST', url, true)
+			xhr.timeout = timeoutMs || 300000
+			Object.keys(headers).forEach(function (k) {
+				if (headers[k] != null && headers[k] !== '') {
+					xhr.setRequestHeader(k, headers[k])
+				}
+			})
+			xhr.onload = function () {
+				if (xhr.status >= 200 && xhr.status < 300) {
+					try {
+						resolve(xhr.responseText ? JSON.parse(xhr.responseText) : {})
+					} catch (_e) {
+						resolve({})
+					}
+					return
+				}
+				var msg = xhr.responseText || xhr.statusText || 'HTTP ' + xhr.status
+				reject(new Error(msg))
+			}
+			xhr.onerror = function () {
+				reject(new Error('Failed to fetch'))
+			}
+			xhr.ontimeout = function () {
+				reject(new Error('Превышено время загрузки — попробуйте Wi‑Fi или файл поменьше'))
+			}
+			xhr.send(file)
+		})
+	}
+
+	async function uploadEvidenceFileOnce(file, path, contentType) {
+		var sb = getClient()
+		var cfg = getConfig()
+		if (!sb) throw new Error('Нет подключения')
+		var session = await getSession()
+		if (!session) throw new Error('not_authenticated')
+		var base = (cfg.supabaseUrl || '').replace(/\/$/, '')
+		var url =
+			base +
+			'/storage/v1/object/' +
+			SUPPORT_EVIDENCE_BUCKET +
+			'/' +
+			encodeStorageObjectPath(path)
+		try {
+			return await xhrStorageUpload(
+				url,
+				file,
+				{
+					Authorization: 'Bearer ' + session.access_token,
+					apikey: cfg.supabaseAnonKey,
+					'Content-Type': contentType,
+					'x-upsert': 'false',
+					'cache-control': '3600',
+				},
+				300000,
+			)
+		} catch (xhrErr) {
+			var up = await sb.storage.from(SUPPORT_EVIDENCE_BUCKET).upload(path, file, {
+				cacheControl: '3600',
+				upsert: false,
+				contentType: contentType,
+			})
+			if (up.error) throw xhrErr || up.error
+			return up.data
+		}
+	}
+
+	async function uploadEvidenceFileWithRetry(file, path, contentType) {
+		var lastErr = null
+		var attempt
+		for (attempt = 0; attempt < 3; attempt++) {
+			try {
+				return await uploadEvidenceFileOnce(file, path, contentType)
+			} catch (err) {
+				lastErr = err
+				if (attempt < 2) {
+					await new Promise(function (r) {
+						setTimeout(r, 800 * (attempt + 1))
+					})
+				}
+			}
+		}
+		throw lastErr
+	}
 
 	/** Подписанные URL Storage через api.isnix.ru — меньше предупреждений __cf_bm в консоли */
 	function rewriteStorageSignedUrl(signedUrl) {
@@ -1265,12 +1386,13 @@
 		return rows
 	}
 
-	async function uploadSupportEvidenceFiles(ticketId, fileList) {
+	async function uploadSupportEvidenceFiles(ticketId, fileList, options) {
 		var sb = getClient()
 		if (!sb) throw new Error('Нет подключения')
 		var session = await getSession()
 		if (!session) throw new Error('not_authenticated')
 		var uid = session.user.id
+		var onProgress = options && options.onProgress
 		var uploaded = 0
 		var failed = []
 		var files = []
@@ -1281,14 +1403,18 @@
 		for (i = 0; i < files.length; i++) {
 			var file = files[i]
 			if (!file) continue
+			if (typeof onProgress === 'function') {
+				onProgress(i + 1, files.length, file.name)
+			}
 			if (file.size > SUPPORT_EVIDENCE_MAX_BYTES) {
 				failed.push(file.name + ': больше 25 МБ')
 				continue
 			}
-			if (file.type && !SUPPORT_EVIDENCE_MIMES[file.type]) {
-				failed.push(file.name + ': недопустимый тип')
+			if (!isAllowedEvidenceFile(file)) {
+				failed.push(file.name + ': недопустимый тип (JPG, PNG, WebP, GIF, MP4, WebM, MOV)')
 				continue
 			}
+			var contentType = inferEvidenceMime(file)
 			var path =
 				uid +
 				'/' +
@@ -1297,20 +1423,17 @@
 				Date.now() +
 				'-' +
 				sanitizeEvidenceFileName(file.name)
-			var up = await sb.storage.from(SUPPORT_EVIDENCE_BUCKET).upload(path, file, {
-				cacheControl: '3600',
-				upsert: false,
-				contentType: file.type || undefined,
-			})
-			if (up.error) {
-				failed.push(file.name + ': ' + errorText(up.error))
+			try {
+				await uploadEvidenceFileWithRetry(file, path, contentType)
+			} catch (err) {
+				failed.push(file.name + ': ' + errorText(err))
 				continue
 			}
 			var reg = await sb.rpc('register_support_attachment', {
 				p_ticket_id: ticketId,
 				p_storage_path: path,
 				p_file_name: file.name,
-				p_mime_type: file.type || null,
+				p_mime_type: contentType || null,
 				p_size_bytes: file.size,
 			})
 			if (reg.error) {
@@ -1320,6 +1443,50 @@
 			uploaded++
 		}
 		return { uploaded: uploaded, failed: failed }
+	}
+
+	var notificationsRealtimeChannel = null
+
+	function subscribeUserNotifications(userId, onInsert) {
+		var sb = getClient()
+		if (!sb || !userId || typeof onInsert !== 'function') {
+			return function () {}
+		}
+		if (notificationsRealtimeChannel) {
+			try {
+				sb.removeChannel(notificationsRealtimeChannel)
+			} catch (_e) {
+				/* ignore */
+			}
+			notificationsRealtimeChannel = null
+		}
+		notificationsRealtimeChannel = sb
+			.channel('user_notifications:' + userId, {
+				config: { private: false },
+			})
+			.on(
+				'postgres_changes',
+				{
+					event: 'INSERT',
+					schema: 'public',
+					table: 'user_notifications',
+					filter: 'user_id=eq.' + userId,
+				},
+				function (payload) {
+					if (payload && payload.new) onInsert(payload.new)
+				},
+			)
+			.subscribe()
+		return function () {
+			if (notificationsRealtimeChannel) {
+				try {
+					sb.removeChannel(notificationsRealtimeChannel)
+				} catch (_e2) {
+					/* ignore */
+				}
+				notificationsRealtimeChannel = null
+			}
+		}
 	}
 
 	async function getAdminProfiles() {
@@ -1746,6 +1913,7 @@
 		validateWhitelistApplicationData: validateWhitelistApplicationData,
 		getNotifications: getNotifications,
 		markNotificationsRead: markNotificationsRead,
+		subscribeUserNotifications: subscribeUserNotifications,
 		updatePassword: updatePassword,
 		getAdminProfiles: getAdminProfiles,
 		onAuthStateChange: onAuthStateChange,

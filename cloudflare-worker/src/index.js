@@ -34,13 +34,15 @@ export default {
 		const headers = new Headers(request.headers)
 		headers.set('Host', host)
 
+		const hasBody =
+			request.method !== 'GET' &&
+			request.method !== 'HEAD' &&
+			request.method !== 'OPTIONS'
+
 		const proxied = new Request(target.toString(), {
 			method: request.method,
 			headers,
-			body:
-				request.method !== 'GET' && request.method !== 'HEAD'
-					? request.body
-					: undefined,
+			body: hasBody ? request.body : undefined,
 			redirect: 'follow',
 		})
 
@@ -122,7 +124,7 @@ async function proxyElySkin(url, allowOrigin, method) {
 }
 
 const DEFAULT_ALLOW_HEADERS =
-	'accept-profile, apikey, authorization, content-profile, content-type, prefer, range, x-client-info, x-retry-count, x-supabase-api-version, x-upsert'
+	'accept-profile, apikey, authorization, cache-control, content-length, content-profile, content-type, prefer, range, x-client-info, x-retry-count, x-supabase-api-version, x-upsert'
 
 function elySkinMiss(allowOrigin) {
 	return new Response(null, {

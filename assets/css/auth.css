@@ -1384,3 +1384,112 @@
 		font-size: 1.2rem;
 	}
 }
+
+/* Всплывающий статус действий (site-toast.js) */
+.isnix-toast-host {
+	position: fixed;
+	top: max(0.75rem, env(safe-area-inset-top, 0px));
+	left: 50%;
+	transform: translateX(-50%);
+	z-index: 10050;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 0.5rem;
+	width: min(24rem, calc(100vw - 1.5rem));
+	pointer-events: none;
+}
+
+.isnix-toast {
+	display: flex;
+	align-items: flex-start;
+	gap: 0.55rem;
+	width: 100%;
+	padding: 0.75rem 0.85rem;
+	border-radius: var(--radius-md);
+	border: 1px solid rgba(255, 255, 255, 0.12);
+	background: rgba(12, 18, 12, 0.96);
+	box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45);
+	opacity: 0;
+	transform: translateY(-0.75rem);
+	transition:
+		opacity 0.25s ease,
+		transform 0.25s ease;
+	pointer-events: auto;
+	backdrop-filter: blur(8px);
+}
+
+.isnix-toast--visible {
+	opacity: 1;
+	transform: translateY(0);
+}
+
+.isnix-toast--ok {
+	border-color: rgba(74, 222, 128, 0.45);
+}
+
+.isnix-toast--err {
+	border-color: rgba(248, 113, 113, 0.45);
+}
+
+.isnix-toast--loading {
+	border-color: rgba(96, 165, 250, 0.4);
+}
+
+.isnix-toast__icon {
+	flex-shrink: 0;
+	width: 1.1rem;
+	height: 1.1rem;
+	margin-top: 0.1rem;
+	border-radius: 50%;
+}
+
+.isnix-toast--ok .isnix-toast__icon {
+	background: rgba(74, 222, 128, 0.35);
+}
+
+.isnix-toast--err .isnix-toast__icon {
+	background: rgba(248, 113, 113, 0.35);
+}
+
+.isnix-toast--loading .isnix-toast__icon {
+	background: rgba(96, 165, 250, 0.35);
+	animation: isnix-toast-pulse 1s ease-in-out infinite;
+}
+
+.isnix-toast--info .isnix-toast__icon {
+	background: rgba(74, 222, 128, 0.2);
+}
+
+@keyframes isnix-toast-pulse {
+	0%,
+	100% {
+		opacity: 0.5;
+	}
+	50% {
+		opacity: 1;
+	}
+}
+
+.isnix-toast__text {
+	flex: 1;
+	font-size: 0.84rem;
+	line-height: 1.45;
+	color: #e8f5e8;
+}
+
+.isnix-toast__close {
+	flex-shrink: 0;
+	margin: -0.15rem -0.1rem 0 0;
+	padding: 0.15rem 0.35rem;
+	font-size: 1.1rem;
+	line-height: 1;
+	color: var(--text-soft);
+	background: none;
+	border: none;
+	cursor: pointer;
+}
+
+.isnix-toast__close:hover {
+	color: #fff;
+}

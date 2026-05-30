@@ -38,9 +38,9 @@
 	}
 
 	function showMsg(text, ok) {
-		if (window.IsnixAccount && IsnixAccount.showMsg) {
-			IsnixAccount.showMsg(text, ok)
-			return
+		if (window.IsnixToast) {
+			if (!text) IsnixToast.hideAll()
+			else IsnixToast.show(text, ok ? 'ok' : 'err')
 		}
 		var el =
 			document.getElementById('appealsMessage') ||
@@ -496,8 +496,12 @@
 				return
 			}
 			var btn = form.querySelector('button[type="submit"]')
+			var loadingToast = 0
 			if (btn) btn.disabled = true
 			try {
+				if (window.IsnixToast) {
+					loadingToast = IsnixToast.show('Отправка обращения…', 'loading', 0)
+				}
 				var ticketId = await IsnixAuth.createSupportTicket({
 					category: document.getElementById('supportCategory').value,
 					subject: document.getElementById('supportSubject').value,
@@ -516,7 +520,22 @@
 					var up = await IsnixAuth.uploadSupportEvidenceFiles(
 						ticketId,
 						fileInput.files,
+						{
+							onProgress: function (n, total, name) {
+								if (!window.IsnixToast) return
+								if (loadingToast) IsnixToast.hide(loadingToast)
+								loadingToast = IsnixToast.show(
+									'Загрузка файла ' + n + ' из ' + total + ': ' + name,
+									'loading',
+									0,
+								)
+							},
+						},
 					)
+					if (loadingToast && window.IsnixToast) {
+						IsnixToast.hide(loadingToast)
+						loadingToast = 0
+					}
 					if (up.failed && up.failed.length) {
 						showMsg(
 							'Обращение создано, но часть файлов не загрузилась: ' +
@@ -532,6 +551,10 @@
 						showMsg('Обращение отправлено. Ожидай ответа в этом разделе.', true)
 					}
 				} else {
+					if (loadingToast && window.IsnixToast) {
+						IsnixToast.hide(loadingToast)
+						loadingToast = 0
+					}
 					showMsg('Обращение отправлено. Ожидай ответа в этом разделе.', true)
 				}
 				form.reset()
@@ -551,6 +574,7 @@
 					scrollRoot.scrollIntoView({ behavior: 'smooth', block: 'start' })
 				}
 			} catch (err) {
+				if (loadingToast && window.IsnixToast) IsnixToast.hide(loadingToast)
 				showMsg(IsnixAuth.formatAuthError(err), false)
 			} finally {
 				if (btn) btn.disabled = false

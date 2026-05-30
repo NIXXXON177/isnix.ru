@@ -32,8 +32,11 @@
 	}
 	var cachedNotifications = []
 	var notificationsPollTimer = null
+	var notificationsRealtimeUnsub = null
+	var notificationsRealtimeOk = false
 	var seenNotificationIds = {}
-	var NOTIFICATIONS_POLL_MS = 45000
+	var NOTIFICATIONS_POLL_MS = 90000
+	var NOTIFICATIONS_POLL_FAST_MS = 20000
 	var notificationsUiBound = false
 	var adminPendingPollTimer = null
 	var ADMIN_PENDING_POLL_MS = 60000
@@ -52,6 +55,10 @@
 	}
 
 	function showMsg(text, ok) {
+		if (window.IsnixToast) {
+			if (!text) IsnixToast.hideAll()
+			else IsnixToast.show(text, ok ? 'ok' : 'err')
+		}
 		if (!authMsg) return
 		authMsg.textContent = text
 		authMsg.className =
@@ -1522,21 +1529,91 @@
 		}
 	}
 
+	function mergeNotificationRow(row) {
+		if (!row || !row.id) return
+		var found = false
+		for (var i = 0; i < cachedNotifications.length; i++) {
+			if (cachedNotifications[i].id === row.id) {
+				cachedNotifications[i] = row
+				found = true
+				break
+			}
+		}
+		if (!found) {
+			cachedNotifications = [row].concat(cachedNotifications)
+		}
+		paintNotificationsList(cachedNotifications)
+	}
+
+	function handleRealtimeNotification(row) {
+		if (!row || !row.id) return
+		var isNew = !seenNotificationIds[row.id] && !row.read_at
+		mergeNotificationRow(row)
+		if (isNew) {
+			seenNotificationIds[row.id] = true
+			maybeBrowserNotify([row])
+			if (window.IsnixToast) {
+				var hint = row.body ? ': ' + row.body : ''
+				IsnixToast.show((row.title || 'Новое уведомление') + hint, 'info', 7000)
+			}
+		}
+	}
+
 	function stopNotificationsPoll() {
 		if (notificationsPollTimer) {
 			clearInterval(notificationsPollTimer)
 			notificationsPollTimer = null
 		}
+		if (notificationsRealtimeUnsub) {
+			notificationsRealtimeUnsub()
+			notificationsRealtimeUnsub = null
+		}
+		notificationsRealtimeOk = false
 		cachedNotifications = []
 	}
 
 	function startNotificationsPoll(userId) {
-		stopNotificationsPoll()
+		if (notificationsPollTimer) {
+			clearInterval(notificationsPollTimer)
+			notificationsPollTimer = null
+		}
 		if (!userId) return
-		refreshNotifications(userId, false)
+		var interval = notificationsRealtimeOk
+			? NOTIFICATIONS_POLL_MS
+			: NOTIFICATIONS_POLL_FAST_MS
 		notificationsPollTimer = setInterval(function () {
 			refreshNotifications(userId, true)
-		}, NOTIFICATIONS_POLL_MS)
+		}, interval)
+	}
+
+	function startNotificationsRealtime(userId) {
+		if (
+			!userId ||
+			!window.IsnixAuth ||
+			!IsnixAuth.subscribeUserNotifications
+		) {
+			return
+		}
+		if (notificationsRealtimeUnsub) {
+			notificationsRealtimeUnsub()
+			notificationsRealtimeUnsub = null
+		}
+		notificationsRealtimeOk = false
+		notificationsRealtimeUnsub = IsnixAuth.subscribeUserNotifications(
+			userId,
+			handleRealtimeNotification,
+		)
+		window.setTimeout(function () {
+			notificationsRealtimeOk = true
+			startNotificationsPoll(userId)
+		}, 4000)
+	}
+
+	function startNotifications(userId) {
+		if (!userId) return
+		refreshNotifications(userId, false)
+		startNotificationsRealtime(userId)
+		startNotificationsPoll(userId)
 	}
 
 	function bindNotificationsUi(userId) {
@@ -2192,7 +2269,7 @@
 
 			bindNotificationsUi(userId)
 			deferAccountTask(function () {
-				startNotificationsPoll(userId)
+				startNotifications(userId)
 			}, 400)
 
 			if (!IsnixAuth.isAdminProfile(quickProfile)) {
