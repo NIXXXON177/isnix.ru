@@ -1336,83 +1336,156 @@
 				<div class="s-eyebrow">Правила</div>
 				<h2 class="s-title">Играем честно</h2>
 				<p class="s-desc">
-					Версия <strong>3.0</strong> (27.05.2026).
-					<a href="rules.html" style="color: var(--green)">Полный текст правил →</a>
+					Версия <strong>3.0</strong> (27.05.2026). Для всех игроков и отдельно для
+					администрации.
+					<a href="rules.html" style="color: var(--green)">Полный текст →</a>
 				</p>
 			</div>
-			<div
-				class="rules-slider-viewport"
-				id="rulesSliderViewport"
-				tabindex="0"
-				role="region"
-				aria-roledescription="карусель"
-				aria-label="Правила сервера — листайте горизонтально или свайпом"
-			>
-				<div class="rules-grid">
-					<div class="rule">
-						<span class="rule-n">01</span
-						><span class="rule-t"
-							><strong>Уважение.</strong> Без оскорблений, буллинга, токсичности,
-							флуда. Мат — умеренно, не в адрес игрока. Политика/религия в споре →
-							бан. Возраст 12+.</span
-						>
+			<nav class="rules-split-nav" aria-label="Разделы правил">
+				<a href="#rules-players">Правила для игроков</a>
+				<a href="#rules-admins" class="rules-split-nav__admin">Для администрации</a>
+				<a href="rules.html#rules-players">Полная версия (игроки)</a>
+				<a href="rules.html#rules-admins" class="rules-split-nav__admin"
+					>Полная версия (админы)</a
+				>
+			</nav>
+
+			<div id="rules-players" class="rules-block">
+				<h3 class="rules-block__title">Правила для игроков</h3>
+				<p class="rules-block__desc">
+					Обязательны для всех, кто на сервере. Нарушение — предупреждение, мут или бан.
+				</p>
+				<div
+					class="rules-slider-viewport"
+					tabindex="0"
+					role="region"
+					aria-roledescription="карусель"
+					aria-label="Правила для игроков"
+				>
+					<div class="rules-grid">
+						<div class="rule">
+							<span class="rule-n">01</span
+							><span class="rule-t"
+								><strong>Уважение.</strong> Без оскорблений, буллинга, токсичности,
+								флуда — к игрокам и <strong>админам</strong>. Мат — умеренно, не в адрес
+								человека. Политика/религия в споре → бан. Возраст 12+.</span
+							>
+						</div>
+						<div class="rule">
+							<span class="rule-n">02</span
+							><span class="rule-t"
+								><strong>Читы и моды.</strong> Запрещены читы, макросы, автоклик,
+								<strong>Baritone</strong>, карты с мобами/игроками. Cave Mode, X-Ray,
+								миникарты с сущностями <strong>сервер не детектит</strong>. GrimAC
+								ловит явные читы.</span
+							>
+						</div>
+						<div class="rule">
+							<span class="rule-n">03</span
+							><span class="rule-t"
+								><strong>Территория.</strong> Гриф и воровство запрещены. Защита —
+								<strong>OPAC</strong> (приваты). Без привата правила на землю не
+								действуют.</span
+							>
+						</div>
+						<div class="rule">
+							<span class="rule-n">04</span
+							><span class="rule-t"
+								><strong>Мир.</strong> Без мусора, летающих деревьев, ям до бедрока.
+								Спавн ~200 блоков — без частных построек без согласования.</span
+							>
+						</div>
+						<div class="rule">
+							<span class="rule-n">05</span
+							><span class="rule-t"
+								><strong>Бартер.</strong> <code>/trade</code>, <code>/sell</code> —
+								без обмана. <strong>Казино и азарт запрещены.</strong> Дюпы — в
+								<a href="support.html">поддержку</a>.</span
+							>
+						</div>
+						<div class="rule">
+							<span class="rule-n">06</span
+							><span class="rule-t"
+								><strong>Контент.</strong> Нацизм, NSFW, наркотики и намёки (в т.ч.
+								«нюхай сахар», кидать предметы «на понюхай» — и админу) — бан.
+								Оскорбительные ники/скины — бан.</span
+							>
+						</div>
+						<div class="rule">
+							<span class="rule-n">07</span
+							><span class="rule-t"
+								><strong>Связь.</strong> Вайтлист и жалобы —
+								<a href="account.html">isnix.ru</a>,
+								<a href="support.html">техподдержка</a>. Видишь нарушение — фото/видео
+								(Replay Mod, NVIDIA App, OBS, скрин) в заявку. После смерти — сам к
+								могиле (см. блок для админов).</span
+							>
+						</div>
 					</div>
-					<div class="rule">
-						<span class="rule-n">02</span
-						><span class="rule-t"
-							><strong>Читы и моды.</strong> Запрещены читы, макросы, автоклик,
-							<strong>Baritone</strong>, карты с мобами/игроками. Cave Mode, X-Ray-текстуры,
-							миникарты с сущностями <strong>сервер не детектит</strong> — риск на вас.
-							GrimAC ловит явные читы.</span
-						>
-					</div>
-					<div class="rule">
-						<span class="rule-n">03</span
-						><span class="rule-t"
-							><strong>Админы не помогают в игре.</strong> После смерти — сам к могиле
-							(исключение: сбой <code>/rtpback</code>). Нет выдачи ресурсов, брони,
-							постройки. Нет <code>/give</code> и креатива — чинят руками или сами
-							игроки.</span
-						>
-					</div>
-					<div class="rule">
-						<span class="rule-n">04</span
-						><span class="rule-t"
-							><strong>Территория.</strong> Гриф и воровство запрещены. Защита —
-							<strong>OPAC</strong> (приваты). Без привата правила на землю не
-							распространяются.</span
-						>
-					</div>
-					<div class="rule">
-						<span class="rule-n">05</span
-						><span class="rule-t"
-							><strong>Мир.</strong> Без мусора, летающих деревьев, ям до бедрока.
-							Спавн ~200 блоков — без частных построек без согласования.</span
-						>
-					</div>
-					<div class="rule">
-						<span class="rule-n">06</span
-						><span class="rule-t"
-							><strong>Бартер.</strong> <code>/trade</code>, <code>/sell</code> —
-							без обмана. <strong>Казино и азарт запрещены.</strong> Дюпы — в
-							<a href="support.html">поддержку</a>, не использовать.</span
-						>
-					</div>
-					<div class="rule">
-						<span class="rule-n">07</span
-						><span class="rule-t"
-							><strong>Контент.</strong> Нацистская символика, наркотики, NSFW,
-							оскорбительные ники/скины — бан.</span
-						>
-					</div>
-					<div class="rule">
-						<span class="rule-n">08</span
-						><span class="rule-t"
-							><strong>Связь.</strong> Вайтлист и жалобы — только
-							<a href="account.html">isnix.ru</a> и
-							<a href="support.html">техподдержка</a>.
-							<a href="rules.html">Все 12 разделов правил →</a></span
-						>
+				</div>
+			</div>
+
+			<div id="rules-admins" class="rules-block rules-block--admin">
+				<h3 class="rules-block__title">Правила для администрации</h3>
+				<p class="rules-block__desc">
+					Админы подчиняются правилам игроков и дополнительно <strong>не влияют</strong> на
+					игровой процесс. Игрокам не обещается помощь в выживании.
+				</p>
+				<div
+					class="rules-slider-viewport"
+					tabindex="0"
+					role="region"
+					aria-roledescription="карусель"
+					aria-label="Правила для администрации"
+				>
+					<div class="rules-grid">
+						<div class="rule">
+							<span class="rule-n">A1</span
+							><span class="rule-t"
+								><strong>Без помощи в игре.</strong> Не выдаём ресурсы, броню, еду,
+								инструменты. Не помогаем строить. После смерти игрока — не телепортируем
+								и не возвращаем лут.</span
+							>
+						</div>
+						<div class="rule">
+							<span class="rule-n">A2</span
+							><span class="rule-t"
+								><strong>Исключение.</strong> Только техсбой сервера (например, не
+								сработал <code>/rtpback</code>) — исправление ситуации, без «подарков»
+								игроку.</span
+							>
+						</div>
+						<div class="rule">
+							<span class="rule-n">A3</span
+							><span class="rule-t"
+								><strong>Без /give и креатива.</strong> Запрещены креатив, fly, god,
+								/give для себя и других. Ущерб (динамит, гриф) чиним
+								<strong>руками</strong> как игрок или чинят сами участники.</span
+							>
+						</div>
+						<div class="rule">
+							<span class="rule-n">A4</span
+							><span class="rule-t"
+								><strong>Как все.</strong> Админы добывают всё сами. PvP без
+								админ-преимуществ. Личные базы не в креативе.</span
+							>
+						</div>
+						<div class="rule">
+							<span class="rule-n">A5</span
+							><span class="rule-t"
+								><strong>Расследование.</strong> Ledger, баны, муты. Не выдаём вещи по
+								просьбе «верни алмазы». Споры — по фактам. В причине бана/мута — пункт
+								правил (напр. «2.1 — читы»), не текст от себя.</span
+							>
+						</div>
+						<div class="rule">
+							<span class="rule-n">A6</span
+							><span class="rule-t"
+								><strong>Злоупотребление.</strong> Использование прав для выгоды → снятие
+								прав и бан.
+								<a href="rules.html#rules-admins">Подробно для админов →</a></span
+							>
+						</div>
 					</div>
 				</div>
 			</div>

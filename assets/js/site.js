@@ -387,17 +387,19 @@
 	}
 
 	;(function rulesSliderA11y() {
-		const vp = document.getElementById('rulesSliderViewport')
-		if (!vp) return
+		const viewports = document.querySelectorAll('.rules-slider-viewport')
+		if (!viewports.length) return
 		const mqReduce = window.matchMedia('(prefers-reduced-motion: reduce)')
-		vp.addEventListener('keydown', e => {
-			if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return
-			const step = Math.max(240, Math.round(vp.clientWidth * 0.82))
-			vp.scrollBy({
-				left: e.key === 'ArrowLeft' ? -step : step,
-				behavior: mqReduce.matches ? 'auto' : 'smooth',
+		viewports.forEach(vp => {
+			vp.addEventListener('keydown', e => {
+				if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return
+				const step = Math.max(240, Math.round(vp.clientWidth * 0.82))
+				vp.scrollBy({
+					left: e.key === 'ArrowLeft' ? -step : step,
+					behavior: mqReduce.matches ? 'auto' : 'smooth',
+				})
+				e.preventDefault()
 			})
-			e.preventDefault()
 		})
 	})()
 
