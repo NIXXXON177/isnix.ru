@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="ru">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+		<title>Обращения и жалобы — ISTHISNIXXXON</title>
+		<meta
+			name="description"
+			content="Жалобы на игроков, баги и вопросы по серверу ISTHISNIXXXON — личный диалог с администрацией на сайте."
+		/>
+		<meta name="theme-color" content="#0a0f0a" />
+		<link rel="canonical" href="https://isnix.ru/appeals.html" />
+		<link rel="icon" href="favicon.svg" type="image/svg+xml" />
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link rel="preconnect" href="https://yfrlgeztbaebdapdnefy.supabase.co" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Raleway:wght@400;600;700&display=swap"
+			rel="stylesheet"
+		/>
+		<link rel="stylesheet" href="assets/css/main.css?v=2" />
+		<link rel="stylesheet" href="assets/css/components.css" />
+		<link rel="stylesheet" href="assets/css/how-to-play.css" />
+		<link rel="stylesheet" href="assets/css/auth.css?v=4" />
+		<link rel="stylesheet" href="assets/css/support.css?v=2" />
+		<link rel="stylesheet" href="assets/css/site-header.css" />
+	</head>
+	<body class="htp-page appeals-page" data-page="appeals">
+		<div class="site-header" id="siteHeader">
+			<div class="site-header__inner">
+				<header class="site-top" id="siteNav">
+					<a href="index.html" class="nav-logo" id="navLogo">ISTHIS<span>NIXXXON</span></a>
+					<div class="site-top__actions">
+						<button
+							type="button"
+							class="site-top__ip"
+							id="siteCopyIp"
+							title="Скопировать IP сервера"
+						>
+							mc.isnix.ru
+						</button>
+						<a href="index.html#join-server" class="nav-btn nav-btn--top" id="navJoinTop"
+							>На сервер</a
+						>
+						<button
+							type="button"
+							class="nav-toggle"
+							id="navToggle"
+							aria-expanded="false"
+							aria-controls="navMenu"
+							aria-label="Открыть меню"
+						>
+							<span></span><span></span><span></span>
+						</button>
+					</div>
+				</header>
+				<nav class="nav-drawer" id="navMenu" aria-label="Навигация по сайту">
+					<div class="nav-drawer-auth" id="navDrawerAuth">
+						<a href="account.html" class="nav-drawer-auth__login" id="navDrawerLogin"
+							>Вход</a
+						>
+						<a
+							href="account.html"
+							class="nav-drawer-auth__user"
+							id="navDrawerUser"
+							hidden
+						>
+							<span class="nav-drawer-auth__avatar-wrap" aria-hidden="true">
+								<img
+									class="nav-drawer-auth__avatar"
+									id="navDrawerAvatar"
+									width="40"
+									height="40"
+									alt=""
+								/>
+								<span
+									class="nav-drawer-auth__avatar-fallback"
+									id="navDrawerAvatarFb"
+									>?</span
+								>
+							</span>
+							<span class="nav-drawer-auth__meta">
+								<span class="nav-drawer-auth__nick" id="navDrawerNick">—</span>
+								<span class="nav-drawer-auth__email" id="navDrawerEmail">—</span>
+							</span>
+						</a>
+					</div>
+					<ul class="nav-links">
+						<li><a href="index.html#about" data-nav="about">О сервере</a></li>
+						<li><a href="index.html#download" data-nav="download">Скачать</a></li>
+						<li><a href="index.html#barter" data-nav="barter">Бартер</a></li>
+						<li><a href="index.html#shop" data-nav="shop">Магазин</a></li>
+						<li><a href="rules.html" data-page-link="rules">Правила</a></li>
+						<li><a href="index.html#join-server" data-nav="join-server">На сервер</a></li>
+						<li>
+							<a href="how-to-play.html" data-page-link="how-to-play">Как играть</a>
+						</li>
+						<li>
+							<a href="status.html" data-page-link="status">Статус</a>
+						</li>
+						<li>
+							<a href="support.html" data-page-link="support">Техподдержка</a>
+						</li>
+						<li>
+							<a href="appeals.html" data-page-link="appeals">Обращения</a>
+						</li>
+						<li class="nav-links__account">
+							<a href="account.html" data-page-link="account" id="navAccountBtn"
+								>Аккаунт</a
+							>
+						</li>
+						<li><a href="index.html#links" data-nav="links">Контакты</a></li>
+					</ul>
+					<a href="index.html#join-server" class="nav-btn nav-btn-menu" id="navJoinBtn"
+						>На сервер</a
+					>
+					<div class="nav-drawer__footer">
+						<button
+							type="button"
+							class="nav-drawer-auth__logout"
+							id="navDrawerLogout"
+							hidden
+						>
+							Выход
+						</button>
+					</div>
+				</nav>
+			</div>
+		</div>
+		<button
+			type="button"
+			class="nav-backdrop"
+			id="navBackdrop"
+			aria-hidden="true"
+			tabindex="-1"
+		></button>
+
+		<main class="htp-main appeals-main" id="appealsMain">
+			<header class="htp-hero account-hero">
+				<p class="htp-hero__eyebrow account-hero__eyebrow">Поддержка</p>
+				<h1 class="htp-hero__title account-hero__title">Обращения и жалобы</h1>
+				<p class="htp-hero__lead account-hero__lead">
+					Личный диалог с администрацией: жалоба на игрока, баг, вопрос по аккаунту.
+					<strong>Не в ВК и не в Telegram</strong> — только здесь на сайте.
+				</p>
+			</header>
+
+			<div id="appealsMessage" class="auth-message" hidden></div>
+
+			<div id="appealsGuest" class="auth-card appeals-guest">
+				<p class="auth-lead">
+					Чтобы отправить обращение или прочитать ответ админа, войди в аккаунт на сайте.
+					После входа ты вернёшься на эту страницу.
+				</p>
+				<div class="appeals-guest__actions">
+					<a
+						href="account.html"
+						class="auth-submit"
+						id="appealsLoginBtn"
+						>Войти или зарегистрироваться</a
+					>
+					<a href="support.html" class="auth-submit auth-submit--ghost">FAQ техподдержки</a>
+				</div>
+			</div>
+
+			<div id="appealsDashboard" class="appeals-dashboard" hidden>
+				<p class="auth-muted auth-whitelist-lead">
+					Приложи фото или видео (файлы ниже) и/или ссылку на запись (Replay Mod, NVIDIA App,
+					OBS). <a href="rules.html#rules-players">Правила §9.1</a>.
+					<a href="account.html">Аккаунт</a> ·
+					<a href="support.html">Справка</a>
+				</p>
+				<p id="supportSetupNotice" class="auth-hint" hidden></p>
+				<div id="supportTicketsList"></div>
+				<h2 class="auth-panel__subtitle">Новое обращение</h2>
+				<form id="supportTicketForm" class="auth-form">
+					<div class="auth-field">
+						<label for="supportCategory">Тип</label>
+						<select id="supportCategory" required>
+							<option value="player_report">Жалоба на игрока</option>
+							<option value="bug">Баг / дюп</option>
+							<option value="account">Аккаунт / вход на сайт</option>
+							<option value="other">Другое</option>
+						</select>
+					</div>
+					<div class="auth-field">
+						<label for="supportSubject">Тема</label>
+						<input
+							id="supportSubject"
+							type="text"
+							maxlength="200"
+							required
+							placeholder="Кратко: что случилось"
+						/>
+					</div>
+					<div class="auth-field">
+						<label for="supportOffender">Ник нарушителя (если жалоба)</label>
+						<input
+							id="supportOffender"
+							type="text"
+							maxlength="16"
+							placeholder="Steve123"
+							pattern="[A-Za-z0-9_]{3,16}"
+						/>
+					</div>
+					<div class="auth-field">
+						<label for="supportEvidenceFiles">Фото или видео (файлы)</label>
+						<input
+							id="supportEvidenceFiles"
+							type="file"
+							accept="image/jpeg,image/png,image/webp,image/gif,video/mp4,video/webm,video/quicktime"
+							multiple
+						/>
+						<p class="auth-hint">
+							До 5 файлов, каждый до 25 МБ: JPG, PNG, WebP, GIF, MP4, WebM.
+						</p>
+					</div>
+					<div class="auth-field">
+						<label for="supportEvidence">Или ссылка на скрин / видео</label>
+						<input
+							id="supportEvidence"
+							type="url"
+							maxlength="500"
+							placeholder="https://… (необязательно)"
+						/>
+					</div>
+					<div class="auth-field">
+						<label for="supportBody">Описание *</label>
+						<textarea
+							id="supportBody"
+							required
+							minlength="10"
+							maxlength="4000"
+							rows="5"
+							placeholder="Что произошло, когда, ники, что нарушено…"
+						></textarea>
+					</div>
+					<button type="submit" class="auth-submit">Отправить обращение</button>
+				</form>
+				<p class="auth-muted appeals-admin-hint" id="appealsAdminHint" hidden>
+					Администратор: ответы игрокам — в
+					<a href="account.html#admin-support">кабинете → Обращения</a>.
+				</p>
+			</div>
+
+			<p class="htp-bottom">
+				<a href="index.html">На главную</a> ·
+				<a href="support.html">Техподдержка</a> ·
+				<a href="account.html">Аккаунт</a>
+			</p>
+		</main>
+
+		<script src="assets/js/browser-compat.js?v=1"></script>
+		<script>
+			window.ISNIX_AUTH = window.ISNIX_AUTH || {
+				enabled: false,
+				supabaseUrl: '',
+				supabaseAnonKey: '',
+			}
+		</script>
+		<script src="assets/js/auth-config.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+		<script src="assets/js/auth.js?v=32"></script>
+		<script src="assets/js/site-presence.js?v=4" defer></script>
+		<script src="assets/js/site-header.js?v=5" defer></script>
+		<script src="assets/js/support-tickets.js?v=4" defer></script>
+		<script src="assets/js/appeals-page.js?v=1" defer></script>
+	</body>
+</html>

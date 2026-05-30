@@ -137,6 +137,40 @@
 	margin-bottom: 0;
 }
 
+.appeals-page .appeals-main {
+	max-width: 42rem;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.appeals-page .appeals-dashboard {
+	margin-bottom: 2rem;
+}
+
+.appeals-guest__actions {
+	display: flex;
+	flex-direction: column;
+	gap: 0.65rem;
+	margin-top: 1rem;
+}
+
+.appeals-guest__actions .auth-submit {
+	text-align: center;
+	text-decoration: none;
+}
+
+.appeals-link-panel .auth-submit {
+	display: inline-block;
+	text-align: center;
+	text-decoration: none;
+	margin-top: 0.5rem;
+}
+
+.appeals-admin-hint {
+	margin-top: 1.25rem;
+	font-size: 0.82rem;
+}
+
 .support-section-title {
 	font-family: 'Cinzel', serif;
 	font-size: 1.1rem;

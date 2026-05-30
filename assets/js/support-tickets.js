@@ -37,7 +37,9 @@
 			IsnixAccount.showMsg(text, ok)
 			return
 		}
-		var el = document.getElementById('authMessage')
+		var el =
+			document.getElementById('appealsMessage') ||
+			document.getElementById('authMessage')
 		if (!el) return
 		el.textContent = text
 		el.className = 'auth-message' + (ok ? ' auth-message--ok' : ' auth-message--err')
@@ -398,8 +400,12 @@
 				}
 				form.reset()
 				await renderPlayerSupport()
-				var section = document.getElementById('support')
-				if (section) section.scrollIntoView({ behavior: 'smooth', block: 'start' })
+				var scrollRoot =
+					document.getElementById('appealsMain') ||
+					document.getElementById('support')
+				if (scrollRoot) {
+					scrollRoot.scrollIntoView({ behavior: 'smooth', block: 'start' })
+				}
 			} catch (err) {
 				showMsg(IsnixAuth.formatAuthError(err), false)
 			} finally {
@@ -422,16 +428,25 @@
 		})
 	}
 
-	function onDashboard(userId, profile) {
-		var section = document.getElementById('support')
-		if (!section) return
-		section.hidden = false
+	function initPlayerSupport() {
+		if (!document.getElementById('supportTicketsList')) return false
 		bindCreateForm()
 		renderPlayerSupport()
+		supportReady = true
+		return true
+	}
+
+	function onDashboard(userId, profile) {
+		var section = document.getElementById('support')
+		if (section) section.hidden = false
+		if (!initPlayerSupport()) return
 		if (window.IsnixAuth && IsnixAuth.isAdminProfile(profile)) {
 			bindAdminFilters()
 		}
-		supportReady = true
+	}
+
+	function onAppealsPage() {
+		initPlayerSupport()
 	}
 
 	function onAdminView(view) {
@@ -450,6 +465,7 @@
 
 	window.IsnixSupportTickets = {
 		onDashboard: onDashboard,
+		onAppealsPage: onAppealsPage,
 		onAdminView: onAdminView,
 		onGuest: onGuest,
 		refresh: renderPlayerSupport,

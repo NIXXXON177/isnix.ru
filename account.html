@@ -99,6 +99,9 @@
 					<li>
 						<a href="support.html" data-page-link="support">Техподдержка</a>
 					</li>
+					<li>
+						<a href="appeals.html" data-page-link="appeals">Обращения</a>
+					</li>
 					<li class="nav-links__account">
 						<a href="account.html" data-page-link="account" id="navAccountBtn"
 							>Аккаунт</a
@@ -136,8 +139,8 @@
 					<p class="account-hero__eyebrow">Личный кабинет</p>
 					<h1 class="account-hero__title" id="accountHeroTitle">Аккаунт</h1>
 					<p class="account-hero__lead" id="accountHeroLead">
-						Войди или зарегистрируйся: вайтлист, личные обращения к администрации
-						(жалобы, баги) и уведомления — только на сайте.
+						Войди или зарегистрируйся: вайтлист, обращения к администрации и
+						уведомления — только на сайте.
 					</p>
 					<ul class="account-hero__hints" id="accountHeroHints" hidden>
 						<li>Обычный чат слышат рядом</li>
@@ -545,80 +548,14 @@
 					<div id="applicationsList"></div>
 					</section>
 
-					<section class="auth-panel" id="support" hidden>
-						<h2 class="auth-panel__title">Мои обращения</h2>
+					<section class="auth-panel appeals-link-panel">
+						<h2 class="auth-panel__title">Обращения и жалобы</h2>
 						<p class="auth-muted auth-whitelist-lead">
-							Жалоба на игрока, баг, вопрос по аккаунту — только здесь, в личном
-							диалоге с администрацией. Приложи фото или видео (файлы ниже) и/или
-							ссылку на запись (Replay Mod, NVIDIA App, OBS).
+							Жалоба на игрока, баг, вопрос по аккаунту — на отдельной странице в личном
+							диалоге с администрацией.
 							<a href="rules.html#rules-players">Правила §9.1</a>.
 						</p>
-						<div id="supportTicketsList"></div>
-						<h3 class="auth-panel__subtitle">Новое обращение</h3>
-						<form id="supportTicketForm" class="auth-form">
-							<div class="auth-field">
-								<label for="supportCategory">Тип</label>
-								<select id="supportCategory" required>
-									<option value="player_report">Жалоба на игрока</option>
-									<option value="bug">Баг / дюп</option>
-									<option value="account">Аккаунт / вход на сайт</option>
-									<option value="other">Другое</option>
-								</select>
-							</div>
-							<div class="auth-field">
-								<label for="supportSubject">Тема</label>
-								<input
-									id="supportSubject"
-									type="text"
-									maxlength="200"
-									required
-									placeholder="Кратко: что случилось"
-								/>
-							</div>
-							<div class="auth-field">
-								<label for="supportOffender">Ник нарушителя (если жалоба)</label>
-								<input
-									id="supportOffender"
-									type="text"
-									maxlength="16"
-									placeholder="Steve123"
-									pattern="[A-Za-z0-9_]{3,16}"
-								/>
-							</div>
-							<div class="auth-field">
-								<label for="supportEvidenceFiles">Фото или видео (файлы)</label>
-								<input
-									id="supportEvidenceFiles"
-									type="file"
-									accept="image/jpeg,image/png,image/webp,image/gif,video/mp4,video/webm,video/quicktime"
-									multiple
-								/>
-								<p class="auth-hint">
-									До 5 файлов, каждый до 25 МБ: JPG, PNG, WebP, GIF, MP4, WebM.
-								</p>
-							</div>
-							<div class="auth-field">
-								<label for="supportEvidence">Или ссылка на скрин / видео</label>
-								<input
-									id="supportEvidence"
-									type="url"
-									maxlength="500"
-									placeholder="https://… (необязательно)"
-								/>
-							</div>
-							<div class="auth-field">
-								<label for="supportBody">Описание *</label>
-								<textarea
-									id="supportBody"
-									required
-									minlength="10"
-									maxlength="4000"
-									rows="5"
-									placeholder="Что произошло, когда, ники, что нарушено…"
-								></textarea>
-							</div>
-							<button type="submit" class="auth-submit">Отправить обращение</button>
-						</form>
+						<a href="appeals.html" class="auth-submit">Открыть обращения</a>
 					</section>
 
 					<section class="auth-panel" id="whitelist">
@@ -822,6 +759,6 @@
 		<script src="assets/js/site-presence.js?v=4" defer></script>
 		<script src="assets/js/site-header.js?v=5" defer></script>
 		<script src="assets/js/support-tickets.js?v=3" defer></script>
-		<script src="assets/js/account.js?v=39"></script>
+		<script src="assets/js/account.js?v=40"></script>
 	</body>
 </html>

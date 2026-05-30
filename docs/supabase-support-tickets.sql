@@ -278,7 +278,7 @@ begin
 		'support_admin_reply',
 		'Ответ по обращению',
 		left(msg, 300),
-		'/account.html#support',
+		'/appeals.html',
 		null
 	);
 end;
@@ -311,7 +311,7 @@ begin
 		'support_admin_reply',
 		'Обращение закрыто',
 		left('Тема: ' || t.subject, 300),
-		'/account.html#support',
+		'/appeals.html',
 		null
 	);
 end;

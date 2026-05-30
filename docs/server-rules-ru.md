@@ -47,7 +47,7 @@ OPAC (приваты). Гриф и воровство запрещены.
 
 ## 9. Связь
 
-Вайтлист — [кабинет](https://isnix.ru/account.html#whitelist). Жалобы — [обращения в кабинете](https://isnix.ru/account.html#support), [справка](https://isnix.ru/support.html).
+Вайтлист — [кабинет](https://isnix.ru/account.html#whitelist). Жалобы — [обращения](https://isnix.ru/appeals.html), [справка](https://isnix.ru/support.html).
 
 Увидел нарушение — по возможности **фото или видео** (Replay Mod, NVIDIA App / откат, OBS, скриншот) и приложи к жалобе: ник, дата, описание.
 

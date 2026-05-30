@@ -10,8 +10,8 @@
 |----------|-----|
 | Вход | https://isnix.ru/account.html |
 | Панель заявок | https://isnix.ru/account.html#admin → вкладка **Заявки** |
-| Техподдержка игрокам | https://isnix.ru/support.html — направляй в [кабинет → Обращения](https://isnix.ru/account.html#support), **не в ВК/TG** |
-| Жалобы / баги | https://isnix.ru/account.html#support — вкладка **Обращения** у админов |
+| Техподдержка игрокам | https://isnix.ru/support.html — направляй на [appeals.html](https://isnix.ru/appeals.html), **не в ВК/TG** |
+| Жалобы / баги | https://isnix.ru/appeals.html — ответы админов в [кабинете → Обращения](https://isnix.ru/account.html#admin-support) |
 
 ### Заявки в вайтлист
 

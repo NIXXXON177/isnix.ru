@@ -37,6 +37,19 @@
 	var notificationsUiBound = false
 	var adminPendingPollTimer = null
 	var ADMIN_PENDING_POLL_MS = 60000
+	var AFTER_LOGIN_KEY = 'isnix_after_login'
+
+	function consumeAfterLoginRedirect() {
+		try {
+			var url = sessionStorage.getItem(AFTER_LOGIN_KEY)
+			if (!url || url.indexOf('appeals.html') === -1) return false
+			sessionStorage.removeItem(AFTER_LOGIN_KEY)
+			window.location.href = url
+			return true
+		} catch (_e) {
+			return false
+		}
+	}
 
 	function showMsg(text, ok) {
 		if (!authMsg) return
@@ -2120,6 +2133,10 @@
 		dashboardEnterUserId = userId
 		dashboardEnterPromise = (async function () {
 			dashboardLoading = true
+			if (consumeAfterLoginRedirect()) {
+				dashboardLoading = false
+				return
+			}
 
 			var quickProfile = readProfileCache(userId) || profileFromSession(session)
 			var quickStats = readPlayerStatsCache(userId)
@@ -2163,9 +2180,6 @@
 							}
 						}, 150)
 					}
-					if (window.IsnixSupportTickets) {
-						IsnixSupportTickets.onDashboard(userId, profile)
-					}
 					deferAccountTask(function () {
 						refreshPlayerStatus(false)
 					}, 80)
@@ -2180,10 +2194,6 @@
 			deferAccountTask(function () {
 				startNotificationsPoll(userId)
 			}, 400)
-
-			if (window.IsnixSupportTickets) {
-				IsnixSupportTickets.onDashboard(userId, quickProfile)
-			}
 
 			if (!IsnixAuth.isAdminProfile(quickProfile)) {
 				renderApplications(userId)
@@ -2254,6 +2264,11 @@
 	}
 
 	async function init() {
+		if (window.location.hash === '#support') {
+			window.location.replace('appeals.html')
+			return
+		}
+
 		loadWhitelist()
 
 		if (!window.IsnixAuth || !IsnixAuth.isReady()) {

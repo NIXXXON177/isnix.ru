@@ -10,6 +10,7 @@ on:
       - 'account.html'
       - 'status.html'
       - 'support.html'
+      - 'appeals.html'
       - 'assets/**'
       - 'robots.txt'
       - 'sitemap.xml'
@@ -29,6 +30,9 @@ jobs:
           test -f status.html
           test -f how-to-play.html
           test -f support.html
+          test -f appeals.html
+          test -f assets/js/appeals-page.js
+          test -f assets/js/support-tickets.js
           test -f assets/css/support.css
           test -f assets/css/main.css
           test -f assets/css/components.css
