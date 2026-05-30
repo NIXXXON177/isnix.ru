@@ -9,12 +9,35 @@
 			if (global.navigator && global.navigator.standalone) return true
 			if (global.matchMedia) {
 				if (global.matchMedia('(display-mode: standalone)').matches) return true
-				if (global.matchMedia('(display-mode: fullscreen)').matches) return true
 			}
 		} catch (_e) {
 			/* ignore */
 		}
 		return false
+	}
+
+	/** Только телефон, не ПК и не планшет */
+	function isMobilePhone() {
+		var ua = (global.navigator && global.navigator.userAgent) || ''
+		if (/iPhone|iPod/i.test(ua)) return true
+		if (/Android/i.test(ua) && /Mobile/i.test(ua)) return true
+		if (/iPad|Tablet|PlayBook|Silk/i.test(ua)) return false
+		if (/Android/i.test(ua)) return false
+		if (/Windows|Macintosh|Linux x86|CrOS/i.test(ua)) return false
+		try {
+			if (!global.matchMedia('(pointer: coarse)').matches) return false
+			if (!global.matchMedia('(max-width: 820px)').matches) return false
+			var touch =
+				'ontouchstart' in global ||
+				(global.navigator && global.navigator.maxTouchPoints > 0)
+			return touch
+		} catch (_e2) {
+			return false
+		}
+	}
+
+	function shouldPrompt() {
+		return isInstalledApp() && isMobilePhone() && supportsPush()
 	}
 
 	function supportsPush() {
@@ -171,7 +194,7 @@
 	}
 
 	function tryPrompt() {
-		if (!isInstalledApp() || !supportsPush()) return
+		if (!shouldPrompt()) return
 
 		var perm = getPermission()
 		if (perm === 'granted') {
@@ -203,12 +226,12 @@
 	}
 
 	function init() {
-		if (!isInstalledApp()) return
+		if (!shouldPrompt()) return
 		schedulePrompt()
 	}
 
 	global.addEventListener('pageshow', function (ev) {
-		if (!isInstalledApp() || !supportsPush()) return
+		if (!shouldPrompt()) return
 		if (getPermission() === 'granted') {
 			hideBanner()
 			return
@@ -226,6 +249,8 @@
 
 	global.IsnixPushPrompt = {
 		isInstalledApp: isInstalledApp,
+		isMobilePhone: isMobilePhone,
+		shouldPrompt: shouldPrompt,
 		tryPrompt: tryPrompt,
 		requestPermission: requestPermission,
 	}
