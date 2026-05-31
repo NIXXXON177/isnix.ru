@@ -33,10 +33,26 @@ public final class OpacBridge {
 	}
 
 	public static boolean isAvailable() {
+		ensureInitialized();
+		return available;
+	}
+
+	public static void ensureInitialized() {
 		if (!checked) {
 			init();
 		}
-		return available;
+	}
+
+	/** Повторная попытка, если OPAC ещё не был готов при первом init (после рестарта). */
+	public static void retryInitIfNeeded() {
+		if (available) {
+			return;
+		}
+		checked = false;
+		init();
+		if (available) {
+			IsnixOpacTabMod.LOGGER.info("Open Parties and Claims API доступен после повторной инициализации.");
+		}
 	}
 
 	private static void init() {
@@ -102,7 +118,14 @@ public final class OpacBridge {
 	}
 
 	public static UUID getPartyOwnerId(ServerPlayerEntity player) {
-		Object party = getPartyForMember(player);
+		if (player == null) {
+			return null;
+		}
+		return getPartyOwnerIdForMember(player.getUuid(), player.getServer());
+	}
+
+	public static UUID getPartyOwnerIdForMember(UUID memberUuid, MinecraftServer server) {
+		Object party = getPartyForMemberUuid(memberUuid, server);
 		if (party == null) {
 			return null;
 		}
@@ -118,13 +141,20 @@ public final class OpacBridge {
 	}
 
 	private static Object getPartyForMember(ServerPlayerEntity player) {
-		if (!isAvailable() || player == null) {
+		if (player == null) {
+			return null;
+		}
+		return getPartyForMemberUuid(player.getUuid(), player.getServer());
+	}
+
+	private static Object getPartyForMemberUuid(UUID memberUuid, MinecraftServer server) {
+		if (!isAvailable() || memberUuid == null || server == null) {
 			return null;
 		}
 		try {
-			Object api = apiGet.invoke(null, player.getServer());
+			Object api = apiGet.invoke(null, server);
 			Object partyManager = getPartyManager.invoke(api);
-			return getPartyByMember.invoke(partyManager, player.getUuid());
+			return getPartyByMember.invoke(partyManager, memberUuid);
 		} catch (Throwable t) {
 			return null;
 		}

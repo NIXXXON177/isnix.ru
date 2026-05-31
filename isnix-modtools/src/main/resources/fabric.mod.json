@@ -1,0 +1,27 @@
+{
+	"schemaVersion": 1,
+	"id": "isnix_modtools",
+	"version": "${version}",
+	"name": "ISNIX ModTools",
+	"description": "Админ-команды: mute, mutevoice, freeze",
+	"authors": ["ISTHISNIXXXON"],
+	"license": "MIT",
+	"environment": "server",
+	"entrypoints": {
+		"server": [
+			"ru.isnix.modtools.IsnixModToolsMod"
+		]
+	},
+	"mixins": [
+		"isnix-modtools.mixins.json"
+	],
+	"depends": {
+		"fabricloader": ">=0.16.0",
+		"minecraft": "~1.21.1",
+		"java": ">=21",
+		"fabric-api": "*"
+	},
+	"suggests": {
+		"luckperms": "*"
+	}
+}

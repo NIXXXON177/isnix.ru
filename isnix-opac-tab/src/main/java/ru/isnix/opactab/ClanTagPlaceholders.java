@@ -20,7 +20,8 @@ public final class ClanTagPlaceholders {
 				return PlaceholderResult.value("");
 			}
 			ClanTagCache.put(serverPlayer);
-			return PlaceholderResult.value(ClanTagCache.get(serverPlayer.getUuid()));
+			return PlaceholderResult.value(
+					ClanTagCache.resolve(serverPlayer.getServer(), serverPlayer.getUuid()));
 		});
 	}
 }

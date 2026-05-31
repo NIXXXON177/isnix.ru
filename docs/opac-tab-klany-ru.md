@@ -10,6 +10,14 @@
 
 ---
 
+## Вход в чужие приваты (гости)
+
+По умолчанию на ISNIX **можно заходить** на чужие регионы (ходить), но **нельзя** ломать и открывать сундуки.
+
+Если «не пускает» у границы — на сервере должен быть дефолт OPAC `entity.barrier.Players = "N"`. См. [opac-visitors-enter-claims.md](config-samples/opac-visitors-enter-claims.md).
+
+---
+
 ## Часть 1. Админ: упростить GUI OPAC
 
 ### 1.1. Остановите сервер
@@ -82,6 +90,17 @@ tabsuffix: "%luckperms:suffix% %isnix:clan_tag%"
 tagprefix: "%luckperms:prefix%"
 tagsuffix: "%luckperms:suffix% %isnix:clan_tag%"
 ```
+
+В **`config/tab/config.yml`**:
+
+```yaml
+tablist-name-format:
+  format: "%tabprefix%&f%player%&r%tabsuffix%"
+above-name-format:
+  format: "%tagprefix%%player%&r%tagsuffix%"
+```
+
+**Не** дописывайте `&r` к `%luckperms:prefix%` в `groups.yml` — у LP-префиксов уже есть `&r` в конце (`&c&l[Админ] &r`), лишний сброс убивает цвет над головой. Сброс только **после ника** (`&r%tabsuffix%`), не в начале префикса.
 
 В **`config.yml`** должны быть включены форматы с `%tabsuffix%` / `%tagsuffix%` (см. образец).
 

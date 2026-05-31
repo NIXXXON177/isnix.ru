@@ -24,6 +24,9 @@ public final class ChatHandler {
 			SignedMessage signedMessage,
 			ServerPlayerEntity sender,
 			MessageType.Parameters params) {
+		if (ModToolsBridge.blockChat(sender)) {
+			return false;
+		}
 		String raw = signedMessage.getContent().getString();
 		if (raw.isEmpty() || raw.charAt(0) == '/') {
 			return true;

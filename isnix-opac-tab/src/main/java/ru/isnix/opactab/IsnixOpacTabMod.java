@@ -14,9 +14,14 @@ public class IsnixOpacTabMod implements DedicatedServerModInitializer {
 
 	@Override
 	public void onInitializeServer() {
-		ServerLifecycleEvents.SERVER_STARTING.register(server -> ClanTagConfig.load(server));
+		ServerLifecycleEvents.SERVER_STARTING.register(ClanTagConfig::load);
 
-		ServerLifecycleEvents.SERVER_STARTED.register(server -> TabBridge.register(server));
+		ServerLifecycleEvents.SERVER_STARTED.register(server -> {
+			TabBridge.register(server);
+			ClanTagCache.refreshAll(server);
+		});
+
+		ServerLifecycleEvents.SERVER_STOPPING.register(server -> ClanTagConfig.save());
 
 		ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> ClanTagCache.put(handler.player));
 
@@ -24,7 +29,11 @@ public class IsnixOpacTabMod implements DedicatedServerModInitializer {
 				ClanTagCache.remove(handler.player.getUuid()));
 
 		ServerTickEvents.END_SERVER_TICK.register(server -> {
-			if (server.getTicks() % 20 == 0) {
+			long ticks = server.getTicks();
+			if (ticks == 40L || ticks == 200L) {
+				OpacBridge.retryInitIfNeeded();
+				ClanTagCache.refreshAll(server);
+			} else if (ticks % 20 == 0) {
 				ClanTagCache.refreshAll(server);
 			}
 		});

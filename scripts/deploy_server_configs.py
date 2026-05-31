@@ -31,6 +31,9 @@ DEPLOYS: list[tuple[Path, str, str]] = [
 ]
 
 OPAC_REMOTE = ROOT / "server-remote" / "config" / "openpartiesandclaims-server.toml"
+OPAC_DEFAULT_PLAYER = (
+    ROOT / "server-remote" / "world" / "serverconfig" / "openpartiesandclaims-default-player-config.toml"
+)
 
 
 def push(local: Path, remote: str, dry_run: bool) -> int:
@@ -80,10 +83,24 @@ def main() -> None:
                 file=sys.stderr,
             )
             failed += 1
+        if OPAC_DEFAULT_PLAYER.is_file():
+            failed += push(
+                OPAC_DEFAULT_PLAYER,
+                "world/serverconfig/openpartiesandclaims-default-player-config.toml",
+                args.dry_run,
+            )
+        else:
+            print(
+                "OPAC default player: pull world/serverconfig/openpartiesandclaims-default-player-config.toml",
+                file=sys.stderr,
+            )
+            failed += 1
 
     if failed:
         sys.exit(failed)
-    print("OK. TAB: /tab reload | Styled: /styledchat reload | OPAC toml: рестарт после Stop.")
+    print(
+        "OK. TAB: /tab reload | Styled: /styledchat reload | OPAC: только при STOP сервера, затем старт."
+    )
 
 
 if __name__ == "__main__":

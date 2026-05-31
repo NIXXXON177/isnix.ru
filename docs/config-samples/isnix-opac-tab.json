@@ -1,5 +1,6 @@
 {
 	"wrap_brackets": true,
-	"suffix_reset": "&r",
+	"suffix_reset": "",
+	"tag_lead_reset": "",
 	"styles": {}
 }

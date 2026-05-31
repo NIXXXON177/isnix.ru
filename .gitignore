@@ -28,6 +28,10 @@ isnix-opac-tab/.gradle/
 isnix-opac-tab/build/
 isnix-opac-tab/run/
 isnix-opac-tab/.idea/
+isnix-modtools/.gradle/
+isnix-modtools/build/
+isnix-modtools/run/
+isnix-modtools/.idea/
 isnix-server-messages/.gradle/
 isnix-server-messages/build/
 isnix-server-messages/run/

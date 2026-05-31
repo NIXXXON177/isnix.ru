@@ -16,6 +16,8 @@ public final class ClanTagConfig {
 	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 	private static Path configPath;
 	private static Root root = new Root();
+	/** false после ошибки чтения — не перезаписывать файл пустым root из памяти. */
+	private static boolean loadSucceeded;
 
 	public static Root get() {
 		return root;
@@ -23,6 +25,7 @@ public final class ClanTagConfig {
 
 	public static void load(MinecraftServer server) {
 		configPath = server.getRunDirectory().resolve("config").resolve("isnix-opac-tab.json");
+		loadSucceeded = false;
 		if (Files.exists(configPath)) {
 			try {
 				String json = Files.readString(configPath);
@@ -32,17 +35,49 @@ public final class ClanTagConfig {
 					if (root.styles == null) {
 						root.styles = new HashMap<>();
 					}
+					loadSucceeded = true;
+					migrateLegacyResets();
 				}
 			} catch (Exception e) {
-				IsnixOpacTabMod.LOGGER.warn("Не удалось прочитать isnix-opac-tab.json: {}", e.getMessage());
+				IsnixOpacTabMod.LOGGER.error(
+						"Не удалось прочитать isnix-opac-tab.json (теги в TAB не сбрасывайте — файл на диске не тронут): {}",
+						e.getMessage());
 			}
 		} else {
+			root = new Root();
+			loadSucceeded = true;
+		}
+	}
+
+	/** Убирает &r в tag_lead_reset — ломает префиксы в TAB после рестарта. */
+	private static void migrateLegacyResets() {
+		boolean changed = false;
+		if ("&r".equalsIgnoreCase(trimOrEmpty(root.tagLeadReset))
+				|| "§r".equalsIgnoreCase(trimOrEmpty(root.tagLeadReset))) {
+			root.tagLeadReset = "";
+			changed = true;
+		}
+		if ("&r".equalsIgnoreCase(trimOrEmpty(root.suffixReset))
+				|| "§r".equalsIgnoreCase(trimOrEmpty(root.suffixReset))) {
+			root.suffixReset = "";
+			changed = true;
+		}
+		if (changed) {
 			save();
 		}
 	}
 
+	private static String trimOrEmpty(String s) {
+		return s == null ? "" : s.trim();
+	}
+
 	public static void save() {
 		if (configPath == null) {
+			return;
+		}
+		if (!loadSucceeded && Files.exists(configPath)) {
+			IsnixOpacTabMod.LOGGER.warn(
+					"Пропуск сохранения isnix-opac-tab.json: конфиг не загружен, чтобы не затереть стили на диске.");
 			return;
 		}
 		try {
@@ -72,8 +107,16 @@ public final class ClanTagConfig {
 		@SerializedName("wrap_brackets")
 		public boolean wrapBrackets = true;
 
+		/**
+		 * В конце тега (часто ломает цвет префикса в TAB — оставьте пустым).
+		 * Сброс после ника/суффикса LP настраивайте в config/tab/groups.yml.
+		 */
 		@SerializedName("suffix_reset")
-		public String suffixReset = "&r";
+		public String suffixReset = "";
+
+		/** Перед стилем клана (пусто — сброс &r в TAB ломает цвет префикса над головой). */
+		@SerializedName("tag_lead_reset")
+		public String tagLeadReset = "";
 	}
 
 	public static final class ClanStyle {

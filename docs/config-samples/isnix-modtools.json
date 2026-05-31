@@ -1,0 +1,8 @@
+{
+	"opPermissionLevel": 4,
+	"luckpermsAdminGroup": "admin",
+	"chatMutedMessage": "&cВы замьючены в чате. Осталось: &f%remaining%",
+	"voiceMutedMessage": "&cВам запрещено говорить в голосовом чате. Осталось: &f%remaining%",
+	"frozenMessage": "&cВы заморожены администратором. Двигаться и телепортироваться нельзя.",
+	"frozenCommandBlocked": "&cВы заморожены — команды недоступны."
+}

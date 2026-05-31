@@ -1,10 +1,12 @@
 package ru.isnix.opactab;
 
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 
 import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
+
 public final class ClanTagFormatter {
 	private static final Map<String, String> COLOR_NAMES = Map.ofEntries(
 			Map.entry("black", "0"),
@@ -31,19 +33,31 @@ public final class ClanTagFormatter {
 	}
 
 	public static String formatForPlayer(ServerPlayerEntity player) {
-		if (player == null || !OpacBridge.isAvailable() || !OpacBridge.hasParty(player)) {
+		if (player == null) {
 			return "";
 		}
-		UUID ownerId = OpacBridge.getPartyOwnerId(player);
+		return formatForMemberUuid(player.getServer(), player.getUuid());
+	}
+
+	/** Тег по UUID участника — работает и для оффлайн игроков в TAB после рестарта. */
+	public static String formatForMemberUuid(MinecraftServer server, UUID memberUuid) {
+		if (server == null || memberUuid == null) {
+			return "";
+		}
+		OpacBridge.ensureInitialized();
+		if (!OpacBridge.isAvailable()) {
+			return "";
+		}
+		UUID ownerId = OpacBridge.getPartyOwnerIdForMember(memberUuid, server);
 		if (ownerId == null) {
 			return "";
 		}
-		String rawName = resolveTagText(player, ownerId);
+		String rawName = resolveTagTextForOwner(ownerId, server);
 		if (rawName == null || rawName.isEmpty()) {
 			return "";
 		}
 		if (rawName.indexOf('&') >= 0 || rawName.indexOf('§') >= 0) {
-			return rawName + ClanTagConfig.get().suffixReset;
+			return stripTrailingReset(rawName.trim());
 		}
 		ClanTagConfig.ClanStyle style = ClanTagConfig.styleFor(ownerId);
 		if (style == null) {
@@ -54,20 +68,41 @@ public final class ClanTagFormatter {
 			display = "[" + display + "]";
 		}
 		StringBuilder out = new StringBuilder();
+		appendLeadReset(out);
 		appendStyleCodes(out, style);
 		out.append(display);
-		if (ClanTagConfig.get().suffixReset != null && !ClanTagConfig.get().suffixReset.isEmpty()) {
-			out.append(ClanTagConfig.get().suffixReset);
-		}
+		appendSuffixReset(out);
 		return out.toString();
 	}
 
-	private static String resolveTagText(ServerPlayerEntity player, UUID ownerId) {
+	private static String stripTrailingReset(String raw) {
+		String s = raw.trim();
+		while (s.endsWith("&r") || s.endsWith("§r") || s.endsWith("&R") || s.endsWith("§R")) {
+			s = s.substring(0, s.length() - 2).trim();
+		}
+		return s;
+	}
+
+	private static void appendLeadReset(StringBuilder out) {
+		String lead = ClanTagConfig.get().tagLeadReset;
+		if (lead != null && !lead.isEmpty()) {
+			out.append(lead);
+		}
+	}
+
+	private static void appendSuffixReset(StringBuilder out) {
+		String reset = ClanTagConfig.get().suffixReset;
+		if (reset != null && !reset.isEmpty()) {
+			out.append(reset);
+		}
+	}
+
+	private static String resolveTagTextForOwner(UUID ownerId, MinecraftServer server) {
 		ClanTagConfig.ClanStyle style = ClanTagConfig.styleFor(ownerId);
 		if (style != null && style.tagText != null && !style.tagText.isBlank()) {
 			return style.tagText.trim();
 		}
-		return OpacBridge.getPartyNameForPlayer(player);
+		return OpacBridge.getPartyNameForOwner(ownerId, server);
 	}
 
 	static void appendStyleCodes(StringBuilder out, ClanTagConfig.ClanStyle style) {

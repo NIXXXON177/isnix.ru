@@ -11,8 +11,11 @@
 
 ## Настройка Discord
 
-1. Канал объявлений → ⚙️ → **Интеграции** → **Webhooks** → **Создать**.
-2. Скопируйте **URL webhook** → секрет `DISCORD_WEBHOOK_URL`.
+1. Канал объявлений → ⚙️ → **Интеграции** → **Webhooks** → **Создать** → **Скопировать URL webhook**.
+2. В секрет `DISCORD_WEBHOOK_URL` — **только** этот URL (`https://discord.com/api/webhooks/…`), **не** токен бота.
+3. Пост уходит **Embed** (заголовок = первая строка поста, текст, подвал в footer embed).
+
+**Ошибка 403:** webhook удалён или вставлен не тот URL — создайте новый webhook и обновите секрет в GitHub.
 
 ## Настройка Telegram
 
@@ -25,9 +28,22 @@
 
 ## Настройка ВКонтакте
 
-1. Сообщество **vk.com/isthisnixxxon** → **Управление** → **Работа с API**.
+1. Сообщество [vk.ru/isthisnixxxon](https://vk.ru/isthisnixxxon) (то же, что `vk.com/isthisnixxxon`) → **Управление** → **Работа с API**.
 2. Создайте ключ с правами **Управление сообществом** и **Запись на стене** → `VK_ACCESS_TOKEN`.
-3. `VK_GROUP_ID` — число из ссылки группы (`club123456` → `123456`).
+3. `VK_GROUP_ID` — **числовой** id группы для API (не короткое имя из ссылки).
+
+   В секрет можно: **`isthisnixxxon`**, **`123456`** или полную ссылку `https://vk.ru/isthisnixxxon` — скрипт сам нормализует.
+
+   **Как узнать число (опционально):**
+   - Уже работает **`isthisnixxxon`** — id подтянется через API при публикации.
+   - Или в браузере откройте группу → иногда в адресе появится `club123456` / `public123456` → id = `123456`.
+   - Или в консоли (подставьте свой токен):
+
+     ```text
+     https://api.vk.com/method/groups.getById?group_id=isthisnixxxon&access_token=ВАШ_ТОКЕН&v=5.199
+     ```
+
+     В ответе `"id": 123456` → в секреты пишите `VK_GROUP_ID=123456` (без минуса).
 
 ## Секреты GitHub
 
@@ -39,7 +55,7 @@ Repository **isnix.ru** → **Settings** → **Secrets and variables** → **Act
 | `TELEGRAM_BOT_TOKEN` | токен бота |
 | `TELEGRAM_CHAT_ID` | `@isthisnixxxon` |
 | `VK_ACCESS_TOKEN` | ключ сообщества |
-| `VK_GROUP_ID` | id группы |
+| `VK_GROUP_ID` | `123456` или `isthisnixxxon` |
 
 ## Локальная публикация
 

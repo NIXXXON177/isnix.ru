@@ -11,10 +11,13 @@ import java.util.function.Function;
  * Регистрация %isnix:clan_tag% в TAB (основной поток, без async pb4).
  */
 public final class TabBridge {
+	private static MinecraftServer boundServer;
+
 	private TabBridge() {
 	}
 
 	public static void register(MinecraftServer server) {
+		boundServer = server;
 		try {
 			Class<?> tabApiClass = Class.forName("me.neznamy.tab.api.TabAPI");
 			Object tabApi = tabApiClass.getMethod("getInstance").invoke(null);
@@ -22,12 +25,16 @@ public final class TabBridge {
 			Class<?> tabPlayerClass = Class.forName("me.neznamy.tab.api.TabPlayer");
 			Method getUniqueId = tabPlayerClass.getMethod("getUniqueId");
 
+			OpacBridge.retryInitIfNeeded();
 			ClanTagCache.refreshAll(server);
 
 			@SuppressWarnings("unchecked")
 			Function<Object, String> resolver = tabPlayer -> {
 				try {
 					UUID uuid = (UUID) getUniqueId.invoke(tabPlayer);
+					if (boundServer != null) {
+						return ClanTagCache.resolve(boundServer, uuid);
+					}
 					return ClanTagCache.get(uuid);
 				} catch (Throwable t) {
 					return "";

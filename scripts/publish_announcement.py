@@ -9,7 +9,7 @@
   TELEGRAM_BOT_TOKEN
   TELEGRAM_CHAT_ID     (@channel или -100…)
   VK_ACCESS_TOKEN      (ключ сообщества, запись на стене)
-  VK_GROUP_ID          (числовой id группы, без минуса)
+  VK_GROUP_ID          (числовой id группы без минуса, или screen name: isthisnixxxon)
 
 Примеры:
   python scripts/publish_announcement.py posts/sell-update.txt
@@ -30,7 +30,10 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 FOOTER_PATH = ROOT / "docs" / "social-post-footer.txt"
 ENV_FILE = ROOT / "social-publish.env"
-DISCORD_LIMIT = 2000
+DISCORD_EMBED_DESC_LIMIT = 4096
+DISCORD_EMBED_TITLE_LIMIT = 256
+DISCORD_EMBED_FOOTER_LIMIT = 2048
+DISCORD_COLOR = 0x2ECC71  # зелёный ISNIX
 VK_API = "5.199"
 
 
@@ -82,35 +85,99 @@ def plain_for_vk_telegram(text: str) -> str:
     return "\n".join(out).strip()
 
 
-def discord_chunks(text: str, limit: int = DISCORD_LIMIT) -> list[str]:
-    if len(text) <= limit:
-        return [text]
-    chunks: list[str] = []
-    remaining = text
+def normalize_vk_group_id(raw: str) -> str:
+    """Число, screen name или ссылка vk.ru/vk.com/isthisnixxxon."""
+    value = raw.strip()
+    match = re.search(
+        r"(?:https?://)?(?:www\.)?(?:vk\.com|vk\.ru)/(?:club|public|event)?/?([\w.-]+)",
+        value,
+        re.IGNORECASE,
+    )
+    if match:
+        return match.group(1)
+    return value
+
+
+def split_body_and_footer(text: str, footer: str) -> tuple[str, str]:
+    body = text.strip()
+    foot = footer.strip()
+    if foot and body.endswith(foot):
+        body = body[: -len(foot)].strip()
+    elif foot and foot in body:
+        body = body.replace(foot, "", 1).strip()
+    return body, foot
+
+
+def build_discord_embeds(body: str, footer: str) -> list[dict]:
+    """Один или несколько embed (Discord markdown в description)."""
+    lines = body.splitlines()
+    if not lines:
+        lines = ["ISTHISNIXXXON"]
+    title = lines[0].strip()[:DISCORD_EMBED_TITLE_LIMIT]
+    description = "\n".join(lines[1:]).strip() if len(lines) > 1 else ""
+    if not description:
+        description = title
+        title = "ISTHISNIXXXON"
+
+    footer_one_line = re.sub(r"\s+", " ", footer.replace("—", "-")).strip()
+    footer_text = footer_one_line[:DISCORD_EMBED_FOOTER_LIMIT] if footer_one_line else None
+
+    embeds: list[dict] = []
+    remaining = description
+    first = True
     while remaining:
-        if len(remaining) <= limit:
-            chunks.append(remaining.strip())
+        chunk = remaining[:DISCORD_EMBED_DESC_LIMIT]
+        remaining = remaining[len(chunk) :].lstrip()
+        embed: dict = {
+            "color": DISCORD_COLOR,
+            "description": chunk,
+        }
+        if first:
+            embed["title"] = title
+            first = False
+        if footer_text and not remaining:
+            embed["footer"] = {"text": footer_text}
+        embeds.append(embed)
+        if len(embeds) >= 10:
             break
-        cut = remaining.rfind("\n\n", 0, limit)
-        if cut < limit // 3:
-            cut = limit
-        chunk = remaining[:cut].strip()
-        remaining = remaining[cut:].lstrip()
-        if chunk:
-            chunks.append(chunk)
-    return chunks
+    return embeds
 
 
-def http_json(url: str, data: dict, headers: dict | None = None) -> dict:
-    body = json.dumps(data).encode("utf-8")
+def validate_discord_webhook(url: str) -> None:
+    if not url:
+        raise ValueError("DISCORD_WEBHOOK_URL пустой")
+    if not re.search(r"discord(?:app)?\.com/api/webhooks/\d+/[\w-]+", url, re.I):
+        raise ValueError(
+            "DISCORD_WEBHOOK_URL должен быть URL webhook из канала "
+            "(Интеграции → Webhooks), а не токен бота"
+        )
+
+
+def http_json(url: str, data: dict, headers: dict | None = None) -> dict | None:
+    body = json.dumps(data, ensure_ascii=False).encode("utf-8")
     req = urllib.request.Request(
         url,
         data=body,
-        headers={"Content-Type": "application/json", **(headers or {})},
+        headers={"Content-Type": "application/json; charset=utf-8", **(headers or {})},
         method="POST",
     )
-    with urllib.request.urlopen(req, timeout=60) as resp:
-        return json.loads(resp.read().decode("utf-8"))
+    try:
+        with urllib.request.urlopen(req, timeout=60) as resp:
+            raw = resp.read().decode("utf-8")
+            if not raw.strip():
+                return None
+            return json.loads(raw)
+    except urllib.error.HTTPError as e:
+        detail = e.read().decode("utf-8", errors="replace")
+        hint = ""
+        if e.code == 403:
+            hint = (
+                " (403: неверный или удалённый webhook — создайте новый в Discord: "
+                "канал → Интеграции → Webhooks → Скопировать URL)"
+            )
+        elif e.code == 404:
+            hint = " (404: webhook не существует — создайте новый URL)"
+        raise RuntimeError(f"HTTP {e.code}{hint}: {detail[:500]}") from e
 
 
 def http_form(url: str, fields: dict) -> dict:
@@ -120,14 +187,20 @@ def http_form(url: str, fields: dict) -> dict:
         return json.loads(resp.read().decode("utf-8"))
 
 
-def publish_discord(text: str, webhook: str, dry_run: bool) -> None:
-    chunks = discord_chunks(text)
-    print(f"[discord] {len(chunks)} сообщений, {len(text)} символов")
-    for i, chunk in enumerate(chunks, 1):
-        if dry_run:
-            _safe_print(f"--- discord chunk {i} ---\n{chunk}\n")
-            continue
-        http_json(webhook, {"content": chunk})
+def publish_discord(text: str, webhook: str, footer: str, dry_run: bool) -> None:
+    validate_discord_webhook(webhook)
+    body, foot = split_body_and_footer(text, footer)
+    embeds = build_discord_embeds(body, foot or footer)
+    print(f"[discord] embed × {len(embeds)}, {len(text)} символов")
+    payload = {
+        "username": "ISTHISNIXXXON",
+        "avatar_url": "https://isnix.ru/favicon.ico",
+        "embeds": embeds,
+    }
+    if dry_run:
+        _safe_print(f"--- discord embed ---\n{json.dumps(payload, ensure_ascii=False, indent=2)}\n")
+        return
+    http_json(webhook, payload)
     print("[discord] OK")
 
 
@@ -149,9 +222,32 @@ def publish_telegram(text: str, token: str, chat_id: str, dry_run: bool) -> None
     print("[telegram] OK")
 
 
+def resolve_vk_group_id(group_id: str, token: str, dry_run: bool) -> int:
+    raw = normalize_vk_group_id(group_id)
+    if not raw:
+        raise ValueError("VK_GROUP_ID пустой")
+    if re.fullmatch(r"-?\d+", raw):
+        return abs(int(raw))
+    if dry_run:
+        print(f"[vk] screen name «{raw}» → id будет запрошен при реальной публикации")
+        return 0
+    fields = {
+        "group_id": raw,
+        "access_token": token,
+        "v": VK_API,
+    }
+    data = http_form("https://api.vk.com/method/groups.getById", fields)
+    if "error" in data:
+        raise RuntimeError(f"VK groups.getById: {data['error']}")
+    items = data.get("response") or []
+    if not items:
+        raise RuntimeError(f"VK: группа не найдена по «{raw}»")
+    return int(items[0]["id"])
+
+
 def publish_vk(text: str, token: str, group_id: str, dry_run: bool) -> None:
     plain = plain_for_vk_telegram(text)
-    gid = int(group_id)
+    gid = resolve_vk_group_id(group_id, token, dry_run)
     owner_id = -gid if gid > 0 else gid
     print(f"[vk] owner_id={owner_id}, {len(plain)} символов")
     if dry_run:
@@ -198,7 +294,8 @@ def main() -> None:
         print(f"Файл не найден: {post_path}", file=sys.stderr)
         sys.exit(1)
 
-    message = assemble_message(read_post(post_path), read_footer())
+    footer = read_footer()
+    message = assemble_message(read_post(post_path), footer)
     errors: list[str] = []
 
     webhook = os.environ.get("DISCORD_WEBHOOK_URL", "").strip()
@@ -212,7 +309,7 @@ def main() -> None:
             errors.append("DISCORD_WEBHOOK_URL не задан")
         else:
             try:
-                publish_discord(message, webhook or "", args.dry_run)
+                publish_discord(message, webhook or "", footer, args.dry_run)
             except (urllib.error.URLError, RuntimeError, json.JSONDecodeError) as e:
                 errors.append(f"discord: {e}")
 

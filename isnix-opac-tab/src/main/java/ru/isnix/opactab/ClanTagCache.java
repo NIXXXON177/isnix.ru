@@ -21,6 +21,24 @@ public final class ClanTagCache {
 		return BY_UUID.getOrDefault(uuid, "");
 	}
 
+	public static String resolve(MinecraftServer server, UUID uuid) {
+		if (uuid == null) {
+			return "";
+		}
+		String cached = BY_UUID.get(uuid);
+		if (cached != null && !cached.isEmpty()) {
+			return cached;
+		}
+		if (server == null) {
+			return "";
+		}
+		String computed = ClanTagFormatter.formatForMemberUuid(server, uuid);
+		if (computed != null && !computed.isEmpty()) {
+			BY_UUID.put(uuid, computed);
+		}
+		return computed == null ? "" : computed;
+	}
+
 	public static void put(ServerPlayerEntity player) {
 		if (player == null) {
 			return;

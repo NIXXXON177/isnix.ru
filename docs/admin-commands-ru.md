@@ -75,19 +75,19 @@ op NikenER999
 op daydonik
 ```
 
-### LuckPerms — farmila52: [Гл. Админ] (priority 250)
+### LuckPerms — farmila52: [Мл. Админ] (priority 250)
 
 Только префикс, **без** группы `admin` и прав админа. Красный жирный префикс, ник обычный:
 
 ```text
 lp user farmila52 parent set default
 lp user farmila52 meta clear prefix
-lp user farmila52 meta setprefix 250 "&c&l[Гл. Админ] &r"
+lp user farmila52 meta setprefix 250 "&c&l[Мл. Админ] &r"
 lp user farmila52 permission unset isthis.boldnick
 lp sync
 ```
 
-Файл: [luckperms-farmila52-gl-admin.txt](luckperms-farmila52-gl-admin.txt)
+Файл: [luckperms-farmila52-ml-admin.txt](luckperms-farmila52-ml-admin.txt)
 
 ### LuckPerms — донат / особый префикс (priority 50)
 
@@ -151,7 +151,24 @@ lp sync
 
 В GUI: **Shift+ПКМ** по своему лоту — снять. Подробно: [isnix-market-mod.md](isnix-market-mod.md)
 
-## 4. Полезные команды модов (Fabric)
+## 4. Модерация (мод isnix-modtools)
+
+Требуется **restart** после установки jar. Подробно: [isnix-modtools-mod.md](isnix-modtools-mod.md)
+
+| Команда | Назначение |
+|---------|------------|
+| `/mute <ник> <время> [причина]` | Мут чата (`30m`, `2h`, `1d`…) |
+| `/unmute <ник>` | Снять мут чата |
+| `/mutevoice <ник> <время> [причина]` | Мут микрофона (Simple Voice Chat + LP) |
+| `/unmutevoice <ник>` | Снять мут микрофона |
+| `/freeze <ник> [причина]` | Заморозка: не ходит, не ТП, команды заблокированы |
+| `/unfreeze <ник>` | Снять заморозку |
+
+Команды только у **OP** (`/op`, уровень 4) и группы LuckPerms **`admin`**. Мл. админы без группы `admin` — нет. Настройка: `config/isnix-modtools.json` (`opPermissionLevel`, `luckpermsAdminGroup`).
+
+---
+
+## 5. Полезные команды модов (Fabric)
 
 Зависит от установленных модов на сервере.
 
@@ -168,7 +185,7 @@ lp group default permission set essentialcommands.randomteleport true
 
 ---
 
-## 5. Whitelist вручную (если сайт/очередь не сработали)
+## 6. Whitelist вручную (если сайт/очередь не сработали)
 
 1. GitHub → Actions → **Add player to whitelist (manual)** → ник.
 2. Или правка `whitelist.json` на сервере + restart (см. Play2GO SFTP).
@@ -177,7 +194,7 @@ UUID для пиратского клиента: режим **offline** — [aut
 
 ---
 
-## 6. Supabase (редко, для настройки)
+## 7. Supabase (редко, для настройки)
 
 | SQL-файл | Зачем |
 |----------|--------|
@@ -188,7 +205,7 @@ UUID для пиратского клиента: режим **offline** — [aut
 
 ---
 
-## 7. Чего не делать
+## 8. Чего не делать
 
 - Не одобрять/отклонять заявки **только в ВК** — только сайт.
 - Не ставить админу личный `meta setprefix` вместе с группой `admin` (будет два `[Админ]`).

@@ -52,8 +52,6 @@ playerConfigurablePlayerConfigOptions = [
 	"claims.protection.exceptions.groups.block.interact.Shulker_Boxes",
 	"claims.protection.exceptions.groups.block.interact.Smithing_Tables",
 	"claims.protection.exceptions.groups.block.interact.Stonecutters",
-	"claims.protection.exceptions.groups.entity.barrier.Ender_Pearls",
-	"claims.protection.exceptions.groups.entity.barrier.Players",
 	"claims.protection.exceptions.groups.entity.blockAccess.Villagers",
 	"claims.protection.exceptions.groups.entity.break.Livestock",
 	"claims.protection.exceptions.groups.entity.droppedItemAccess.Foxes",

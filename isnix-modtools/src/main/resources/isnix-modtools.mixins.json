@@ -1,0 +1,12 @@
+{
+	"required": true,
+	"package": "ru.isnix.modtools.mixin",
+	"compatibilityLevel": "JAVA_21",
+	"mixins": [
+		"ServerPlayNetworkHandlerMixin",
+		"EntityFreezeMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}
