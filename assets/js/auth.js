@@ -1065,6 +1065,38 @@
 		)
 	}
 
+	async function attachReporterProfilesToTickets(tickets) {
+		if (!tickets || !tickets.length) return tickets
+		var sb = getClient()
+		if (!sb) return tickets
+		var ids = []
+		var seen = {}
+		tickets.forEach(function (t) {
+			if (t.user_id && !seen[t.user_id]) {
+				seen[t.user_id] = true
+				ids.push(t.user_id)
+			}
+		})
+		if (!ids.length) return tickets
+		var res = await sb
+			.from('profiles')
+			.select('id, minecraft_nick, email, display_name')
+			.in('id', ids)
+		if (res.error) return tickets
+		var map = {}
+		;(res.data || []).forEach(function (p) {
+			map[p.id] = p
+		})
+		return tickets.map(function (t) {
+			var p = map[t.user_id] || {}
+			return Object.assign({}, t, {
+				reporter_minecraft_nick: p.minecraft_nick || null,
+				reporter_email: p.email || null,
+				reporter_display_name: p.display_name || null,
+			})
+		})
+	}
+
 	async function getSupportTickets(opts) {
 		var asAdmin = false
 		var filter = 'active'
@@ -1108,9 +1140,13 @@
 			}
 			throw res.error
 		}
+		var tickets = res.data || []
+		if (asAdmin) {
+			tickets = await attachReporterProfilesToTickets(tickets)
+		}
 		return {
-			tickets: res.data || [],
-			total: res.count == null ? (res.data || []).length : res.count,
+			tickets: tickets,
+			total: res.count == null ? tickets.length : res.count,
 			page: page,
 			pageSize: pageSize,
 		}

@@ -77,6 +77,20 @@
 		return 'auth-badge auth-badge--pending'
 	}
 
+	function reporterDisplayName(ticket) {
+		if (!ticket) return 'Игрок'
+		var nick = (ticket.reporter_minecraft_nick || '').trim()
+		if (nick) return nick
+		var display = (ticket.reporter_display_name || '').trim()
+		if (display) return display
+		var email = (ticket.reporter_email || '').trim()
+		if (email) return email.split('@')[0]
+		if (ticket.user_id) {
+			return 'ID ' + String(ticket.user_id).slice(0, 8) + '…'
+		}
+		return 'Игрок'
+	}
+
 	function renderAttachmentsHtml(attachments) {
 		if (!attachments || !attachments.length) return ''
 		return (
@@ -124,12 +138,18 @@
 		return IsnixAuth.getSupportAttachments(ticketId)
 	}
 
-	function renderMessages(messages) {
+	function renderMessages(messages, msgOptions) {
+		msgOptions = msgOptions || {}
 		if (!messages.length) return ''
+		var reporterLabel = msgOptions.reporterLabel || 'Игрок'
 		return messages
 			.map(function (m) {
 				var mod = m.is_staff ? 'auth-dialog--admin' : 'auth-dialog--user'
-				var lab = m.is_staff ? 'Администрация' : 'Ты'
+				var lab = m.is_staff
+					? 'Администрация'
+					: msgOptions.adminView
+						? reporterLabel
+						: 'Ты'
 				return (
 					'<div class="auth-dialog ' +
 					mod +
@@ -260,6 +280,20 @@
 				escapeHtml(formatDate(t.created_at)) +
 				'</p>'
 		}
+		if (options.admin) {
+			var reporter = reporterDisplayName(t)
+			meta +=
+				'<p class="auth-muted support-ticket-reporter">Игрок: <strong>' +
+				escapeHtml(reporter) +
+				'</strong>'
+			if (t.reporter_email && t.reporter_minecraft_nick) {
+				meta +=
+					' <span class="auth-muted">(' + escapeHtml(t.reporter_email) + ')</span>'
+			} else if (t.reporter_email && !t.reporter_minecraft_nick) {
+				meta += ' <span class="auth-muted">(' + escapeHtml(t.reporter_email) + ')</span>'
+			}
+			meta += '</p>'
+		}
 		if (t.offender_nick) {
 			meta += '<p class="auth-muted">Нарушитель: <strong>' + escapeHtml(t.offender_nick) + '</strong></p>'
 		}
@@ -270,12 +304,16 @@
 				'" target="_blank" rel="noopener noreferrer">открыть</a></p>'
 		}
 		meta += renderAttachmentsHtml(attachments)
+		var msgOpts = {
+			adminView: !!options.admin,
+			reporterLabel: reporterDisplayName(t),
+		}
 		var footer = ''
 		if (options.admin) {
 			if (t.status !== 'closed') {
 				footer =
 					'<div class="auth-admin-actions">' +
-					renderMessages(msgs) +
+					renderMessages(msgs, msgOpts) +
 					'<label class="auth-dialog__label" for="admin-support-' +
 					t.id +
 					'">Ответ игроку</label>' +
@@ -292,7 +330,7 @@
 					'</div></div>'
 			} else {
 				footer =
-					renderMessages(msgs) +
+					renderMessages(msgs, msgOpts) +
 					'<div class="auth-admin-btns auth-admin-btns--end">' +
 					deleteTicketButtonHtml(t.id, 'Удалить обращение') +
 					'</div>'
@@ -315,12 +353,12 @@
 						: ''
 			if (t.status === 'closed') {
 				footer =
-					renderMessages(msgs) +
+					renderMessages(msgs, msgOpts) +
 					'<div class="auth-admin-btns auth-admin-btns--end">' +
 					deleteTicketButtonHtml(t.id, 'Удалить из истории') +
 					'</div>'
 			} else {
-				footer = renderMessages(msgs) + replyForm
+				footer = renderMessages(msgs, msgOpts) + replyForm
 			}
 		}
 		var cardClass = options.admin ? 'auth-app-card auth-app-card--admin' : 'auth-app-card'
