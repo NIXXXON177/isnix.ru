@@ -32,10 +32,16 @@ public abstract class ServerPlayNetworkHandlerMixin {
 		if (!FreezeManager.isFrozen(player)) {
 			return;
 		}
-		if (packet.changesPosition()) {
+		// Поворот обрабатываем сами: vanilla при pending teleport (после requestTeleport)
+		// отбрасывает все PlayerMove, включая look-only.
+		if (packet.changesLook()) {
 			FreezeManager.applyLookFromPacket(player, packet);
+		}
+		if (packet.changesPosition()) {
 			ci.cancel();
-			FreezeManager.snapToAnchor(player);
+			FreezeManager.repositionFrozen(player);
+		} else if (packet.changesLook()) {
+			ci.cancel();
 		}
 	}
 

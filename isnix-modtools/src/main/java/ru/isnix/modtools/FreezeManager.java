@@ -5,16 +5,17 @@ import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
 import net.minecraft.network.packet.s2c.play.PositionFlag;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
-import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 public final class FreezeManager {
-	private static final Set<PositionFlag> ABSOLUTE_TELEPORT = Collections.emptySet();
+	/** Только координаты — не перезаписывать yaw/pitch клиента при коррекции дрифта. */
+	private static final Set<PositionFlag> POSITION_ONLY_SYNC = PositionFlag.ROT;
 	private static final double DRIFT_SQ = 1.0E-6;
 	/** Не чаще одного teleport-пакета клиенту раз в N тиков (иначе кик «превышение частоты пакетов»). */
 	private static final int NETWORK_SYNC_INTERVAL_TICKS = 20;
@@ -54,17 +55,30 @@ public final class FreezeManager {
 		return storage != null && storage.isFrozen(player.getUuid());
 	}
 
-	/** Однократная фиксация при /freeze или входе. */
+	/** Однократная фиксация при /freeze или входе (с синхронизацией клиенту). */
 	public static void snapToAnchor(ServerPlayerEntity player) {
 		maintainFrozen(player, true);
+	}
+
+	/** Фиксация позиции без лишнего teleport-пакета (из обработчика движения). */
+	public static void repositionFrozen(ServerPlayerEntity player) {
+		maintainFrozen(player, false);
 	}
 
 	public static void applyLookFromPacket(ServerPlayerEntity player, PlayerMoveC2SPacket packet) {
 		if (!packet.changesLook()) {
 			return;
 		}
-		player.setYaw(packet.getYaw(player.getYaw()));
-		player.setPitch(packet.getPitch(player.getPitch()));
+		float yaw = MathHelper.wrapDegrees(packet.getYaw(player.getYaw()));
+		float pitch = MathHelper.clamp(
+				MathHelper.wrapDegrees(packet.getPitch(player.getPitch())), -90.0f, 90.0f);
+		ModerationStorage.FreezeEntry entry = storage != null ? storage.getFreeze(player.getUuid()) : null;
+		if (entry != null) {
+			runInternalTeleport(() -> player.updatePositionAndAngles(entry.x, entry.y, entry.z, yaw, pitch));
+		} else {
+			player.setYaw(yaw);
+			player.setPitch(pitch);
+		}
 	}
 
 	public static void tickFrozen(ServerPlayerEntity player) {
@@ -129,10 +143,8 @@ public final class FreezeManager {
 		if (handler == null) {
 			return;
 		}
-		float yaw = player.getYaw();
-		float pitch = player.getPitch();
 		runInternalTeleport(() -> handler.requestTeleport(
-				entry.x, entry.y, entry.z, yaw, pitch, ABSOLUTE_TELEPORT));
+				entry.x, entry.y, entry.z, 0.0f, 0.0f, POSITION_ONLY_SYNC));
 	}
 
 	public static boolean shouldBlockEntityPositionChange(Entity entity, double x, double y, double z) {
