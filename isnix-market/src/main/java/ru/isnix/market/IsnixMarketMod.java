@@ -5,25 +5,25 @@ import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.isnix.market.command.SellCommand;
 import ru.isnix.market.storage.ListingStorage;
 import ru.isnix.market.storage.PendingPayoutStorage;
+import ru.isnix.market.storage.TradeHistoryStorage;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class IsnixMarketMod implements ModInitializer {
 	public static final String MOD_ID = "isnix_market";
-	public static final String VERSION = "1.3.0";
+	public static final String VERSION = "1.6.1";
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
 	private static final AtomicBoolean STARTED = new AtomicBoolean();
 
 	private static ListingStorage listingStorage;
 	private static PendingPayoutStorage payoutStorage;
+	private static TradeHistoryStorage tradeHistoryStorage;
 
 	@Override
 	public void onInitialize() {
@@ -40,6 +40,7 @@ public class IsnixMarketMod implements ModInitializer {
 			MarketConfig.load();
 			listingStorage = new ListingStorage(server);
 			payoutStorage = new PendingPayoutStorage(server);
+			tradeHistoryStorage = new TradeHistoryStorage(server);
 			listingStorage.load();
 			payoutStorage.load();
 		});
@@ -63,10 +64,6 @@ public class IsnixMarketMod implements ModInitializer {
 			if (payoutStorage != null) {
 				payoutStorage.deliverPending(handler.player);
 			}
-			handler.player.sendMessage(
-					Text.literal("[ISNIX Market " + VERSION + "] /sell готов.")
-							.formatted(Formatting.GREEN),
-					false);
 		});
 
 		CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) ->
@@ -81,5 +78,9 @@ public class IsnixMarketMod implements ModInitializer {
 
 	public static PendingPayoutStorage payouts() {
 		return payoutStorage;
+	}
+
+	public static TradeHistoryStorage trades() {
+		return tradeHistoryStorage;
 	}
 }

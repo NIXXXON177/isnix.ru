@@ -46,4 +46,8 @@ public record MarketListing(
 				ru.isnix.market.util.ItemStackCodec.fromJson(json.getAsJsonObject("priceItem"), lookup)
 		);
 	}
+
+	public MarketListing withStacks(ItemStack sale, ItemStack price) {
+		return new MarketListing(id, sellerUuid, sellerName, createdAtEpochMs, sale.copy(), price.copy());
+	}
 }

@@ -16,6 +16,7 @@ import ru.isnix.market.MarketConfig;
 import ru.isnix.market.MarketItemRules;
 import ru.isnix.market.listing.MarketListing;
 import ru.isnix.market.util.InventoryHelper;
+import ru.isnix.market.trade.MarketRatioGuard;
 import ru.isnix.market.util.ListingAnnouncements;
 import ru.isnix.market.util.ListingMessages;
 
@@ -258,6 +259,14 @@ public class CreateListingScreenHandler extends GenericContainerScreenHandler {
 			player.sendMessage(MarketItemRules.banMessage(price), false);
 			return;
 		}
+		MarketRatioGuard.Check ratio = MarketRatioGuard.check(sale, price);
+		if (ratio.blocked()) {
+			player.sendMessage(MarketRatioGuard.blockMessage(ratio), false);
+			return;
+		}
+		if (ratio.suspicious()) {
+			player.sendMessage(MarketRatioGuard.warnMessage(ratio), false);
+		}
 		MarketConfig.MarketConfigData cfg = MarketConfig.get();
 		if (IsnixMarketMod.listings().countBySeller(player.getUuid()) >= cfg.maxListingsPerPlayer) {
 			player.sendMessage(Text.literal("Лимит ваших лотов: " + cfg.maxListingsPerPlayer).formatted(Formatting.RED), false);
@@ -273,7 +282,9 @@ public class CreateListingScreenHandler extends GenericContainerScreenHandler {
 		MarketListing listing = MarketListing.create(player.getUuid(), player.getName().getString(), sale, price);
 		if (!IsnixMarketMod.listings().add(listing)) {
 			InventoryHelper.giveOrDrop(player, sale);
-			player.sendMessage(Text.literal("Рынок переполнен, попробуйте позже.").formatted(Formatting.RED), false);
+			player.sendMessage(
+					Text.literal("Лимит ваших лотов: " + cfg.maxListingsPerPlayer).formatted(Formatting.RED),
+					false);
 			return;
 		}
 		draft.sale = ItemStack.EMPTY;
@@ -283,7 +294,7 @@ public class CreateListingScreenHandler extends GenericContainerScreenHandler {
 		player.sendMessage(ListingMessages.listed(sale, price, listing.id()), false);
 		ListingAnnouncements.broadcastNewListing(player.getServer(), listing);
 		player.closeHandledScreen();
-		MarketScreens.openMarket(player, 0);
+		MarketScreens.openMarket(player, 0, MarketSession.viewMode(player));
 	}
 
 	@Override

@@ -6,19 +6,86 @@ import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import ru.isnix.market.IsnixMarketMod;
+import ru.isnix.market.MarketConfig;
+import ru.isnix.market.trade.MarketListingQuery;
+
+import java.util.List;
+import java.util.UUID;
 
 public final class MarketScreens {
 	private MarketScreens() {
 	}
 
 	public static void openMarket(ServerPlayerEntity player, int page) {
+		openMarket(player, page, MarketSession.viewMode(player));
+	}
+
+	public static void openMarket(ServerPlayerEntity player, int page, MarketViewMode mode) {
+		MarketSession.setViewMode(player, mode);
+		List<?> list = MarketListingQuery.browse(
+				player.getUuid(),
+				mode,
+				MarketSession.searchFilter(player),
+				MarketSession.sortMode(player));
+		int totalPages = Math.max(1, (int) Math.ceil(list.size() / (double) MarketScreenHandler.PAGE_SIZE));
+		int shown = Math.min(page + 1, totalPages);
+		String modeLabel = mode == MarketViewMode.MINE ? "Мои" : "Все";
+		String sortLabel = MarketSession.sortMode(player).label();
+		String search = MarketSession.searchFilter(player);
+		String title = "Рынок · " + modeLabel + " · " + sortLabel;
+		if (search != null) {
+			title += " · " + MarketListingQuery.saleItemLabel(search);
+		}
+		title += " · " + shown + "/" + totalPages;
 		player.openHandledScreen(new SimpleNamedScreenHandlerFactory(
-				(syncId, inv, p) -> new MarketScreenHandler(syncId, inv, page, player),
-				Text.literal("Рынок ISNIX").formatted(Formatting.DARK_GREEN)
+				(syncId, inv, p) -> new MarketScreenHandler(syncId, inv, page, player, mode),
+				Text.literal(title).formatted(Formatting.DARK_GREEN)
 		));
 	}
 
+	public static ItemStack sortButton(MarketSortMode mode) {
+		ItemStack stack = new ItemStack(Items.HOPPER);
+		stack.set(net.minecraft.component.DataComponentTypes.CUSTOM_NAME,
+				Text.literal("Сорт: " + mode.label()).formatted(Formatting.LIGHT_PURPLE, Formatting.BOLD));
+		stack.set(net.minecraft.component.DataComponentTypes.LORE,
+				new net.minecraft.component.type.LoreComponent(java.util.List.of(
+						Text.literal("Клик — сменить").formatted(Formatting.GRAY),
+						Text.literal("Новые → Дешевле → Дороже → Продавец").formatted(Formatting.DARK_GRAY)
+				)));
+		return stack;
+	}
+
+	public static ItemStack searchButton() {
+		ItemStack stack = new ItemStack(Items.SPYGLASS);
+		stack.set(net.minecraft.component.DataComponentTypes.CUSTOM_NAME,
+				Text.literal("Поиск").formatted(Formatting.AQUA, Formatting.BOLD));
+		stack.set(net.minecraft.component.DataComponentTypes.LORE,
+				new net.minecraft.component.type.LoreComponent(java.util.List.of(
+						Text.literal("Клик — предмет из инвентаря внизу").formatted(Formatting.GRAY),
+						Text.literal("/sell search gunpowder").formatted(Formatting.DARK_GRAY)
+				)));
+		return stack;
+	}
+
+	public static ItemStack clearSearchButton() {
+		ItemStack stack = new ItemStack(Items.BARRIER);
+		stack.set(net.minecraft.component.DataComponentTypes.CUSTOM_NAME,
+				Text.literal("Сброс поиска").formatted(Formatting.RED, Formatting.BOLD));
+		stack.set(net.minecraft.component.DataComponentTypes.LORE,
+				new net.minecraft.component.type.LoreComponent(java.util.List.of(
+						Text.literal("Клик — показать все лоты").formatted(Formatting.GRAY)
+				)));
+		return stack;
+	}
+
 	public static void openCreate(ServerPlayerEntity player) {
+		MarketConfig.MarketConfigData cfg = MarketConfig.get();
+		int mine = IsnixMarketMod.listings().countBySeller(player.getUuid());
+		player.sendMessage(
+				Text.literal("Ваши лоты: " + mine + "/" + cfg.maxListingsPerPlayer).formatted(Formatting.GRAY),
+				false
+		);
 		player.openHandledScreen(new SimpleNamedScreenHandlerFactory(
 				(syncId, inv, p) -> new CreateListingScreenHandler(syncId, inv),
 				Text.literal("Выставить лот").formatted(Formatting.GOLD)
@@ -30,6 +97,34 @@ public final class MarketScreens {
 				(syncId, inv, p) -> new PricePresetScreenHandler(syncId, inv, page),
 				Text.literal("Выберите цену").formatted(Formatting.AQUA)
 		));
+	}
+
+	public static void openBuy(
+			ServerPlayerEntity player,
+			UUID listingId,
+			int marketPage,
+			MarketViewMode marketViewMode
+	) {
+		MarketSession.startBuy(player, listingId, marketPage, marketViewMode);
+		player.openHandledScreen(new SimpleNamedScreenHandlerFactory(
+				(syncId, inv, p) -> new BuyListingScreenHandler(syncId, inv),
+				Text.literal("Покупка лота").formatted(Formatting.GREEN)
+		));
+	}
+
+	public static ItemStack viewModeButton(MarketViewMode mode, int myCount, int max) {
+		boolean mine = mode == MarketViewMode.MINE;
+		ItemStack stack = new ItemStack(mine ? Items.ENDER_CHEST : Items.CHEST);
+		stack.set(net.minecraft.component.DataComponentTypes.CUSTOM_NAME,
+				Text.literal(mine ? "Мои лоты" : "Весь рынок").formatted(Formatting.AQUA, Formatting.BOLD));
+		stack.set(net.minecraft.component.DataComponentTypes.LORE,
+				new net.minecraft.component.type.LoreComponent(java.util.List.of(
+						Text.literal(mine
+								? "Сейчас: только ваши (" + myCount + "/" + max + ")"
+								: "Сейчас: все продавцы").formatted(Formatting.GRAY),
+						Text.literal("Клик — переключить").formatted(Formatting.DARK_GRAY)
+				)));
+		return stack;
 	}
 
 	public static ItemStack navArrow(boolean next) {
@@ -87,7 +182,53 @@ public final class MarketScreens {
 				|| text.equals("Пред. страница")
 				|| text.startsWith("Цена · стр. ")
 				|| text.equals("+1")
-				|| text.equals("−1");
+				|| text.equals("−1")
+				|| text.startsWith("Количество · ")
+				|| text.equals("Максимум")
+				|| text.equals("Мои лоты")
+				|| text.equals("Весь рынок")
+				|| text.startsWith("Сорт: ")
+				|| text.equals("Поиск")
+				|| text.equals("Сброс поиска");
+	}
+
+	public static ItemStack buyConfirmButton(boolean needShiftConfirm) {
+		ItemStack stack = new ItemStack(Items.LIME_STAINED_GLASS_PANE);
+		stack.set(net.minecraft.component.DataComponentTypes.CUSTOM_NAME,
+				Text.literal("Подтвердить").formatted(Formatting.GREEN, Formatting.BOLD));
+		var lore = new java.util.ArrayList<Text>();
+		lore.add(Text.literal("Купить выбранное количество").formatted(Formatting.GRAY));
+		if (needShiftConfirm) {
+			lore.add(Text.literal("Дорогой лот: Shift+клик!").formatted(Formatting.RED, Formatting.BOLD));
+		} else {
+			lore.add(Text.literal("Цена пропорциональна лоту").formatted(Formatting.DARK_GRAY));
+		}
+		stack.set(net.minecraft.component.DataComponentTypes.LORE,
+				new net.minecraft.component.type.LoreComponent(lore));
+		return stack;
+	}
+
+	public static ItemStack maxBuyButton() {
+		ItemStack stack = new ItemStack(Items.GOLD_NUGGET);
+		stack.set(net.minecraft.component.DataComponentTypes.CUSTOM_NAME,
+				Text.literal("Максимум").formatted(Formatting.GOLD, Formatting.BOLD));
+		stack.set(net.minecraft.component.DataComponentTypes.LORE,
+				new net.minecraft.component.type.LoreComponent(java.util.List.of(
+						Text.literal("Сколько хватит ресурсов").formatted(Formatting.GRAY)
+				)));
+		return stack;
+	}
+
+	public static ItemStack quantityInfo(int qty, int maxInLot) {
+		ItemStack stack = new ItemStack(Items.PAPER);
+		stack.set(net.minecraft.component.DataComponentTypes.CUSTOM_NAME,
+				Text.literal("Количество · " + qty + "/" + maxInLot).formatted(Formatting.WHITE, Formatting.BOLD));
+		stack.set(net.minecraft.component.DataComponentTypes.LORE,
+				new net.minecraft.component.type.LoreComponent(java.util.List.of(
+						Text.literal("Красный/зелёный ±1").formatted(Formatting.GRAY),
+						Text.literal("Золотой самородок — макс.").formatted(Formatting.DARK_GRAY)
+				)));
+		return stack;
 	}
 
 	public static ItemStack pickSaleButton() {

@@ -10,6 +10,7 @@ import net.minecraft.util.Formatting;
 import ru.isnix.market.IsnixMarketMod;
 import ru.isnix.market.MarketConfig;
 import ru.isnix.market.listing.MarketListing;
+import ru.isnix.market.trade.MarketRatioGuard;
 import ru.isnix.market.util.ItemStackCodec;
 
 import java.io.IOException;
@@ -40,6 +41,13 @@ public class ListingStorage {
 				.toList();
 	}
 
+	public List<MarketListing> allSortedForSeller(UUID seller) {
+		return listings.stream()
+				.filter(l -> l.sellerUuid().equals(seller))
+				.sorted(Comparator.comparingLong(MarketListing::createdAtEpochMs).reversed())
+				.toList();
+	}
+
 	public int countBySeller(UUID seller) {
 		int n = 0;
 		for (MarketListing l : listings) {
@@ -56,7 +64,7 @@ public class ListingStorage {
 
 	public boolean add(MarketListing listing) {
 		MarketConfig.MarketConfigData cfg = MarketConfig.get();
-		if (listings.size() >= cfg.maxListingsTotal) {
+		if (cfg.maxListingsTotal > 0 && listings.size() >= cfg.maxListingsTotal) {
 			return false;
 		}
 		if (countBySeller(listing.sellerUuid()) >= cfg.maxListingsPerPlayer) {
@@ -73,6 +81,17 @@ public class ListingStorage {
 			save();
 		}
 		return removed;
+	}
+
+	public boolean replace(MarketListing updated) {
+		for (int i = 0; i < listings.size(); i++) {
+			if (listings.get(i).id().equals(updated.id())) {
+				listings.set(i, updated);
+				save();
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public void load() {
@@ -151,12 +170,19 @@ public class ListingStorage {
 				.append(Text.literal("Лот: ").formatted(Formatting.GRAY))
 				.append(Text.literal(sale.getCount() + "× ").formatted(Formatting.WHITE))
 				.append(sale.getName()));
+		lines.add(MarketRatioGuard.unitPriceHint(listing));
+		MarketRatioGuard.Check ratio = MarketRatioGuard.check(listing);
+		if (ratio.suspicious() && (viewerUuid == null || !listing.sellerUuid().equals(viewerUuid))) {
+			lines.add(Text.empty());
+			lines.add(MarketRatioGuard.warnMessage(ratio));
+		}
 		if (viewerUuid != null && listing.sellerUuid().equals(viewerUuid)) {
 			lines.add(Text.empty());
 			lines.add(Text.literal("Shift+ПКМ — снять лот").formatted(Formatting.RED));
 		} else {
 			lines.add(Text.empty());
-			lines.add(Text.literal("ЛКМ — купить").formatted(Formatting.GREEN));
+			lines.add(Text.literal("ЛКМ — количество и покупка").formatted(Formatting.GREEN));
+			lines.add(Text.literal("Цена за шт. пропорциональна лоту").formatted(Formatting.DARK_GRAY));
 		}
 		return lines;
 	}

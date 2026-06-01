@@ -1,6 +1,14 @@
 {
 	"maxListingsPerPlayer": 10,
-	"maxListingsTotal": 300,
+	"maxListingsTotal": 0,
+	"blockAbsurdRatios": true,
+	"warnSuspiciousRatios": true,
+	"maxUnitPriceRatio": 64,
+	"minUnitPriceRatio": 0.015625,
+	"suspiciousMaxUnitPriceRatio": 16,
+	"suspiciousMinUnitPriceRatio": 0.0625,
+	"announceOnJoin": false,
+	"tradeLogMaxLines": 3000,
 	"listingsExpireDays": 14,
 	"broadcastNewListings": true,
 	"banAllSpawnEggs": true,
@@ -76,5 +84,9 @@
 	],
 	"purchaseSound": "entity.experience_orb.pickup",
 	"purchaseSoundVolume": 0.7,
-	"purchaseSoundPitch": 1.25
+	"purchaseSoundPitch": 1.25,
+	"sellerSaleSound": "block.note_block.bell",
+	"sellerSaleSoundVolume": 0.75,
+	"sellerSaleSoundPitch": 1.5,
+	"sellerSaleJingle": true
 }

@@ -62,10 +62,11 @@ public final class MarketConfig {
 
 	public static class MarketConfigData {
 		@SerializedName("maxListingsPerPlayer")
-		public int maxListingsPerPlayer = 8;
+		public int maxListingsPerPlayer = 10;
 
+		/** 0 или меньше — без лимита на весь рынок (листать страницы в /sell). */
 		@SerializedName("maxListingsTotal")
-		public int maxListingsTotal = 300;
+		public int maxListingsTotal = 0;
 
 		@SerializedName("listingsExpireDays")
 		public int listingsExpireDays = 14;
@@ -90,6 +91,49 @@ public final class MarketConfig {
 
 		@SerializedName("purchaseSoundPitch")
 		public float purchaseSoundPitch = 1.25f;
+
+		/** Продавец (онлайн): один звук, если sellerSaleJingle = false. */
+		@SerializedName("sellerSaleSound")
+		public String sellerSaleSound = "block.note_block.bell";
+
+		@SerializedName("sellerSaleSoundVolume")
+		public float sellerSaleSoundVolume = 0.75f;
+
+		@SerializedName("sellerSaleSoundPitch")
+		public float sellerSaleSoundPitch = 1.5f;
+
+		/** Три ноты (pling → chime → bell) при продаже лота. */
+		@SerializedName("sellerSaleJingle")
+		public boolean sellerSaleJingle = true;
+
+		/** Анти-скам: блокировать лоты с абсурдным соотношением цена/товар. */
+		@SerializedName("blockAbsurdRatios")
+		public boolean blockAbsurdRatios = true;
+
+		@SerializedName("warnSuspiciousRatios")
+		public boolean warnSuspiciousRatios = true;
+
+		/** Макс. предметов оплаты за 1 шт. товара (например 64 = не больше 64 палок за 1 порох). */
+		@SerializedName("maxUnitPriceRatio")
+		public double maxUnitPriceRatio = 64;
+
+		/** Мин. предметов оплаты за 1 шт. товара (1/64 ≈ 0.015625). */
+		@SerializedName("minUnitPriceRatio")
+		public double minUnitPriceRatio = 1.0 / 64.0;
+
+		@SerializedName("suspiciousMaxUnitPriceRatio")
+		public double suspiciousMaxUnitPriceRatio = 16;
+
+		@SerializedName("suspiciousMinUnitPriceRatio")
+		public double suspiciousMinUnitPriceRatio = 1.0 / 16.0;
+
+		/** Сообщение [ISNIX Market] при входе (false = тише). */
+		@SerializedName("announceOnJoin")
+		public boolean announceOnJoin = false;
+
+		/** Макс. строк в config/isnix-market/trades.jsonl (0 = без обрезки). */
+		@SerializedName("tradeLogMaxLines")
+		public int tradeLogMaxLines = 3000;
 
 		public static class PricePresetEntry {
 			@SerializedName("id")
@@ -141,6 +185,18 @@ public final class MarketConfig {
 			}
 			if (pricePresets == null || pricePresets.isEmpty()) {
 				pricePresets = new ArrayList<>(loadPricePresetsFromResource());
+			}
+			if (maxUnitPriceRatio <= 0) {
+				maxUnitPriceRatio = 64;
+			}
+			if (minUnitPriceRatio <= 0) {
+				minUnitPriceRatio = 1.0 / 64.0;
+			}
+			if (suspiciousMaxUnitPriceRatio <= 0) {
+				suspiciousMaxUnitPriceRatio = 16;
+			}
+			if (suspiciousMinUnitPriceRatio <= 0) {
+				suspiciousMinUnitPriceRatio = 1.0 / 16.0;
 			}
 		}
 
