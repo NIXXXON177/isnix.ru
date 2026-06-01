@@ -1,7 +1,6 @@
 package ru.isnix.stats;
 
 import net.fabricmc.api.DedicatedServerModInitializer;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import org.slf4j.Logger;
@@ -14,7 +13,7 @@ public class IsnixPlayerStatsMod implements DedicatedServerModInitializer {
 
 	@Override
 	public void onInitializeServer() {
-		ServerLifecycleEvents.SERVER_STARTING.register(server -> StatsConfig.load());
+		StatsConfig.load();
 
 		ServerTickEvents.END_SERVER_TICK.register(server -> {
 			if (!StatsConfig.get().isReady()) {

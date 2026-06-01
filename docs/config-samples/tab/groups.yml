@@ -7,5 +7,5 @@
 _DEFAULT_:
   tabprefix: "%luckperms:prefix%"
   tagprefix: "%luckperms:prefix%"
-  tabsuffix: "%luckperms:suffix% %isnix:clan_tag%"
-  tagsuffix: "%luckperms:suffix% %isnix:clan_tag%"
+  tabsuffix: "%luckperms:suffix% %isnix:clan_tag% %isnix:rep%"
+  tagsuffix: "%luckperms:suffix% %isnix:clan_tag% %isnix:rep%"

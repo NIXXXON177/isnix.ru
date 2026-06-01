@@ -20,7 +20,7 @@
 		/>
 		<link rel="stylesheet" href="assets/css/main.css?v=2" />
 		<link rel="stylesheet" href="assets/css/components.css?v=3" />
-		<link rel="stylesheet" href="assets/css/auth.css?v=11" />
+		<link rel="stylesheet" href="assets/css/auth.css?v=14" />
 		<link rel="stylesheet" href="assets/css/site-header.css" />
 	</head>
 	<body class="account-page" data-page="account">
@@ -270,80 +270,103 @@
 				</div>
 
 				<div id="authDashboard" class="auth-card auth-card--dashboard" hidden>
-					<div class="auth-dash-head account-user-bar">
-						<div class="account-user-bar__identity">
-							<div class="account-user-bar__avatar-wrap" aria-hidden="true">
+					<span id="dashEmail" class="auth-sr-only" aria-hidden="true">—</span>
+
+					<section class="auth-panel profile-hero" id="profile-hero">
+						<div class="profile-hero__skin" aria-hidden="true">
+							<div class="profile-hero__avatar-wrap account-user-bar__avatar-wrap">
 								<img
-									id="dashAvatar"
-									class="account-user-bar__avatar"
+									id="profileHeroAvatar"
+									class="profile-hero__avatar account-user-bar__avatar"
 									src=""
 									alt=""
-									width="48"
-									height="48"
+									width="96"
+									height="96"
 									hidden
 								/>
-								<span class="account-user-bar__avatar-fallback" id="dashAvatarFallback"
+								<span
+									class="profile-hero__avatar-fallback account-user-bar__avatar-fallback"
+									id="profileHeroAvatarFb"
 									>?</span
 								>
 							</div>
-							<div class="account-user-bar__meta">
-								<p class="account-user-bar__label">Вы вошли</p>
-								<p class="auth-dash-email">
-									<strong id="dashEmail">—</strong>
-								</p>
-								<span id="adminRoleBadge" class="auth-admin-badge" hidden
-									>Администрация</span
-								>
-							</div>
 						</div>
-						<div class="account-user-bar__actions">
-							<div class="auth-notifications" id="notificationsWrap" hidden>
-								<button
-									type="button"
-									id="notificationsBtn"
-									class="auth-notifications__btn"
-									aria-expanded="false"
-									aria-controls="notificationsPanel"
-									title="Уведомления"
-								>
-									<span class="auth-notifications__icon" aria-hidden="true">🔔</span>
-									<span id="notificationsBadge" class="auth-notifications__badge" hidden
-										>0</span
-									>
-									<span class="auth-sr-only">Уведомления</span>
-								</button>
-								<div
-									id="notificationsPanel"
-									class="auth-notifications__panel"
-									hidden
-									role="region"
-									aria-label="Уведомления с сайта"
-								>
-									<div class="auth-notifications__head">
-										<strong>Уведомления</strong>
+						<div class="profile-stats-block" aria-label="Статистика игрока">
+							<p class="profile-stats-eyebrow">Статистика</p>
+							<dl class="profile-stats-list">
+								<div class="profile-stats-row">
+									<dt>На сайте</dt>
+									<dd id="profileStatSite">—</dd>
+								</div>
+								<div class="profile-stats-row">
+									<dt>Всего в игре</dt>
+									<dd id="profileStatTotal">—</dd>
+								</div>
+								<div class="profile-stats-row">
+									<dt>Текущая сессия</dt>
+									<dd id="profileStatSession">—</dd>
+								</div>
+							</dl>
+							<p id="profileStatsHint" class="auth-hint profile-stats-hint" hidden></p>
+						</div>
+						<div class="profile-meta">
+							<div class="profile-meta__row">
+								<div class="profile-meta__intro">
+									<p class="profile-meta-eyebrow">Профиль</p>
+									<h2 class="profile-display-name" id="profileDisplayName">Игрок</h2>
+									<p class="profile-nick-line" id="profileNickDisplay">—</p>
+								</div>
+								<div class="profile-hero__toolbar">
+									<div class="auth-notifications" id="notificationsWrap" hidden>
 										<button
 											type="button"
-											id="notificationsMarkAll"
-											class="auth-notifications__mark-all"
+											id="notificationsBtn"
+											class="auth-notifications__btn"
+											aria-expanded="false"
+											aria-controls="notificationsModalRoot"
+											title="Уведомления"
 										>
-											Прочитать все
+											<span class="auth-notifications__icon" aria-hidden="true">🔔</span>
+											<span id="notificationsBadge" class="auth-notifications__badge" hidden
+												>0</span
+											>
+											<span class="auth-sr-only">Уведомления</span>
 										</button>
 									</div>
-									<div id="notificationsList" class="auth-notifications__list"></div>
-									<p id="notificationsEmpty" class="auth-muted auth-notifications__empty">
-										Пока нет уведомлений
-									</p>
+									<button
+										type="button"
+										id="logoutBtn"
+										class="auth-submit auth-submit--ghost profile-hero__logout"
+									>
+										Выйти
+									</button>
 								</div>
 							</div>
-							<button
-								type="button"
-								id="logoutBtn"
-								class="auth-submit auth-submit--ghost account-user-bar__logout"
-							>
-								Выйти
-							</button>
+							<div class="profile-badges">
+								<span id="adminRoleBadge" class="profile-badge profile-badge--admin" hidden
+									>Администрация</span
+								>
+								<span id="profileWlBadge" class="profile-badge">Вайтлист</span>
+								<span id="profileOnlineBadge" class="profile-badge">Сервер</span>
+								<span id="profileSiteBadge" class="profile-badge" hidden>Сайт</span>
+							</div>
+							<p id="profileWlStatusLine" class="profile-wl-status" hidden></p>
+							<div class="profile-quick-actions">
+								<button
+									type="button"
+									class="profile-quick-action"
+									id="profileCopyIp"
+									title="Скопировать IP сервера"
+								>
+									mc.isnix.ru
+								</button>
+								<a href="how-to-play.html" class="profile-quick-action">Как играть</a>
+								<a href="rules.html" class="profile-quick-action">Правила</a>
+								<a href="appeals.html" class="profile-quick-action">Обращения</a>
+								<a href="status.html" class="profile-quick-action">Статус</a>
+							</div>
 						</div>
-					</div>
+					</section>
 
 					<section id="adminPanel" class="auth-admin-panel" hidden>
 						<h2 class="auth-section-title" id="admin-support">Панель администрации</h2>
@@ -464,70 +487,7 @@
 					</nav>
 
 					<div id="playerSections" class="account-sections">
-					<section class="auth-panel profile-hero" id="profile-hero">
-						<div class="profile-hero__skin" aria-hidden="true">
-							<div class="profile-hero__avatar-wrap account-user-bar__avatar-wrap">
-								<img
-									id="profileHeroAvatar"
-									class="profile-hero__avatar account-user-bar__avatar"
-									src=""
-									alt=""
-									width="96"
-									height="96"
-									hidden
-								/>
-								<span
-									class="profile-hero__avatar-fallback account-user-bar__avatar-fallback"
-									id="profileHeroAvatarFb"
-									>?</span
-								>
-							</div>
-						</div>
-						<div class="profile-stats-block" aria-label="Статистика игрока">
-							<p class="profile-stats-eyebrow">Статистика</p>
-							<dl class="profile-stats-list">
-								<div class="profile-stats-row">
-									<dt>На сайте</dt>
-									<dd id="profileStatSite">—</dd>
-								</div>
-								<div class="profile-stats-row">
-									<dt>Всего в игре</dt>
-									<dd id="profileStatTotal">—</dd>
-								</div>
-								<div class="profile-stats-row">
-									<dt>Текущая сессия</dt>
-									<dd id="profileStatSession">—</dd>
-								</div>
-							</dl>
-							<p id="profileStatsHint" class="auth-hint profile-stats-hint" hidden></p>
-						</div>
-						<div class="profile-meta">
-							<p class="profile-meta-eyebrow">Профиль</p>
-							<h2 class="profile-display-name" id="profileDisplayName">Игрок</h2>
-							<p class="profile-nick-line" id="profileNickDisplay">—</p>
-							<div class="profile-badges">
-								<span id="profileWlBadge" class="profile-badge">Вайтлист</span>
-								<span id="profileOnlineBadge" class="profile-badge">Сервер</span>
-								<span id="profileSiteBadge" class="profile-badge" hidden>Сайт</span>
-							</div>
-							<p id="profileWlStatusLine" class="profile-wl-status" hidden></p>
-							<div class="profile-quick-actions">
-								<button
-									type="button"
-									class="profile-quick-action"
-									id="profileCopyIp"
-									title="Скопировать IP сервера"
-								>
-									mc.isnix.ru
-								</button>
-								<a href="how-to-play.html" class="profile-quick-action">Как играть</a>
-								<a href="rules.html" class="profile-quick-action">Правила</a>
-								<a href="appeals.html" class="profile-quick-action">Обращения</a>
-								<a href="status.html" class="profile-quick-action">Статус</a>
-							</div>
-						</div>
-					</section>
-
+					<div class="account-panel-pair">
 					<section class="auth-panel profile-reputation" id="profile-reputation">
 						<h2 class="auth-panel__title">Социальный рейтинг</h2>
 						<p class="auth-hint profile-reputation-lead">
@@ -633,6 +593,7 @@
 						</form>
 					</details>
 					</section>
+					</div>
 
 					<section class="auth-panel" id="applications">
 						<h2 class="auth-panel__title">Мои заявки</h2>
@@ -837,6 +798,50 @@
 			</div>
 		</div>
 
+		<div
+			id="notificationsModalRoot"
+			class="bold-modal auth-notifications-modal"
+			aria-hidden="true"
+			role="presentation"
+		>
+			<div id="notificationsModalBackdrop" class="bold-modal__backdrop" tabindex="-1"></div>
+			<div
+				id="notificationsPanel"
+				class="bold-modal__panel auth-notifications__dialog"
+				role="dialog"
+				aria-modal="true"
+				aria-labelledby="notificationsModalTitle"
+			>
+				<div class="auth-notifications__head">
+					<div class="auth-notifications__head-text">
+						<h3 id="notificationsModalTitle" class="auth-notifications__title">
+							Уведомления
+						</h3>
+						<p class="auth-notifications__lead">
+							Ответы по заявкам в вайтлист и важные сообщения по аккаунту.
+						</p>
+					</div>
+					<button
+						type="button"
+						id="notificationsModalClose"
+						class="auth-notifications__close"
+						aria-label="Закрыть"
+					>
+						×
+					</button>
+				</div>
+				<div class="auth-notifications__toolbar-row">
+					<button type="button" id="notificationsMarkAll" class="auth-notifications__mark-all">
+						Прочитать все
+					</button>
+				</div>
+				<div id="notificationsList" class="auth-notifications__list"></div>
+				<p id="notificationsEmpty" class="auth-muted auth-notifications__empty">
+					Пока нет уведомлений
+				</p>
+			</div>
+		</div>
+
 		<script src="assets/js/browser-compat.js?v=1"></script>
 		<script>
 			window.ISNIX_AUTH = window.ISNIX_AUTH || {
@@ -854,6 +859,6 @@
 		<script src="assets/js/site-header.js?v=5" defer></script>
 		<script src="assets/js/site-push-prompt.js?v=2" defer></script>
 		<script src="assets/js/support-tickets.js?v=8" defer></script>
-		<script src="assets/js/account.js?v=46"></script>
+		<script src="assets/js/account.js?v=48"></script>
 	</body>
 </html>

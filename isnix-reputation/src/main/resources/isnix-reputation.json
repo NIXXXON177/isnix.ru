@@ -1,0 +1,17 @@
+{
+	"enabled": false,
+	"supabase_url": "https://yfrlgeztbaebdapdnefy.supabase.co",
+	"service_role_key": "ВСТАВЬ_service_role_из_Supabase",
+	"allow_dislikes": false,
+	"refresh_interval_ticks": 6000,
+	"op_permission_level": 4,
+	"placeholder_format": "&e★%score%",
+	"placeholder_empty": "&8—",
+	"vote_success_like": "&aВы поставили лайк игроку &f%target%&a. Его рейтинг: &e★%score%",
+	"vote_success_dislike": "&cВы поставили диз игроку &f%target%&c. Его рейтинг: &e★%score%",
+	"vote_error_not_linked": "&cГолосовать могут только игроки с привязанным ником на &fisnix.ru",
+	"vote_error_self": "&cНельзя голосовать за себя.",
+	"vote_error_cooldown": "&cВы уже меняли оценку недавно. Попробуйте позже.",
+	"vote_error_already": "&7Вы уже поставили такую оценку.",
+	"vote_error_target": "&cИгрок не найден или не привязан к аккаунту на сайте."
+}

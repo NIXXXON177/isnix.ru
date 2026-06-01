@@ -1,0 +1,19 @@
+{
+	"schemaVersion": 1,
+	"id": "isnix_graveguard",
+	"version": "${version}",
+	"name": "ISNIX GraveGuard",
+	"description": "Защита от PvP при луте могилы (Vanilla Tweaks / ly-graves datapack)",
+	"authors": ["ISTHISNIXXXON"],
+	"license": "MIT",
+	"environment": "server",
+	"entrypoints": {
+		"server": ["ru.isnix.graveguard.IsnixGraveGuardMod"]
+	},
+	"depends": {
+		"fabricloader": ">=0.16.0",
+		"minecraft": "~1.21.1",
+		"java": ">=21",
+		"fabric-api": "*"
+	}
+}

@@ -166,6 +166,15 @@ lp sync
 
 Команды только у **OP** (`/op`, уровень 4) и группы LuckPerms **`admin`**. Мл. админы без группы `admin` — нет. Настройка: `config/isnix-modtools.json` (`opPermissionLevel`, `luckpermsAdminGroup`).
 
+## 4.1. Могилы (мод isnix-graveguard)
+
+Защита от PvP при луте **Vanilla Tweaks Graves**. Подробно: [isnix-graveguard-mod.md](isnix-graveguard-mod.md)
+
+| Команда | Назначение |
+|---------|------------|
+| `/graveguard status` | Статус мода |
+| `/graveguard reload` | Перечитать `config/isnix-graveguard.json` |
+
 ---
 
 ## 5. Полезные команды модов (Fabric)
@@ -175,9 +184,15 @@ lp sync
 | Команда | Назначение |
 |---------|------------|
 | `/rtp` | Случайный телепорт (право: `essentialcommands.randomteleport`) |
+| `/warp tp <имя>` | Телепорт на варп (все игроки) |
+| `/warp list` | Список варпов |
+| `/warp set <имя>` | **Только админ** — создать варп |
+| `/warp delete <имя>` | **Только админ** — удалить варп |
 | `/sell` | Рынок isnix-market (если мод стоит) |
 
 Права `/rtp` для всех: [luckperms-rtp-default.md](luckperms-rtp-default.md)
+
+Права варпов (создание только admin): [luckperms-warp-admin.md](luckperms-warp-admin.md)
 
 ```text
 lp group default permission set essentialcommands.randomteleport true

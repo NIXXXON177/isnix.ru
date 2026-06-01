@@ -20,6 +20,8 @@ public final class ModToolsConfig {
 	public String voiceMutedMessage = "&cВам запрещено говорить в голосовом чате. Осталось: &f%remaining%";
 	public String frozenMessage = "&cВы заморожены администратором. Двигаться и телепортироваться нельзя.";
 	public String frozenCommandBlocked = "&cВы заморожены — команды недоступны.";
+	public String warpManageDenied =
+			"&cСоздавать и удалять варпы могут только админы. &7Попросите админа в чате или через обращение на &fisnix.ru&7.";
 
 	public static ModToolsConfig get() {
 		return INSTANCE;

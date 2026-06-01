@@ -266,15 +266,6 @@
 		}
 	}
 
-	function updateDashAvatar(nick) {
-		applyAvatarToElement(
-			document.getElementById('dashAvatar'),
-			document.getElementById('dashAvatarFallback'),
-			nick,
-			48,
-		)
-	}
-
 	function updateProfileHeroAvatar(nick) {
 		applyAvatarToElement(
 			document.getElementById('profileHeroAvatar'),
@@ -285,7 +276,6 @@
 	}
 
 	function updateProfileAvatars(nick) {
-		updateDashAvatar(nick)
 		updateProfileHeroAvatar(nick)
 	}
 
@@ -1493,7 +1483,18 @@
 
 		if (nameEl) nameEl.textContent = display || nick || 'Игрок'
 		if (nickLine) {
-			nickLine.textContent = nick ? nick : 'Ник не указан'
+			if (!nick) {
+				nickLine.textContent = 'Ник не указан'
+				nickLine.hidden = false
+			} else if (
+				display &&
+				display.toLowerCase() !== nick.toLowerCase()
+			) {
+				nickLine.textContent = nick
+				nickLine.hidden = false
+			} else {
+				nickLine.hidden = true
+			}
 		}
 		if (wlBadge) {
 			if (!nick) {
@@ -1974,29 +1975,57 @@
 		})
 	}
 
+	function openNotificationsModal() {
+		var root = document.getElementById('notificationsModalRoot')
+		if (!root) return
+		root.classList.add('is-open')
+		root.setAttribute('aria-hidden', 'false')
+		document.body.style.overflow = 'hidden'
+		var btn = document.getElementById('notificationsBtn')
+		if (btn) btn.setAttribute('aria-expanded', 'true')
+	}
+
+	function closeNotificationsModal() {
+		var root = document.getElementById('notificationsModalRoot')
+		if (!root) return
+		root.classList.remove('is-open')
+		root.setAttribute('aria-hidden', 'true')
+		document.body.style.overflow = ''
+		var btn = document.getElementById('notificationsBtn')
+		if (btn) btn.setAttribute('aria-expanded', 'false')
+	}
+
 	function bindNotificationsUi(userId) {
 		if (notificationsUiBound) return
 		var btn = document.getElementById('notificationsBtn')
-		var panel = document.getElementById('notificationsPanel')
 		var listEl = document.getElementById('notificationsList')
 		var markAll = document.getElementById('notificationsMarkAll')
-		if (!btn || !panel) return
+		var closeBtn = document.getElementById('notificationsModalClose')
+		var backdrop = document.getElementById('notificationsModalBackdrop')
+		if (!btn) return
 		notificationsUiBound = true
 		btn.addEventListener('click', function (e) {
 			e.stopPropagation()
-			var opening = panel.hidden
-			panel.hidden = !opening
-			btn.setAttribute('aria-expanded', opening ? 'true' : 'false')
-			if (opening) {
-				requestBrowserNotificationPermission()
-					.then(function () {
-						return refreshNotifications(userId, true)
-					})
-					.catch(function () {
-						return refreshNotifications(userId, false)
-					})
+			var root = document.getElementById('notificationsModalRoot')
+			if (root && root.classList.contains('is-open')) {
+				closeNotificationsModal()
+				return
 			}
+			openNotificationsModal()
+			requestBrowserNotificationPermission()
+				.then(function () {
+					return refreshNotifications(userId, true)
+				})
+				.catch(function () {
+					return refreshNotifications(userId, false)
+				})
 		})
+		if (closeBtn) {
+			closeBtn.addEventListener('click', closeNotificationsModal)
+		}
+		if (backdrop) {
+			backdrop.addEventListener('click', closeNotificationsModal)
+		}
 		if (markAll) {
 			markAll.addEventListener('click', async function () {
 				var ids = []
@@ -2026,16 +2055,16 @@
 				} catch (_err) {
 					/* ignore */
 				}
-				panel.hidden = true
-				btn.setAttribute('aria-expanded', 'false')
+				closeNotificationsModal()
 				if (href) window.location.href = href
 			})
 		}
-		document.addEventListener('click', function (e) {
-			if (panel.hidden) return
-			if (e.target.closest('.auth-notifications')) return
-			panel.hidden = true
-			btn.setAttribute('aria-expanded', 'false')
+		document.addEventListener('keydown', function (e) {
+			if (e.key !== 'Escape') return
+			var root = document.getElementById('notificationsModalRoot')
+			if (root && root.classList.contains('is-open')) {
+				closeNotificationsModal()
+			}
 		})
 	}
 

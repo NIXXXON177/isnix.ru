@@ -1,0 +1,10 @@
+{
+	"enabled": true,
+	"opPermissionLevel": 4,
+	"protectionSeconds": 12,
+	"eligibleMinutesAfterDeath": 10,
+	"nearGraveRadius": 6.0,
+	"protectFromPlayersOnly": true,
+	"notifyPlayer": true,
+	"extraGraveEntityTags": ["graves.grave", "graves.display"]
+}

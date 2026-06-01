@@ -1,0 +1,13 @@
+# Фрагмент для config/tab/groups.yml — рейтинг рядом с ником в TAB
+# После правки: /tab reload
+
+# default:
+#   tabprefix: "%luckperms:prefix%"
+#   tabsuffix: " %isnix:rep%"
+
+# admin (опционально — свой формат):
+#   tabsuffix: " &e★%isnix:rep_score%"
+
+# above-name (имя над головой в TAB, если включено):
+# above-name-format в config.yml:
+#   format: "%tagprefix%%player%&r %isnix:rep%"

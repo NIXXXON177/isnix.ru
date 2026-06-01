@@ -1,0 +1,9 @@
+# Выполнить в консоли Play2GO (или от OP). Essential Commands + LuckPerms.
+# После — обновить isnix-modtools до 1.0.10+ и restart.
+
+lp group default permission unset essentialcommands.warp.set
+lp group default permission unset essentialcommands.warp.delete
+lp group default permission set essentialcommands.warp.tp true
+lp group admin permission set essentialcommands.warp.set true
+lp group admin permission set essentialcommands.warp.delete true
+lp sync

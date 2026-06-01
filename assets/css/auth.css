@@ -634,44 +634,98 @@
 	text-align: center;
 }
 
-.auth-notifications__panel {
-	position: absolute;
-	top: calc(100% + 0.45rem);
-	right: 0;
-	z-index: 200;
-	width: min(20rem, calc(100vw - 2rem));
-	max-height: 18rem;
-	overflow: auto;
-	border-radius: var(--radius-md);
-	border: 1px solid rgba(74, 222, 128, 0.25);
-	background: rgba(10, 15, 10, 0.98);
-	box-shadow: 0 12px 40px rgba(0, 0, 0, 0.55);
-	padding: 0.65rem 0;
+.auth-notifications-modal .bold-modal__panel {
+	display: flex;
+	flex-direction: column;
+	width: 100%;
+	max-width: 32rem;
+	max-height: min(85vh, 36rem);
+	padding: 0;
+	overflow: hidden;
+	border-color: rgba(74, 222, 128, 0.35);
+	box-shadow:
+		0 0 0 1px rgba(74, 222, 128, 0.12),
+		0 32px 64px rgba(0, 0, 0, 0.55);
+	background-image: linear-gradient(
+		165deg,
+		rgba(12, 24, 16, 0.97),
+		rgba(10, 15, 10, 0.98) 45%,
+		rgba(10, 12, 10, 1)
+	);
 }
 
 .auth-notifications__head {
 	display: flex;
-	align-items: center;
+	align-items: flex-start;
 	justify-content: space-between;
-	gap: 0.5rem;
-	padding: 0 0.75rem 0.5rem;
+	gap: 0.75rem;
+	padding: 1.25rem 1.35rem 0.75rem;
 	border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-	font-size: 0.82rem;
+}
+
+.auth-notifications__head-text {
+	min-width: 0;
+}
+
+.auth-notifications__title {
+	margin: 0;
+	font-family: 'Cinzel', serif;
+	font-size: 1.15rem;
+	font-weight: 700;
 	color: #fff;
+}
+
+.auth-notifications__lead {
+	margin: 0.35rem 0 0;
+	font-size: 0.78rem;
+	line-height: 1.45;
+	color: var(--muted);
+}
+
+.auth-notifications__close {
+	flex-shrink: 0;
+	border: none;
+	background: none;
+	color: var(--muted);
+	font-size: 1.65rem;
+	line-height: 1;
+	cursor: pointer;
+	padding: 0.1rem 0.25rem;
+	transition: color 0.15s;
+}
+
+.auth-notifications__close:hover {
+	color: #fff;
+}
+
+.auth-notifications__toolbar-row {
+	display: flex;
+	justify-content: flex-end;
+	padding: 0.55rem 1.35rem 0.65rem;
+	border-bottom: 1px solid rgba(255, 255, 255, 0.04);
 }
 
 .auth-notifications__mark-all {
 	border: none;
 	background: none;
 	color: var(--green);
-	font-size: 0.72rem;
+	font-size: 0.78rem;
+	font-weight: 600;
 	cursor: pointer;
 	padding: 0.2rem 0;
+}
+
+.auth-notifications__mark-all:hover {
+	text-decoration: underline;
+	text-underline-offset: 2px;
 }
 
 .auth-notifications__list {
 	display: flex;
 	flex-direction: column;
+	overflow-y: auto;
+	flex: 1;
+	min-height: 0;
 }
 
 .auth-notification {
@@ -715,9 +769,10 @@
 }
 
 .auth-notifications__empty {
-	padding: 0.5rem 0.75rem 0;
+	padding: 1rem 1.35rem 1.35rem;
 	margin: 0;
-	font-size: 0.78rem;
+	font-size: 0.82rem;
+	text-align: center;
 }
 
 .auth-section-title {
@@ -1097,8 +1152,7 @@
 }
 
 .account-page.account--logged-in .account-hero {
-	margin-bottom: 1.35rem;
-	padding-bottom: 1.1rem;
+	display: none;
 }
 
 .account-page.account--logged-in .auth-card--dashboard {
@@ -1198,15 +1252,54 @@
 		align-items: start;
 	}
 
-	.account-page.account--logged-in .account-sections > .profile-hero,
+	.account-page.account--logged-in .account-sections > .account-panel-pair,
 	.account-page.account--logged-in .account-sections > #whitelist,
 	.account-page.account--logged-in .account-sections > .appeals-link-panel {
 		grid-column: 1 / -1;
 	}
+
+	.account-panel-pair {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 1.15rem;
+		align-items: stretch;
+	}
+
+	.account-panel-pair > .auth-panel {
+		margin-bottom: 0;
+		height: 100%;
+		display: flex;
+		flex-direction: column;
+	}
+
+	.account-panel-pair .profile-reputation-form,
+	.account-panel-pair #profileForm {
+		max-width: none;
+		width: 100%;
+	}
+
+	.account-panel-pair .profile-reputation-form {
+		margin-top: 0.75rem;
+	}
+
+	.account-panel-pair .auth-password-panel--inset {
+		margin-top: auto;
+		padding-top: 0.75rem;
+	}
+}
+
+.account-panel-pair {
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+}
+
+.account-panel-pair > .auth-panel {
+	margin-bottom: 0;
 }
 
 .profile-hero.auth-panel {
-	margin-bottom: 0;
+	margin-bottom: 1.15rem;
 	padding: 1.35rem 1.5rem;
 	display: grid;
 	grid-template-columns: auto minmax(0, 1fr);
@@ -1222,6 +1315,33 @@
 		rgba(10, 15, 10, 0.98) 100%
 	);
 	border-color: rgba(74, 222, 128, 0.18);
+}
+
+.profile-meta__row {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: 0.75rem 1rem;
+}
+
+.profile-meta__intro {
+	min-width: 0;
+	flex: 1;
+}
+
+.profile-hero__toolbar {
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+	gap: 0.45rem;
+	flex-shrink: 0;
+}
+
+.profile-hero__logout.auth-submit {
+	padding: 0.45rem 0.75rem;
+	min-height: 0;
+	font-size: 0.72rem;
+	white-space: nowrap;
 }
 
 .profile-hero__skin {
@@ -1410,7 +1530,6 @@ button.profile-quick-action.is-copied {
 
 .profile-reputation-lead {
 	margin: 0 0 1rem;
-	max-width: 42rem;
 }
 
 .profile-reputation-lead code {
@@ -1419,12 +1538,15 @@ button.profile-quick-action.is-copied {
 }
 
 .profile-reputation-score {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	gap: 0.35rem 1.25rem;
 	margin-bottom: 1rem;
 	padding: 1rem 1.1rem;
 	border-radius: var(--radius-sm);
 	background: rgba(0, 0, 0, 0.35);
 	border: 1px solid var(--border);
-	text-align: center;
 }
 
 .profile-reputation-score__value {
@@ -1445,13 +1567,12 @@ button.profile-quick-action.is-copied {
 }
 
 .profile-reputation-score__meta {
-	margin: 0.35rem 0 0;
+	margin: 0;
 	font-size: 0.88rem;
 	color: var(--muted);
 }
 
 .profile-reputation-form {
-	max-width: 22rem;
 	margin-top: 0.5rem;
 }
 
@@ -1532,6 +1653,16 @@ button.profile-quick-action.is-copied {
 	color: #93c5fd;
 	border-color: rgba(96, 165, 250, 0.45);
 	background: rgba(59, 130, 246, 0.1);
+}
+
+.profile-badge--admin {
+	color: #fca5a5;
+	border-color: rgba(248, 113, 113, 0.4);
+	background: rgba(248, 113, 113, 0.12);
+}
+
+.profile-meta__row + .profile-badges {
+	margin-top: 0.65rem;
 }
 
 .auth-status--site {
@@ -1746,14 +1877,8 @@ button.profile-quick-action.is-copied {
 		word-break: break-word;
 	}
 
-	.auth-notifications__panel {
-		position: fixed;
-		top: calc(var(--nav-h, 3.5rem) + env(safe-area-inset-top, 0px) + 0.35rem);
-		left: max(0.65rem, env(safe-area-inset-left, 0px));
-		right: max(0.65rem, env(safe-area-inset-right, 0px));
-		width: auto;
-		max-height: min(16rem, 45vh);
-		z-index: 10040;
+	.auth-notifications__dialog {
+		max-height: min(88vh, 36rem);
 	}
 
 	.profile-hero.auth-panel {
@@ -1785,6 +1910,15 @@ button.profile-quick-action.is-copied {
 	.profile-meta {
 		min-width: 0;
 		width: 100%;
+	}
+
+	.profile-meta__row {
+		flex-direction: column;
+		align-items: stretch;
+	}
+
+	.profile-hero__toolbar {
+		justify-content: flex-start;
 	}
 
 	.account-subnav {

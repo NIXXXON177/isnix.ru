@@ -44,6 +44,14 @@ isnix-sell-test/.gradle/
 isnix-sell-test/build/
 isnix-sell-test/run/
 isnix-sell-test/.idea/
+isnix-graveguard/.gradle/
+isnix-graveguard/build/
+isnix-graveguard/run/
+isnix-graveguard/.idea/
+isnix-reputation/.gradle/
+isnix-reputation/build/
+isnix-reputation/run/
+isnix-reputation/.idea/
 
 # Play2GO SFTP (пароль и зеркало файлов сервера)
 server-sftp.env

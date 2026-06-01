@@ -65,16 +65,12 @@
 		display: none !important;
 	}
 
-	.nav-links a[data-nav='barter'],
-	.nav-links a[data-nav='links'],
-	.nav-links a[data-nav='join-server'],
-	.nav-links a[href*='#barter'],
-	.nav-links a[href*='#links'],
-	.nav-links a[href*='join-server'] {
-		display: none;
-	}
-
-	/* Дубль «На сервер» только в кнопке справа */
+	/* Бартер, Контакты и дубль «На сервер» — только в мобильном меню */
+	.nav-links > li:has(> a[data-nav='barter']),
+	.nav-links > li:has(> a[data-nav='links']),
+	.nav-links > li:has(> a[data-nav='join-server']),
+	.nav-links > li:has(> a[href*='#barter']),
+	.nav-links > li:has(> a[href*='#links']),
 	.nav-links > li:has(> a[href*='join-server']) {
 		display: none;
 	}

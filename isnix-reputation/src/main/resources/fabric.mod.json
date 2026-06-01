@@ -1,0 +1,20 @@
+{
+	"schemaVersion": 1,
+	"id": "isnix_reputation",
+	"version": "${version}",
+	"name": "ISNIX Reputation",
+	"description": "Социальный рейтинг: лайки/дизы, placeholder для TAB, Supabase",
+	"authors": ["ISTHISNIXXXON"],
+	"license": "MIT",
+	"environment": "server",
+	"entrypoints": {
+		"server": ["ru.isnix.reputation.IsnixReputationMod"]
+	},
+	"depends": {
+		"fabricloader": ">=0.16.0",
+		"minecraft": "~1.21.1",
+		"java": ">=21",
+		"fabric-api": "*",
+		"placeholder-api": "*"
+	}
+}

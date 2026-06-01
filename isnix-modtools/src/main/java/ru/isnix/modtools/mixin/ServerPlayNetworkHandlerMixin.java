@@ -13,6 +13,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import ru.isnix.modtools.FreezeManager;
 import ru.isnix.modtools.ModToolsConfig;
 import ru.isnix.modtools.TextColors;
+import ru.isnix.modtools.WarpCommandGuard;
 
 @Mixin(ServerPlayNetworkHandler.class)
 public abstract class ServerPlayNetworkHandlerMixin {
@@ -56,6 +57,11 @@ public abstract class ServerPlayNetworkHandlerMixin {
 
 	@Inject(method = "executeCommand", at = @At("HEAD"), cancellable = true)
 	private void isnix$blockCommandWhenFrozen(String command, CallbackInfo ci) {
+		if (WarpCommandGuard.isWarpManageCommand(command) && !WarpCommandGuard.canManageWarps(player)) {
+			player.sendMessage(TextColors.parse(ModToolsConfig.get().warpManageDenied), false);
+			ci.cancel();
+			return;
+		}
 		if (!FreezeManager.shouldBlockCommand(player, command)) {
 			return;
 		}
