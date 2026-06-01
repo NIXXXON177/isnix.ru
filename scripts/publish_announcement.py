@@ -71,8 +71,106 @@ def assemble_message(body: str, footer: str) -> str:
     return body
 
 
+def escape_telegram_html(text: str) -> str:
+    return text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+
+
+def _tg_inline_markdown(line: str) -> str:
+    """**жирный**, *курсив*, `код`, __подчёркивание__, ~~зачёркнутый~~, ссылки."""
+    placeholders: list[str] = []
+
+    def stash(html: str) -> str:
+        placeholders.append(html)
+        return f"\x00{len(placeholders) - 1}\x00"
+
+    line = re.sub(
+        r"`([^`\n]+)`",
+        lambda m: stash(f"<code>{escape_telegram_html(m.group(1))}</code>"),
+        line,
+    )
+    line = re.sub(
+        r"\*\*(.+?)\*\*",
+        lambda m: stash(f"<b>{escape_telegram_html(m.group(1))}</b>"),
+        line,
+    )
+    line = re.sub(
+        r"(?<!\*)\*([^*\n]+?)\*(?!\*)",
+        lambda m: stash(f"<i>{escape_telegram_html(m.group(1))}</i>"),
+        line,
+    )
+    line = re.sub(
+        r"__(.+?)__",
+        lambda m: stash(f"<u>{escape_telegram_html(m.group(1))}</u>"),
+        line,
+    )
+    line = re.sub(
+        r"~~(.+?)~~",
+        lambda m: stash(f"<s>{escape_telegram_html(m.group(1))}</s>"),
+        line,
+    )
+
+    parts: list[str] = []
+    for chunk in re.split(r"(\x00\d+\x00)", line):
+        if re.fullmatch(r"\x00\d+\x00", chunk):
+            parts.append(placeholders[int(chunk[1:-1])])
+        else:
+            parts.append(_tg_linkify_plain(escape_telegram_html(chunk)))
+    return "".join(parts)
+
+
+def _tg_linkify_plain(escaped: str) -> str:
+    """Ссылка на уже экранированном фрагменте (без вложенных тегов)."""
+
+    def trim_trailing(url: str) -> str:
+        return url.rstrip(".,;:!?)")
+
+    def link_http(m: re.Match[str]) -> str:
+        raw = trim_trailing(m.group(0))
+        return f'<a href="{raw}">{raw}</a>'
+
+    def link_bare(m: re.Match[str]) -> str:
+        raw = trim_trailing(m.group(0))
+        return f'<a href="https://{raw}">{raw}</a>'
+
+    text = re.sub(r"https?://[^\s<]+", link_http, escaped)
+    if "<a href=" not in text:
+        text = re.sub(
+            r"(?<![/\w@:])(?:[a-zA-Z0-9][-a-zA-Z0-9]*\.)+[a-zA-Z]{2,}(?:/[^\s<]*)?",
+            link_bare,
+            text,
+        )
+    else:
+        # Ссылки без https в подвале (isnix.ru/account, t.me/…)
+        parts: list[str] = []
+        for chunk in re.split(r"(<a href=\"[^\"]+\">[^<]*</a>)", text):
+            if chunk.startswith("<a href="):
+                parts.append(chunk)
+            else:
+                parts.append(
+                    re.sub(
+                        r"(?<![/\w@:])(?:[a-zA-Z0-9][-a-zA-Z0-9]*\.)+[a-zA-Z]{2,}(?:/[^\s<]*)?",
+                        link_bare,
+                        chunk,
+                    )
+                )
+        text = "".join(parts)
+    return text
+
+
+def markdown_to_telegram_html(text: str) -> str:
+    lines_out: list[str] = []
+    for line in text.splitlines():
+        if line.startswith("### "):
+            lines_out.append(f"<b>{escape_telegram_html(line[4:].strip())}</b>")
+        elif line.startswith("## "):
+            lines_out.append(f"<b>{escape_telegram_html(line[3:].strip())}</b>")
+        else:
+            lines_out.append(_tg_inline_markdown(line))
+    return "\n".join(lines_out).strip()
+
+
 def plain_for_vk_telegram(text: str) -> str:
-    """Убирает Discord-markdown, оставляет эмодзи и ссылки."""
+    """Убирает разметку, оставляет эмодзи и текст (для ВК)."""
     out: list[str] = []
     for line in text.splitlines():
         if line.startswith("### "):
@@ -80,6 +178,9 @@ def plain_for_vk_telegram(text: str) -> str:
         elif line.startswith("## "):
             line = line[3:].strip()
         line = re.sub(r"\*\*(.+?)\*\*", r"\1", line)
+        line = re.sub(r"(?<!\*)\*([^*\n]+?)\*(?!\*)", r"\1", line)
+        line = re.sub(r"__(.+?)__", r"\1", line)
+        line = re.sub(r"~~(.+?)~~", r"\1", line)
         line = re.sub(r"`([^`]+)`", r"\1", line)
         out.append(line)
     return "\n".join(out).strip()
@@ -205,20 +306,28 @@ def publish_discord(text: str, webhook: str, footer: str, dry_run: bool) -> None
 
 
 def publish_telegram(text: str, token: str, chat_id: str, dry_run: bool) -> None:
-    plain = plain_for_vk_telegram(text)
-    print(f"[telegram] {len(plain)} символов → {chat_id}")
+    html = markdown_to_telegram_html(text)
+    print(f"[telegram] HTML, {len(html)} символов → {chat_id}")
     if dry_run:
-        _safe_print(f"--- telegram ---\n{plain}\n")
+        _safe_print(f"--- telegram (parse_mode=HTML) ---\n{html}\n")
         return
     url = f"https://api.telegram.org/bot{token}/sendMessage"
     fields = {
         "chat_id": chat_id,
-        "text": plain,
+        "text": html,
+        "parse_mode": "HTML",
         "disable_web_page_preview": "false",
     }
     data = http_form(url, fields)
     if not data.get("ok"):
-        raise RuntimeError(f"Telegram API: {data}")
+        err = data.get("description", data)
+        if "parse" in str(err).lower() or data.get("error_code") == 400:
+            print("[telegram] HTML не принят, повтор без разметки…", file=sys.stderr)
+            fields["text"] = plain_for_vk_telegram(text)
+            fields.pop("parse_mode")
+            data = http_form(url, fields)
+        if not data.get("ok"):
+            raise RuntimeError(f"Telegram API: {data}")
     print("[telegram] OK")
 
 
