@@ -1337,9 +1337,26 @@
 	flex-shrink: 0;
 }
 
+.profile-hero__toolbar .auth-notifications__btn,
+.profile-hero__toolbar .profile-hero__logout.auth-submit {
+	box-sizing: border-box;
+	height: 2.5rem;
+	min-height: 2.5rem;
+	margin: 0;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	line-height: 1;
+}
+
+.profile-hero__toolbar .auth-notifications__icon .icon {
+	width: 1.15rem;
+	height: 1.15rem;
+}
+
 .profile-hero__logout.auth-submit {
-	padding: 0.45rem 0.75rem;
-	min-height: 0;
+	width: auto;
+	padding: 0 0.85rem;
 	font-size: 0.72rem;
 	white-space: nowrap;
 }
