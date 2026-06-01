@@ -39,9 +39,9 @@ public class IsnixModToolsMod implements DedicatedServerModInitializer {
 
 		ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
 			ServerPlayerEntity player = handler.player;
-		if (FreezeManager.isFrozen(player)) {
-			FreezeManager.snapToAnchor(player);
-		}
+			if (FreezeManager.isFrozen(player)) {
+				FreezeManager.snapToAnchor(player);
+			}
 		});
 
 		ServerTickEvents.END_SERVER_TICK.register(server -> {
@@ -50,9 +50,6 @@ public class IsnixModToolsMod implements DedicatedServerModInitializer {
 			}
 			if (server.getTicks() % 20 == 0) {
 				storage.pruneExpired(server);
-			}
-			for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
-				FreezeManager.tickFrozen(player);
 			}
 		});
 

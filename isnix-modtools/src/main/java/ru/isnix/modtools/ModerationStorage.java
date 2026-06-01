@@ -197,6 +197,7 @@ public final class ModerationStorage {
 
 	public void unfreeze(UUID uuid) {
 		if (frozen.remove(uuid.toString()) != null) {
+			FreezeManager.clearPlayer(uuid);
 			save();
 		}
 	}

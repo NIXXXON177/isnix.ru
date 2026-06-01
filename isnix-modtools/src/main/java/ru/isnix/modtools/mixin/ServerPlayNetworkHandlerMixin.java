@@ -39,13 +39,6 @@ public abstract class ServerPlayNetworkHandlerMixin {
 		}
 	}
 
-	@Inject(method = "onPlayerMove", at = @At("RETURN"))
-	private void isnix$snapAfterMove(PlayerMoveC2SPacket packet, CallbackInfo ci) {
-		if (FreezeManager.isFrozen(player)) {
-			FreezeManager.snapToAnchor(player);
-		}
-	}
-
 	@Inject(method = "onVehicleMove", at = @At("HEAD"), cancellable = true)
 	private void isnix$blockVehicleWhenFrozen(VehicleMoveC2SPacket packet, CallbackInfo ci) {
 		if (FreezeManager.isFrozen(player)) {

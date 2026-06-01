@@ -1,17 +1,27 @@
 package ru.isnix.modtools;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
 import net.minecraft.network.packet.s2c.play.PositionFlag;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.Vec3d;
 
 import java.util.Collections;
+import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 public final class FreezeManager {
 	private static final Set<PositionFlag> ABSOLUTE_TELEPORT = Collections.emptySet();
+	private static final double DRIFT_SQ = 1.0E-6;
+	/** Не чаще одного teleport-пакета клиенту раз в N тиков (иначе кик «превышение частоты пакетов»). */
+	private static final int NETWORK_SYNC_INTERVAL_TICKS = 20;
+
 	private static final ThreadLocal<Boolean> INTERNAL_TELEPORT = ThreadLocal.withInitial(() -> false);
+	private static final Map<UUID, Long> LAST_NETWORK_SYNC_TICK = new ConcurrentHashMap<>();
+
 	private static ModerationStorage storage;
 
 	private FreezeManager() {
@@ -34,12 +44,37 @@ public final class FreezeManager {
 		storage = s;
 	}
 
+	public static void clearPlayer(UUID uuid) {
+		if (uuid != null) {
+			LAST_NETWORK_SYNC_TICK.remove(uuid);
+		}
+	}
+
 	public static boolean isFrozen(ServerPlayerEntity player) {
 		return storage != null && storage.isFrozen(player.getUuid());
 	}
 
-	/** Жёстко фиксирует тело на точке freeze; yaw/pitch не меняет. */
+	/** Однократная фиксация при /freeze или входе. */
 	public static void snapToAnchor(ServerPlayerEntity player) {
+		maintainFrozen(player, true);
+	}
+
+	public static void applyLookFromPacket(ServerPlayerEntity player, PlayerMoveC2SPacket packet) {
+		if (!packet.changesLook()) {
+			return;
+		}
+		player.setYaw(packet.getYaw(player.getYaw()));
+		player.setPitch(packet.getPitch(player.getPitch()));
+	}
+
+	public static void tickFrozen(ServerPlayerEntity player) {
+		if (!isFrozen(player)) {
+			return;
+		}
+		maintainFrozen(player, false);
+	}
+
+	private static void maintainFrozen(ServerPlayerEntity player, boolean forceNetworkSync) {
 		if (storage == null || !isFrozen(player)) {
 			return;
 		}
@@ -52,44 +87,52 @@ public final class FreezeManager {
 			return;
 		}
 
-		float yaw = player.getYaw();
-		float pitch = player.getPitch();
 		player.setVelocity(Vec3d.ZERO);
 		player.fallDistance = 0.0f;
 
-		runInternalTeleport(() -> {
-			player.setPos(entry.x, entry.y, entry.z);
-			player.prevX = entry.x;
-			player.prevY = entry.y;
-			player.prevZ = entry.z;
-			player.setYaw(yaw);
-			player.setPitch(pitch);
-		});
+		Vec3d pos = player.getPos();
+		double dx = pos.x - entry.x;
+		double dy = pos.y - entry.y;
+		double dz = pos.z - entry.z;
+		boolean drifted = dx * dx + dy * dy + dz * dz > DRIFT_SQ;
 
+		if (drifted) {
+			float yaw = player.getYaw();
+			float pitch = player.getPitch();
+			runInternalTeleport(() -> {
+				player.setPos(entry.x, entry.y, entry.z);
+				player.prevX = entry.x;
+				player.prevY = entry.y;
+				player.prevZ = entry.z;
+				player.setYaw(yaw);
+				player.setPitch(pitch);
+			});
+		}
+
+		if (forceNetworkSync || (drifted && maySendNetworkSync(player))) {
+			syncClientToAnchor(player, entry);
+		}
+	}
+
+	private static boolean maySendNetworkSync(ServerPlayerEntity player) {
+		long tick = player.getServer().getTicks();
+		Long last = LAST_NETWORK_SYNC_TICK.get(player.getUuid());
+		if (last != null && tick - last < NETWORK_SYNC_INTERVAL_TICKS) {
+			return false;
+		}
+		LAST_NETWORK_SYNC_TICK.put(player.getUuid(), tick);
+		return true;
+	}
+
+	private static void syncClientToAnchor(ServerPlayerEntity player, ModerationStorage.FreezeEntry entry) {
 		ServerPlayNetworkHandler handler = player.networkHandler;
-		if (handler != null) {
-			runInternalTeleport(() -> handler.requestTeleport(
-					entry.x, entry.y, entry.z, yaw, pitch, ABSOLUTE_TELEPORT));
-		}
-	}
-
-	public static void applyLookFromPacket(ServerPlayerEntity player, net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket packet) {
-		if (!packet.changesLook()) {
+		if (handler == null) {
 			return;
 		}
-		player.setYaw(packet.getYaw(player.getYaw()));
-		player.setPitch(packet.getPitch(player.getPitch()));
-	}
-
-	public static void tickFrozen(ServerPlayerEntity player) {
-		if (!isFrozen(player)) {
-			return;
-		}
-		snapToAnchor(player);
-	}
-
-	public static boolean shouldBlockPositionMove(ServerPlayerEntity player) {
-		return isFrozen(player);
+		float yaw = player.getYaw();
+		float pitch = player.getPitch();
+		runInternalTeleport(() -> handler.requestTeleport(
+				entry.x, entry.y, entry.z, yaw, pitch, ABSOLUTE_TELEPORT));
 	}
 
 	public static boolean shouldBlockEntityPositionChange(Entity entity, double x, double y, double z) {
