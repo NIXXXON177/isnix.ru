@@ -1410,19 +1410,25 @@
 	font-size: 0.72rem;
 }
 
-.account-card--appeals .account-card__body {
-	display: flex;
-	flex-direction: column;
-	gap: 0.65rem;
+.account-appeals-strip {
+	margin-bottom: 1rem;
+	padding: 0.85rem 1rem;
 }
 
-.account-card--appeals .auth-whitelist-lead {
-	flex: 1;
+.account-appeals-strip__text {
 	margin: 0;
+	font-size: 0.8rem;
+	line-height: 1.5;
 }
 
-.account-card--appeals .profile-appeals-btn {
-	margin-top: auto;
+.account-appeals-strip__text a {
+	color: var(--green);
+}
+
+.account-subnav__link--external::after {
+	content: ' ↗';
+	font-size: 0.85em;
+	opacity: 0.65;
 }
 
 .profile-hero.auth-panel {
