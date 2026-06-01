@@ -276,18 +276,43 @@
 	}
 
 	/** Повтор только для GET; PATCH/POST при сбое не дублируем (иначе лавина запросов). */
+	var FETCH_GET_TIMEOUT_MS = 20000
+
 	function fetchWithRetry(url, options) {
 		var method = ((options && options.method) || 'GET').toUpperCase()
 		var delays = method === 'GET' || method === 'HEAD' ? [0, 280] : [0]
+		var useTimeout =
+			(method === 'GET' || method === 'HEAD') &&
+			!(options && options.signal)
+
 		function attempt(i) {
-			return global.fetch(url, options).catch(function (err) {
-				if (!isNetworkError(err) || i >= delays.length - 1) {
-					throw err
-				}
-				return sleep(delays[i + 1]).then(function () {
-					return attempt(i + 1)
+			var opts = options ? Object.assign({}, options) : {}
+			var controller
+			var timer
+			if (useTimeout) {
+				controller = new AbortController()
+				opts.signal = controller.signal
+				timer = setTimeout(function () {
+					try {
+						controller.abort()
+					} catch (_abortErr) {
+						/* ignore */
+					}
+				}, FETCH_GET_TIMEOUT_MS)
+			}
+			return global
+				.fetch(url, opts)
+				.finally(function () {
+					if (timer) clearTimeout(timer)
 				})
-			})
+				.catch(function (err) {
+					if (!isNetworkError(err) || i >= delays.length - 1) {
+						throw err
+					}
+					return sleep(delays[i + 1]).then(function () {
+						return attempt(i + 1)
+					})
+				})
 		}
 		return attempt(0)
 	}

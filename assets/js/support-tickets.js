@@ -5,6 +5,7 @@
 	var MAX_EVIDENCE_BYTES = 25 * 1024 * 1024
 
 	var TICKETS_PAGE_SIZE = 5
+	var SUPPORT_LOAD_TIMEOUT_MS = 15000
 
 	var supportReady = false
 	var adminSupportLoaded = false
@@ -133,9 +134,27 @@
 		)
 	}
 
+	function withLoadTimeout(promise, ms) {
+		return Promise.race([
+			promise,
+			new Promise(function (_resolve, reject) {
+				setTimeout(function () {
+					reject(new Error('support_load_timeout'))
+				}, ms || SUPPORT_LOAD_TIMEOUT_MS)
+			}),
+		])
+	}
+
 	async function loadAttachmentsForTicket(ticketId) {
 		if (!window.IsnixAuth || !IsnixAuth.getSupportAttachments) return []
-		return IsnixAuth.getSupportAttachments(ticketId)
+		try {
+			return await withLoadTimeout(
+				IsnixAuth.getSupportAttachments(ticketId),
+				SUPPORT_LOAD_TIMEOUT_MS,
+			)
+		} catch (_e) {
+			return []
+		}
 	}
 
 	function renderMessages(messages, msgOptions) {
@@ -169,7 +188,14 @@
 
 	async function loadMessages(ticketId) {
 		if (!window.IsnixAuth || !IsnixAuth.getSupportMessages) return []
-		return IsnixAuth.getSupportMessages(ticketId)
+		try {
+			return await withLoadTimeout(
+				IsnixAuth.getSupportMessages(ticketId),
+				SUPPORT_LOAD_TIMEOUT_MS,
+			)
+		} catch (_e) {
+			return null
+		}
 	}
 
 	function deleteTicketButtonHtml(ticketId, label) {
@@ -269,8 +295,14 @@
 
 	async function renderTicketCard(t, options) {
 		options = options || {}
-		var msgs = await loadMessages(t.id)
-		var attachments = await loadAttachmentsForTicket(t.id)
+		var msgsResult = await Promise.all([
+			loadMessages(t.id),
+			loadAttachmentsForTicket(t.id),
+		])
+		var msgs = msgsResult[0]
+		var attachments = msgsResult[1]
+		var messagesFailed = msgs === null
+		if (messagesFailed) msgs = []
 		var meta = ''
 		if (options.showId) {
 			meta +=
@@ -302,6 +334,10 @@
 				'<p class="auth-muted">Доп. ссылка: <a href="' +
 				escapeHtml(t.evidence_url) +
 				'" target="_blank" rel="noopener noreferrer">открыть</a></p>'
+		}
+		if (messagesFailed) {
+			meta +=
+				'<p class="auth-hint auth-hint--warn">Переписка не загрузилась (таймаут или сеть). Обнови страницу или открой вкладку снова.</p>'
 		}
 		meta += renderAttachmentsHtml(attachments)
 		var msgOpts = {
@@ -428,10 +464,12 @@
 					'</p>'
 				return
 			}
-			var html = ''
-			for (var i = 0; i < tickets.length; i++) {
-				html += await renderTicketCard(tickets[i], { admin: false })
-			}
+			var cards = await Promise.all(
+				tickets.map(function (ticket) {
+					return renderTicketCard(ticket, { admin: false })
+				}),
+			)
+			var html = cards.join('')
 			html += renderPaginationHtml('player', playerSupportPage, TICKETS_PAGE_SIZE, total)
 			list.innerHTML = html
 			list.querySelectorAll('.auth-app-reply-form[data-ticket-id]').forEach(function (form) {
@@ -481,10 +519,12 @@
 				list.innerHTML = '<p class="auth-muted">Нет обращений в этом разделе.</p>'
 				return
 			}
-			var html = ''
-			for (var i = 0; i < tickets.length; i++) {
-				html += await renderTicketCard(tickets[i], { admin: true, showId: true })
-			}
+			var cards = await Promise.all(
+				tickets.map(function (ticket) {
+					return renderTicketCard(ticket, { admin: true, showId: true })
+				}),
+			)
+			var html = cards.join('')
 			html += renderPaginationHtml('admin', adminSupportPage, TICKETS_PAGE_SIZE, total)
 			list.innerHTML = html
 			list.querySelectorAll('.auth-admin-support-reply').forEach(function (btn) {
