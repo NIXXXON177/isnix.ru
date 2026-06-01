@@ -636,14 +636,20 @@
 		if (block) block.hidden = false
 		if (form) form.hidden = false
 		if (scoreEl) {
-			scoreEl.textContent = '★' + rep.score
+			if (typeof isnixRepScoreHtml === 'function') {
+				scoreEl.innerHTML = isnixRepScoreHtml(rep.score)
+			} else {
+				scoreEl.textContent = String(rep.score)
+			}
 			scoreEl.classList.toggle('profile-reputation-score__value--pos', rep.score > 0)
 			scoreEl.classList.toggle('profile-reputation-score__value--neg', rep.score < 0)
 		}
 		if (metaEl) {
-			var parts = ['👍 ' + rep.likes]
-			if (rep.dislikes > 0) parts.push('👎 ' + rep.dislikes)
-			metaEl.textContent = parts.join(' · ')
+			if (typeof isnixRepMetaHtml === 'function') {
+				metaEl.innerHTML = isnixRepMetaHtml(rep.likes, rep.dislikes || 0)
+			} else {
+				metaEl.textContent = rep.likes + (rep.dislikes > 0 ? ' / ' + rep.dislikes : '')
+			}
 		}
 	}
 
@@ -1012,9 +1018,14 @@
 			return
 		}
 		if (whitelistAccessGranted(v)) {
-			hintEl.textContent = isOnWhitelist(v)
-				? '✅ Этот ник в вайтлисте — можно заходить на сервер'
-				: '✅ Заявка одобрена — можно заходить на сервер'
+			var okMsg = isOnWhitelist(v)
+				? 'Этот ник в вайтлисте — можно заходить на сервер'
+				: 'Заявка одобрена — можно заходить на сервер'
+			if (typeof isnixSetStatus === 'function') {
+				isnixSetStatus(hintEl, okMsg, true)
+			} else {
+				hintEl.textContent = okMsg
+			}
 			hintEl.className = 'auth-hint auth-hint--ok'
 		} else if (IsnixAuth && IsnixAuth.MC_NICK_RE.test(v)) {
 			hintEl.textContent = 'Ника нет в вайтлисте — после сохранения откроется заявка'
@@ -1398,8 +1409,8 @@
 		if (!app) return ''
 		var bits = []
 		if (app.age) bits.push('возраст: ' + escapeHtml(String(app.age)))
-		if (app.read_rules) bits.push('правила ✓')
-		if (app.downloaded_modpack) bits.push('сборка ✓')
+		if (app.read_rules) bits.push('правила OK')
+		if (app.downloaded_modpack) bits.push('сборка OK')
 		if (app.referral_source) {
 			bits.push('откуда: ' + escapeHtml(app.referral_source))
 		}
@@ -1501,9 +1512,7 @@
 				wlBadge.textContent = 'Укажи ник'
 				wlBadge.className = 'profile-badge'
 			} else if (whitelistAccessGranted(nick)) {
-				wlBadge.textContent = isOnWhitelist(nick)
-					? '✓ В вайтлисте'
-					: '✓ Одобрено'
+				wlBadge.textContent = isOnWhitelist(nick) ? 'В вайтлисте' : 'Одобрено'
 				wlBadge.className = 'profile-badge profile-badge--ok'
 			} else {
 				wlBadge.textContent = 'Нет в вайтлисте'
@@ -2400,10 +2409,14 @@
 			.map(function (app) {
 				var decision =
 					app.status === 'approved'
-						? '✅ Одобрено'
+						? (typeof isnixStatusHtml === 'function'
+							? isnixStatusHtml('Одобрено', true)
+							: 'Одобрено')
 						: app.status === 'rejected'
-							? '❌ Отклонено'
-							: '⏳ На рассмотрении'
+							? (typeof isnixStatusHtml === 'function'
+								? isnixStatusHtml('Отклонено', false)
+								: 'Отклонено')
+							: 'На рассмотрении'
 				var adminMsg = app.admin_note
 					? '<div class="auth-dialog auth-dialog--admin">' +
 						'<p class="auth-dialog__label">Сообщение от администрации</p>' +
@@ -2996,7 +3009,7 @@
 				setLoading(repVoteForm, true)
 				try {
 					await IsnixAuth.castReputationVote(target, 1)
-					setRepVoteMsg('Лайк отправлен игроку ' + target + ' 👍', true)
+					setRepVoteMsg('Лайк отправлен игроку ' + target, true)
 					showMsg('Лайк отправлен: ' + target, true)
 					if (targetEl) targetEl.value = ''
 				} catch (err) {

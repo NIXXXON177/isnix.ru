@@ -19,7 +19,7 @@
 			rel="stylesheet"
 		/>
 		<link rel="stylesheet" href="assets/css/main.css?v=2" />
-		<link rel="stylesheet" href="assets/css/components.css?v=3" />
+		<link rel="stylesheet" href="assets/css/components.css?v=4" />
 		<link rel="stylesheet" href="assets/css/auth.css?v=14" />
 		<link rel="stylesheet" href="assets/css/site-header.css" />
 	</head>
@@ -326,7 +326,7 @@
 											aria-controls="notificationsModalRoot"
 											title="Уведомления"
 										>
-											<span class="auth-notifications__icon" aria-hidden="true">🔔</span>
+											<span class="auth-notifications__icon" aria-hidden="true"><svg class="icon" aria-hidden="true" focusable="false"><use href="assets/icons/sprite.svg#bell"></use></svg></span>
 											<span id="notificationsBadge" class="auth-notifications__badge" hidden
 												>0</span
 											>
@@ -495,8 +495,8 @@
 							TAB в игре (<code>%isnix:rep%</code>).
 						</p>
 						<div class="profile-reputation-score" id="profileRepScoreBlock" hidden>
-							<p class="profile-reputation-score__value" id="profileRepScore">★0</p>
-							<p class="profile-reputation-score__meta" id="profileRepMeta">👍 0</p>
+							<p class="profile-reputation-score__value" id="profileRepScore"><svg class="icon icon--inline" aria-hidden="true" focusable="false"><use href="assets/icons/sprite.svg#star"></use></svg>0</p>
+							<p class="profile-reputation-score__meta" id="profileRepMeta"><svg class="icon icon--inline" aria-hidden="true" focusable="false"><use href="assets/icons/sprite.svg#thumb-up"></use></svg> 0</p>
 						</div>
 						<p id="profileRepHint" class="auth-hint profile-reputation-hint">
 							Загрузка рейтинга…
@@ -517,7 +517,7 @@
 								</p>
 							</div>
 							<button type="submit" class="auth-submit profile-reputation-like">
-								👍 Лайк
+								<svg class="icon icon--inline" aria-hidden="true" focusable="false"><use href="assets/icons/sprite.svg#thumb-up"></use></svg> Лайк
 							</button>
 						</form>
 						<p id="profileRepVoteMsg" class="auth-hint" hidden></p>
@@ -859,6 +859,7 @@
 		<script src="assets/js/site-header.js?v=5" defer></script>
 		<script src="assets/js/site-push-prompt.js?v=2" defer></script>
 		<script src="assets/js/support-tickets.js?v=8" defer></script>
-		<script src="assets/js/account.js?v=48"></script>
+		<script src="assets/js/icons.js?v=1"></script>
+		<script src="assets/js/account.js?v=49"></script>
 	</body>
 </html>

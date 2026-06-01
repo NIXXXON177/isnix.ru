@@ -70,7 +70,7 @@
 		nickWhitelistAbort = new AbortController()
 		var ac = nickWhitelistAbort
 		nickApprovedKey = null
-		st.textContent = '⏳ Проверяем вайтлист…'
+		st.textContent = 'Проверяем вайтлист…'
 		st.className = 'nick-status checking'
 		updateCustomPreview()
 
@@ -87,11 +87,11 @@
 			}
 			if (canon) {
 				nickApprovedKey = lv
-				st.textContent = '✅ В вайтлисте: ' + canon
+				setNickStatus(st, 'В вайтлисте: ' + canon, true)
 				st.className = 'nick-status ok'
 			} else {
 				nickApprovedKey = null
-				st.textContent = '❌ Нет в вайтлисте'
+				setNickStatus(st, 'Нет в вайтлисте', false)
 				st.className = 'nick-status invalid'
 			}
 			updateCustomPreview()
@@ -123,18 +123,30 @@
 				nickApprovedKey = null
 				whitelistPlayers = null
 				whitelistFetchedAt = 0
-				st.textContent = '⚠️ Нет whitelist.json или ошибка загрузки'
+				setNickStatus(st, 'Нет whitelist.json или ошибка загрузки', 'warn')
 				st.className = 'nick-status empty'
 				updateCustomPreview()
 			})
 	}
 
 	function showToast(msg, ok = true) {
+		if (typeof isnixShowToast === 'function') {
+			isnixShowToast(msg, ok)
+			return
+		}
 		const t = document.getElementById('toast')
 		t.textContent = msg
 		t.style.borderColor = ok ? 'var(--green-dark)' : 'rgba(248,113,113,.4)'
 		t.classList.add('show')
 		setTimeout(() => t.classList.remove('show'), 3200)
+	}
+
+	function setNickStatus(el, text, ok) {
+		if (typeof isnixSetStatus === 'function') {
+			isnixSetStatus(el, text, ok)
+			return
+		}
+		if (el) el.textContent = text
 	}
 
 	function buildDonationUrl(prefix, amount) {
@@ -149,12 +161,12 @@
 	function openDonation(btn) {
 		const nick = getNick()
 		if (!nick) {
-			showToast('⚠️ Сначала введи ник в Minecraft!', false)
+			showToast('Сначала введи ник в Minecraft!', false)
 			document.getElementById('playerNick').focus()
 			return
 		}
 		if (!isNickVerifiedForPurchase()) {
-			showToast('⚠️ Ник должен быть в вайтлисте (зелёный статус)', false)
+			showToast('Ник должен быть в вайтлисте (зелёный статус)', false)
 			document.getElementById('playerNick').focus()
 			return
 		}
@@ -167,12 +179,12 @@
 	function openCreatorPrefix(btn) {
 		const nick = getNick()
 		if (!nick) {
-			showToast('⚠️ Сначала введи ник в Minecraft!', false)
+			showToast('Сначала введи ник в Minecraft!', false)
 			document.getElementById('playerNick').focus()
 			return
 		}
 		if (!isNickVerifiedForPurchase()) {
-			showToast('⚠️ Ник должен быть в вайтлисте (зелёный статус)', false)
+			showToast('Ник должен быть в вайтлисте (зелёный статус)', false)
 			document.getElementById('playerNick').focus()
 			return
 		}
@@ -237,12 +249,12 @@
 			document.getElementById('boldNickModalNick').value || ''
 		).trim()
 		if (!raw) {
-			showToast('⚠️ Введите ник в Minecraft!', false)
+			showToast('Введите ник в Minecraft!', false)
 			document.getElementById('boldNickModalNick').focus()
 			return
 		}
 		if (!MC_NICK_RE.test(raw)) {
-			showToast('⚠️ Ник: 3–16 символов, латиница, цифры и _', false)
+			showToast('Ник: 3–16 символов, латиница, цифры и _', false)
 			document.getElementById('boldNickModalNick').focus()
 			return
 		}
@@ -262,14 +274,14 @@
 			const st = document.getElementById('nickStatus')
 			if (!canon) {
 				nickApprovedKey = null
-				st.textContent = '❌ Нет в вайтлисте'
+				setNickStatus(st, 'Нет в вайтлисте', false)
 				st.className = 'nick-status invalid'
 				updateCustomPreview()
-				showToast('⚠️ Ник должен быть в вайтлисте (зелёный статус)', false)
+				showToast('Ник должен быть в вайтлисте (зелёный статус)', false)
 				return
 			}
 			nickApprovedKey = lv
-			st.textContent = '✅ В вайтлисте: ' + canon
+			setNickStatus(st, 'В вайтлисте: ' + canon, true)
 			st.className = 'nick-status ok'
 			updateCustomPreview()
 			const nickCanon = canonicalNickFromWhitelist(raw)
@@ -303,17 +315,17 @@
 			document.getElementById('customPrefix').value || ''
 		).trim()
 		if (!nick) {
-			showToast('⚠️ Введи ник!', false)
+			showToast('Введи ник!', false)
 			document.getElementById('customNick').focus()
 			return
 		}
 		if (!isNickVerifiedForPurchase()) {
-			showToast('⚠️ Сначала проверь ник по вайтлисту', false)
+			showToast('Сначала проверь ник по вайтлисту', false)
 			document.getElementById('playerNick').focus()
 			return
 		}
 		if (!prefix) {
-			showToast('⚠️ Придумай префикс!', false)
+			showToast('Придумай префикс!', false)
 			document.getElementById('customPrefix').focus()
 			return
 		}
@@ -339,21 +351,21 @@
 			}
 			var st = document.getElementById('nickStatus')
 			if (!v) {
-				st.textContent = '⚠️ Введи ник перед покупкой'
+				setNickStatus(st, 'Введи ник перед покупкой', 'warn')
 				st.className = 'nick-status empty'
 				nickApprovedKey = null
 				updateCustomPreview()
 				return
 			}
 			if (!MC_NICK_RE.test(v)) {
-				st.textContent = '⚠️ Ник: 3–16 символов, латиница, цифры и _'
+				setNickStatus(st, 'Ник: 3–16 символов, латиница, цифры и _', 'warn')
 				st.className = 'nick-status invalid'
 				nickApprovedKey = null
 				updateCustomPreview()
 				return
 			}
 			nickApprovedKey = null
-			st.textContent = '⏳ Проверяем вайтлист…'
+			st.textContent = 'Проверяем вайтлист…'
 			st.className = 'nick-status checking'
 			updateCustomPreview()
 			nickDebounceTimer = setTimeout(function () {

@@ -661,6 +661,9 @@
 			.feat-icon {
 				font-size: 1.6rem;
 				margin-bottom: 0.8rem;
+				display: flex;
+				align-items: center;
+				justify-content: flex-start;
 			}
 			.feat-title {
 				font-family: 'Cinzel', serif;
@@ -974,6 +977,9 @@
 				font-weight: 700;
 				color: #fff;
 				margin-bottom: 0.5rem;
+				display: flex;
+				align-items: center;
+				gap: 0.35rem;
 			}
 			.info-text {
 				font-size: 0.8rem;

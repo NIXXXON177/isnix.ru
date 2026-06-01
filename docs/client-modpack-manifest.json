@@ -1,0 +1,11 @@
+{
+  "name": "ISTHISNIXXXON Client Modpack",
+  "minecraft": "1.21.1",
+  "loader": "Fabric",
+  "java": "21",
+  "launcher": "ElyPrismLauncher (recommended)",
+  "version": "2.1.0-client",
+  "built": "2026-06-01T21:30:32Z",
+  "mods_count": 33,
+  "note": "Player client only: required parity mods + client UX (Sodium, Xaero, etc.). Server-only (EasyAuth, TAB, trade, FallingTree, isnix-market, admin) excluded."
+}

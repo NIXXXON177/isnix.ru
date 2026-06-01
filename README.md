@@ -2,7 +2,7 @@
 
 Официальный сайт сервера ISTHISNIXXXON — ванильный Minecraft-сервер (Fabric 1.21.1, whitelist).
 
-- Сборка для игроков: `downloads/ISTHISNIXXXONmods.zip` (~35 МБ)
+- Сборка для игроков: `downloads/ISTHISNIXXXONmods.zip` (~42 МБ, только клиент) — `python scripts/build_client_modpack.py`, см. [docs/client-modpack.md](docs/client-modpack.md)
 - Инструкция: [how-to-play.html](how-to-play.html)
 - Аккаунт и заявка в вайтлист: [account.html](account.html) — нужен [Supabase](docs/supabase-auth-setup.md)
 - Жирный ник только админам (сервер): [docs/bold-nick-server.md](docs/bold-nick-server.md)

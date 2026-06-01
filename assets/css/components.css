@@ -1,4 +1,5 @@
-/* Секция «Как попасть на сервер» */
+@import url('icons.css?v=1');
+
 .join-section .join-inner {
 	max-width: 36rem;
 	margin: 0 auto;
