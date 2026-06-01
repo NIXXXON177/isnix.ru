@@ -407,40 +407,6 @@
 		}
 	}
 
-	async function refreshAppealsBadge() {
-		var countEl = document.getElementById('profileAppealsCount')
-		var btn = document.getElementById('profileAppealsBtn')
-		if (!countEl || !window.IsnixAuth || !IsnixAuth.getSupportTickets) return
-		if (IsnixAuth.isAdminProfile(currentProfile)) {
-			countEl.hidden = true
-			return
-		}
-		try {
-			var result = await IsnixAuth.getSupportTickets({
-				asAdmin: false,
-				filter: 'active',
-				page: 1,
-				pageSize: 1,
-			})
-			var total = result.total == null ? 0 : result.total
-			if (total > 0) {
-				countEl.textContent = String(total > 99 ? '99+' : total)
-				countEl.hidden = false
-				if (btn) {
-					btn.setAttribute(
-						'aria-label',
-						'Открыть обращения, активных: ' + total,
-					)
-				}
-			} else {
-				countEl.hidden = true
-				if (btn) btn.removeAttribute('aria-label')
-			}
-		} catch (_e) {
-			countEl.hidden = true
-		}
-	}
-
 	function refreshProfileDashboardHints(profile) {
 		updateProfileWlStatusLine(profile || currentProfile)
 		updateAccountSubnav(profile || currentProfile)
@@ -940,9 +906,6 @@
 		updatePlayerApplicationSections(profile)
 		updateWhitelistHint()
 		refreshProfileDashboardHints(profile)
-		deferAccountTask(function () {
-			refreshAppealsBadge()
-		}, 500)
 		var isAdmin = IsnixAuth && IsnixAuth.isAdminProfile(profile)
 		var wrap = document.querySelector('.auth-wrap')
 		if (wrap) wrap.classList.toggle('auth-wrap--wide', isAdmin)

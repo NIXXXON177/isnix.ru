@@ -1302,23 +1302,6 @@ button.profile-quick-action.is-copied {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	gap: 0.5rem;
-	flex-wrap: wrap;
-}
-
-.profile-appeals-count {
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	min-width: 1.35rem;
-	height: 1.35rem;
-	padding: 0 0.35rem;
-	border-radius: 999px;
-	background: #ef4444;
-	color: #fff;
-	font-size: 0.72rem;
-	font-weight: 700;
-	line-height: 1;
 }
 
 @media (min-width: 720px) {
