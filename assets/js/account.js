@@ -15,6 +15,7 @@
 	var adminView = 'applications'
 	var playerStats = null
 	var playerStatsUserId = null
+	var playerReputation = null
 	var playerStatsTimer = null
 	var statsRefreshTimer = null
 	var cachedServerStatus = null
@@ -620,6 +621,102 @@
 		}
 	}
 
+	function parseRepData(data) {
+		if (!data) return null
+		if (typeof data === 'string') {
+			try {
+				data = JSON.parse(data)
+			} catch (_e) {
+				return null
+			}
+		}
+		if (data.ok === false) return null
+		return {
+			score: Number(data.score) || 0,
+			likes: Number(data.likes) || 0,
+			dislikes: Number(data.dislikes) || 0,
+			nick: data.nick || '',
+		}
+	}
+
+	function renderPlayerReputation(profile, rep) {
+		var block = document.getElementById('profileRepScoreBlock')
+		var scoreEl = document.getElementById('profileRepScore')
+		var metaEl = document.getElementById('profileRepMeta')
+		var hintEl = document.getElementById('profileRepHint')
+		var form = document.getElementById('repVoteForm')
+		var nick =
+			profile && profile.minecraft_nick ? profile.minecraft_nick.trim() : ''
+
+		if (!hintEl) return
+
+		if (!nick) {
+			if (block) block.hidden = true
+			if (form) form.hidden = true
+			hintEl.hidden = false
+			hintEl.textContent =
+				'Укажи Minecraft-ник в настройках профиля — тогда появится рейтинг и можно ставить лайки.'
+			return
+		}
+
+		if (rep === undefined) {
+			if (block) block.hidden = true
+			if (form) form.hidden = true
+			hintEl.hidden = false
+			hintEl.textContent = 'Загрузка рейтинга…'
+			return
+		}
+
+		if (rep === null) {
+			if (block) block.hidden = true
+			if (form) form.hidden = true
+			hintEl.hidden = false
+			hintEl.textContent =
+				'Рейтинг пока недоступен. Нужен SQL из docs/supabase-player-reputation.sql в Supabase.'
+			return
+		}
+
+		hintEl.hidden = true
+		if (block) block.hidden = false
+		if (form) form.hidden = false
+		if (scoreEl) {
+			scoreEl.textContent = '★' + rep.score
+			scoreEl.classList.toggle('profile-reputation-score__value--pos', rep.score > 0)
+			scoreEl.classList.toggle('profile-reputation-score__value--neg', rep.score < 0)
+		}
+		if (metaEl) {
+			var parts = ['👍 ' + rep.likes]
+			if (rep.dislikes > 0) parts.push('👎 ' + rep.dislikes)
+			metaEl.textContent = parts.join(' · ')
+		}
+	}
+
+	async function loadPlayerReputation(profile) {
+		var nick =
+			profile && profile.minecraft_nick ? profile.minecraft_nick.trim() : ''
+		renderPlayerReputation(profile, undefined)
+		if (!nick || !IsnixAuth || !IsnixAuth.getReputation) {
+			renderPlayerReputation(profile, null)
+			return
+		}
+		try {
+			var raw = await IsnixAuth.getReputation(nick)
+			playerReputation = parseRepData(raw)
+			renderPlayerReputation(profile, playerReputation)
+		} catch (_e) {
+			renderPlayerReputation(profile, null)
+		}
+	}
+
+	function setRepVoteMsg(text, ok) {
+		var el = document.getElementById('profileRepVoteMsg')
+		if (!el) return
+		el.hidden = !text
+		el.textContent = text || ''
+		el.className =
+			'auth-hint' + (ok ? ' auth-hint--ok' : text ? ' auth-hint--err' : '')
+	}
+
 	function stopPlayerStatsTicker() {
 		if (playerStatsTimer) {
 			clearInterval(playerStatsTimer)
@@ -838,6 +935,7 @@
 		updateProfileAvatars(profile.minecraft_nick ? profile.minecraft_nick : '')
 		updateProfileMeta(profile, cachedServerStatus)
 		renderPlayerStats(profile, playerStats, cachedServerStatus)
+		loadPlayerReputation(profile)
 		updateProfileNickHint()
 		updatePlayerApplicationSections(profile)
 		updateWhitelistHint()
@@ -2835,6 +2933,7 @@
 					updateProfileNickHint()
 					updateProfileAvatars(nick)
 					renderPlayerStats(currentProfile, playerStats, cachedServerStatus)
+					loadPlayerReputation(currentProfile)
 					await refreshPlayerStatus()
 					var appNickEl = document.getElementById('appNick')
 					var appCallEl = document.getElementById('appCallName')
@@ -2869,6 +2968,51 @@
 					showMsg(IsnixAuth.formatAuthError(err), false)
 				} finally {
 					setLoading(profileForm, false)
+				}
+			})
+		}
+
+		var repVoteForm = document.getElementById('repVoteForm')
+		if (repVoteForm) {
+			repVoteForm.addEventListener('submit', async function (e) {
+				e.preventDefault()
+				setRepVoteMsg('', true)
+				var session = await IsnixAuth.getSession()
+				if (!session) return
+				var targetEl = document.getElementById('repTargetNick')
+				var target = targetEl ? targetEl.value.trim() : ''
+				if (!target) {
+					setRepVoteMsg('Укажи ник игрока', false)
+					return
+				}
+				if (!IsnixAuth.MC_NICK_RE.test(target)) {
+					setRepVoteMsg('Ник: 3–16 символов, латиница, цифры и _', false)
+					return
+				}
+				var ownNick =
+					currentProfile && currentProfile.minecraft_nick
+						? currentProfile.minecraft_nick.trim()
+						: ''
+				if (ownNick && ownNick.toLowerCase() === target.toLowerCase()) {
+					setRepVoteMsg('Нельзя голосовать за себя', false)
+					return
+				}
+				if (!ownNick) {
+					setRepVoteMsg('Сначала укажи свой ник в профиле', false)
+					return
+				}
+				setLoading(repVoteForm, true)
+				try {
+					await IsnixAuth.castReputationVote(target, 1)
+					setRepVoteMsg('Лайк отправлен игроку ' + target + ' 👍', true)
+					showMsg('Лайк отправлен: ' + target, true)
+					if (targetEl) targetEl.value = ''
+				} catch (err) {
+					var msg = IsnixAuth.formatAuthError(err)
+					setRepVoteMsg(msg, false)
+					showMsg(msg, false)
+				} finally {
+					setLoading(repVoteForm, false)
 				}
 			})
 		}

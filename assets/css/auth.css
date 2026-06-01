@@ -1421,6 +1421,65 @@ button.profile-quick-action.is-copied {
 	line-height: 1.4;
 }
 
+.profile-reputation {
+	margin-top: 0;
+}
+
+.profile-reputation-lead {
+	margin: 0 0 1rem;
+	max-width: 42rem;
+}
+
+.profile-reputation-lead code {
+	font-size: 0.85em;
+	color: var(--green);
+}
+
+.profile-reputation-score {
+	margin-bottom: 1rem;
+	padding: 1rem 1.1rem;
+	border-radius: var(--radius-sm);
+	background: rgba(0, 0, 0, 0.35);
+	border: 1px solid var(--border);
+	text-align: center;
+}
+
+.profile-reputation-score__value {
+	margin: 0;
+	font-family: 'Cinzel', serif;
+	font-size: 2rem;
+	font-weight: 700;
+	color: #fff;
+	font-variant-numeric: tabular-nums;
+}
+
+.profile-reputation-score__value--pos {
+	color: #c8e6a0;
+}
+
+.profile-reputation-score__value--neg {
+	color: #f0a8a8;
+}
+
+.profile-reputation-score__meta {
+	margin: 0.35rem 0 0;
+	font-size: 0.88rem;
+	color: var(--muted);
+}
+
+.profile-reputation-form {
+	max-width: 22rem;
+	margin-top: 0.5rem;
+}
+
+.profile-reputation-like {
+	margin-top: 0.25rem;
+}
+
+.profile-reputation-hint {
+	margin: 0;
+}
+
 .profile-meta-eyebrow {
 	font-size: 0.58rem;
 	font-weight: 700;

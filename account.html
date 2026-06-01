@@ -20,7 +20,7 @@
 		/>
 		<link rel="stylesheet" href="assets/css/main.css?v=2" />
 		<link rel="stylesheet" href="assets/css/components.css?v=3" />
-		<link rel="stylesheet" href="assets/css/auth.css?v=9" />
+		<link rel="stylesheet" href="assets/css/auth.css?v=10" />
 		<link rel="stylesheet" href="assets/css/site-header.css" />
 	</head>
 	<body class="account-page" data-page="account">
@@ -454,6 +454,7 @@
 						hidden
 					>
 						<a href="#profile-hero" class="account-subnav__link">Профиль</a>
+						<a href="#profile-reputation" class="account-subnav__link">Рейтинг</a>
 						<a href="#profile-settings" class="account-subnav__link">Настройки</a>
 						<a href="#applications" class="account-subnav__link">Заявки</a>
 						<a href="#profile-appeals" class="account-subnav__link">Обращения</a>
@@ -525,6 +526,41 @@
 								<a href="status.html" class="profile-quick-action">Статус</a>
 							</div>
 						</div>
+					</section>
+
+					<section class="auth-panel profile-reputation" id="profile-reputation">
+						<h2 class="auth-panel__title">Социальный рейтинг</h2>
+						<p class="auth-hint profile-reputation-lead">
+							Как в соцсети сервера: лайки от игроков с аккаунтом на isnix.ru. Рейтинг виден в
+							TAB в игре (<code>%isnix:rep%</code>).
+						</p>
+						<div class="profile-reputation-score" id="profileRepScoreBlock" hidden>
+							<p class="profile-reputation-score__value" id="profileRepScore">★0</p>
+							<p class="profile-reputation-score__meta" id="profileRepMeta">👍 0</p>
+						</div>
+						<p id="profileRepHint" class="auth-hint profile-reputation-hint">
+							Загрузка рейтинга…
+						</p>
+						<form id="repVoteForm" class="auth-form profile-reputation-form" hidden>
+							<div class="auth-field">
+								<label for="repTargetNick">Поставить лайк игроку</label>
+								<input
+									id="repTargetNick"
+									type="text"
+									maxlength="16"
+									autocomplete="off"
+									spellcheck="false"
+									placeholder="Ник в Minecraft"
+								/>
+								<p class="auth-hint">
+									Нужен привязанный ник у обоих. Сменить оценку можно раз в 7 дней.
+								</p>
+							</div>
+							<button type="submit" class="auth-submit profile-reputation-like">
+								👍 Лайк
+							</button>
+						</form>
+						<p id="profileRepVoteMsg" class="auth-hint" hidden></p>
 					</section>
 
 					<section class="auth-panel" id="profile-settings">
@@ -814,11 +850,11 @@
 		<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 		<script src="assets/js/server-status.js?v=6"></script>
 		<script src="assets/js/site-toast.js?v=1"></script>
-		<script src="assets/js/auth.js?v=36"></script>
+		<script src="assets/js/auth.js?v=37"></script>
 		<script src="assets/js/site-presence.js?v=4" defer></script>
 		<script src="assets/js/site-header.js?v=5" defer></script>
 		<script src="assets/js/site-push-prompt.js?v=2" defer></script>
 		<script src="assets/js/support-tickets.js?v=8" defer></script>
-		<script src="assets/js/account.js?v=44"></script>
+		<script src="assets/js/account.js?v=45"></script>
 	</body>
 </html>

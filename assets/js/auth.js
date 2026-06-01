@@ -1143,6 +1143,65 @@
 		return res.data
 	}
 
+	function isMissingReputationRpc(err) {
+		var msg = errorText(err)
+		return (
+			/server_get_reputation|rep_cast_vote|player_reputation/i.test(msg) ||
+			(err && (err.code === 'PGRST202' || err.code === '42883'))
+		)
+	}
+
+	async function getReputation(minecraftNick) {
+		var nick = (minecraftNick || '').trim()
+		if (!nick || isSupabaseBackoffActive()) return null
+		var sb = getClient()
+		if (!sb) return null
+		var res = await sb.rpc('server_get_reputation', { p_nick: nick })
+		if (res.error) {
+			if (isMissingReputationRpc(res.error)) return null
+			noteSupabaseNetworkFailure(res.error)
+			throw res.error
+		}
+		clearSupabaseBackoff()
+		return res.data
+	}
+
+	async function castReputationVote(targetNick, vote) {
+		var nick = (targetNick || '').trim()
+		if (!nick) throw new Error('Укажи ник игрока')
+		if (vote !== 1 && vote !== -1) throw new Error('Некорректная оценка')
+		var sb = getClient()
+		if (!sb) throw new Error('Нет подключения')
+		var res = await sb.rpc('rep_cast_vote', {
+			p_target_nick: nick,
+			p_vote: vote,
+		})
+		if (res.error) {
+			if (isMissingReputationRpc(res.error)) {
+				throw new Error(
+					'Рейтинг ещё не настроен в базе — выполни docs/supabase-player-reputation.sql в Supabase.',
+				)
+			}
+			throw res.error
+		}
+		var data = res.data
+		if (data && data.ok === false) {
+			var code = data.error || 'unknown'
+			var msg =
+				code === 'self_vote'
+					? 'Нельзя голосовать за себя.'
+					: code === 'cooldown'
+						? 'Вы уже меняли оценку недавно — подождите 7 дней.'
+						: code === 'already_voted'
+							? 'Вы уже поставили такую оценку.'
+							: code === 'target_not_found'
+								? 'Игрок не найден или не привязал ник на isnix.ru.'
+								: 'Не удалось отправить оценку.'
+			throw new Error(msg)
+		}
+		return data
+	}
+
 	function isMissingSupportTables(err) {
 		var msg = errorText(err)
 		return (
@@ -2016,6 +2075,8 @@
 		getProfile: getProfile,
 		getProfileDiskCache: readProfileDiskCache,
 		getPlayerStats: getPlayerStats,
+		getReputation: getReputation,
+		castReputationVote: castReputationVote,
 		isAdminProfile: isAdminProfile,
 		isCurrentUserAdmin: isCurrentUserAdmin,
 		updateProfile: updateProfile,
