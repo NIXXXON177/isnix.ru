@@ -31,7 +31,7 @@ public class IsnixModToolsMod implements DedicatedServerModInitializer {
 
 		ServerLifecycleEvents.SERVER_STOPPING.register(server -> {
 			if (storage != null) {
-				storage.save();
+				storage.save(server);
 			}
 		});
 

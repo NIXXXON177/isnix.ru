@@ -46,7 +46,9 @@ Fabric 1.21.1, серверный мод `isnix-modtools`.
 3. **Restart** сервера.
 4. Опционально: `config/isnix-modtools.json` — см. [isnix-modtools.json](config-samples/isnix-modtools.json)
 
-Состояние мутов/freeze: `isnix-modtools-state.json` в корне мира.
+Состояние мутов/freeze: `config/isnix-modtools-state.json` (старый файл в корне переносится при старте).
+
+**1.0.2** — исправлен NPE при `stop` сервера при сохранении state.
 
 ## Сборка
 

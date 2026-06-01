@@ -25,8 +25,33 @@ public final class ModerationStorage {
 	private Map<String, FreezeEntry> frozen = new HashMap<>();
 
 	public void bind(MinecraftServer server) {
-		path = server.getRunDirectory().resolve("isnix-modtools-state.json");
+		path = statePath(server);
 		load();
+		migrateLegacyStateFile(server);
+	}
+
+	private static Path statePath(MinecraftServer server) {
+		return server.getRunDirectory().resolve("config").resolve("isnix-modtools-state.json");
+	}
+
+	/** Старые установки писали в корень сервера. */
+	private void migrateLegacyStateFile(MinecraftServer server) {
+		if (path == null) {
+			return;
+		}
+		try {
+			Path legacy = server.getRunDirectory().resolve("isnix-modtools-state.json");
+			if (Files.isRegularFile(legacy) && !Files.isRegularFile(path)) {
+				Path parent = path.getParent();
+				if (parent != null) {
+					Files.createDirectories(parent);
+				}
+				Files.move(legacy, path);
+				IsnixModToolsMod.LOGGER.info("Перенесён isnix-modtools-state.json → config/");
+			}
+		} catch (IOException e) {
+			IsnixModToolsMod.LOGGER.warn("migrate state: {}", e.getMessage());
+		}
 	}
 
 	public void load() {
@@ -52,11 +77,21 @@ public final class ModerationStorage {
 	}
 
 	public void save() {
+		save(null);
+	}
+
+	public void save(MinecraftServer server) {
+		if (path == null && server != null) {
+			path = statePath(server);
+		}
 		if (path == null) {
 			return;
 		}
 		try {
-			Files.createDirectories(path.getParent());
+			Path parent = path.getParent();
+			if (parent != null) {
+				Files.createDirectories(parent);
+			}
 			StorageFile file = new StorageFile();
 			file.chatMutes = chatMutes;
 			file.voiceMutes = voiceMutes;
