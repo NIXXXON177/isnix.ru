@@ -39,7 +39,7 @@ Fabric **1.21.1**, серверный мод `isnix-graveguard`.
 ## Установка
 
 1. Собрать: `cd isnix-graveguard && ./gradlew build`
-2. JAR в `mods/isnix-graveguard-1.0.0.jar`
+2. JAR в `mods/isnix-graveguard-1.0.1.jar`
 3. **Restart** сервера (не `/reload` для модов)
 4. Проверка: умри → подойди к могиле → `/graveguard status`
 
@@ -49,4 +49,5 @@ Fabric **1.21.1**, серверный мод `isnix-graveguard`.
 
 ## Версии
 
+**1.0.1** — исправлен StackOverflow в `isGraveEntity` (цикл пассажир ↔ транспорт у сущности могилы).
 **1.0.0** — защита у VT Graves после смерти, конфиг, команды.

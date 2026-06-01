@@ -7,6 +7,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
@@ -15,19 +16,23 @@ public final class GraveEntityDetector {
 	}
 
 	public static boolean isGraveEntity(Entity entity) {
-		if (entity == null) {
+		return isGraveEntity(entity, new HashSet<>());
+	}
+
+	private static boolean isGraveEntity(Entity entity, Set<UUID> visited) {
+		if (entity == null || !visited.add(entity.getUuid())) {
 			return false;
 		}
 		if (hasGraveTag(entity)) {
 			return true;
 		}
 		for (Entity passenger : entity.getPassengerList()) {
-			if (isGraveEntity(passenger)) {
+			if (isGraveEntity(passenger, visited)) {
 				return true;
 			}
 		}
 		Entity vehicle = entity.getVehicle();
-		return vehicle != null && isGraveEntity(vehicle);
+		return vehicle != null && isGraveEntity(vehicle, visited);
 	}
 
 	public static boolean isNearOwnGrave(ServerPlayerEntity player, double radius) {
