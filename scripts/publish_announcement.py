@@ -272,10 +272,17 @@ def http_json(url: str, data: dict, headers: dict | None = None) -> dict | None:
         detail = e.read().decode("utf-8", errors="replace")
         hint = ""
         if e.code == 403:
-            hint = (
-                " (403: неверный или удалённый webhook — создайте новый в Discord: "
-                "канал → Интеграции → Webhooks → Скопировать URL)"
-            )
+            if "1010" in detail:
+                hint = (
+                    " (403/1010: Discord/Cloudflare часто блокирует запросы с GitHub Actions — "
+                    "опубликуйте вручную или перезапустите workflow с «skip Discord»; "
+                    "также проверьте DISCORD_WEBHOOK_URL в Secrets)"
+                )
+            else:
+                hint = (
+                    " (403: неверный или удалённый webhook — создайте новый в Discord: "
+                    "канал → Интеграции → Webhooks → Скопировать URL)"
+                )
         elif e.code == 404:
             hint = " (404: webhook не существует — создайте новый URL)"
         raise RuntimeError(f"HTTP {e.code}{hint}: {detail[:500]}") from e
@@ -301,7 +308,11 @@ def publish_discord(text: str, webhook: str, footer: str, dry_run: bool) -> None
     if dry_run:
         _safe_print(f"--- discord embed ---\n{json.dumps(payload, ensure_ascii=False, indent=2)}\n")
         return
-    http_json(webhook, payload)
+    http_json(
+        webhook,
+        payload,
+        headers={"User-Agent": "ISNIX-Publish/1.0 (+https://isnix.ru)"},
+    )
     print("[discord] OK")
 
 
@@ -420,6 +431,7 @@ def main() -> None:
     footer = read_footer()
     message = assemble_message(read_post(post_path), footer)
     errors: list[str] = []
+    successes: list[str] = []
 
     webhook = os.environ.get("DISCORD_WEBHOOK_URL", "").strip()
     tg_token = os.environ.get("TELEGRAM_BOT_TOKEN", "").strip()
@@ -433,6 +445,7 @@ def main() -> None:
         else:
             try:
                 publish_discord(message, webhook or "", footer, args.dry_run)
+                successes.append("discord")
             except (urllib.error.URLError, RuntimeError, json.JSONDecodeError) as e:
                 errors.append(f"discord: {e}")
 
@@ -444,6 +457,7 @@ def main() -> None:
                 publish_telegram(
                     message, tg_token or "dry", tg_chat or "@channel", args.dry_run
                 )
+                successes.append("telegram")
             except (urllib.error.URLError, RuntimeError, json.JSONDecodeError) as e:
                 errors.append(f"telegram: {e}")
 
@@ -453,6 +467,7 @@ def main() -> None:
         else:
             try:
                 publish_vk(message, vk_token or "dry", vk_group or "0", args.dry_run)
+                successes.append("vk")
             except (
                 urllib.error.URLError,
                 RuntimeError,
@@ -462,11 +477,20 @@ def main() -> None:
             ) as e:
                 errors.append(f"vk: {e}")
 
+    if successes:
+        print("Опубликовано: " + ", ".join(successes))
     if errors:
         print("Ошибки:", file=sys.stderr)
         for err in errors:
             print(f"  - {err}", file=sys.stderr)
+    if not successes:
         sys.exit(1)
+    if errors:
+        print(
+            "Завершено с предупреждениями: не все площадки (CI не падает, если хотя бы одна успешна).",
+            file=sys.stderr,
+        )
+        sys.exit(0)
 
     print("Готово: все выбранные площадки опубликованы." if not args.dry_run else "Dry-run завершён.")
 

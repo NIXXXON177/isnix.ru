@@ -10,10 +10,10 @@
 На сайте: «Отправить сообщение» | «Одобрить» | «Отклонить»
 После одобрения whitelist ~5 мин (GitHub Actions).
 
---- farmila52: [Гл. Админ] (только префикс, НЕ admin) ---
+--- farmila52: [Мл. Админ] (только префикс, НЕ admin) ---
 lp user farmila52 parent set default
 lp user farmila52 meta clear prefix
-lp user farmila52 meta setprefix 250 "&c&l[Гл. Админ] &r"
+lp user farmila52 meta setprefix 250 "&c&l[Мл. Админ] &r"
 lp user farmila52 permission unset isthis.boldnick
 lp sync
 
@@ -59,6 +59,15 @@ lp group default permission set essentialcommands.randomteleport true
 /sell buy <uuid>
 
 В GUI: Shift+ПКМ по своему лоту — снять с продажи.
+
+--- МОДЕРАЦИЯ (isnix-modtools, после рестарта) ---
+
+/mute <ник> <время> [причина]     — мут чата (30m, 2h, 1d)
+/unmute <ник>
+/mutevoice <ник> <время>          — мут микрофона (Voice Chat + LP)
+/unmutevoice <ник>
+/freeze <ник> [причина]           — заморозка (ходьба, ТП, команды)
+/unfreeze <ник>
 
 --- ИГРОКИ (моды, если стоят) ---
 

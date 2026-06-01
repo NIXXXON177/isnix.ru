@@ -6,7 +6,7 @@
 		<title>Правила сервера — ISTHISNIXXXON</title>
 		<meta
 			name="description"
-			content="Правила сервера ISTHISNIXXXON v3.0: честная игра, администрация без помощи в выживании, OPAC, бартер, наказания."
+			content="Правила сервера ISTHISNIXXXON v3.1: честная игра, OPAC, бартер, таблица наказаний (мут, бан, freeze)."
 		/>
 		<meta name="theme-color" content="#0a0f0a" />
 		<link rel="canonical" href="https://isnix.ru/rules.html" />
@@ -21,7 +21,7 @@
 		<link rel="stylesheet" href="assets/css/components.css?v=3" />
 		<link rel="stylesheet" href="assets/css/how-to-play.css" />
 		<link rel="stylesheet" href="assets/css/site-header.css?v=2" />
-		<link rel="stylesheet" href="assets/css/rules.css?v=2" />
+		<link rel="stylesheet" href="assets/css/rules.css?v=3" />
 	</head>
 	<body class="htp-page rules-page" data-page="rules">
 		<div class="site-header" id="siteHeader">
@@ -137,7 +137,7 @@
 			<a href="index.html#rules" class="rules-doc__back">← Краткая версия на главной</a>
 			<h1 class="htp-hero__title" style="margin-bottom: 0.5rem">Правила сервера</h1>
 			<p class="rules-doc__meta">
-				<strong>Версия 3.0</strong> — действуют с 27 мая 2026 года · Fabric 1.21.1 ·
+				<strong>Версия 3.1</strong> — действуют с 27 мая 2026 года · Fabric 1.21.1 ·
 				mc.isnix.ru
 			</p>
 			<p class="rules-doc__lead">
@@ -147,6 +147,7 @@
 			</p>
 			<nav class="rules-doc__toc" aria-label="Разделы правил">
 				<a href="#rules-players">Часть I — игроки</a>
+				<a href="#punishments">Наказания §10</a>
 				<a href="#rules-admins" class="rules-doc__toc--admin">Часть II — администрация</a>
 				<a href="index.html#rules-players">Кратко: игроки</a>
 				<a href="index.html#rules-admins" class="rules-doc__toc--admin">Кратко: админы</a>
@@ -155,8 +156,8 @@
 			<section id="rules-players" class="rules-doc__part">
 				<h2 class="rules-doc__part-title">Часть I. Правила для игроков</h2>
 				<p class="rules-doc__part-desc">
-					Обязательны для каждого, кто играет на сервере. Нарушение — предупреждение, мут или
-					бан.
+					Обязательны для каждого, кто играет на сервере. За нарушение — санкции по
+					<a href="#punishments">разделу §10</a> (предупреждение, мут, заморозка, бан).
 				</p>
 
 			<h2>1. Основные принципы</h2>
@@ -292,6 +293,154 @@
 				укажи ник нарушителя, дату и что произошло. Без доказательств расследовать сложнее —
 				«на словах» часто недостаточно.
 			</p>
+
+			<h2 id="punishments">10. Наказания</h2>
+			<p>
+				Администрация выбирает меру по <strong>таблице ниже</strong>, тяжести нарушения и
+				истории игрока. В причине указывают <strong>номер пункта</strong> правил (например,
+				«1.1.2 — оскорбление в общем чате», «2.1 — читы»). Сроки — ориентир; админ может
+				усилить или смягчить с обоснованием в логе.
+			</p>
+
+			<h3>10.1 Виды санкций</h3>
+			<ul>
+				<li>
+					<strong>Предупреждение</strong> — устно или в личку; при повторе переходит в мут или
+					бан.
+				</li>
+				<li>
+					<strong>Мут чата</strong> (<code>/mute</code>) — нельзя писать в чат; обычно
+					<strong>30&nbsp;мин — 7&nbsp;суток</strong>.
+				</li>
+				<li>
+					<strong>Мут голоса</strong> (<code>/mutevoice</code>) — нельзя говорить в Simple Voice
+					Chat; обычно <strong>30&nbsp;мин — 7&nbsp;суток</strong>.
+				</li>
+				<li>
+					<strong>Заморозка</strong> (<code>/freeze</code>) — игрок стоит на месте, может
+					смотреть по сторонам; для <strong>проверки</strong>, разбора конфликта или ожидания
+					админа (до снятия <code>/unfreeze</code>).
+				</li>
+				<li><strong>Кик</strong> — принудительный выход с сервера (лёгкие или разовые нарушения).</li>
+				<li>
+					<strong>Временный бан</strong> — <strong>1&nbsp;день — 30&nbsp;дней</strong>; доступ к
+					серверу закрыт.
+				</li>
+				<li>
+					<strong>Перманентный бан</strong> — навсегда; при грубых нарушениях или повторе после
+					временного бана.
+				</li>
+				<li>
+					<strong>Исключение из вайтлиста</strong> — при возрасте младше 12&nbsp;лет (§1.5), обходе
+					бана с другого аккаунта или особо тяжёлых нарушениях.
+				</li>
+			</ul>
+
+			<h3>10.2 Таблица наказаний</h3>
+			<table class="rules-doc__table rules-doc__table--punishments">
+				<tr>
+					<td><strong>Нарушение (пункт)</strong></td>
+					<td><strong>Обычно</strong></td>
+					<td><strong>Повтор / отягчающие</strong></td>
+				</tr>
+				<tr>
+					<td>Оскорбление, токсичность, флуд в <strong>общем чате</strong> (1.1.2)</td>
+					<td>Мут чата 30&nbsp;мин — 2&nbsp;ч</td>
+					<td>Мут 1&nbsp;д — 7&nbsp;д → бан 7&nbsp;д → перманент</td>
+				</tr>
+				<tr>
+					<td>Оскорбление в личке/войсе <strong>с жалобой адресата</strong> (1.1.1)</td>
+					<td>Предупреждение → мут 30&nbsp;мин — 2&nbsp;ч</td>
+					<td>Мут 1&nbsp;д → бан 3&nbsp;д — 7&nbsp;д</td>
+				</tr>
+				<tr>
+					<td>Мат <strong>в адрес человека</strong> (1.2)</td>
+					<td>Мут чата/голоса 30&nbsp;мин — 2&nbsp;ч</td>
+					<td>Бан 1&nbsp;д — 7&nbsp;д</td>
+				</tr>
+				<tr>
+					<td>Троллинг администрации (1.4)</td>
+					<td>Мут 1&nbsp;ч — 1&nbsp;д или freeze на проверку</td>
+					<td>Бан 7&nbsp;д → перманент</td>
+				</tr>
+				<tr>
+					<td>Политика / религия / национальные провокации (1.3)</td>
+					<td>Бан 7&nbsp;д — перманент</td>
+					<td>Перманент</td>
+				</tr>
+				<tr>
+					<td>Читы, макросы, Baritone, Litematica, обход GrimAC (2.1–2.3)</td>
+					<td>Перманентный бан</td>
+					<td>—</td>
+				</tr>
+				<tr>
+					<td>Доказанный X-Ray, Freecam и т.п. (2.2)</td>
+					<td>Бан 7&nbsp;д — перманент</td>
+					<td>Перманент</td>
+				</tr>
+				<tr>
+					<td>Использование багов и дюпов (2.5)</td>
+					<td>Перманентный бан</td>
+					<td>—</td>
+				</tr>
+				<tr>
+					<td>Гриф, воровство, сундуки в чужом привате (3.2, 3.4)</td>
+					<td>Бан 3&nbsp;д — 14&nbsp;д + возмещение ущерба</td>
+					<td>Перманент</td>
+				</tr>
+				<tr>
+					<td>Массовый гриф (3.5)</td>
+					<td>Перманентный бан</td>
+					<td>—</td>
+				</tr>
+				<tr>
+					<td>Мусор, лаг-фермы, постройки у спавна (4)</td>
+					<td>Предупреждение → кик → снос постройки</td>
+					<td>Бан 1&nbsp;д — 3&nbsp;д</td>
+				</tr>
+				<tr>
+					<td>Троллинг в голосе, наркотики в войсе (5, 7.1)</td>
+					<td>Мут голоса 1&nbsp;ч — 1&nbsp;д</td>
+					<td>Бан 7&nbsp;д → перманент</td>
+				</tr>
+				<tr>
+					<td>Обман и принуждение при бартере (6)</td>
+					<td>Бан 3&nbsp;д — 14&nbsp;д + возврат по фактам</td>
+					<td>Перманент</td>
+				</tr>
+				<tr>
+					<td>Азартные игры (6)</td>
+					<td>Бан 7&nbsp;д — перманент</td>
+					<td>Перманент</td>
+				</tr>
+				<tr>
+					<td>NSFW, нацизм, наркотики, оскорбительный ник/скин (7, 7.1)</td>
+					<td>Перманентный бан</td>
+					<td>—</td>
+				</tr>
+				<tr>
+					<td>Возраст младше 12&nbsp;лет (1.5)</td>
+					<td>Исключение из вайтлиста</td>
+					<td>—</td>
+				</tr>
+				<tr>
+					<td>Обход бана (другой аккаунт)</td>
+					<td>Перманент на все связанные аккаунты</td>
+					<td>—</td>
+				</tr>
+			</table>
+
+			<h3>10.3 Смягчение и усиление</h3>
+			<p>
+				<strong>Смягчить</strong> можно при первом лёгком нарушении, если игрок признал ошибку и
+				ущерб устранён (например, вернул украденное). <strong>Усилить</strong> — при повторе
+				того же пункта, лжи админам, сокрытии нарушения или обходе наказания.
+			</p>
+			<p>
+				<strong>10.4 Обжалование.</strong> Несогласны с баном или мутом —
+				<a href="appeals.html">обращение на сайте</a> с ником, датой и доказательствами (§9.1).
+				Решение другого администратора или техподдержки — окончательное в рамках правил сервера.
+			</p>
 			</section>
 
 			<section id="rules-admins" class="rules-doc__part rules-doc__part--admin">
@@ -329,8 +478,9 @@
 
 			<h2>A3. Расследование и наказания</h2>
 			<p>
-				Ledger, баны, муты. Решение по фактам. Не выдаём вещи по просьбе «верни алмазы».
-				Наказания — как в правилах для игроков (§ общие).
+				Ledger, баны, муты, <code>/mute</code>, <code>/mutevoice</code>, <code>/freeze</code>.
+				Решение по фактам. Не выдаём вещи по просьбе «верни алмазы». Наказания — по
+				<a href="#punishments">§10</a> и таблице наказаний.
 			</p>
 			<p>
 				В причине бана или мута указывают <strong>конкретный пункт</strong> правил для игроков

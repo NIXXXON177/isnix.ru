@@ -17,6 +17,8 @@
 
 **Ошибка 403:** webhook удалён или вставлен не тот URL — создайте новый webhook и обновите секрет в GitHub.
 
+**Ошибка 403 + `error code: 1010`:** часто Cloudflare блокирует запрос с GitHub Actions (Telegram/ВК при этом могут пройти). Варианты: опубликовать в Discord вручную; перезапустить workflow с галочкой **skip Discord**; обновить `DISCORD_WEBHOOK_URL`. Если Telegram и ВК уже вышли — повторный полный запуск дублирует посты; для Discord-only используйте skip Telegram и skip VK.
+
 ## Настройка Telegram
 
 1. @BotFather → `/newbot` → токен → `TELEGRAM_BOT_TOKEN`.

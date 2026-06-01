@@ -4,11 +4,11 @@
 tablist-name-format:
   enabled: true
   anti-override: true
-  format: "%tabprefix%&f%player%%tabsuffix%"
+  format: "%tabprefix%&f%player%&r%tabsuffix%"
 
 above-name-format:
   enabled: true
-  format: "%tagprefix%%player%%tagsuffix%"
+  format: "%tagprefix%%player%&r%tagsuffix%"
 
 # Дубликат для TAB 5.5+ (должен быть выключен, если включён tablist-name-format выше):
 tablist-name-formatting:

@@ -158,7 +158,7 @@ lp user evgesha_z meta clear prefix
 lp user evgesha_z parent set default
 lp user ezzpro meta clear prefix
 lp user ezzpro parent set default
-# farmila52 — [Гл. Админ]: не сбрасывать, см. docs/luckperms-farmila52-gl-admin.txt
+# farmila52 — [Мл. Админ]: не сбрасывать, см. docs/luckperms-farmila52-ml-admin.txt
 lp user farmila53 meta clear prefix
 lp user farmila53 parent set default
 lp user farsh42 meta clear prefix

@@ -1,9 +1,9 @@
-# farmila52 — только префикс [Гл. Админ] (НЕ группа admin, без прав админа)
+# farmila52 — только префикс [Мл. Админ] (НЕ группа admin, без прав админа)
 # Выполни в консоли сервера (после входа игрока хотя бы раз):
 
 lp user farmila52 parent set default
 lp user farmila52 meta clear prefix
-lp user farmila52 meta setprefix 250 "&c&l[Гл. Админ] &r"
+lp user farmila52 meta setprefix 250 "&c&l[Мл. Админ] &r"
 lp user farmila52 permission unset isthis.boldnick
 lp sync
 lp user farmila52 info

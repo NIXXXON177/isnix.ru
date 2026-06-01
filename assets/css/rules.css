@@ -393,3 +393,14 @@
 	font-weight: 600;
 	white-space: nowrap;
 }
+
+.rules-page .rules-doc__table--punishments td:first-child {
+	white-space: normal;
+	min-width: 9rem;
+}
+
+.rules-page .rules-doc__table--punishments tr:first-child td {
+	color: var(--text);
+	font-weight: 700;
+	background: rgba(255, 255, 255, 0.03);
+}
