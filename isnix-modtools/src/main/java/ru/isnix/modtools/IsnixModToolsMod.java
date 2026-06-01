@@ -39,9 +39,9 @@ public class IsnixModToolsMod implements DedicatedServerModInitializer {
 
 		ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
 			ServerPlayerEntity player = handler.player;
-			if (FreezeManager.isFrozen(player)) {
-				FreezeManager.enforcePosition(player);
-			}
+		if (FreezeManager.isFrozen(player)) {
+			FreezeManager.snapToAnchor(player);
+		}
 		});
 
 		ServerTickEvents.END_SERVER_TICK.register(server -> {

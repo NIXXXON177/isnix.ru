@@ -153,6 +153,7 @@ public final class ModToolsCommands {
 			return 0;
 		}
 		IsnixModToolsMod.storage().freeze(target, actorName(ctx), reason);
+		FreezeManager.snapToAnchor(target);
 		broadcastAdmin(ctx.getSource(), "Заморожен " + target.getGameProfile().getName());
 		target.sendMessage(TextColors.parse(ModToolsConfig.get().frozenMessage), false);
 		return 1;

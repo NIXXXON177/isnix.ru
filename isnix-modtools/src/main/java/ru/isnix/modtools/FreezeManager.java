@@ -1,9 +1,16 @@
 package ru.isnix.modtools;
 
+import net.minecraft.entity.Entity;
+import net.minecraft.network.packet.s2c.play.PositionFlag;
+import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.Vec3d;
 
+import java.util.Collections;
+import java.util.Set;
+
 public final class FreezeManager {
+	private static final Set<PositionFlag> ABSOLUTE_TELEPORT = Collections.emptySet();
 	private static final ThreadLocal<Boolean> INTERNAL_TELEPORT = ThreadLocal.withInitial(() -> false);
 	private static ModerationStorage storage;
 
@@ -31,7 +38,8 @@ public final class FreezeManager {
 		return storage != null && storage.isFrozen(player.getUuid());
 	}
 
-	public static void enforcePosition(ServerPlayerEntity player) {
+	/** Жёстко фиксирует тело на точке freeze; yaw/pitch не меняет. */
+	public static void snapToAnchor(ServerPlayerEntity player) {
 		if (storage == null || !isFrozen(player)) {
 			return;
 		}
@@ -43,27 +51,58 @@ public final class FreezeManager {
 		if (!worldKey.equals(entry.world)) {
 			return;
 		}
+
+		float yaw = player.getYaw();
+		float pitch = player.getPitch();
 		player.setVelocity(Vec3d.ZERO);
 		player.fallDistance = 0.0f;
-		Vec3d pos = player.getPos();
-		double dx = pos.x - entry.x;
-		double dy = pos.y - entry.y;
-		double dz = pos.z - entry.z;
-		if (dx * dx + dy * dy + dz * dz > 1.0E-8) {
-			runInternalTeleport(() -> player.requestTeleport(entry.x, entry.y, entry.z));
+
+		runInternalTeleport(() -> {
+			player.setPos(entry.x, entry.y, entry.z);
+			player.prevX = entry.x;
+			player.prevY = entry.y;
+			player.prevZ = entry.z;
+			player.setYaw(yaw);
+			player.setPitch(pitch);
+		});
+
+		ServerPlayNetworkHandler handler = player.networkHandler;
+		if (handler != null) {
+			runInternalTeleport(() -> handler.requestTeleport(
+					entry.x, entry.y, entry.z, yaw, pitch, ABSOLUTE_TELEPORT));
 		}
 	}
 
-	/** Каждый тик: обнулить скорость и вернуть на точку заморозки (поворот головы не трогаем). */
+	public static void applyLookFromPacket(ServerPlayerEntity player, net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket packet) {
+		if (!packet.changesLook()) {
+			return;
+		}
+		player.setYaw(packet.getYaw(player.getYaw()));
+		player.setPitch(packet.getPitch(player.getPitch()));
+	}
+
 	public static void tickFrozen(ServerPlayerEntity player) {
 		if (!isFrozen(player)) {
 			return;
 		}
-		enforcePosition(player);
+		snapToAnchor(player);
 	}
 
 	public static boolean shouldBlockPositionMove(ServerPlayerEntity player) {
 		return isFrozen(player);
+	}
+
+	public static boolean shouldBlockEntityPositionChange(Entity entity, double x, double y, double z) {
+		if (!(entity instanceof ServerPlayerEntity player) || !isFrozen(player) || isInternalTeleport()) {
+			return false;
+		}
+		ModerationStorage.FreezeEntry entry = storage.getFreeze(player.getUuid());
+		if (entry == null) {
+			return false;
+		}
+		return Math.abs(x - entry.x) > 1.0E-4
+				|| Math.abs(y - entry.y) > 1.0E-4
+				|| Math.abs(z - entry.z) > 1.0E-4;
 	}
 
 	public static boolean shouldBlockCommand(ServerPlayerEntity player, String command) {

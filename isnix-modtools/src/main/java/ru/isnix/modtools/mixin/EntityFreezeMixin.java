@@ -12,6 +12,14 @@ import ru.isnix.modtools.TextColors;
 
 @Mixin(Entity.class)
 public abstract class EntityFreezeMixin {
+	@Inject(method = "setPos(DDD)V", at = @At("HEAD"), cancellable = true)
+	private void isnix$blockSetPos(double x, double y, double z, CallbackInfo ci) {
+		Entity self = (Entity) (Object) this;
+		if (FreezeManager.shouldBlockEntityPositionChange(self, x, y, z)) {
+			ci.cancel();
+		}
+	}
+
 	@Inject(method = "requestTeleport(DDD)V", at = @At("HEAD"), cancellable = true)
 	private void isnix$blockRequestTeleport(double destX, double destY, double destZ, CallbackInfo ci) {
 		Entity self = (Entity) (Object) this;
@@ -21,8 +29,7 @@ public abstract class EntityFreezeMixin {
 		if (!FreezeManager.isFrozen(player) || FreezeManager.isInternalTeleport()) {
 			return;
 		}
-		var pos = player.getPos();
-		if (Math.abs(pos.x - destX) > 0.05 || Math.abs(pos.y - destY) > 0.05 || Math.abs(pos.z - destZ) > 0.05) {
+		if (FreezeManager.shouldBlockEntityPositionChange(player, destX, destY, destZ)) {
 			player.sendMessage(TextColors.parse(ModToolsConfig.get().frozenMessage), false);
 			ci.cancel();
 		}

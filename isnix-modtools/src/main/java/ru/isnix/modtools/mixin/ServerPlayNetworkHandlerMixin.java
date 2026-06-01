@@ -33,8 +33,16 @@ public abstract class ServerPlayNetworkHandlerMixin {
 			return;
 		}
 		if (packet.changesPosition()) {
+			FreezeManager.applyLookFromPacket(player, packet);
 			ci.cancel();
-			FreezeManager.enforcePosition(player);
+			FreezeManager.snapToAnchor(player);
+		}
+	}
+
+	@Inject(method = "onPlayerMove", at = @At("RETURN"))
+	private void isnix$snapAfterMove(PlayerMoveC2SPacket packet, CallbackInfo ci) {
+		if (FreezeManager.isFrozen(player)) {
+			FreezeManager.snapToAnchor(player);
 		}
 	}
 
@@ -42,7 +50,7 @@ public abstract class ServerPlayNetworkHandlerMixin {
 	private void isnix$blockVehicleWhenFrozen(VehicleMoveC2SPacket packet, CallbackInfo ci) {
 		if (FreezeManager.isFrozen(player)) {
 			ci.cancel();
-			FreezeManager.enforcePosition(player);
+			FreezeManager.snapToAnchor(player);
 		}
 	}
 
