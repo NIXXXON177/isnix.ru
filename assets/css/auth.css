@@ -1105,6 +1105,43 @@
 	padding: 1.5rem 1.35rem;
 }
 
+.account-subnav {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.45rem;
+	margin: 0 0 1rem;
+	padding: 0.65rem 0.75rem;
+	border: 1px solid var(--border);
+	border-radius: var(--radius-md);
+	background: rgba(0, 0, 0, 0.28);
+}
+
+.account-subnav__link {
+	display: inline-flex;
+	align-items: center;
+	padding: 0.4rem 0.7rem;
+	border-radius: var(--radius-sm);
+	border: 1px solid transparent;
+	font-size: 0.72rem;
+	font-weight: 600;
+	color: var(--text-soft);
+	text-decoration: none;
+	transition:
+		color 0.15s,
+		border-color 0.15s,
+		background 0.15s;
+}
+
+.account-subnav__link:hover {
+	color: var(--green);
+	border-color: rgba(74, 222, 128, 0.25);
+	background: rgba(74, 222, 128, 0.06);
+}
+
+.account-subnav__link--wl[hidden] {
+	display: none;
+}
+
 @media (min-width: 640px) {
 	.account-page.account--logged-in .auth-card--dashboard {
 		padding: 1.75rem 1.85rem;
@@ -1130,9 +1167,12 @@
 	margin-bottom: 0;
 	padding: 1.35rem 1.5rem;
 	display: grid;
-	grid-template-columns: minmax(0, 13rem) minmax(0, 1fr);
-	gap: 1.5rem 1.75rem;
-	align-items: center;
+	grid-template-columns: auto minmax(0, 1fr);
+	grid-template-areas:
+		'skin meta'
+		'stats stats';
+	gap: 1.15rem 1.35rem;
+	align-items: start;
 	background: linear-gradient(
 		145deg,
 		rgba(22, 101, 52, 0.12) 0%,
@@ -1142,11 +1182,117 @@
 	border-color: rgba(74, 222, 128, 0.18);
 }
 
+.profile-hero__skin {
+	grid-area: skin;
+}
+
+.profile-hero__avatar-wrap {
+	position: relative;
+	width: 80px;
+	height: 80px;
+	flex-shrink: 0;
+	overflow: hidden;
+}
+
+.profile-hero__avatar {
+	width: 80px;
+	height: 80px;
+}
+
+.profile-hero__avatar-fallback {
+	font-size: 1.75rem;
+}
+
+.profile-meta {
+	grid-area: meta;
+	min-width: 0;
+}
+
+.profile-stats-block {
+	grid-area: stats;
+}
+
+.profile-wl-status {
+	margin: 0.65rem 0 0;
+	font-size: 0.82rem;
+	line-height: 1.5;
+}
+
+.profile-quick-actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.45rem;
+	margin-top: 0.85rem;
+}
+
+.profile-quick-action {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0.38rem 0.7rem;
+	border-radius: var(--radius-sm);
+	border: 1px solid var(--border);
+	background: rgba(0, 0, 0, 0.35);
+	color: var(--text-soft);
+	font-family: 'Raleway', sans-serif;
+	font-size: 0.72rem;
+	font-weight: 600;
+	text-decoration: none;
+	cursor: pointer;
+	transition:
+		border-color 0.15s,
+		color 0.15s,
+		background 0.15s;
+}
+
+.profile-quick-action:hover {
+	border-color: rgba(74, 222, 128, 0.4);
+	color: var(--green);
+	background: rgba(74, 222, 128, 0.08);
+}
+
+button.profile-quick-action.is-copied {
+	border-color: rgba(74, 222, 128, 0.55);
+	color: var(--green);
+}
+
+.profile-appeals-btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.5rem;
+	flex-wrap: wrap;
+}
+
+.profile-appeals-count {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 1.35rem;
+	height: 1.35rem;
+	padding: 0 0.35rem;
+	border-radius: 999px;
+	background: #ef4444;
+	color: #fff;
+	font-size: 0.72rem;
+	font-weight: 700;
+	line-height: 1;
+}
+
 @media (min-width: 720px) {
 	.profile-hero.auth-panel {
-		grid-template-columns: minmax(14rem, 22rem) minmax(0, 1fr);
 		padding: 1.5rem 1.85rem;
-		gap: 2rem;
+		gap: 1.35rem 1.75rem;
+	}
+
+	.profile-hero__avatar-wrap {
+		width: 96px;
+		height: 96px;
+	}
+
+	.profile-hero__avatar {
+		width: 96px;
+		height: 96px;
 	}
 
 	.profile-stats-list {
@@ -1527,10 +1673,23 @@
 	}
 
 	.profile-hero.auth-panel {
-		grid-template-columns: 1fr;
+		grid-template-columns: auto minmax(0, 1fr);
+		grid-template-areas:
+			'skin meta'
+			'stats stats';
 		gap: 1rem;
 		padding: 1rem 0.85rem;
 		text-align: left;
+	}
+
+	.profile-hero__avatar-wrap {
+		width: 72px;
+		height: 72px;
+	}
+
+	.profile-hero__avatar {
+		width: 72px;
+		height: 72px;
 	}
 
 	.profile-stats-block {
@@ -1542,6 +1701,15 @@
 	.profile-meta {
 		min-width: 0;
 		width: 100%;
+	}
+
+	.account-subnav {
+		padding: 0.55rem 0.65rem;
+	}
+
+	.account-subnav__link {
+		font-size: 0.68rem;
+		padding: 0.35rem 0.55rem;
 	}
 
 	.profile-display-name {

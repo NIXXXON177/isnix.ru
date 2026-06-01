@@ -234,16 +234,15 @@
 		})
 	}
 
-	function updateDashAvatar(nick) {
-		var img = document.getElementById('dashAvatar')
-		var fallback = document.getElementById('dashAvatarFallback')
+	function applyAvatarToElement(img, fallback, nick, size) {
 		if (!img || !fallback) return
 		var v = (nick || '').trim()
+		var px = size || 48
 		if (v && IsnixAuth && IsnixAuth.MC_NICK_RE.test(v)) {
 			if (IsnixAuth.applyElyHeadToImg) {
-				IsnixAuth.applyElyHeadToImg(img, v, 48)
+				IsnixAuth.applyElyHeadToImg(img, v, px)
 			} else {
-				img.src = avatarUrl(v, 48)
+				img.src = avatarUrl(v, px)
 			}
 			img.alt = v
 			img.hidden = false
@@ -261,6 +260,186 @@
 				!img.hidden && !!img.getAttribute('src'),
 			)
 		}
+	}
+
+	function updateDashAvatar(nick) {
+		applyAvatarToElement(
+			document.getElementById('dashAvatar'),
+			document.getElementById('dashAvatarFallback'),
+			nick,
+			48,
+		)
+	}
+
+	function updateProfileHeroAvatar(nick) {
+		applyAvatarToElement(
+			document.getElementById('profileHeroAvatar'),
+			document.getElementById('profileHeroAvatarFb'),
+			nick,
+			96,
+		)
+	}
+
+	function updateProfileAvatars(nick) {
+		updateDashAvatar(nick)
+		updateProfileHeroAvatar(nick)
+	}
+
+	var PROFILE_SERVER_IP = 'mc.isnix.ru'
+
+	function initProfileQuickActions() {
+		var btn = document.getElementById('profileCopyIp')
+		if (!btn || btn.dataset.bound) return
+		btn.dataset.bound = '1'
+		btn.addEventListener('click', function () {
+			function done(ok) {
+				if (!ok) {
+					if (window.IsnixToast) {
+						IsnixToast.show('Не удалось скопировать IP', 'err')
+					}
+					return
+				}
+				btn.classList.add('is-copied')
+				btn.textContent = 'Скопировано'
+				if (window.IsnixToast) {
+					IsnixToast.show('IP скопирован', 'ok')
+				}
+				setTimeout(function () {
+					btn.classList.remove('is-copied')
+					btn.textContent = PROFILE_SERVER_IP
+				}, 1600)
+			}
+			var copyFn =
+				window.IsnixCompat && IsnixCompat.copyText
+					? IsnixCompat.copyText(PROFILE_SERVER_IP)
+					: null
+			if (copyFn && typeof copyFn.then === 'function') {
+				copyFn.then(function () {
+					done(true)
+				}).catch(function () {
+					done(false)
+				})
+			} else if (navigator.clipboard && navigator.clipboard.writeText) {
+				navigator.clipboard
+					.writeText(PROFILE_SERVER_IP)
+					.then(function () {
+						done(true)
+					})
+					.catch(function () {
+						done(false)
+					})
+			} else {
+				done(false)
+			}
+		})
+	}
+
+	function initAccountSubnav() {
+		var nav = document.getElementById('accountSubnav')
+		if (!nav || nav.dataset.bound) return
+		nav.dataset.bound = '1'
+		nav.addEventListener('click', function (e) {
+			var link = e.target.closest('a[href^="#"]')
+			if (!link) return
+			var id = (link.getAttribute('href') || '').replace(/^#/, '')
+			if (!id) return
+			var target = document.getElementById(id)
+			if (!target) return
+			e.preventDefault()
+			target.scrollIntoView({ behavior: 'smooth', block: 'start' })
+		})
+	}
+
+	function updateProfileWlStatusLine(profile) {
+		var el = document.getElementById('profileWlStatusLine')
+		if (!el) return
+		if (IsnixAuth && IsnixAuth.isAdminProfile(profile || currentProfile)) {
+			el.hidden = true
+			return
+		}
+		var nick =
+			profile && profile.minecraft_nick ? profile.minecraft_nick.trim() : ''
+		if (!nick || !IsnixAuth || !IsnixAuth.MC_NICK_RE.test(nick)) {
+			el.textContent =
+				'Укажи ник Minecraft в настройках ниже, чтобы подать заявку в вайтлист.'
+			el.className = 'profile-wl-status auth-hint auth-hint--warn'
+			el.hidden = false
+			return
+		}
+		if (whitelistAccessGranted(nick)) {
+			el.textContent = 'Можно заходить на mc.isnix.ru — ты в вайтлисте.'
+			el.className = 'profile-wl-status auth-hint auth-hint--ok'
+			el.hidden = false
+			return
+		}
+		if (hasPendingApplication(cachedApplications)) {
+			el.textContent =
+				'Заявка в вайтлист на рассмотрении — обычно отвечаем в течение часа.'
+			el.className = 'profile-wl-status auth-hint'
+			el.hidden = false
+			return
+		}
+		el.textContent = 'Подай заявку в вайтлист ниже, чтобы зайти на сервер.'
+		el.className = 'profile-wl-status auth-hint auth-hint--warn'
+		el.hidden = false
+	}
+
+	function updateAccountSubnav(profile) {
+		var nav = document.getElementById('accountSubnav')
+		if (!nav) return
+		var isAdmin = IsnixAuth && IsnixAuth.isAdminProfile(profile || currentProfile)
+		nav.hidden = !!isAdmin
+		var wlLink = nav.querySelector('.account-subnav__link--wl')
+		if (wlLink) {
+			var nick =
+				profile && profile.minecraft_nick ? profile.minecraft_nick.trim() : ''
+			wlLink.hidden = !!(
+				isAdmin ||
+				(nick &&
+					IsnixAuth &&
+					IsnixAuth.MC_NICK_RE.test(nick) &&
+					whitelistAccessGranted(nick))
+			)
+		}
+	}
+
+	async function refreshAppealsBadge() {
+		var countEl = document.getElementById('profileAppealsCount')
+		var btn = document.getElementById('profileAppealsBtn')
+		if (!countEl || !window.IsnixAuth || !IsnixAuth.getSupportTickets) return
+		if (IsnixAuth.isAdminProfile(currentProfile)) {
+			countEl.hidden = true
+			return
+		}
+		try {
+			var result = await IsnixAuth.getSupportTickets({
+				asAdmin: false,
+				filter: 'active',
+				page: 1,
+				pageSize: 1,
+			})
+			var total = result.total == null ? 0 : result.total
+			if (total > 0) {
+				countEl.textContent = String(total > 99 ? '99+' : total)
+				countEl.hidden = false
+				if (btn) {
+					btn.setAttribute(
+						'aria-label',
+						'Открыть обращения, активных: ' + total,
+					)
+				}
+			} else {
+				countEl.hidden = true
+				if (btn) btn.removeAttribute('aria-label')
+			}
+		} catch (_e) {
+			countEl.hidden = true
+		}
+	}
+
+	function refreshProfileDashboardHints(profile) {
+		updateProfileWlStatusLine(profile || currentProfile)
+		updateAccountSubnav(profile || currentProfile)
 	}
 
 	function formatDurationSeconds(totalSeconds) {
@@ -653,12 +832,16 @@
 		currentProfile = profile
 		playerStatsUserId = session.user.id
 		applyProfileToForm(profile)
-		updateDashAvatar(profile.minecraft_nick ? profile.minecraft_nick : '')
+		updateProfileAvatars(profile.minecraft_nick ? profile.minecraft_nick : '')
 		updateProfileMeta(profile, cachedServerStatus)
 		renderPlayerStats(profile, playerStats, cachedServerStatus)
 		updateProfileNickHint()
 		updatePlayerApplicationSections(profile)
 		updateWhitelistHint()
+		refreshProfileDashboardHints(profile)
+		deferAccountTask(function () {
+			refreshAppealsBadge()
+		}, 500)
 		var isAdmin = IsnixAuth && IsnixAuth.isAdminProfile(profile)
 		var wrap = document.querySelector('.auth-wrap')
 		if (wrap) wrap.classList.toggle('auth-wrap--wide', isAdmin)
@@ -824,6 +1007,8 @@
 					: 'Заявка одобрена — заявку заполнять не нужно, можно заходить на сервер.'
 			}
 		}
+		updateAccountSubnav(currentProfile)
+		updateProfileWlStatusLine(currentProfile)
 	}
 
 	function syncWhitelistFormState(nick) {
@@ -1169,6 +1354,8 @@
 				wlBadge.className = 'profile-badge profile-badge--warn'
 			}
 		}
+		updateProfileWlStatusLine(profile)
+
 		if (onlineBadge) {
 			if (!nick) {
 				onlineBadge.textContent = 'Сервер'
@@ -1773,7 +1960,7 @@
 		var emailEl = document.getElementById('dashEmail')
 		if (emailEl) emailEl.textContent = user.email || '—'
 		syncPasswordFormUsername(user.email || '')
-		updateDashAvatar(profile && profile.minecraft_nick ? profile.minecraft_nick : '')
+		updateProfileAvatars(profile && profile.minecraft_nick ? profile.minecraft_nick : '')
 	}
 
 	async function renderApplications(userId) {
@@ -1786,6 +1973,7 @@
 		if (cached) {
 			cachedApplications = cached
 			paintApplicationsList(cached)
+			refreshProfileDashboardHints(currentProfile)
 		} else {
 			list.innerHTML = '<p class="auth-muted">Загрузка…</p>'
 		}
@@ -1794,6 +1982,7 @@
 			cachedApplications = apps
 			writeAppsCache(userId, apps)
 			paintApplicationsList(apps)
+			refreshProfileDashboardHints(currentProfile)
 			return apps
 		} catch (err) {
 			if (!cached) {
@@ -2364,6 +2553,8 @@
 		}
 
 		loadWhitelist()
+		initProfileQuickActions()
+		initAccountSubnav()
 
 		if (!window.IsnixAuth || !IsnixAuth.isReady()) {
 			showSetupNotice()
@@ -2504,7 +2695,7 @@
 					writeProfileCache(session.user.id, currentProfile)
 					await loadWhitelist()
 					updateProfileNickHint()
-					updateDashAvatar(nick)
+					updateProfileAvatars(nick)
 					renderPlayerStats(currentProfile, playerStats, cachedServerStatus)
 					await refreshPlayerStatus()
 					var appNickEl = document.getElementById('appNick')

@@ -20,7 +20,7 @@
 		/>
 		<link rel="stylesheet" href="assets/css/main.css?v=2" />
 		<link rel="stylesheet" href="assets/css/components.css?v=3" />
-		<link rel="stylesheet" href="assets/css/auth.css?v=7" />
+		<link rel="stylesheet" href="assets/css/auth.css?v=8" />
 		<link rel="stylesheet" href="assets/css/site-header.css" />
 	</head>
 	<body class="account-page" data-page="account">
@@ -447,8 +447,41 @@
 						</div>
 					</section>
 
+					<nav
+						class="account-subnav"
+						id="accountSubnav"
+						aria-label="Разделы кабинета"
+						hidden
+					>
+						<a href="#profile-hero" class="account-subnav__link">Профиль</a>
+						<a href="#profile-settings" class="account-subnav__link">Настройки</a>
+						<a href="#applications" class="account-subnav__link">Заявки</a>
+						<a href="#profile-appeals" class="account-subnav__link">Обращения</a>
+						<a href="#whitelist" class="account-subnav__link account-subnav__link--wl"
+							>Вайтлист</a
+						>
+					</nav>
+
 					<div id="playerSections" class="account-sections">
-					<section class="auth-panel profile-hero">
+					<section class="auth-panel profile-hero" id="profile-hero">
+						<div class="profile-hero__skin" aria-hidden="true">
+							<div class="profile-hero__avatar-wrap account-user-bar__avatar-wrap">
+								<img
+									id="profileHeroAvatar"
+									class="profile-hero__avatar account-user-bar__avatar"
+									src=""
+									alt=""
+									width="96"
+									height="96"
+									hidden
+								/>
+								<span
+									class="profile-hero__avatar-fallback account-user-bar__avatar-fallback"
+									id="profileHeroAvatarFb"
+									>?</span
+								>
+							</div>
+						</div>
 						<div class="profile-stats-block" aria-label="Статистика игрока">
 							<p class="profile-stats-eyebrow">Статистика</p>
 							<dl class="profile-stats-list">
@@ -476,10 +509,25 @@
 								<span id="profileOnlineBadge" class="profile-badge">Сервер</span>
 								<span id="profileSiteBadge" class="profile-badge" hidden>Сайт</span>
 							</div>
+							<p id="profileWlStatusLine" class="profile-wl-status" hidden></p>
+							<div class="profile-quick-actions">
+								<button
+									type="button"
+									class="profile-quick-action"
+									id="profileCopyIp"
+									title="Скопировать IP сервера"
+								>
+									mc.isnix.ru
+								</button>
+								<a href="how-to-play.html" class="profile-quick-action">Как играть</a>
+								<a href="rules.html" class="profile-quick-action">Правила</a>
+								<a href="appeals.html" class="profile-quick-action">Обращения</a>
+								<a href="status.html" class="profile-quick-action">Статус</a>
+							</div>
 						</div>
 					</section>
 
-					<section class="auth-panel">
+					<section class="auth-panel" id="profile-settings">
 						<h2 class="auth-panel__title">Настройки профиля</h2>
 					<form id="profileForm" class="auth-form">
 						<div class="auth-field">
@@ -555,14 +603,17 @@
 					<div id="applicationsList"></div>
 					</section>
 
-					<section class="auth-panel appeals-link-panel">
+					<section class="auth-panel appeals-link-panel" id="profile-appeals">
 						<h2 class="auth-panel__title">Обращения и жалобы</h2>
 						<p class="auth-muted auth-whitelist-lead">
 							Жалоба на игрока, баг, вопрос по аккаунту — на отдельной странице в личном
 							диалоге с администрацией.
 							<a href="rules.html#rules-players">Правила §9.1</a>.
 						</p>
-						<a href="appeals.html" class="auth-submit">Открыть обращения</a>
+						<a href="appeals.html" class="auth-submit profile-appeals-btn" id="profileAppealsBtn">
+							Открыть обращения
+							<span id="profileAppealsCount" class="profile-appeals-count" hidden></span>
+						</a>
 					</section>
 
 					<section class="auth-panel" id="whitelist">
@@ -768,6 +819,6 @@
 		<script src="assets/js/site-header.js?v=5" defer></script>
 		<script src="assets/js/site-push-prompt.js?v=2" defer></script>
 		<script src="assets/js/support-tickets.js?v=8" defer></script>
-		<script src="assets/js/account.js?v=42"></script>
+		<script src="assets/js/account.js?v=43"></script>
 	</body>
 </html>
