@@ -18,7 +18,7 @@ public final class FreezeManager {
 	private static final Set<PositionFlag> POSITION_ONLY_SYNC = PositionFlag.ROT;
 	private static final double DRIFT_SQ = 1.0E-6;
 	/** Не чаще одного teleport-пакета клиенту раз в N тиков (иначе кик «превышение частоты пакетов»). */
-	private static final int NETWORK_SYNC_INTERVAL_TICKS = 20;
+	private static final int NETWORK_SYNC_INTERVAL_TICKS = 5;
 
 	private static final ThreadLocal<Boolean> INTERNAL_TELEPORT = ThreadLocal.withInitial(() -> false);
 	private static final Map<UUID, Long> LAST_NETWORK_SYNC_TICK = new ConcurrentHashMap<>();
@@ -60,9 +60,17 @@ public final class FreezeManager {
 		maintainFrozen(player, true);
 	}
 
-	/** Фиксация позиции без лишнего teleport-пакета (из обработчика движения). */
-	public static void repositionFrozen(ServerPlayerEntity player) {
+	/** Фиксация позиции после отклонённого пакета движения (клиент мог «уехать» визуально). */
+	public static void onMovementPacketBlocked(ServerPlayerEntity player) {
 		maintainFrozen(player, false);
+		ModerationStorage.FreezeEntry entry = storage != null ? storage.getFreeze(player.getUuid()) : null;
+		if (entry != null && maySendNetworkSync(player)) {
+			syncClientToAnchor(player, entry);
+		}
+	}
+
+	public static void clearMovementInput(ServerPlayerEntity player) {
+		player.updateInput(0.0f, 0.0f, false, false);
 	}
 
 	public static void applyLookFromPacket(ServerPlayerEntity player, PlayerMoveC2SPacket packet) {
@@ -85,6 +93,7 @@ public final class FreezeManager {
 		if (!isFrozen(player)) {
 			return;
 		}
+		clearMovementInput(player);
 		maintainFrozen(player, false);
 	}
 

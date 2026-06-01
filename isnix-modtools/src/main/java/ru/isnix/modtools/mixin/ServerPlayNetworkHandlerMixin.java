@@ -23,6 +23,7 @@ public abstract class ServerPlayNetworkHandlerMixin {
 	@Inject(method = "onPlayerInput", at = @At("HEAD"), cancellable = true)
 	private void isnix$blockInputWhenFrozen(PlayerInputC2SPacket packet, CallbackInfo ci) {
 		if (FreezeManager.isFrozen(player)) {
+			FreezeManager.clearMovementInput(player);
 			ci.cancel();
 		}
 	}
@@ -39,7 +40,7 @@ public abstract class ServerPlayNetworkHandlerMixin {
 		}
 		if (packet.changesPosition()) {
 			ci.cancel();
-			FreezeManager.repositionFrozen(player);
+			FreezeManager.onMovementPacketBlocked(player);
 		} else if (packet.changesLook()) {
 			ci.cancel();
 		}
