@@ -329,8 +329,6 @@
 		if (mode === 'admin' && isAdmin) {
 			switchAdminView(adminView || 'applications')
 		}
-
-		updateAccountSubnav(currentProfile)
 	}
 
 	function initAccountModeNav() {
@@ -341,22 +339,6 @@
 			var btn = e.target.closest('[data-account-mode]')
 			if (!btn) return
 			setAccountMode(btn.dataset.accountMode)
-		})
-	}
-
-	function initAccountSubnav() {
-		var nav = document.getElementById('accountSubnav')
-		if (!nav || nav.dataset.bound) return
-		nav.dataset.bound = '1'
-		nav.addEventListener('click', function (e) {
-			var link = e.target.closest('a[href^="#"]')
-			if (!link) return
-			var id = (link.getAttribute('href') || '').replace(/^#/, '')
-			if (!id) return
-			var target = document.getElementById(id)
-			if (!target) return
-			e.preventDefault()
-			target.scrollIntoView({ behavior: 'smooth', block: 'start' })
 		})
 	}
 
@@ -394,29 +376,19 @@
 		el.hidden = false
 	}
 
-	function updateAccountSubnav(profile) {
-		var nav = document.getElementById('accountSubnav')
-		if (!nav) return
-		var profileZone = document.getElementById('accountProfileZone')
-		nav.hidden = profileZone ? profileZone.hidden : false
-		var isAdmin = IsnixAuth && IsnixAuth.isAdminProfile(profile || currentProfile)
-		var wlLink = nav.querySelector('.account-subnav__link--wl')
-		if (wlLink) {
-			var nick =
-				profile && profile.minecraft_nick ? profile.minecraft_nick.trim() : ''
-			wlLink.hidden = !!(
-				isAdmin ||
-				(nick &&
-					IsnixAuth &&
-					IsnixAuth.MC_NICK_RE.test(nick) &&
-					whitelistAccessGranted(nick))
-			)
-		}
-	}
-
 	function refreshProfileDashboardHints(profile) {
 		updateProfileWlStatusLine(profile || currentProfile)
-		updateAccountSubnav(profile || currentProfile)
+	}
+
+	function showNotificationsUi() {
+		var wrap = document.getElementById('notificationsWrap')
+		if (wrap) wrap.hidden = false
+	}
+
+	function hideNotificationsUi() {
+		var wrap = document.getElementById('notificationsWrap')
+		if (wrap) wrap.hidden = true
+		closeNotificationsModal()
 	}
 
 	function formatDurationSeconds(totalSeconds) {
@@ -1093,7 +1065,6 @@
 					: 'Заявка одобрена — заявку заполнять не нужно, можно заходить на сервер.'
 			}
 		}
-		updateAccountSubnav(currentProfile)
 		updateProfileWlStatusLine(currentProfile)
 	}
 
@@ -1848,11 +1819,12 @@
 		return Notification.requestPermission()
 	}
 
-	function paintNotificationsList(list) {
+	function paintNotificationsList(list, emptyMessage) {
 		var listEl = document.getElementById('notificationsList')
 		var emptyEl = document.getElementById('notificationsEmpty')
 		var badge = document.getElementById('notificationsBadge')
 		if (!listEl) return
+		list = list || []
 		var unread = unreadNotificationCount(list)
 		if (badge) {
 			if (unread > 0) {
@@ -1864,10 +1836,17 @@
 		}
 		if (!list.length) {
 			listEl.innerHTML = ''
-			if (emptyEl) emptyEl.hidden = false
+			if (emptyEl) {
+				emptyEl.hidden = false
+				emptyEl.textContent =
+					emptyMessage || 'Пока нет уведомлений'
+			}
 			return
 		}
-		if (emptyEl) emptyEl.hidden = true
+		if (emptyEl) {
+			emptyEl.hidden = true
+			emptyEl.textContent = 'Пока нет уведомлений'
+		}
 		listEl.innerHTML = list
 			.map(function (n) {
 				var unreadCls = n.read_at ? '' : ' auth-notification--unread'
@@ -1896,7 +1875,7 @@
 
 	async function refreshNotifications(userId, notifyBrowser) {
 		if (!userId || !window.IsnixAuth) return
-		var wrap = document.getElementById('notificationsWrap')
+		showNotificationsUi()
 		try {
 			var list = await IsnixAuth.getNotifications(userId)
 			var prevIds = {}
@@ -1910,11 +1889,13 @@
 				}
 			}
 			cachedNotifications = list
-			if (wrap) wrap.hidden = false
 			paintNotificationsList(list)
 			if (notifyBrowser) maybeBrowserNotify(freshUnread)
 		} catch (e) {
-			if (wrap) wrap.hidden = true
+			paintNotificationsList(
+				cachedNotifications,
+				'Не удалось загрузить уведомления. Проверь сеть или выполни docs/supabase-notifications.sql в Supabase.',
+			)
 			if (
 				window.IsnixAuth &&
 				IsnixAuth.isSupabaseBackoffActive &&
@@ -2033,6 +2014,7 @@
 	function openNotificationsModal() {
 		var root = document.getElementById('notificationsModalRoot')
 		if (!root) return
+		paintNotificationsList(cachedNotifications)
 		root.classList.add('is-open')
 		root.setAttribute('aria-hidden', 'false')
 		document.body.style.overflow = 'hidden'
@@ -2159,6 +2141,7 @@
 
 	function showGuest() {
 		setAccountPageMode(false)
+		hideNotificationsUi()
 		if (window.IsnixSupportTickets) IsnixSupportTickets.onGuest()
 		if (setupNotice) setupNotice.hidden = true
 		if (authPanels) authPanels.hidden = false
@@ -2183,6 +2166,7 @@
 		if (setupNotice) setupNotice.hidden = true
 		if (authPanels) authPanels.hidden = true
 		if (dashboard) dashboard.hidden = false
+		showNotificationsUi()
 		currentProfile = profile || null
 		if (user && user.id) {
 			playerStatsUserId = user.id
@@ -2835,7 +2819,6 @@
 
 		loadWhitelist()
 		initAccountModeNav()
-		initAccountSubnav()
 
 		if (!window.IsnixAuth || !IsnixAuth.isReady()) {
 			showSetupNotice()

@@ -639,6 +639,7 @@
 	flex-direction: column;
 	width: 100%;
 	max-width: 32rem;
+	min-height: 14rem;
 	max-height: min(85vh, 36rem);
 	padding: 0;
 	overflow: hidden;
@@ -720,12 +721,17 @@
 	text-underline-offset: 2px;
 }
 
+.auth-notifications__scroll {
+	flex: 1 1 auto;
+	min-height: 10rem;
+	max-height: calc(min(85vh, 36rem) - 10.5rem);
+	overflow-y: auto;
+	-webkit-overflow-scrolling: touch;
+}
+
 .auth-notifications__list {
 	display: flex;
 	flex-direction: column;
-	overflow-y: auto;
-	flex: 1;
-	min-height: 0;
 }
 
 .auth-notification {
@@ -2041,6 +2047,10 @@
 
 	.auth-notifications__dialog {
 		max-height: min(88vh, 36rem);
+	}
+
+	.auth-notifications__scroll {
+		max-height: calc(min(88vh, 36rem) - 10.5rem);
 	}
 
 	.profile-hero.auth-panel {

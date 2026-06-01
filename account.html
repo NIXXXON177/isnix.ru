@@ -20,7 +20,7 @@
 		/>
 		<link rel="stylesheet" href="assets/css/main.css?v=2" />
 		<link rel="stylesheet" href="assets/css/components.css?v=4" />
-		<link rel="stylesheet" href="assets/css/auth.css?v=20" />
+		<link rel="stylesheet" href="assets/css/auth.css?v=21" />
 		<link rel="stylesheet" href="assets/css/site-header.css" />
 	</head>
 	<body class="account-page" data-page="account">
@@ -355,7 +355,7 @@
 									<p class="profile-call-line" id="profileCallNameDisplay" hidden></p>
 								</div>
 								<div class="profile-hero__toolbar">
-									<div class="auth-notifications" id="notificationsWrap" hidden>
+									<div class="auth-notifications" id="notificationsWrap">
 										<button
 											type="button"
 											id="notificationsBtn"
@@ -388,24 +388,6 @@
 							<p id="profileWlStatusLine" class="profile-wl-status" hidden></p>
 						</div>
 					</section>
-
-					<nav
-						class="account-subnav"
-						id="accountSubnav"
-						aria-label="Разделы профиля"
-						hidden
-					>
-						<a href="#profile-hero" class="account-subnav__link">Профиль</a>
-						<a href="#profile-reputation" class="account-subnav__link">Рейтинг</a>
-						<a href="#profile-settings" class="account-subnav__link">Настройки</a>
-						<a href="#applications" class="account-subnav__link">Заявки</a>
-						<a href="#whitelist" class="account-subnav__link account-subnav__link--wl"
-							>Вайтлист</a
-						>
-						<a href="appeals.html" class="account-subnav__link account-subnav__link--external"
-							>Обращения</a
-						>
-					</nav>
 
 					<div id="playerSections" class="account-sections">
 					<div class="account-cards-grid">
@@ -858,10 +840,12 @@
 						Прочитать все
 					</button>
 				</div>
-				<div id="notificationsList" class="auth-notifications__list"></div>
-				<p id="notificationsEmpty" class="auth-muted auth-notifications__empty">
-					Пока нет уведомлений
-				</p>
+				<div class="auth-notifications__scroll">
+					<div id="notificationsList" class="auth-notifications__list"></div>
+					<p id="notificationsEmpty" class="auth-muted auth-notifications__empty" hidden>
+						Пока нет уведомлений
+					</p>
+				</div>
 			</div>
 		</div>
 
@@ -883,6 +867,6 @@
 		<script src="assets/js/site-push-prompt.js?v=2" defer></script>
 		<script src="assets/js/support-tickets.js?v=8" defer></script>
 		<script src="assets/js/icons.js?v=1"></script>
-		<script src="assets/js/account.js?v=52"></script>
+		<script src="assets/js/account.js?v=53"></script>
 	</body>
 </html>
