@@ -32,6 +32,10 @@ isnix-modtools/.gradle/
 isnix-modtools/build/
 isnix-modtools/run/
 isnix-modtools/.idea/
+isnix-lagwatch/.gradle/
+isnix-lagwatch/build/
+isnix-lagwatch/run/
+isnix-lagwatch/.idea/
 isnix-server-messages/.gradle/
 isnix-server-messages/build/
 isnix-server-messages/run/

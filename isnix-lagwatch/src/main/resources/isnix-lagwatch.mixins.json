@@ -1,0 +1,9 @@
+{
+	"required": true,
+	"package": "ru.isnix.lagwatch.mixin",
+	"compatibilityLevel": "JAVA_21",
+	"mixins": ["WorldBlockUpdateMixin"],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}
