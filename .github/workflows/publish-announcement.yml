@@ -14,6 +14,14 @@ on:
         description: "Только показать текст, не публиковать"
         type: boolean
         default: false
+      skip_discord:
+        description: "Не публиковать в Discord (если уже вышло)"
+        type: boolean
+        default: false
+      skip_telegram:
+        description: "Не публиковать в Telegram (если уже вышло)"
+        type: boolean
+        default: false
 
 jobs:
   publish:
@@ -32,5 +40,11 @@ jobs:
           ARGS="scripts/publish_announcement.py ${{ inputs.post_file }}"
           if [ "${{ inputs.dry_run }}" = "true" ]; then
             ARGS="$ARGS --dry-run"
+          fi
+          if [ "${{ inputs.skip_discord }}" = "true" ]; then
+            ARGS="$ARGS --skip-discord"
+          fi
+          if [ "${{ inputs.skip_telegram }}" = "true" ]; then
+            ARGS="$ARGS --skip-telegram"
           fi
           python3 $ARGS

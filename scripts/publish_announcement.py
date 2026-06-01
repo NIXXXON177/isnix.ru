@@ -222,6 +222,20 @@ def publish_telegram(text: str, token: str, chat_id: str, dry_run: bool) -> None
     print("[telegram] OK")
 
 
+def _vk_groups_from_response(data: dict) -> list[dict]:
+    """VK 5.199: response — массив или объект { groups: [...] }."""
+    resp = data.get("response")
+    if isinstance(resp, list):
+        return [g for g in resp if isinstance(g, dict)]
+    if isinstance(resp, dict):
+        groups = resp.get("groups")
+        if isinstance(groups, list) and groups:
+            return [g for g in groups if isinstance(g, dict)]
+        if "id" in resp:
+            return [resp]
+    return []
+
+
 def resolve_vk_group_id(group_id: str, token: str, dry_run: bool) -> int:
     raw = normalize_vk_group_id(group_id)
     if not raw:
@@ -239,9 +253,9 @@ def resolve_vk_group_id(group_id: str, token: str, dry_run: bool) -> int:
     data = http_form("https://api.vk.com/method/groups.getById", fields)
     if "error" in data:
         raise RuntimeError(f"VK groups.getById: {data['error']}")
-    items = data.get("response") or []
+    items = _vk_groups_from_response(data)
     if not items:
-        raise RuntimeError(f"VK: группа не найдена по «{raw}»")
+        raise RuntimeError(f"VK: группа не найдена по «{raw}» (ответ: {data})")
     return int(items[0]["id"])
 
 
@@ -330,7 +344,13 @@ def main() -> None:
         else:
             try:
                 publish_vk(message, vk_token or "dry", vk_group or "0", args.dry_run)
-            except (urllib.error.URLError, RuntimeError, json.JSONDecodeError, ValueError) as e:
+            except (
+                urllib.error.URLError,
+                RuntimeError,
+                json.JSONDecodeError,
+                ValueError,
+                KeyError,
+            ) as e:
                 errors.append(f"vk: {e}")
 
     if errors:
