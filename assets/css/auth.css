@@ -1530,44 +1530,6 @@
 	line-height: 1.5;
 }
 
-.profile-quick-actions {
-	display: flex;
-	flex-wrap: wrap;
-	gap: 0.45rem;
-	margin-top: 0.85rem;
-}
-
-.profile-quick-action {
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	padding: 0.38rem 0.7rem;
-	border-radius: var(--radius-sm);
-	border: 1px solid var(--border);
-	background: rgba(0, 0, 0, 0.35);
-	color: var(--text-soft);
-	font-family: 'Raleway', sans-serif;
-	font-size: 0.72rem;
-	font-weight: 600;
-	text-decoration: none;
-	cursor: pointer;
-	transition:
-		border-color 0.15s,
-		color 0.15s,
-		background 0.15s;
-}
-
-.profile-quick-action:hover {
-	border-color: rgba(74, 222, 128, 0.4);
-	color: var(--green);
-	background: rgba(74, 222, 128, 0.08);
-}
-
-button.profile-quick-action.is-copied {
-	border-color: rgba(74, 222, 128, 0.55);
-	color: var(--green);
-}
-
 .profile-appeals-btn {
 	display: inline-flex;
 	align-items: center;

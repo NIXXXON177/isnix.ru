@@ -279,55 +279,6 @@
 		updateProfileHeroAvatar(nick)
 	}
 
-	var PROFILE_SERVER_IP = 'mc.isnix.ru'
-
-	function initProfileQuickActions() {
-		var btn = document.getElementById('profileCopyIp')
-		if (!btn || btn.dataset.bound) return
-		btn.dataset.bound = '1'
-		btn.addEventListener('click', function () {
-			function done(ok) {
-				if (!ok) {
-					if (window.IsnixToast) {
-						IsnixToast.show('Не удалось скопировать IP', 'err')
-					}
-					return
-				}
-				btn.classList.add('is-copied')
-				btn.textContent = 'Скопировано'
-				if (window.IsnixToast) {
-					IsnixToast.show('IP скопирован', 'ok')
-				}
-				setTimeout(function () {
-					btn.classList.remove('is-copied')
-					btn.textContent = PROFILE_SERVER_IP
-				}, 1600)
-			}
-			var copyFn =
-				window.IsnixCompat && IsnixCompat.copyText
-					? IsnixCompat.copyText(PROFILE_SERVER_IP)
-					: null
-			if (copyFn && typeof copyFn.then === 'function') {
-				copyFn.then(function () {
-					done(true)
-				}).catch(function () {
-					done(false)
-				})
-			} else if (navigator.clipboard && navigator.clipboard.writeText) {
-				navigator.clipboard
-					.writeText(PROFILE_SERVER_IP)
-					.then(function () {
-						done(true)
-					})
-					.catch(function () {
-						done(false)
-					})
-			} else {
-				done(false)
-			}
-		})
-	}
-
 	var ACCOUNT_MODE_KEY = 'isnix_account_mode'
 
 	function resolveInitialAccountMode() {
@@ -2883,7 +2834,6 @@
 		}
 
 		loadWhitelist()
-		initProfileQuickActions()
 		initAccountModeNav()
 		initAccountSubnav()
 
