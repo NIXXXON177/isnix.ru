@@ -40,7 +40,7 @@ public abstract class ServerPlayNetworkHandlerMixin {
 		}
 		if (packet.changesPosition()) {
 			ci.cancel();
-			FreezeManager.onMovementPacketBlocked(player);
+			FreezeManager.onMovementPacketBlocked(player, packet);
 		} else if (packet.changesLook()) {
 			ci.cancel();
 		}

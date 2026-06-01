@@ -8,14 +8,25 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
+import java.util.EnumSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 public final class FreezeManager {
-	/** Только координаты — не перезаписывать yaw/pitch клиента при коррекции дрифта. */
-	private static final Set<PositionFlag> POSITION_ONLY_SYNC = PositionFlag.ROT;
+	/**
+	 * Синхронизация позиции с клиентом: координаты → якорь, углы без изменения
+	 * (дельта 0). Нельзя использовать только {@link PositionFlag#ROT} — иначе
+	 * {@code requestTeleport} вызовет {@code updatePositionAndAngles(..., 0, 0)} и
+	 * сбросит взгляд.
+	 */
+	private static final Set<PositionFlag> SYNC_POSITION_KEEP_LOOK = EnumSet.of(
+			PositionFlag.X,
+			PositionFlag.Y,
+			PositionFlag.Z,
+			PositionFlag.X_ROT,
+			PositionFlag.Y_ROT);
 	private static final double DRIFT_SQ = 1.0E-6;
 	/** Не чаще одного teleport-пакета клиенту раз в N тиков (иначе кик «превышение частоты пакетов»). */
 	private static final int NETWORK_SYNC_INTERVAL_TICKS = 5;
@@ -61,12 +72,27 @@ public final class FreezeManager {
 	}
 
 	/** Фиксация позиции после отклонённого пакета движения (клиент мог «уехать» визуально). */
-	public static void onMovementPacketBlocked(ServerPlayerEntity player) {
+	public static void onMovementPacketBlocked(ServerPlayerEntity player, PlayerMoveC2SPacket packet) {
 		maintainFrozen(player, false);
 		ModerationStorage.FreezeEntry entry = storage != null ? storage.getFreeze(player.getUuid()) : null;
-		if (entry != null && maySendNetworkSync(player)) {
+		if (entry == null || !shouldSyncClientAfterBlockedMove(player, packet, entry)) {
+			return;
+		}
+		if (maySendNetworkSync(player)) {
 			syncClientToAnchor(player, entry);
 		}
+	}
+
+	private static boolean shouldSyncClientAfterBlockedMove(
+			ServerPlayerEntity player, PlayerMoveC2SPacket packet, ModerationStorage.FreezeEntry entry) {
+		double px = packet.getX(entry.x);
+		double py = packet.getY(entry.y);
+		double pz = packet.getZ(entry.z);
+		double dx = px - entry.x;
+		double dy = py - entry.y;
+		double dz = pz - entry.z;
+		// Микросдвиг при копании блока под собой — не дёргать teleport (сбивает ломание).
+		return dx * dx + dy * dy + dz * dz > 0.01;
 	}
 
 	public static void clearMovementInput(ServerPlayerEntity player) {
@@ -132,7 +158,9 @@ public final class FreezeManager {
 			});
 		}
 
-		if (forceNetworkSync || (drifted && maySendNetworkSync(player))) {
+		// Клиенту — только при /freeze или попытке шагнуть (не при микродрифте: лишний
+		// requestTeleport сбрасывает копание блока и крутит голову).
+		if (forceNetworkSync) {
 			syncClientToAnchor(player, entry);
 		}
 	}
@@ -152,8 +180,10 @@ public final class FreezeManager {
 		if (handler == null) {
 			return;
 		}
+		float yaw = player.getYaw();
+		float pitch = player.getPitch();
 		runInternalTeleport(() -> handler.requestTeleport(
-				entry.x, entry.y, entry.z, 0.0f, 0.0f, POSITION_ONLY_SYNC));
+				entry.x, entry.y, entry.z, yaw, pitch, SYNC_POSITION_KEEP_LOOK));
 	}
 
 	public static boolean shouldBlockEntityPositionChange(Entity entity, double x, double y, double z) {
