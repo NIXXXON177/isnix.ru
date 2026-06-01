@@ -9,6 +9,9 @@
 	var cachedApplications = []
 	var currentProfile = null
 	var adminFilter = 'pending'
+	var APPS_PAGE_SIZE = 5
+	var playerAppsPage = 1
+	var adminAppsPage = 1
 	var adminView = 'applications'
 	var playerStats = null
 	var playerStatsUserId = null
@@ -933,8 +936,17 @@
 		return isOnWhitelist(nick) || hasApprovedApplication(cachedApplications, nick)
 	}
 
+	function normalizeApplicationsList(data) {
+		if (!data) return []
+		if (data.applications && Array.isArray(data.applications)) {
+			return data.applications
+		}
+		return Array.isArray(data) ? data : []
+	}
+
 	function hasPendingApplication(apps) {
-		if (!apps || !apps.length) return false
+		apps = normalizeApplicationsList(apps)
+		if (!apps.length) return false
 		return apps.some(function (a) {
 			return a.status === 'pending'
 		})
@@ -1074,10 +1086,14 @@
 		var list = apps
 		if (!list) {
 			try {
-				list = await IsnixAuth.getApplications(userId)
+				list = normalizeApplicationsList(
+					await IsnixAuth.getApplications(userId),
+				)
 			} catch (_e) {
 				list = []
 			}
+		} else {
+			list = normalizeApplicationsList(list)
 		}
 		if (hasPendingApplication(list)) return false
 		openWhitelistModal(nick, callName)
@@ -1226,11 +1242,89 @@
 	async function refreshAdminPendingBadge() {
 		if (!window.IsnixAuth || !IsnixAuth.isAdminProfile(currentProfile)) return
 		try {
-			var apps = await IsnixAuth.getAdminApplications('pending')
-			setAdminPendingBadgeCount(apps ? apps.length : 0)
+			var result = await IsnixAuth.getAdminApplications('pending', {
+				page: 1,
+				pageSize: 1,
+			})
+			var total =
+				result && typeof result.total === 'number'
+					? result.total
+					: result && result.applications
+						? result.applications.length
+						: 0
+			setAdminPendingBadgeCount(total)
 		} catch (_e) {
 			setAdminPendingBadgeCount(0)
 		}
+	}
+
+	function renderListPagination(scope, page, pageSize, total) {
+		var pages = Math.max(1, Math.ceil(total / pageSize))
+		if (total <= pageSize) return ''
+		var prev = page > 1 ? page - 1 : null
+		var next = page < pages ? page + 1 : null
+		var label =
+			scope === 'admin-apps'
+				? 'Страницы заявок'
+				: scope === 'player-apps'
+					? 'Страницы моих заявок'
+					: 'Страницы'
+		var html =
+			'<nav class="support-pagination" aria-label="' +
+			escapeHtml(label) +
+			'" data-pagination-scope="' +
+			escapeHtml(scope) +
+			'">'
+		html +=
+			'<button type="button" class="support-pagination__btn" data-page="' +
+			(prev || page) +
+			'" data-scope="' +
+			escapeHtml(scope) +
+			'"' +
+			(prev ? '' : ' disabled') +
+			'>Назад</button>'
+		html +=
+			'<span class="support-pagination__info">Стр. ' +
+			page +
+			' из ' +
+			pages +
+			' · всего ' +
+			total +
+			'</span>'
+		html +=
+			'<button type="button" class="support-pagination__btn" data-page="' +
+			(next || page) +
+			'" data-scope="' +
+			escapeHtml(scope) +
+			'"' +
+			(next ? '' : ' disabled') +
+			'>Вперёд</button></nav>'
+		return html
+	}
+
+	function bindListPagination(container, scope) {
+		if (!container) return
+		container
+			.querySelectorAll(
+				'.support-pagination__btn[data-scope="' +
+					scope +
+					'"]:not([disabled])',
+			)
+			.forEach(function (btn) {
+				if (btn.dataset.appsPagBound) return
+				btn.dataset.appsPagBound = '1'
+				btn.addEventListener('click', function () {
+					var p = parseInt(btn.getAttribute('data-page'), 10)
+					if (!p || p < 1) return
+					if (scope === 'admin-apps') {
+						adminAppsPage = p
+						renderAdminApplications()
+					} else if (scope === 'player-apps') {
+						playerAppsPage = p
+						paintApplicationsList(cachedApplications)
+					}
+				})
+			})
 	}
 
 	function stopAdminPendingPoll() {
@@ -1978,9 +2072,12 @@
 			list.innerHTML = '<p class="auth-muted">Загрузка…</p>'
 		}
 		try {
-			var apps = await IsnixAuth.getApplications(userId)
+			var apps = normalizeApplicationsList(
+				await IsnixAuth.getApplications(userId),
+			)
 			cachedApplications = apps
 			writeAppsCache(userId, apps)
+			playerAppsPage = 1
 			paintApplicationsList(apps)
 			refreshProfileDashboardHints(currentProfile)
 			return apps
@@ -2008,33 +2105,13 @@
 		}
 	}
 
-	async function renderAdminApplications() {
-		var list = document.getElementById('adminApplicationsList')
-		if (!list || !window.IsnixAuth || !IsnixAuth.isAdminProfile(currentProfile)) return
-		list.innerHTML = '<p class="auth-muted">Загрузка…</p>'
-		try {
-			var fetchStatus =
-				adminFilter === 'all' ? null : 'pending'
-			var rawApps = await IsnixAuth.getAdminApplications(fetchStatus)
-			setAdminPendingBadgeCount(
-				fetchStatus === 'pending'
-					? rawApps.length
-					: countPendingApplications(rawApps),
-			)
-			var apps = filterAdminApplications(rawApps)
-			if (!apps.length) {
-				list.innerHTML =
-					'<p class="auth-muted">Нет заявок в этом разделе.</p>'
-				return
-			}
-			list.innerHTML = apps
-				.map(function (app) {
-					var onWl = isOnWhitelist(app.minecraft_nick)
-					var wlHint = onWl
-						? '<p class="auth-hint auth-hint--ok">Уже в whitelist.json — проверь перед одобрением</p>'
-						: '<p class="auth-hint">После одобрения ник добавится на сервер автоматически (до ~5 мин)</p>'
-					var warns = applicationAdminWarnings(app)
-					var meta =
+	function renderAdminApplicationCard(app) {
+		var onWl = isOnWhitelist(app.minecraft_nick)
+		var wlHint = onWl
+			? '<p class="auth-hint auth-hint--ok">Уже в whitelist.json — проверь перед одобрением</p>'
+			: '<p class="auth-hint">После одобрения ник добавится на сервер автоматически (до ~5 мин)</p>'
+		var warns = applicationAdminWarnings(app)
+		var meta =
 						'<p class="auth-muted">' +
 						formatDate(app.created_at) +
 						(app.applicant_email
@@ -2044,24 +2121,24 @@
 							? '<br>Обращение: ' + escapeHtml(app.call_name)
 							: '') +
 						applicationExtraMeta(app) +
-						'</p>'
-					var applicantBlock = app.applicant_reply
+			'</p>'
+		var applicantBlock = app.applicant_reply
 						? '<div class="auth-dialog auth-dialog--user">' +
 							'<p class="auth-dialog__label">Ответ игрока</p>' +
 							'<p class="auth-dialog__body">' +
 							escapeHtml(app.applicant_reply) +
 							'</p></div>'
-						: ''
-					var prevAdminMsg =
+			: ''
+		var prevAdminMsg =
 						app.admin_note && app.status === 'pending'
 							? '<div class="auth-dialog auth-dialog--admin">' +
 								'<p class="auth-dialog__label">Уже отправлено игроку</p>' +
 								'<p class="auth-dialog__body">' +
 								escapeHtml(app.admin_note) +
 								'</p></div>'
-							: ''
-					var noteValue = app.admin_note ? escapeHtml(app.admin_note) : ''
-					var actions =
+				: ''
+		var noteValue = app.admin_note ? escapeHtml(app.admin_note) : ''
+		var actions =
 						app.status === 'pending'
 							? '<div class="auth-admin-actions">' +
 								prevAdminMsg +
@@ -2095,9 +2172,9 @@
 									escapeHtml(app.admin_note) +
 									'</p>' +
 									(applicantBlock || '')
-								: applicantBlock || ''
-					return (
-						'<article class="auth-app-card auth-app-card--admin">' +
+					: applicantBlock || ''
+		return (
+			'<article class="auth-app-card auth-app-card--admin">' +
 						'<div class="auth-app-head">' +
 						'<div class="auth-app-head__nick">' +
 						'<strong>' +
@@ -2120,10 +2197,45 @@
 						'</p>' +
 						wlHint +
 						actions +
-						'</article>'
-					)
-				})
-				.join('')
+			'</article>'
+		)
+	}
+
+	async function renderAdminApplications() {
+		var list = document.getElementById('adminApplicationsList')
+		if (!list || !window.IsnixAuth || !IsnixAuth.isAdminProfile(currentProfile)) return
+		list.innerHTML = '<p class="auth-muted">Загрузка…</p>'
+		try {
+			var result = await IsnixAuth.getAdminApplications(adminFilter, {
+				page: adminAppsPage,
+				pageSize: APPS_PAGE_SIZE,
+			})
+			var apps = result.applications || []
+			var total = result.total == null ? apps.length : result.total
+			var pages = Math.max(1, Math.ceil(total / APPS_PAGE_SIZE))
+			if (adminAppsPage > pages) {
+				adminAppsPage = pages
+				return renderAdminApplications()
+			}
+			if (adminFilter === 'pending') {
+				setAdminPendingBadgeCount(total)
+			} else {
+				deferAccountTask(refreshAdminPendingBadge, 0)
+			}
+			if (!apps.length) {
+				list.innerHTML =
+					'<p class="auth-muted">Нет заявок в этом разделе.</p>'
+				return
+			}
+			var html = apps.map(renderAdminApplicationCard).join('')
+			html += renderListPagination(
+				'admin-apps',
+				adminAppsPage,
+				APPS_PAGE_SIZE,
+				total,
+			)
+			list.innerHTML = html
+			bindListPagination(list, 'admin-apps')
 			ensureAdminListDelegation()
 		} catch (err) {
 			list.innerHTML =
@@ -2274,7 +2386,32 @@
 	function paintApplicationsList(apps) {
 		var list = document.getElementById('applicationsList')
 		if (!list) return
-		list.innerHTML = renderApplicationsHtml(apps)
+		cachedApplications = apps || []
+		var total = cachedApplications.length
+		if (!total) {
+			playerAppsPage = 1
+			list.innerHTML = renderApplicationsHtml([])
+			bindApplicantReplyForms(list)
+			syncWhitelistSectionVisibility(
+				document.getElementById('profileNick')
+					? document.getElementById('profileNick').value
+					: '',
+			)
+			return
+		}
+		var pages = Math.max(1, Math.ceil(total / APPS_PAGE_SIZE))
+		if (playerAppsPage > pages) playerAppsPage = pages
+		var start = (playerAppsPage - 1) * APPS_PAGE_SIZE
+		var slice = cachedApplications.slice(start, start + APPS_PAGE_SIZE)
+		var html = renderApplicationsHtml(slice)
+		html += renderListPagination(
+			'player-apps',
+			playerAppsPage,
+			APPS_PAGE_SIZE,
+			total,
+		)
+		list.innerHTML = html
+		bindListPagination(list, 'player-apps')
 		bindApplicantReplyForms(list)
 		syncWhitelistSectionVisibility(
 			document.getElementById('profileNick')
@@ -2576,6 +2713,7 @@
 		document.querySelectorAll('[data-admin-filter]').forEach(function (btn) {
 			btn.addEventListener('click', function () {
 				adminFilter = btn.dataset.adminFilter || 'pending'
+				adminAppsPage = 1
 				document.querySelectorAll('[data-admin-filter]').forEach(function (b) {
 					b.classList.toggle('active', b === btn)
 				})

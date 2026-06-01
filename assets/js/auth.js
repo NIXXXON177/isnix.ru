@@ -883,34 +883,93 @@
 		return withReply ? APP_SELECT_WITH_REPLY_FALLBACK : APP_SELECT_FALLBACK
 	}
 
-	async function queryApplications(sb, userId, withReply, withV2) {
-		var fields = applicationSelectFields(withReply, withV2 !== false, false)
-		var res = await sb
-			.from('whitelist_applications')
-			.select(fields)
-			.eq('user_id', userId)
-			.order('created_at', { ascending: false })
-		if (res.error) throw res.error
-		return res.data || []
+	function applyAdminApplicationsFilter(q, filter) {
+		if (filter === 'pending') {
+			return q.eq('status', 'pending')
+		}
+		if (filter === 'awaiting_reply') {
+			return q
+				.eq('status', 'pending')
+				.not('admin_note', 'is', null)
+				.neq('admin_note', '')
+				.is('applicant_reply', null)
+		}
+		return q
 	}
 
-	async function queryAdminApplications(sb, status, withReply, withV2) {
-		var fields = applicationSelectFields(withReply, withV2 !== false, true)
+	async function queryApplications(sb, userId, withReply, withV2, pageOpts) {
+		var fields = applicationSelectFields(withReply, withV2 !== false, false)
 		var q = sb
 			.from('whitelist_applications')
-			.select(fields)
+			.select(
+				fields,
+				pageOpts && pageOpts.page ? { count: 'exact' } : undefined,
+			)
+			.eq('user_id', userId)
 			.order('created_at', { ascending: false })
-		if (status) q = q.eq('status', status)
+		if (pageOpts && pageOpts.page) {
+			var page = Math.max(1, parseInt(pageOpts.page, 10) || 1)
+			var pageSize = Math.min(
+				20,
+				Math.max(1, parseInt(pageOpts.pageSize, 10) || 5),
+			)
+			var from = (page - 1) * pageSize
+			var to = from + pageSize - 1
+			var res = await q.range(from, to)
+			if (res.error) throw res.error
+			return {
+				applications: res.data || [],
+				total: res.count == null ? (res.data || []).length : res.count,
+				page: page,
+				pageSize: pageSize,
+			}
+		}
 		var res = await q
 		if (res.error) throw res.error
 		return res.data || []
 	}
 
-	async function getApplications(userId) {
+	async function queryAdminApplications(sb, filter, withReply, withV2, pageOpts) {
+		var fields = applicationSelectFields(withReply, withV2 !== false, true)
+		var q = sb
+			.from('whitelist_applications')
+			.select(
+				fields,
+				pageOpts && pageOpts.page ? { count: 'exact' } : undefined,
+			)
+			.order('created_at', { ascending: false })
+		q = applyAdminApplicationsFilter(q, filter || 'pending')
+		if (pageOpts && pageOpts.page) {
+			var page = Math.max(1, parseInt(pageOpts.page, 10) || 1)
+			var pageSize = Math.min(
+				20,
+				Math.max(1, parseInt(pageOpts.pageSize, 10) || 5),
+			)
+			var from = (page - 1) * pageSize
+			var to = from + pageSize - 1
+			var res = await q.range(from, to)
+			if (res.error) throw res.error
+			return {
+				applications: res.data || [],
+				total: res.count == null ? (res.data || []).length : res.count,
+				page: page,
+				pageSize: pageSize,
+			}
+		}
+		var res = await q
+		if (res.error) throw res.error
+		return res.data || []
+	}
+
+	async function getApplications(userId, opts) {
 		var sb = getClient()
-		if (!sb) return []
+		if (!sb) {
+			return opts && opts.page
+				? { applications: [], total: 0, page: 1, pageSize: 5 }
+				: []
+		}
 		return fetchApplicationsWithFallback(function (withReply, withV2) {
-			return queryApplications(sb, userId, withReply, withV2)
+			return queryApplications(sb, userId, withReply, withV2, opts)
 		})
 	}
 
@@ -941,11 +1000,15 @@
 		if (res.error) throw res.error
 	}
 
-	async function getAdminApplications(status) {
+	async function getAdminApplications(filter, opts) {
 		var sb = getClient()
-		if (!sb) return []
+		if (!sb) {
+			return opts && opts.page
+				? { applications: [], total: 0, page: 1, pageSize: 5 }
+				: []
+		}
 		return fetchApplicationsWithFallback(function (withReply, withV2) {
-			return queryAdminApplications(sb, status, withReply, withV2)
+			return queryAdminApplications(sb, filter, withReply, withV2, opts)
 		})
 	}
 

@@ -1142,6 +1142,48 @@
 	display: none;
 }
 
+/* Пагинация (заявки, обращения в кабинете) */
+.support-pagination {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: center;
+	gap: 0.65rem 1rem;
+	margin-top: 1.25rem;
+	padding-top: 1rem;
+	border-top: 1px solid var(--border);
+}
+
+.support-pagination__info {
+	font-size: 0.78rem;
+	color: var(--muted);
+}
+
+.support-pagination__btn {
+	padding: 0.45rem 0.85rem;
+	border-radius: var(--radius-sm);
+	border: 1px solid var(--border);
+	background: rgba(15, 22, 15, 0.9);
+	color: var(--text);
+	font-family: 'Raleway', sans-serif;
+	font-size: 0.78rem;
+	font-weight: 600;
+	cursor: pointer;
+	transition:
+		border-color 0.2s,
+		background 0.2s;
+}
+
+.support-pagination__btn:hover:not(:disabled) {
+	border-color: rgba(74, 222, 128, 0.4);
+	background: rgba(22, 101, 52, 0.2);
+}
+
+.support-pagination__btn:disabled {
+	opacity: 0.4;
+	cursor: not-allowed;
+}
+
 @media (min-width: 640px) {
 	.account-page.account--logged-in .auth-card--dashboard {
 		padding: 1.75rem 1.85rem;
