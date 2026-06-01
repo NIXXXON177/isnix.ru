@@ -8,17 +8,30 @@ public final class LuckPermsCommandBridge {
 	}
 
 	public static void muteVoice(MinecraftServer server, String playerName, String lpDuration) {
-		run(server, "lp user " + playerName + " permission settemp voicechat.speak false " + lpDuration);
+		String user = quoteLpUsername(playerName);
+		run(server, "lp user " + user + " permission settemp voicechat.speak false " + lpDuration);
 	}
 
 	public static void unmuteVoice(MinecraftServer server, String playerName) {
-		run(server, "lp user " + playerName + " permission unset voicechat.speak");
+		String user = quoteLpUsername(playerName);
+		// mutevoice использует settemp — снимается только unsettemp (+ unset на всякий случай)
+		run(server, "lp user " + user + " permission unsettemp voicechat.speak");
+		run(server, "lp user " + user + " permission unset voicechat.speak");
+		run(server, "lp sync");
+	}
+
+	private static String quoteLpUsername(String playerName) {
+		if (playerName == null || playerName.isBlank()) {
+			return "\"\"";
+		}
+		return "\"" + playerName.replace("\"", "\\\"") + "\"";
 	}
 
 	private static void run(MinecraftServer server, String command) {
 		ServerCommandSource source = server.getCommandSource()
 				.withLevel(4)
 				.withSilent();
-		server.getCommandManager().executeWithPrefix(source, command);
+		String cmd = command.startsWith("/") ? command : "/" + command;
+		server.getCommandManager().executeWithPrefix(source, cmd);
 	}
 }

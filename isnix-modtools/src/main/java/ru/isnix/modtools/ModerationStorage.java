@@ -153,6 +153,24 @@ public final class ModerationStorage {
 		}
 	}
 
+	/** Снять запись voice-mute по нику (если UUID неизвестен). */
+	public void clearVoiceMuteByName(String playerName) {
+		if (playerName == null || playerName.isBlank()) {
+			return;
+		}
+		boolean changed = false;
+		for (var it = voiceMutes.entrySet().iterator(); it.hasNext(); ) {
+			TimedEntry entry = it.next().getValue();
+			if (entry != null && playerName.equalsIgnoreCase(entry.playerName)) {
+				it.remove();
+				changed = true;
+			}
+		}
+		if (changed) {
+			save();
+		}
+	}
+
 	public TimedEntry getChatMute(UUID uuid) {
 		return active(chatMutes.get(uuid.toString()));
 	}

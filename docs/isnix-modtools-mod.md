@@ -31,7 +31,7 @@ Fabric 1.21.1, серверный мод `isnix-modtools`.
 
 `lp user <ник> permission settemp voicechat.speak false <время>`
 
-При снятии: `permission unset voicechat.speak`
+При снятии: `permission unsettemp voicechat.speak`, затем `unset` и `lp sync`
 
 ### Freeze
 
@@ -48,6 +48,7 @@ Fabric 1.21.1, серверный мод `isnix-modtools`.
 
 Состояние мутов/freeze: `config/isnix-modtools-state.json` (старый файл в корне переносится при старте).
 
+**1.0.9** — `/unmutevoice`: снятие через `unsettemp` (раньше только `unset` не убирал settemp от `/mutevoice`).
 **1.0.8** — freeze: взгляд не сбрасывается (исправлен requestTeleport); копание блока не прерывается лишним sync.
 **1.0.7** — freeze: снова фиксация на месте (сброс WASD + откат клиента при отклонённом пакете позиции; голова крутится).
 **1.0.6** — freeze: поворот головы снова работает (look-пакеты обрабатываются до pending teleport; коррекция позиции без сброса камеры).

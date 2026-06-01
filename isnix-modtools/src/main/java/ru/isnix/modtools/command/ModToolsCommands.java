@@ -139,10 +139,13 @@ public final class ModToolsCommands {
 
 	private static int unmuteVoice(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
 		ServerPlayerEntity target = EntityArgumentType.getPlayer(ctx, "player");
-		LuckPermsCommandBridge.unmuteVoice(ctx.getSource().getServer(), target.getGameProfile().getName());
+		String name = target.getGameProfile().getName();
+		LuckPermsCommandBridge.unmuteVoice(ctx.getSource().getServer(), name);
 		IsnixModToolsMod.storage().clearVoiceMute(target.getUuid());
-		broadcastAdmin(ctx.getSource(), "Снят мут микрофона с " + target.getGameProfile().getName());
-		target.sendMessage(Text.literal("Мут микрофона снят.").formatted(Formatting.GREEN), false);
+		IsnixModToolsMod.storage().clearVoiceMuteByName(name);
+		broadcastAdmin(ctx.getSource(), "Снят мут микрофона с " + name);
+		target.sendMessage(Text.literal("Мут микрофона снят. Перезайдите в войс, если микрофон ещё не работает.")
+				.formatted(Formatting.GREEN), false);
 		return 1;
 	}
 
