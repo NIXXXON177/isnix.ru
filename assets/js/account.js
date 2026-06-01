@@ -328,6 +328,71 @@
 		})
 	}
 
+	var ACCOUNT_MODE_KEY = 'isnix_account_mode'
+
+	function resolveInitialAccountMode() {
+		var h = (window.location.hash || '').replace(/^#/, '')
+		if (h === 'admin-support' || h.indexOf('admin') === 0) return 'admin'
+		try {
+			var stored = sessionStorage.getItem(ACCOUNT_MODE_KEY)
+			if (stored === 'admin' || stored === 'profile') return stored
+		} catch (_e) {
+			/* ignore */
+		}
+		return 'profile'
+	}
+
+	function setAccountMode(mode, opts) {
+		opts = opts || {}
+		var isAdmin = IsnixAuth && IsnixAuth.isAdminProfile(currentProfile)
+		if (!isAdmin) mode = 'profile'
+		mode = mode === 'admin' ? 'admin' : 'profile'
+
+		var modeNav = document.getElementById('accountModeNav')
+		var profileZone = document.getElementById('accountProfileZone')
+		var adminZone = document.getElementById('accountAdminZone')
+		var adminPanel = document.getElementById('adminPanel')
+
+		if (modeNav) modeNav.hidden = !isAdmin
+		if (profileZone) profileZone.hidden = isAdmin && mode === 'admin'
+		if (adminZone) adminZone.hidden = !isAdmin || mode !== 'admin'
+		if (adminPanel) adminPanel.hidden = !isAdmin
+
+		document.querySelectorAll('[data-account-mode]').forEach(function (btn) {
+			var on = btn.dataset.accountMode === mode
+			btn.classList.toggle('active', on)
+			btn.setAttribute('aria-selected', on ? 'true' : 'false')
+		})
+
+		var wrap = document.querySelector('.auth-wrap')
+		if (wrap) wrap.classList.toggle('auth-wrap--wide', isAdmin && mode === 'admin')
+
+		if (!opts.skipStore) {
+			try {
+				sessionStorage.setItem(ACCOUNT_MODE_KEY, mode)
+			} catch (_e) {
+				/* ignore */
+			}
+		}
+
+		if (mode === 'admin' && isAdmin) {
+			switchAdminView(adminView || 'applications')
+		}
+
+		updateAccountSubnav(currentProfile)
+	}
+
+	function initAccountModeNav() {
+		var nav = document.getElementById('accountModeNav')
+		if (!nav || nav.dataset.bound) return
+		nav.dataset.bound = '1'
+		nav.addEventListener('click', function (e) {
+			var btn = e.target.closest('[data-account-mode]')
+			if (!btn) return
+			setAccountMode(btn.dataset.accountMode)
+		})
+	}
+
 	function initAccountSubnav() {
 		var nav = document.getElementById('accountSubnav')
 		if (!nav || nav.dataset.bound) return
@@ -381,8 +446,9 @@
 	function updateAccountSubnav(profile) {
 		var nav = document.getElementById('accountSubnav')
 		if (!nav) return
+		var profileZone = document.getElementById('accountProfileZone')
+		nav.hidden = profileZone ? profileZone.hidden : false
 		var isAdmin = IsnixAuth && IsnixAuth.isAdminProfile(profile || currentProfile)
-		nav.hidden = !!isAdmin
 		var wlLink = nav.querySelector('.account-subnav__link--wl')
 		if (wlLink) {
 			var nick =
@@ -903,12 +969,9 @@
 		updateWhitelistHint()
 		refreshProfileDashboardHints(profile)
 		var isAdmin = IsnixAuth && IsnixAuth.isAdminProfile(profile)
-		var wrap = document.querySelector('.auth-wrap')
-		if (wrap) wrap.classList.toggle('auth-wrap--wide', isAdmin)
 		var badge = document.getElementById('adminRoleBadge')
 		if (badge) badge.hidden = !isAdmin
-		var adminPanel = document.getElementById('adminPanel')
-		if (adminPanel) adminPanel.hidden = !isAdmin
+		setAccountMode(resolveInitialAccountMode(), { skipStore: true })
 	}
 
 	function showDashboardShell(session, profile) {
@@ -2143,12 +2206,9 @@
 			if (currentProfile) currentProfile.id = user.id
 		}
 		var isAdmin = IsnixAuth && IsnixAuth.isAdminProfile(profile)
-		var wrap = document.querySelector('.auth-wrap')
-		if (wrap) wrap.classList.toggle('auth-wrap--wide', isAdmin)
 		var badge = document.getElementById('adminRoleBadge')
 		if (badge) badge.hidden = !isAdmin
-		var adminPanel = document.getElementById('adminPanel')
-		if (adminPanel) adminPanel.hidden = !isAdmin
+		setAccountMode(resolveInitialAccountMode(), { skipStore: true })
 		updatePlayerApplicationSections(profile)
 		var emailEl = document.getElementById('dashEmail')
 		if (emailEl) emailEl.textContent = user.email || '—'
@@ -2794,6 +2854,7 @@
 
 		loadWhitelist()
 		initProfileQuickActions()
+		initAccountModeNav()
 		initAccountSubnav()
 
 		if (!window.IsnixAuth || !IsnixAuth.isReady()) {

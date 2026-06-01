@@ -20,7 +20,7 @@
 		/>
 		<link rel="stylesheet" href="assets/css/main.css?v=2" />
 		<link rel="stylesheet" href="assets/css/components.css?v=4" />
-		<link rel="stylesheet" href="assets/css/auth.css?v=16" />
+		<link rel="stylesheet" href="assets/css/auth.css?v=17" />
 		<link rel="stylesheet" href="assets/css/site-header.css" />
 	</head>
 	<body class="account-page" data-page="account">
@@ -272,6 +272,31 @@
 				<div id="authDashboard" class="auth-card auth-card--dashboard" hidden>
 					<span id="dashEmail" class="auth-sr-only" aria-hidden="true">—</span>
 
+					<nav
+						id="accountModeNav"
+						class="account-mode-nav"
+						aria-label="Режим кабинета"
+						hidden
+					>
+						<button
+							type="button"
+							class="account-mode-nav__btn active"
+							data-account-mode="profile"
+							aria-selected="true"
+						>
+							Мой профиль
+						</button>
+						<button
+							type="button"
+							class="account-mode-nav__btn"
+							data-account-mode="admin"
+							aria-selected="false"
+						>
+							Администрирование
+						</button>
+					</nav>
+
+					<div id="accountProfileZone" class="account-zone account-zone--profile">
 					<section class="auth-panel profile-hero" id="profile-hero">
 						<div class="profile-hero__skin" aria-hidden="true">
 							<div class="profile-hero__avatar-wrap account-user-bar__avatar-wrap">
@@ -368,112 +393,10 @@
 						</div>
 					</section>
 
-					<section id="adminPanel" class="auth-admin-panel" hidden>
-						<h2 class="auth-section-title" id="admin-support">Панель администрации</h2>
-						<div class="auth-admin-tabs auth-admin-tabs--main" role="tablist">
-							<button
-								type="button"
-								class="auth-admin-tab active"
-								data-admin-view="applications"
-							>
-								Заявки
-								<span
-									id="adminAppsTabBadge"
-									class="auth-admin-tab-badge"
-									hidden
-									>0</span
-								>
-							</button>
-							<button type="button" class="auth-admin-tab" data-admin-view="server">
-								На сервере
-							</button>
-							<button type="button" class="auth-admin-tab" data-admin-view="users">
-								Аккаунты
-							</button>
-							<button type="button" class="auth-admin-tab" data-admin-view="support">
-								Обращения
-							</button>
-						</div>
-						<div id="adminViewApplications">
-							<p class="auth-muted auth-admin-lead">
-								После «Одобрить» ник автоматически попадает в очередь и на сервер
-								(обычно до 5 минут). Лицензия Mojang не обязательна — сервер
-								offline-mode.
-							</p>
-							<div class="auth-admin-tabs" role="tablist">
-								<button
-									type="button"
-									class="auth-admin-tab auth-admin-tab--sub active"
-									data-admin-filter="pending"
-								>
-									Ожидают
-								</button>
-								<button
-									type="button"
-									class="auth-admin-tab auth-admin-tab--sub"
-									data-admin-filter="awaiting_reply"
-								>
-									Ждут ответа
-								</button>
-								<button
-									type="button"
-									class="auth-admin-tab auth-admin-tab--sub"
-									data-admin-filter="all"
-								>
-									Все
-								</button>
-							</div>
-							<div id="adminApplicationsList"></div>
-						</div>
-						<div id="adminViewServer" hidden>
-							<p class="auth-muted auth-admin-lead">
-								Игроки на <strong>mc.isnix.ru</strong> (обновление каждую минуту).
-							</p>
-							<div id="adminServerList"></div>
-						</div>
-						<div id="adminViewUsers" hidden>
-							<p class="auth-muted auth-admin-lead">
-								Все, кто зарегистрировался на сайте. Метка «сайт · Телефон/ПК» — был
-								на isnix.ru в последние 2 мин.
-							</p>
-							<div id="adminUsersList"></div>
-						</div>
-						<div id="adminViewSupport" hidden>
-							<p class="auth-muted auth-admin-lead">
-								Жалобы на игроков, баги и вопросы — личный диалог с игроком. Не в ВК и
-								не в Telegram.
-							</p>
-							<div class="auth-admin-tabs" role="tablist">
-								<button
-									type="button"
-									class="auth-admin-tab auth-admin-tab--sub active"
-									data-support-filter="open"
-								>
-									Открытые
-								</button>
-								<button
-									type="button"
-									class="auth-admin-tab auth-admin-tab--sub"
-									data-support-filter="closed"
-								>
-									Закрытые
-								</button>
-								<button
-									type="button"
-									class="auth-admin-tab auth-admin-tab--sub"
-									data-support-filter="all"
-								>
-									Все
-								</button>
-							</div>
-							<div id="adminSupportList"></div>
-						</div>
-					</section>
-
 					<nav
 						class="account-subnav"
 						id="accountSubnav"
-						aria-label="Разделы кабинета"
+						aria-label="Разделы профиля"
 						hidden
 					>
 						<a href="#profile-hero" class="account-subnav__link">Профиль</a>
@@ -694,6 +617,112 @@
 					</form>
 					</section>
 					</div>
+
+					</div>
+
+					<div id="accountAdminZone" class="account-zone account-zone--admin" hidden>
+					<section id="adminPanel" class="auth-admin-panel" hidden>
+						<h2 class="auth-section-title" id="admin-support">Панель администрации</h2>
+						<div class="auth-admin-tabs auth-admin-tabs--main" role="tablist">
+							<button
+								type="button"
+								class="auth-admin-tab active"
+								data-admin-view="applications"
+							>
+								Заявки
+								<span
+									id="adminAppsTabBadge"
+									class="auth-admin-tab-badge"
+									hidden
+									>0</span
+								>
+							</button>
+							<button type="button" class="auth-admin-tab" data-admin-view="server">
+								На сервере
+							</button>
+							<button type="button" class="auth-admin-tab" data-admin-view="users">
+								Аккаунты
+							</button>
+							<button type="button" class="auth-admin-tab" data-admin-view="support">
+								Обращения
+							</button>
+						</div>
+						<div id="adminViewApplications">
+							<p class="auth-muted auth-admin-lead">
+								После «Одобрить» ник автоматически попадает в очередь и на сервер
+								(обычно до 5 минут). Лицензия Mojang не обязательна — сервер
+								offline-mode.
+							</p>
+							<div class="auth-admin-tabs" role="tablist">
+								<button
+									type="button"
+									class="auth-admin-tab auth-admin-tab--sub active"
+									data-admin-filter="pending"
+								>
+									Ожидают
+								</button>
+								<button
+									type="button"
+									class="auth-admin-tab auth-admin-tab--sub"
+									data-admin-filter="awaiting_reply"
+								>
+									Ждут ответа
+								</button>
+								<button
+									type="button"
+									class="auth-admin-tab auth-admin-tab--sub"
+									data-admin-filter="all"
+								>
+									Все
+								</button>
+							</div>
+							<div id="adminApplicationsList"></div>
+						</div>
+						<div id="adminViewServer" hidden>
+							<p class="auth-muted auth-admin-lead">
+								Игроки на <strong>mc.isnix.ru</strong> (обновление каждую минуту).
+							</p>
+							<div id="adminServerList"></div>
+						</div>
+						<div id="adminViewUsers" hidden>
+							<p class="auth-muted auth-admin-lead">
+								Все, кто зарегистрировался на сайте. Метка «сайт · Телефон/ПК» — был
+								на isnix.ru в последние 2 мин.
+							</p>
+							<div id="adminUsersList"></div>
+						</div>
+						<div id="adminViewSupport" hidden>
+							<p class="auth-muted auth-admin-lead">
+								Жалобы на игроков, баги и вопросы — личный диалог с игроком. Не в ВК и
+								не в Telegram.
+							</p>
+							<div class="auth-admin-tabs" role="tablist">
+								<button
+									type="button"
+									class="auth-admin-tab auth-admin-tab--sub active"
+									data-support-filter="open"
+								>
+									Открытые
+								</button>
+								<button
+									type="button"
+									class="auth-admin-tab auth-admin-tab--sub"
+									data-support-filter="closed"
+								>
+									Закрытые
+								</button>
+								<button
+									type="button"
+									class="auth-admin-tab auth-admin-tab--sub"
+									data-support-filter="all"
+								>
+									Все
+								</button>
+							</div>
+							<div id="adminSupportList"></div>
+						</div>
+					</section>
+					</div>
 				</div>
 			</div>
 		</main>
@@ -861,6 +890,6 @@
 		<script src="assets/js/site-push-prompt.js?v=2" defer></script>
 		<script src="assets/js/support-tickets.js?v=8" defer></script>
 		<script src="assets/js/icons.js?v=1"></script>
-		<script src="assets/js/account.js?v=49"></script>
+		<script src="assets/js/account.js?v=50"></script>
 	</body>
 </html>
