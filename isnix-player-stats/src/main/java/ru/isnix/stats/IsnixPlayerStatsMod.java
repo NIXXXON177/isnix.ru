@@ -30,6 +30,7 @@ public class IsnixPlayerStatsMod implements DedicatedServerModInitializer {
 			flushTickCounter = 0;
 			for (var player : server.getPlayerManager().getPlayerList()) {
 				SupabaseStatsService.flushSession(player.getGameProfile().getName());
+				SupabaseStatsService.syncPlayerMeta(player);
 			}
 		});
 
@@ -39,6 +40,7 @@ public class IsnixPlayerStatsMod implements DedicatedServerModInitializer {
 				return;
 			}
 			SupabaseStatsService.onPlayerJoin(player.getGameProfile().getName());
+			SupabaseStatsService.syncPlayerMeta(player);
 		});
 
 		ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> {

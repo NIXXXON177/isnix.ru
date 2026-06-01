@@ -25,6 +25,8 @@ public final class StatsConfig {
 	public String serviceRoleKey = "";
 	/** Как часто писать накопленное время в Supabase (тики, 20 = 1 сек). 6000 ≈ 5 мин. */
 	public int flushIntervalTicks = 6000;
+	/** Группа LuckPerms для метки «Админ» на сайте */
+	public String luckpermsAdminGroup = "admin";
 
 	public static StatsConfig get() {
 		return INSTANCE;
@@ -83,6 +85,11 @@ public final class StatsConfig {
 		}
 		if (flushIntervalTicks > 72000) {
 			flushIntervalTicks = 72000;
+		}
+		if (luckpermsAdminGroup == null || luckpermsAdminGroup.isBlank()) {
+			luckpermsAdminGroup = "admin";
+		} else {
+			luckpermsAdminGroup = luckpermsAdminGroup.trim();
 		}
 	}
 }

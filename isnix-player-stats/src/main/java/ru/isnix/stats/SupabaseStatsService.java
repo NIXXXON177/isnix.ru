@@ -9,6 +9,8 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
+import net.minecraft.server.network.ServerPlayerEntity;
+
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -28,6 +30,23 @@ public final class SupabaseStatsService {
 
 	public static void onPlayerJoin(String nick) {
 		callRpc("server_record_player_join", nick);
+	}
+
+	public static void syncPlayerMeta(ServerPlayerEntity player) {
+		if (player == null) {
+			return;
+		}
+		var config = StatsConfig.get();
+		if (!config.isReady()) {
+			return;
+		}
+		final String nick = player.getGameProfile().getName().trim();
+		if (nick.isEmpty()) {
+			return;
+		}
+		final String prefix = LuckPermsBridge.stripFormat(LuckPermsBridge.prefix(player));
+		final boolean isAdmin = LuckPermsBridge.hasAdminGroup(player);
+		EXECUTOR.execute(() -> invokeMetaRpc(config, nick, prefix, isAdmin));
 	}
 
 	public static void onPlayerQuit(String nick) {
@@ -59,10 +78,30 @@ public final class SupabaseStatsService {
 		EXECUTOR.execute(() -> invokeRpc(config, functionName, playerNick));
 	}
 
+	private static void invokeMetaRpc(StatsConfig config, String nick, String prefix, boolean isAdmin) {
+		try {
+			var body = new JsonObject();
+			body.addProperty("p_nick", nick);
+			body.addProperty("p_prefix", prefix == null ? "" : prefix);
+			body.addProperty("p_is_admin", isAdmin);
+			postRpc(config, "server_sync_player_meta", body, nick);
+		} catch (Exception e) {
+			LOGGER.warn("Supabase server_sync_player_meta для {}: {}", nick, e.getMessage());
+		}
+	}
+
 	private static void invokeRpc(StatsConfig config, String functionName, String nick) {
 		try {
 			var body = new JsonObject();
 			body.addProperty("p_nick", nick);
+			postRpc(config, functionName, body, nick);
+		} catch (Exception e) {
+			LOGGER.warn("Supabase {} для {}: {}", functionName, nick, e.getMessage());
+		}
+	}
+
+	private static void postRpc(StatsConfig config, String functionName, JsonObject body, String nick) {
+		try {
 			var url = config.supabaseUrl + "/rest/v1/rpc/" + functionName;
 			var request = HttpRequest.newBuilder()
 					.uri(URI.create(url))

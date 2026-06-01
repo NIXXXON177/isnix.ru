@@ -20,7 +20,7 @@
 		/>
 		<link rel="stylesheet" href="assets/css/main.css?v=2" />
 		<link rel="stylesheet" href="assets/css/components.css?v=4" />
-		<link rel="stylesheet" href="assets/css/auth.css?v=18" />
+		<link rel="stylesheet" href="assets/css/auth.css?v=19" />
 		<link rel="stylesheet" href="assets/css/site-header.css" />
 	</head>
 	<body class="account-page" data-page="account">
@@ -338,8 +338,21 @@
 							<div class="profile-meta__row">
 								<div class="profile-meta__intro">
 									<p class="profile-meta-eyebrow">Профиль</p>
-									<h2 class="profile-display-name" id="profileDisplayName">Игрок</h2>
-									<p class="profile-nick-line" id="profileNickDisplay">—</p>
+									<div class="profile-name-row">
+										<h2 class="profile-display-name">
+											<span id="profileNickText">—</span>
+											<span
+												id="profileRoleBadge"
+												class="profile-role-badge profile-role-badge--player"
+												>Игрок</span
+											>
+										</h2>
+									</div>
+									<p id="profilePrefixLine" class="profile-prefix-line" hidden>
+										<span class="profile-prefix-line__label">Префикс</span>
+										<span id="profilePrefixText" class="profile-prefix-text"></span>
+									</p>
+									<p class="profile-call-line" id="profileCallNameDisplay" hidden></p>
 								</div>
 								<div class="profile-hero__toolbar">
 									<div class="auth-notifications" id="notificationsWrap" hidden>
@@ -368,9 +381,6 @@
 								</div>
 							</div>
 							<div class="profile-badges">
-								<span id="adminRoleBadge" class="profile-badge profile-badge--admin" hidden
-									>Администрация</span
-								>
 								<span id="profileWlBadge" class="profile-badge">Вайтлист</span>
 								<span id="profileOnlineBadge" class="profile-badge">Сервер</span>
 								<span id="profileSiteBadge" class="profile-badge" hidden>Сайт</span>
@@ -886,6 +896,6 @@
 		<script src="assets/js/site-push-prompt.js?v=2" defer></script>
 		<script src="assets/js/support-tickets.js?v=8" defer></script>
 		<script src="assets/js/icons.js?v=1"></script>
-		<script src="assets/js/account.js?v=50"></script>
+		<script src="assets/js/account.js?v=51"></script>
 	</body>
 </html>

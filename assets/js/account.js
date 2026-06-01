@@ -969,8 +969,6 @@
 		updateWhitelistHint()
 		refreshProfileDashboardHints(profile)
 		var isAdmin = IsnixAuth && IsnixAuth.isAdminProfile(profile)
-		var badge = document.getElementById('adminRoleBadge')
-		if (badge) badge.hidden = !isAdmin
 		setAccountMode(resolveInitialAccountMode(), { skipStore: true })
 	}
 
@@ -1544,9 +1542,25 @@
 		)
 	}
 
+	function stripMcFormatting(text) {
+		if (!text) return ''
+		return String(text)
+			.replace(/[&§][0-9a-fk-or]/gi, '')
+			.trim()
+	}
+
+	function isProfileAdminRole(profile) {
+		if (!profile) return false
+		if (window.IsnixAuth && IsnixAuth.isAdminProfile(profile)) return true
+		return !!profile.server_is_admin
+	}
+
 	function updateProfileMeta(profile, serverStatus) {
-		var nameEl = document.getElementById('profileDisplayName')
-		var nickLine = document.getElementById('profileNickDisplay')
+		var nickTextEl = document.getElementById('profileNickText')
+		var roleBadge = document.getElementById('profileRoleBadge')
+		var prefixLine = document.getElementById('profilePrefixLine')
+		var prefixTextEl = document.getElementById('profilePrefixText')
+		var callLine = document.getElementById('profileCallNameDisplay')
 		var wlBadge = document.getElementById('profileWlBadge')
 		var onlineBadge = document.getElementById('profileOnlineBadge')
 		updateSiteDeviceBadge(profile)
@@ -1554,20 +1568,38 @@
 			profile && profile.minecraft_nick ? profile.minecraft_nick.trim() : ''
 		var display =
 			profile && profile.display_name ? profile.display_name.trim() : ''
+		var isAdmin = isProfileAdminRole(profile)
 
-		if (nameEl) nameEl.textContent = display || nick || 'Игрок'
-		if (nickLine) {
-			if (!nick) {
-				nickLine.textContent = 'Ник не указан'
-				nickLine.hidden = false
-			} else if (
-				display &&
-				display.toLowerCase() !== nick.toLowerCase()
-			) {
-				nickLine.textContent = nick
-				nickLine.hidden = false
+		if (nickTextEl) nickTextEl.textContent = nick || '—'
+		if (roleBadge) {
+			roleBadge.textContent = isAdmin ? 'Админ' : 'Игрок'
+			roleBadge.className =
+				'profile-role-badge ' +
+				(isAdmin ? 'profile-role-badge--admin' : 'profile-role-badge--player')
+		}
+		var prefix = stripMcFormatting(
+			profile && profile.minecraft_prefix ? profile.minecraft_prefix : '',
+		)
+		if (prefixLine && prefixTextEl) {
+			if (prefix) {
+				prefixTextEl.textContent = prefix
+				prefixLine.hidden = false
+			} else if (isAdmin) {
+				prefixTextEl.textContent = '[Админ]'
+				prefixLine.hidden = false
 			} else {
-				nickLine.hidden = true
+				prefixLine.hidden = true
+			}
+		}
+		if (callLine) {
+			if (display && nick && display.toLowerCase() !== nick.toLowerCase()) {
+				callLine.textContent = 'Обращение: ' + display
+				callLine.hidden = false
+			} else if (display && !nick) {
+				callLine.textContent = 'Обращение: ' + display
+				callLine.hidden = false
+			} else {
+				callLine.hidden = true
 			}
 		}
 		if (wlBadge) {
@@ -2206,8 +2238,6 @@
 			if (currentProfile) currentProfile.id = user.id
 		}
 		var isAdmin = IsnixAuth && IsnixAuth.isAdminProfile(profile)
-		var badge = document.getElementById('adminRoleBadge')
-		if (badge) badge.hidden = !isAdmin
 		setAccountMode(resolveInitialAccountMode(), { skipStore: true })
 		updatePlayerApplicationSections(profile)
 		var emailEl = document.getElementById('dashEmail')

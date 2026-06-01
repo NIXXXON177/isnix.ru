@@ -7,7 +7,8 @@
 ## 1. Supabase (один раз)
 
 1. Выполни **[supabase-player-stats.sql](supabase-player-stats.sql)** (таблица + RPC `server_record_player_join` / `server_record_player_quit`).
-2. Если таблица уже была — выполни **только блок RPC** в конце того же файла (с `create or replace function`).
+2. Выполни **[supabase-profile-prefix.sql](supabase-profile-prefix.sql)** — префикс LuckPerms и роль `admin` на сервере в `profiles` (для кабинета на сайте).
+3. Если таблица уже была — выполни **только блок RPC** в конце того же файла (с `create or replace function`).
 
 ## 2. Скачать jar
 

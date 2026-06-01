@@ -269,6 +269,14 @@
 		)
 	}
 
+	function isMissingPrefixColumns(err) {
+		var msg = errorText(err)
+		return (
+			/minecraft_prefix|server_is_admin/i.test(msg) &&
+			/does not exist|42703|PGRST204/i.test(msg)
+		)
+	}
+
 	function sleep(ms) {
 		return new Promise(function (resolve) {
 			setTimeout(resolve, ms)
@@ -608,6 +616,22 @@
 		}
 	}
 
+	function prefixMetaQueryDisabled() {
+		try {
+			return localStorage.getItem('isnix_skip_prefix_cols') === '1'
+		} catch (_e) {
+			return false
+		}
+	}
+
+	function disablePrefixMetaQuery() {
+		try {
+			localStorage.setItem('isnix_skip_prefix_cols', '1')
+		} catch (_e) {
+			/* ignore */
+		}
+	}
+
 	async function signUp(email, password) {
 		var sb = getClient()
 		if (!sb) throw new Error('Аккаунты на сайте ещё не подключены')
@@ -707,10 +731,14 @@
 		}
 	}
 
-	async function queryProfile(sb, userId, withSitePresence) {
-		var fields = withSitePresence
-			? 'minecraft_nick, display_name, email, role, created_at, site_last_seen_at, site_device'
-			: 'minecraft_nick, display_name, email, role, created_at'
+	async function queryProfile(sb, userId, withSitePresence, withPrefixMeta) {
+		var fields = 'minecraft_nick, display_name, email, role, created_at'
+		if (withSitePresence) {
+			fields += ', site_last_seen_at, site_device'
+		}
+		if (withPrefixMeta) {
+			fields += ', minecraft_prefix, server_is_admin'
+		}
 		return sb.from('profiles').select(fields).eq('id', userId).maybeSingle()
 	}
 
@@ -725,10 +753,16 @@
 		var sb = getClient()
 		if (!sb) return null
 		var withSite = !sitePresenceQueryDisabled()
-		var res = await queryProfile(sb, userId, withSite)
+		var withPrefix = !prefixMetaQueryDisabled()
+		var res = await queryProfile(sb, userId, withSite, withPrefix)
 		if (res.error && isMissingSitePresenceColumns(res.error)) {
 			disableSitePresenceQuery()
-			res = await queryProfile(sb, userId, false)
+			withSite = false
+			res = await queryProfile(sb, userId, false, withPrefix)
+		}
+		if (res.error && isMissingPrefixColumns(res.error)) {
+			disablePrefixMetaQuery()
+			res = await queryProfile(sb, userId, withSite, false)
 		}
 		if (res.error) {
 			noteSupabaseNetworkFailure(res.error)
