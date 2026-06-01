@@ -4,7 +4,9 @@
 	"compatibilityLevel": "JAVA_21",
 	"mixins": [
 		"ServerPlayNetworkHandlerMixin",
-		"EntityFreezeMixin"
+		"EntityFreezeMixin",
+		"LivingEntityFreezeMixin",
+		"ServerPlayerEntityFreezeMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

@@ -43,14 +43,23 @@ public final class FreezeManager {
 		if (!worldKey.equals(entry.world)) {
 			return;
 		}
+		player.setVelocity(Vec3d.ZERO);
+		player.fallDistance = 0.0f;
 		Vec3d pos = player.getPos();
 		double dx = pos.x - entry.x;
 		double dy = pos.y - entry.y;
 		double dz = pos.z - entry.z;
-		if (dx * dx + dy * dy + dz * dz > 0.0004) {
-			player.setVelocity(0, 0, 0);
+		if (dx * dx + dy * dy + dz * dz > 1.0E-8) {
 			runInternalTeleport(() -> player.requestTeleport(entry.x, entry.y, entry.z));
 		}
+	}
+
+	/** Каждый тик: обнулить скорость и вернуть на точку заморозки (поворот головы не трогаем). */
+	public static void tickFrozen(ServerPlayerEntity player) {
+		if (!isFrozen(player)) {
+			return;
+		}
+		enforcePosition(player);
 	}
 
 	public static boolean shouldBlockPositionMove(ServerPlayerEntity player) {

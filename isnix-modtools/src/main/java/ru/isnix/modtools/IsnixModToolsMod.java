@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 import ru.isnix.modtools.command.ModToolsCommands;
 
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.math.Vec3d;
 
 public class IsnixModToolsMod implements DedicatedServerModInitializer {
 	public static final String MOD_ID = "isnix_modtools";
@@ -53,10 +52,7 @@ public class IsnixModToolsMod implements DedicatedServerModInitializer {
 				storage.pruneExpired(server);
 			}
 			for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
-				if (FreezeManager.isFrozen(player)) {
-					player.setVelocity(Vec3d.ZERO);
-					FreezeManager.enforcePosition(player);
-				}
+				FreezeManager.tickFrozen(player);
 			}
 		});
 
