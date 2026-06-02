@@ -20,7 +20,7 @@
 		/>
 		<link rel="stylesheet" href="assets/css/main.css?v=2" />
 		<link rel="stylesheet" href="assets/css/components.css?v=4" />
-		<link rel="stylesheet" href="assets/css/auth.css?v=25" />
+		<link rel="stylesheet" href="assets/css/auth.css?v=26" />
 		<link rel="stylesheet" href="assets/css/site-header.css" />
 	</head>
 	<body class="account-page" data-page="account">
@@ -374,7 +374,7 @@
 											id="notificationsBtn"
 											class="auth-notifications__btn"
 											aria-expanded="false"
-											aria-controls="notificationsModalRoot"
+											aria-controls="notificationsPopover"
 											title="Уведомления"
 										>
 											<span class="auth-notifications__icon" aria-hidden="true"><svg class="icon" aria-hidden="true" focusable="false"><use href="assets/icons/sprite.svg#bell"></use></svg></span>
@@ -383,6 +383,54 @@
 											>
 											<span class="auth-sr-only">Уведомления</span>
 										</button>
+										<div
+											id="notificationsPopover"
+											class="auth-notifications-popover"
+											role="dialog"
+											aria-modal="true"
+											aria-labelledby="notificationsModalTitle"
+											aria-hidden="true"
+											tabindex="-1"
+											hidden
+										>
+											<div class="auth-notifications__head">
+												<div class="auth-notifications__head-text">
+													<h3 id="notificationsModalTitle" class="auth-notifications__title">
+														Уведомления
+													</h3>
+													<p class="auth-notifications__lead">
+														Ответы по заявкам в вайтлист и важные сообщения по аккаунту.
+													</p>
+												</div>
+												<button
+													type="button"
+													id="notificationsModalClose"
+													class="auth-notifications__close"
+													aria-label="Закрыть"
+												>
+													×
+												</button>
+											</div>
+											<div class="auth-notifications__toolbar-row">
+												<button
+													type="button"
+													id="notificationsMarkAll"
+													class="auth-notifications__mark-all"
+												>
+													Прочитать все
+												</button>
+											</div>
+											<div class="auth-notifications__scroll">
+												<div id="notificationsList" class="auth-notifications__list"></div>
+												<p
+													id="notificationsEmpty"
+													class="auth-muted auth-notifications__empty"
+													hidden
+												>
+													Пока нет уведомлений
+												</p>
+											</div>
+										</div>
 									</div>
 									<button
 										type="button"
@@ -885,51 +933,12 @@
 		</div>
 
 		<div
-			id="notificationsModalRoot"
-			class="bold-modal auth-notifications-modal"
+			id="notificationsOverlay"
+			class="auth-notifications-overlay"
+			hidden
 			aria-hidden="true"
-			role="presentation"
-		>
-			<div id="notificationsModalBackdrop" class="bold-modal__backdrop" tabindex="-1"></div>
-			<div
-				id="notificationsPanel"
-				class="bold-modal__panel auth-notifications__dialog"
-				role="dialog"
-				aria-modal="true"
-				aria-labelledby="notificationsModalTitle"
-				tabindex="-1"
-			>
-				<div class="auth-notifications__head">
-					<div class="auth-notifications__head-text">
-						<h3 id="notificationsModalTitle" class="auth-notifications__title">
-							Уведомления
-						</h3>
-						<p class="auth-notifications__lead">
-							Ответы по заявкам в вайтлист и важные сообщения по аккаунту.
-						</p>
-					</div>
-					<button
-						type="button"
-						id="notificationsModalClose"
-						class="auth-notifications__close"
-						aria-label="Закрыть"
-					>
-						×
-					</button>
-				</div>
-				<div class="auth-notifications__toolbar-row">
-					<button type="button" id="notificationsMarkAll" class="auth-notifications__mark-all">
-						Прочитать все
-					</button>
-				</div>
-				<div class="auth-notifications__scroll">
-					<div id="notificationsList" class="auth-notifications__list"></div>
-					<p id="notificationsEmpty" class="auth-muted auth-notifications__empty" hidden>
-						Пока нет уведомлений
-					</p>
-				</div>
-			</div>
-		</div>
+			tabindex="-1"
+		></div>
 
 		<script src="assets/js/browser-compat.js?v=1"></script>
 		<script>
@@ -949,6 +958,6 @@
 		<script src="assets/js/site-push-prompt.js?v=2" defer></script>
 		<script src="assets/js/support-tickets.js?v=8" defer></script>
 		<script src="assets/js/icons.js?v=1"></script>
-		<script src="assets/js/account.js?v=58"></script>
+		<script src="assets/js/account.js?v=59"></script>
 	</body>
 </html>

@@ -2102,37 +2102,65 @@
 		})
 	}
 
+	function positionNotificationsPopover() {
+		var btn = document.getElementById('notificationsBtn')
+		var pop = document.getElementById('notificationsPopover')
+		if (!btn || !pop) return
+		var rect = btn.getBoundingClientRect()
+		var gap = 8
+		var pad = 8
+		var width = Math.min(360, window.innerWidth - pad * 2)
+		var left = Math.min(
+			Math.max(pad, rect.right - width),
+			window.innerWidth - width - pad,
+		)
+		var top = rect.bottom + gap
+		var maxHeight = Math.max(160, window.innerHeight - top - pad)
+		pop.style.width = width + 'px'
+		pop.style.left = left + 'px'
+		pop.style.top = top + 'px'
+		pop.style.maxHeight = maxHeight + 'px'
+	}
+
 	function openNotificationsModal() {
-		var root = document.getElementById('notificationsModalRoot')
-		if (!root) return
-		if (root.parentNode !== document.body) {
-			document.body.appendChild(root)
-		}
+		var pop = document.getElementById('notificationsPopover')
+		if (!pop) return
 		paintNotificationsList(cachedNotifications)
-		root.classList.remove('is-open')
-		root.classList.add('is-open')
-		root.setAttribute('aria-hidden', 'false')
-		document.body.style.overflow = 'hidden'
+		positionNotificationsPopover()
+		pop.hidden = false
+		pop.classList.add('is-open')
+		pop.setAttribute('aria-hidden', 'false')
+		var overlay = document.getElementById('notificationsOverlay')
+		if (overlay) {
+			overlay.hidden = false
+			overlay.setAttribute('aria-hidden', 'false')
+			overlay.classList.add('is-open')
+		}
 		var btn = document.getElementById('notificationsBtn')
 		if (btn) btn.setAttribute('aria-expanded', 'true')
-		var panel = document.getElementById('notificationsPanel')
-		if (panel) {
-			window.requestAnimationFrame(function () {
-				try {
-					panel.focus({ preventScroll: true })
-				} catch (_focusErr) {
-					/* ignore */
-				}
-			})
-		}
+		window.requestAnimationFrame(function () {
+			positionNotificationsPopover()
+			try {
+				pop.focus({ preventScroll: true })
+			} catch (_focusErr) {
+				/* ignore */
+			}
+		})
 	}
 
 	function closeNotificationsModal() {
-		var root = document.getElementById('notificationsModalRoot')
-		if (!root) return
-		root.classList.remove('is-open')
-		root.setAttribute('aria-hidden', 'true')
-		document.body.style.overflow = ''
+		var pop = document.getElementById('notificationsPopover')
+		if (pop) {
+			pop.classList.remove('is-open')
+			pop.setAttribute('aria-hidden', 'true')
+			pop.hidden = true
+		}
+		var overlay = document.getElementById('notificationsOverlay')
+		if (overlay) {
+			overlay.classList.remove('is-open')
+			overlay.setAttribute('aria-hidden', 'true')
+			overlay.hidden = true
+		}
 		var btn = document.getElementById('notificationsBtn')
 		if (btn) btn.setAttribute('aria-expanded', 'false')
 	}
@@ -2149,14 +2177,14 @@
 		var listEl = document.getElementById('notificationsList')
 		var markAll = document.getElementById('notificationsMarkAll')
 		var closeBtn = document.getElementById('notificationsModalClose')
-		var backdrop = document.getElementById('notificationsModalBackdrop')
+		var overlay = document.getElementById('notificationsOverlay')
 		if (!btn) return
 		notificationsUiBound = true
 		btn.addEventListener('click', function (e) {
 			e.preventDefault()
 			e.stopPropagation()
-			var root = document.getElementById('notificationsModalRoot')
-			if (root && root.classList.contains('is-open')) {
+			var pop = document.getElementById('notificationsPopover')
+			if (pop && pop.classList.contains('is-open')) {
 				closeNotificationsModal()
 				return
 			}
@@ -2177,9 +2205,27 @@
 		if (closeBtn) {
 			closeBtn.addEventListener('click', closeNotificationsModal)
 		}
-		if (backdrop) {
-			backdrop.addEventListener('click', closeNotificationsModal)
+		if (overlay) {
+			overlay.addEventListener('click', closeNotificationsModal)
 		}
+		window.addEventListener(
+			'resize',
+			function () {
+				var pop = document.getElementById('notificationsPopover')
+				if (pop && pop.classList.contains('is-open')) {
+					positionNotificationsPopover()
+				}
+			},
+			{ passive: true },
+		)
+		document.addEventListener('click', function (e) {
+			var pop = document.getElementById('notificationsPopover')
+			if (!pop || !pop.classList.contains('is-open')) return
+			var wrap = document.getElementById('notificationsWrap')
+			if (wrap && wrap.contains(e.target)) return
+			if (overlay && e.target === overlay) return
+			closeNotificationsModal()
+		})
 		if (markAll) {
 			markAll.addEventListener('click', async function () {
 				var uid = resolveNotificationsUserId(userId)
@@ -2218,8 +2264,8 @@
 		}
 		document.addEventListener('keydown', function (e) {
 			if (e.key !== 'Escape') return
-			var root = document.getElementById('notificationsModalRoot')
-			if (root && root.classList.contains('is-open')) {
+			var pop = document.getElementById('notificationsPopover')
+			if (pop && pop.classList.contains('is-open')) {
 				closeNotificationsModal()
 			}
 		})

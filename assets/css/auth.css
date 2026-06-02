@@ -593,6 +593,14 @@
 
 .auth-notifications {
 	position: relative;
+	z-index: 2;
+}
+
+.profile-hero.auth-panel,
+.profile-meta__row,
+.profile-hero__toolbar,
+.account-zone--profile {
+	overflow: visible;
 }
 
 .auth-notifications__btn {
@@ -634,46 +642,53 @@
 	text-align: center;
 }
 
-/* Выше шапки (z-index ~1203) и body > * { z-index: 1 } */
-.auth-notifications-modal.bold-modal {
-	z-index: 13050;
+/* Выпадающий список у колокольчика (не центрированная bold-modal) */
+.auth-notifications-overlay {
+	position: fixed;
+	inset: 0;
+	z-index: 14000;
+	background: rgba(0, 0, 0, 0.35);
+	-webkit-backdrop-filter: blur(2px);
+	backdrop-filter: blur(2px);
 }
 
-.auth-notifications-modal .bold-modal__panel {
-	display: flex;
+.auth-notifications-overlay[hidden] {
+	display: none !important;
+}
+
+.auth-notifications-popover {
+	position: fixed;
+	z-index: 14010;
+	display: none;
 	flex-direction: column;
-	width: 100%;
-	max-width: 32rem;
-	min-height: 14rem;
-	max-height: min(85vh, 36rem);
+	width: min(22.5rem, calc(100vw - 1rem));
+	min-height: 10rem;
+	max-height: min(70vh, 24rem);
 	padding: 0;
 	overflow: hidden;
-	border-color: rgba(74, 222, 128, 0.35);
+	border-radius: var(--radius-md);
+	border: 1px solid rgba(74, 222, 128, 0.35);
 	box-shadow:
 		0 0 0 1px rgba(74, 222, 128, 0.12),
-		0 32px 64px rgba(0, 0, 0, 0.55);
+		0 20px 48px rgba(0, 0, 0, 0.55);
 	background-image: linear-gradient(
 		165deg,
-		rgba(12, 24, 16, 0.97),
-		rgba(10, 15, 10, 0.98) 45%,
+		rgba(12, 24, 16, 0.98),
+		rgba(10, 15, 10, 0.99) 45%,
 		rgba(10, 12, 10, 1)
 	);
-	/* Без «залипшего» opacity:0 у панели в Firefox */
-	opacity: 1;
-	transform: none;
-}
-
-.auth-notifications-modal.is-open {
-	display: flex;
-	opacity: 1;
-	pointer-events: auto;
-}
-
-.auth-notifications-modal.is-open .bold-modal__panel,
-.auth-notifications-modal.is-open .auth-notifications__dialog {
 	opacity: 1;
 	transform: none;
 	visibility: visible;
+	pointer-events: auto;
+}
+
+.auth-notifications-popover[hidden]:not(.is-open) {
+	display: none !important;
+}
+
+.auth-notifications-popover.is-open {
+	display: flex;
 }
 
 .auth-notifications__head {
@@ -2157,12 +2172,12 @@
 		word-break: break-word;
 	}
 
-	.auth-notifications__dialog {
-		max-height: min(88vh, 36rem);
+	.auth-notifications-popover.is-open {
+		max-height: min(78vh, 28rem);
 	}
 
 	.auth-notifications__scroll {
-		max-height: calc(min(88vh, 36rem) - 10.5rem);
+		max-height: calc(min(78vh, 28rem) - 9.5rem);
 	}
 
 	.profile-hero.auth-panel {
