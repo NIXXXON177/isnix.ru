@@ -150,10 +150,18 @@
 		return /applicant_reply/i.test(msg) && /does not exist|42703/i.test(msg)
 	}
 
+	function isMissingReferredByNickColumn(err) {
+		var msg = errorText(err)
+		return (
+			/referred_by_nick/i.test(msg) &&
+			/does not exist|42703|PGRST204/i.test(msg)
+		)
+	}
+
 	function isMissingWhitelistFormV2Columns(err) {
 		var msg = errorText(err)
 		return (
-			/read_rules|downloaded_modpack|referral_source|referred_by_nick/i.test(msg) &&
+			/read_rules|downloaded_modpack|referral_source/i.test(msg) &&
 			/does not exist|42703|PGRST204/i.test(msg)
 		)
 	}
@@ -184,14 +192,19 @@
 		)
 	}
 
-	var APPS_SCHEMA_CACHE_KEY = 'isnix_wl_apps_schema_v1'
+	var APPS_SCHEMA_CACHE_KEY = 'isnix_wl_apps_schema_v2'
 	var SESSION_TIMEOUT_MS = 22000
 	var sessionBackgroundRefresh = null
 
 	function readAppsSchemaCache() {
 		try {
 			var v = localStorage.getItem(APPS_SCHEMA_CACHE_KEY)
-			if (v === 'v2+reply' || v === 'fallback+reply' || v === 'fallback') {
+			if (
+				v === 'v2+reply+ref' ||
+				v === 'v2+reply' ||
+				v === 'fallback+reply' ||
+				v === 'fallback'
+			) {
 				return v
 			}
 		} catch (_e) {
@@ -211,19 +224,23 @@
 
 	function applicationQueryCombos() {
 		var cached = readAppsSchemaCache()
+		if (cached === 'v2+reply+ref') {
+			return [{ reply: true, v2: true, referral: true, key: 'v2+reply+ref' }]
+		}
 		if (cached === 'v2+reply') {
-			return [{ reply: true, v2: true, key: 'v2+reply' }]
+			return [{ reply: true, v2: true, referral: false, key: 'v2+reply' }]
 		}
 		if (cached === 'fallback+reply') {
-			return [{ reply: true, v2: false, key: 'fallback+reply' }]
+			return [{ reply: true, v2: false, referral: false, key: 'fallback+reply' }]
 		}
 		if (cached === 'fallback') {
-			return [{ reply: false, v2: false, key: 'fallback' }]
+			return [{ reply: false, v2: false, referral: false, key: 'fallback' }]
 		}
 		return [
-			{ reply: true, v2: true, key: 'v2+reply' },
-			{ reply: true, v2: false, key: 'fallback+reply' },
-			{ reply: false, v2: false, key: 'fallback' },
+			{ reply: true, v2: true, referral: true, key: 'v2+reply+ref' },
+			{ reply: true, v2: true, referral: false, key: 'v2+reply' },
+			{ reply: true, v2: false, referral: false, key: 'fallback+reply' },
+			{ reply: false, v2: false, referral: false, key: 'fallback' },
 		]
 	}
 
@@ -232,11 +249,16 @@
 		var lastErr = null
 		for (var i = 0; i < combos.length; i++) {
 			try {
-				var data = await queryFn(combos[i].reply, combos[i].v2)
+				var data = await queryFn(
+					combos[i].reply,
+					combos[i].v2,
+					combos[i].referral,
+				)
 				writeAppsSchemaCache(combos[i].key)
 				return data
 			} catch (err) {
 				lastErr = err
+				if (isMissingReferredByNickColumn(err) && combos[i].referral) continue
 				if (isMissingWhitelistFormV2Columns(err) && combos[i].v2) continue
 				if (isMissingApplicantReplyColumn(err) && combos[i].reply) continue
 				throw err
@@ -932,31 +954,44 @@
 		clearProfileMemCache(userId)
 	}
 
-	var APP_SELECT_BASE =
-		'id, minecraft_nick, call_name, age, reason, read_rules, downloaded_modpack, referral_source, referred_by_nick, status, admin_note, created_at'
-	var APP_SELECT_WITH_REPLY = APP_SELECT_BASE + ', applicant_reply'
+	var APP_SELECT_V2 =
+		'id, minecraft_nick, call_name, age, reason, read_rules, downloaded_modpack, referral_source, status, admin_note, created_at'
+	var APP_SELECT_V2_REFERRAL = APP_SELECT_V2 + ', referred_by_nick'
+	var APP_SELECT_V2_WITH_REPLY = APP_SELECT_V2 + ', applicant_reply'
+	var APP_SELECT_V2_REFERRAL_WITH_REPLY = APP_SELECT_V2_REFERRAL + ', applicant_reply'
 	var APP_SELECT_FALLBACK =
 		'id, minecraft_nick, call_name, age, reason, status, admin_note, created_at'
 	var APP_SELECT_WITH_REPLY_FALLBACK = APP_SELECT_FALLBACK + ', applicant_reply'
-	var APP_ADMIN_SELECT_BASE =
-		'id, user_id, minecraft_nick, call_name, age, reason, read_rules, downloaded_modpack, referral_source, referred_by_nick, status, admin_note, created_at'
-	var APP_ADMIN_SELECT_WITH_REPLY = APP_ADMIN_SELECT_BASE + ', applicant_reply'
+	var APP_ADMIN_SELECT_V2 =
+		'id, user_id, minecraft_nick, call_name, age, reason, read_rules, downloaded_modpack, referral_source, status, admin_note, created_at'
+	var APP_ADMIN_SELECT_V2_REFERRAL = APP_ADMIN_SELECT_V2 + ', referred_by_nick'
+	var APP_ADMIN_SELECT_V2_WITH_REPLY = APP_ADMIN_SELECT_V2 + ', applicant_reply'
+	var APP_ADMIN_SELECT_V2_REFERRAL_WITH_REPLY =
+		APP_ADMIN_SELECT_V2_REFERRAL + ', applicant_reply'
 	var APP_ADMIN_SELECT_FALLBACK =
 		'id, user_id, minecraft_nick, call_name, age, reason, status, admin_note, created_at'
 	var APP_ADMIN_SELECT_WITH_REPLY_FALLBACK =
 		APP_ADMIN_SELECT_FALLBACK + ', applicant_reply'
 
-	function applicationSelectFields(withReply, withV2, admin) {
+	function applicationSelectFields(withReply, withV2, withReferral, admin) {
 		if (admin) {
 			if (withV2) {
-				return withReply ? APP_ADMIN_SELECT_WITH_REPLY : APP_ADMIN_SELECT_BASE
+				if (withReferral) {
+					return withReply
+						? APP_ADMIN_SELECT_V2_REFERRAL_WITH_REPLY
+						: APP_ADMIN_SELECT_V2_REFERRAL
+				}
+				return withReply ? APP_ADMIN_SELECT_V2_WITH_REPLY : APP_ADMIN_SELECT_V2
 			}
 			return withReply
 				? APP_ADMIN_SELECT_WITH_REPLY_FALLBACK
 				: APP_ADMIN_SELECT_FALLBACK
 		}
 		if (withV2) {
-			return withReply ? APP_SELECT_WITH_REPLY : APP_SELECT_BASE
+			if (withReferral) {
+				return withReply ? APP_SELECT_V2_REFERRAL_WITH_REPLY : APP_SELECT_V2_REFERRAL
+			}
+			return withReply ? APP_SELECT_V2_WITH_REPLY : APP_SELECT_V2
 		}
 		return withReply ? APP_SELECT_WITH_REPLY_FALLBACK : APP_SELECT_FALLBACK
 	}
@@ -975,8 +1010,13 @@
 		return q
 	}
 
-	async function queryApplications(sb, userId, withReply, withV2, pageOpts) {
-		var fields = applicationSelectFields(withReply, withV2 !== false, false)
+	async function queryApplications(sb, userId, withReply, withV2, withReferral, pageOpts) {
+		var fields = applicationSelectFields(
+			withReply,
+			withV2 !== false,
+			withReferral === true,
+			false,
+		)
 		var q = sb
 			.from('whitelist_applications')
 			.select(
@@ -1007,8 +1047,20 @@
 		return res.data || []
 	}
 
-	async function queryAdminApplications(sb, filter, withReply, withV2, pageOpts) {
-		var fields = applicationSelectFields(withReply, withV2 !== false, true)
+	async function queryAdminApplications(
+		sb,
+		filter,
+		withReply,
+		withV2,
+		withReferral,
+		pageOpts,
+	) {
+		var fields = applicationSelectFields(
+			withReply,
+			withV2 !== false,
+			withReferral === true,
+			true,
+		)
 		var q = sb
 			.from('whitelist_applications')
 			.select(
@@ -1046,8 +1098,8 @@
 				? { applications: [], total: 0, page: 1, pageSize: 5 }
 				: []
 		}
-		return fetchApplicationsWithFallback(function (withReply, withV2) {
-			return queryApplications(sb, userId, withReply, withV2, opts)
+		return fetchApplicationsWithFallback(function (withReply, withV2, withReferral) {
+			return queryApplications(sb, userId, withReply, withV2, withReferral, opts)
 		})
 	}
 
@@ -1067,6 +1119,10 @@
 			referred_by_nick: payload.referred_by_nick,
 		}
 		var res = await sb.from('whitelist_applications').insert(row)
+		if (res.error && isMissingReferredByNickColumn(res.error)) {
+			delete row.referred_by_nick
+			res = await sb.from('whitelist_applications').insert(row)
+		}
 		if (res.error && isMissingWhitelistFormV2Columns(res.error)) {
 			res = await sb.from('whitelist_applications').insert({
 				user_id: userId,
@@ -1086,8 +1142,15 @@
 				? { applications: [], total: 0, page: 1, pageSize: 5 }
 				: []
 		}
-		return fetchApplicationsWithFallback(function (withReply, withV2) {
-			return queryAdminApplications(sb, filter, withReply, withV2, opts)
+		return fetchApplicationsWithFallback(function (withReply, withV2, withReferral) {
+			return queryAdminApplications(
+				sb,
+				filter,
+				withReply,
+				withV2,
+				withReferral,
+				opts,
+			)
 		})
 	}
 

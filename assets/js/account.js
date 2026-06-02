@@ -600,7 +600,7 @@
 			if (form) form.hidden = true
 			hintEl.hidden = false
 			hintEl.textContent =
-				'Укажи Minecraft-ник в настройках профиля — тогда появится рейтинг и можно ставить лайки.'
+				'Укажи Minecraft-ник в настройках профиля — тогда появится рейтинг и можно ставить лайки и дизлайки.'
 			return
 		}
 
@@ -3237,48 +3237,62 @@
 			})
 		}
 
+		async function submitReputationVote(vote) {
+			var repVoteForm = document.getElementById('repVoteForm')
+			setRepVoteMsg('', true)
+			var session = await IsnixAuth.getSession()
+			if (!session) return
+			var targetEl = document.getElementById('repTargetNick')
+			var target = targetEl ? targetEl.value.trim() : ''
+			if (!target) {
+				setRepVoteMsg('Укажи ник игрока', false)
+				return
+			}
+			if (!IsnixAuth.MC_NICK_RE.test(target)) {
+				setRepVoteMsg('Ник: 3–16 символов, латиница, цифры и _', false)
+				return
+			}
+			var ownNick =
+				currentProfile && currentProfile.minecraft_nick
+					? currentProfile.minecraft_nick.trim()
+					: ''
+			if (ownNick && ownNick.toLowerCase() === target.toLowerCase()) {
+				setRepVoteMsg('Нельзя голосовать за себя', false)
+				return
+			}
+			if (!ownNick) {
+				setRepVoteMsg('Сначала укажи свой ник в профиле', false)
+				return
+			}
+			var isLike = vote === 1
+			if (repVoteForm) setLoading(repVoteForm, true)
+			try {
+				await IsnixAuth.castReputationVote(target, vote)
+				var okText = (isLike ? 'Лайк' : 'Дизлайк') + ' отправлен игроку ' + target
+				setRepVoteMsg(okText, true)
+				showMsg(okText, true)
+				if (targetEl) targetEl.value = ''
+			} catch (err) {
+				var msg = IsnixAuth.formatAuthError(err)
+				setRepVoteMsg(msg, false)
+				showMsg(msg, false)
+			} finally {
+				if (repVoteForm) setLoading(repVoteForm, false)
+			}
+		}
+
 		var repVoteForm = document.getElementById('repVoteForm')
 		if (repVoteForm) {
-			repVoteForm.addEventListener('submit', async function (e) {
+			repVoteForm.addEventListener('submit', function (e) {
 				e.preventDefault()
-				setRepVoteMsg('', true)
-				var session = await IsnixAuth.getSession()
-				if (!session) return
-				var targetEl = document.getElementById('repTargetNick')
-				var target = targetEl ? targetEl.value.trim() : ''
-				if (!target) {
-					setRepVoteMsg('Укажи ник игрока', false)
-					return
-				}
-				if (!IsnixAuth.MC_NICK_RE.test(target)) {
-					setRepVoteMsg('Ник: 3–16 символов, латиница, цифры и _', false)
-					return
-				}
-				var ownNick =
-					currentProfile && currentProfile.minecraft_nick
-						? currentProfile.minecraft_nick.trim()
-						: ''
-				if (ownNick && ownNick.toLowerCase() === target.toLowerCase()) {
-					setRepVoteMsg('Нельзя голосовать за себя', false)
-					return
-				}
-				if (!ownNick) {
-					setRepVoteMsg('Сначала укажи свой ник в профиле', false)
-					return
-				}
-				setLoading(repVoteForm, true)
-				try {
-					await IsnixAuth.castReputationVote(target, 1)
-					setRepVoteMsg('Лайк отправлен игроку ' + target, true)
-					showMsg('Лайк отправлен: ' + target, true)
-					if (targetEl) targetEl.value = ''
-				} catch (err) {
-					var msg = IsnixAuth.formatAuthError(err)
-					setRepVoteMsg(msg, false)
-					showMsg(msg, false)
-				} finally {
-					setLoading(repVoteForm, false)
-				}
+				submitReputationVote(1)
+			})
+			repVoteForm.querySelectorAll('[data-rep-vote]').forEach(function (btn) {
+				if (btn.type === 'submit') return
+				btn.addEventListener('click', function () {
+					var v = parseInt(btn.getAttribute('data-rep-vote'), 10)
+					submitReputationVote(v === -1 ? -1 : 1)
+				})
 			})
 		}
 

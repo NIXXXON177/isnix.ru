@@ -1785,8 +1785,29 @@
 	margin-top: 0.5rem;
 }
 
-.profile-reputation-like {
+.profile-reputation-actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
 	margin-top: 0.25rem;
+}
+
+.profile-reputation-like,
+.profile-reputation-dislike {
+	flex: 1 1 8rem;
+	margin-top: 0;
+}
+
+.profile-reputation-dislike {
+	background: rgba(220, 80, 80, 0.12);
+	border-color: rgba(220, 80, 80, 0.35);
+	color: #e8a0a0;
+}
+
+.profile-reputation-dislike:hover:not(:disabled) {
+	background: rgba(220, 80, 80, 0.22);
+	border-color: rgba(220, 80, 80, 0.55);
+	color: #ffc8c8;
 }
 
 .profile-reputation-hint {

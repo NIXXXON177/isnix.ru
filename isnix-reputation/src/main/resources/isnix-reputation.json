@@ -2,7 +2,7 @@
 	"enabled": false,
 	"supabase_url": "https://yfrlgeztbaebdapdnefy.supabase.co",
 	"service_role_key": "ВСТАВЬ_service_role_из_Supabase",
-	"allow_dislikes": false,
+	"allow_dislikes": true,
 	"refresh_interval_ticks": 6000,
 	"op_permission_level": 4,
 	"placeholder_format": "&e★%score%",

@@ -20,7 +20,7 @@
 		/>
 		<link rel="stylesheet" href="assets/css/main.css?v=2" />
 		<link rel="stylesheet" href="assets/css/components.css?v=4" />
-		<link rel="stylesheet" href="assets/css/auth.css?v=24" />
+		<link rel="stylesheet" href="assets/css/auth.css?v=25" />
 		<link rel="stylesheet" href="assets/css/site-header.css" />
 	</head>
 	<body class="account-page" data-page="account">
@@ -446,7 +446,7 @@
 						<h2 class="auth-panel__title">Социальный рейтинг</h2>
 						<div class="account-card__body">
 						<p class="auth-hint profile-reputation-lead">
-							Лайки от игроков с аккаунтом. В TAB: <code>%isnix:rep%</code>.
+							Лайки и дизлайки от игроков с аккаунтом. В TAB: <code>%isnix:rep%</code>.
 						</p>
 						<div class="profile-reputation-score" id="profileRepScoreBlock" hidden>
 							<p class="profile-reputation-score__value" id="profileRepScore"><svg class="icon icon--inline" aria-hidden="true" focusable="false"><use href="assets/icons/sprite.svg#star"></use></svg>0</p>
@@ -457,19 +457,26 @@
 						</p>
 						<form id="repVoteForm" class="auth-form profile-reputation-form" hidden>
 							<div class="auth-field">
-								<label for="repTargetNick">Лайк игроку</label>
+								<label for="repTargetNick">Оценка игроку</label>
 								<input
 									id="repTargetNick"
 									type="text"
 									maxlength="16"
 									autocomplete="off"
 									spellcheck="false"
-									placeholder="Ник"
+									placeholder="Ник Minecraft"
 								/>
 							</div>
-							<button type="submit" class="auth-submit profile-reputation-like">
-								<svg class="icon icon--inline" aria-hidden="true" focusable="false"><use href="assets/icons/sprite.svg#thumb-up"></use></svg> Лайк
-							</button>
+							<div class="profile-reputation-actions">
+								<button type="submit" class="auth-submit profile-reputation-like" data-rep-vote="1">
+									<svg class="icon icon--inline" aria-hidden="true" focusable="false"><use href="assets/icons/sprite.svg#thumb-up"></use></svg>
+									Лайк
+								</button>
+								<button type="button" class="auth-submit profile-reputation-dislike" data-rep-vote="-1">
+									<svg class="icon icon--inline" aria-hidden="true" focusable="false"><use href="assets/icons/sprite.svg#thumb-down"></use></svg>
+									Дизлайк
+								</button>
+							</div>
 						</form>
 						<p id="profileRepVoteMsg" class="auth-hint" hidden></p>
 						</div>
@@ -936,12 +943,12 @@
 		<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 		<script src="assets/js/server-status.js?v=6"></script>
 		<script src="assets/js/site-toast.js?v=1"></script>
-		<script src="assets/js/auth.js?v=40"></script>
+		<script src="assets/js/auth.js?v=41"></script>
 		<script src="assets/js/site-presence.js?v=4" defer></script>
 		<script src="assets/js/site-header.js?v=5" defer></script>
 		<script src="assets/js/site-push-prompt.js?v=2" defer></script>
 		<script src="assets/js/support-tickets.js?v=8" defer></script>
 		<script src="assets/js/icons.js?v=1"></script>
-		<script src="assets/js/account.js?v=57"></script>
+		<script src="assets/js/account.js?v=58"></script>
 	</body>
 </html>

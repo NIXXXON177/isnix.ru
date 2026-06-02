@@ -27,9 +27,13 @@
 
 Рекомендуемые награды: косметический префикс на 14–30 дней, лайк `/rep` — **без** предметов и OP.
 
+## Ошибка `referred_by_nick does not exist`
+
+Колонка ещё не создана в Supabase. Быстрый фикс: **[supabase-referral-column-only.sql](supabase-referral-column-only.sql)**. Для полной рефералки — **[supabase-referral-system.sql](supabase-referral-system.sql)**.
+
 ## Установка (один раз)
 
-1. Supabase → SQL Editor → выполнить **[supabase-referral-system.sql](supabase-referral-system.sql)**.
+1. Supabase → SQL Editor → выполнить **[supabase-referral-system.sql](supabase-referral-system.sql)** (или только column-only, если нужна лишь колонка).
 2. Затем **[supabase-referral-admin-reward.sql](supabase-referral-admin-reward.sql)** (кнопка в админке).
 3. Deploy Pages (сайт с полем и блоком рефералки).
 3. В админке при модерации смотреть строку **«пригласил: Ник»**.
@@ -44,5 +48,6 @@ select referred_by_nick, minecraft_nick, status from public.whitelist_applicatio
 ## Связанные файлы
 
 - [supabase-referral-system.sql](supabase-referral-system.sql)
+- [supabase-referral-column-only.sql](supabase-referral-column-only.sql)
 - `account.html` — форма и блок «Пригласи друга»
 - `assets/js/auth.js` — отправка заявки, `get_my_referral_summary`

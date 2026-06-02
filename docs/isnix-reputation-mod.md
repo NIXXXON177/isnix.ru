@@ -55,7 +55,7 @@ Jar: `isnix-reputation/build/libs/isnix-reputation-0.1.0-mvp.jar`
   "enabled": true,
   "supabase_url": "https://….supabase.co",
   "service_role_key": "…",
-  "allow_dislikes": false
+  "allow_dislikes": true
 }
 ```
 

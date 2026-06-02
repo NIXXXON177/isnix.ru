@@ -106,7 +106,8 @@
 	margin-right: 0.15em;
 }
 
-.profile-reputation-like .icon {
+.profile-reputation-like .icon,
+.profile-reputation-dislike .icon {
 	width: 1em;
 	height: 1em;
 	margin-right: 0.25em;
