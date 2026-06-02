@@ -153,8 +153,16 @@
 	function isMissingWhitelistFormV2Columns(err) {
 		var msg = errorText(err)
 		return (
-			/read_rules|downloaded_modpack|referral_source/i.test(msg) &&
+			/read_rules|downloaded_modpack|referral_source|referred_by_nick/i.test(msg) &&
 			/does not exist|42703|PGRST204/i.test(msg)
+		)
+	}
+
+	function isMissingReferralSystem(err) {
+		var msg = errorText(err)
+		return (
+			/referrals|get_my_referral_summary|referred_by_nick/i.test(msg) &&
+			/does not exist|42703|PGRST204|42P01|PGRST202/i.test(msg)
 		)
 	}
 
@@ -267,6 +275,15 @@
 		if (referral.length > 200) {
 			throw new Error('Поле «откуда узнали» — не больше 200 символов')
 		}
+		var referredBy = (data.referred_by_nick || '').trim()
+		if (referredBy) {
+			if (!MC_NICK_RE.test(referredBy)) {
+				throw new Error('Ник пригласившего: 3–16 символов, латиница, цифры и _')
+			}
+			if (referredBy.toLowerCase() === nick.toLowerCase()) {
+				throw new Error('Нельзя указать свой ник как пригласившего')
+			}
+		}
 		return {
 			minecraft_nick: nick,
 			call_name: (data.call_name || '').trim() || null,
@@ -275,6 +292,7 @@
 			read_rules: true,
 			downloaded_modpack: true,
 			referral_source: referral || null,
+			referred_by_nick: referredBy || null,
 		}
 	}
 
@@ -915,13 +933,13 @@
 	}
 
 	var APP_SELECT_BASE =
-		'id, minecraft_nick, call_name, age, reason, read_rules, downloaded_modpack, referral_source, status, admin_note, created_at'
+		'id, minecraft_nick, call_name, age, reason, read_rules, downloaded_modpack, referral_source, referred_by_nick, status, admin_note, created_at'
 	var APP_SELECT_WITH_REPLY = APP_SELECT_BASE + ', applicant_reply'
 	var APP_SELECT_FALLBACK =
 		'id, minecraft_nick, call_name, age, reason, status, admin_note, created_at'
 	var APP_SELECT_WITH_REPLY_FALLBACK = APP_SELECT_FALLBACK + ', applicant_reply'
 	var APP_ADMIN_SELECT_BASE =
-		'id, user_id, minecraft_nick, call_name, age, reason, read_rules, downloaded_modpack, referral_source, status, admin_note, created_at'
+		'id, user_id, minecraft_nick, call_name, age, reason, read_rules, downloaded_modpack, referral_source, referred_by_nick, status, admin_note, created_at'
 	var APP_ADMIN_SELECT_WITH_REPLY = APP_ADMIN_SELECT_BASE + ', applicant_reply'
 	var APP_ADMIN_SELECT_FALLBACK =
 		'id, user_id, minecraft_nick, call_name, age, reason, status, admin_note, created_at'
@@ -1046,6 +1064,7 @@
 			read_rules: payload.read_rules,
 			downloaded_modpack: payload.downloaded_modpack,
 			referral_source: payload.referral_source,
+			referred_by_nick: payload.referred_by_nick,
 		}
 		var res = await sb.from('whitelist_applications').insert(row)
 		if (res.error && isMissingWhitelistFormV2Columns(res.error)) {
@@ -1143,6 +1162,21 @@
 			p_reply: (reply || '').trim(),
 		})
 		if (res.error) throw res.error
+	}
+
+	async function getReferralSummary() {
+		var sb = getClient()
+		if (!sb) {
+			return { ok: false, pending: 0, qualified: 0, rewarded: 0, total: 0 }
+		}
+		var res = await sb.rpc('get_my_referral_summary')
+		if (res.error) {
+			if (isMissingReferralSystem(res.error)) {
+				return { ok: false, missing: true }
+			}
+			throw res.error
+		}
+		return res.data || { ok: false }
 	}
 
 	async function moderateApplication(id, status, adminNote) {
@@ -2158,6 +2192,7 @@
 		getSupportAttachments: getSupportAttachments,
 		uploadSupportEvidenceFiles: uploadSupportEvidenceFiles,
 		submitApplication: submitApplication,
+		getReferralSummary: getReferralSummary,
 		validateWhitelistApplicationData: validateWhitelistApplicationData,
 		getNotifications: getNotifications,
 		markNotificationsRead: markNotificationsRead,

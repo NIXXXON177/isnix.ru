@@ -892,6 +892,7 @@
 		updateProfileMeta(profile, cachedServerStatus)
 		renderPlayerStats(profile, playerStats, cachedServerStatus)
 		loadPlayerReputation(profile)
+		renderReferralPanel(profile)
 		updateProfileNickHint()
 		updatePlayerApplicationSections(profile)
 		updateWhitelistHint()
@@ -1159,6 +1160,9 @@
 			isModal ? 'modalAppDownloadedModpack' : 'appDownloadedModpack',
 		)
 		var refEl = document.getElementById(isModal ? 'modalAppReferral' : 'appReferral')
+		var referredByEl = document.getElementById(
+			isModal ? 'modalAppReferredBy' : 'appReferredBy',
+		)
 		var aboutEl = document.getElementById(isModal ? 'modalAppReason' : 'appReason')
 		return {
 			minecraft_nick: nickEl ? nickEl.value.trim() : '',
@@ -1167,7 +1171,89 @@
 			read_rules: rulesEl ? rulesEl.checked : false,
 			downloaded_modpack: packEl ? packEl.checked : false,
 			referral_source: refEl ? refEl.value.trim() : '',
+			referred_by_nick: referredByEl ? referredByEl.value.trim() : '',
 			reason: aboutEl ? aboutEl.value.trim() : '',
+		}
+	}
+
+	function applyReferralFromUrl() {
+		var params = new URLSearchParams(window.location.search)
+		var ref = (params.get('ref') || '').trim()
+		if (!ref || !IsnixAuth || !IsnixAuth.MC_NICK_RE.test(ref)) return
+		;['appReferredBy', 'modalAppReferredBy'].forEach(function (id) {
+			var el = document.getElementById(id)
+			if (el && !el.value.trim()) el.value = ref
+		})
+	}
+
+	function buildReferralShareUrl(nick) {
+		var base = window.location.origin + window.location.pathname
+		return base + '?ref=' + encodeURIComponent(nick)
+	}
+
+	async function renderReferralPanel(profile) {
+		var hint = document.getElementById('profileReferralHint')
+		var linkWrap = document.getElementById('profileReferralLinkWrap')
+		var statsWrap = document.getElementById('profileReferralStats')
+		var countsEl = document.getElementById('profileReferralCounts')
+		var linkInput = document.getElementById('profileReferralLink')
+		var copyBtn = document.getElementById('profileReferralCopyBtn')
+		if (!hint) return
+
+		var nick = profile && profile.minecraft_nick ? profile.minecraft_nick.trim() : ''
+		if (!nick || !IsnixAuth.MC_NICK_RE.test(nick)) {
+			if (linkWrap) linkWrap.hidden = true
+			if (statsWrap) statsWrap.hidden = true
+			hint.hidden = false
+			hint.textContent =
+				'Укажи ник Minecraft в профиле — появится персональная ссылка для друга.'
+			return
+		}
+
+		hint.hidden = true
+		if (linkWrap) linkWrap.hidden = false
+		if (linkInput) linkInput.value = buildReferralShareUrl(nick)
+
+		if (copyBtn && !copyBtn.dataset.bound) {
+			copyBtn.dataset.bound = '1'
+			copyBtn.addEventListener('click', function () {
+				var url = linkInput ? linkInput.value : ''
+				copyTextToClipboard(url).then(function (ok) {
+					showMsg(
+						ok ? 'Ссылка скопирована — отправь другу' : 'Не удалось скопировать',
+						ok,
+					)
+				})
+			})
+		}
+
+		if (!window.IsnixAuth || !IsnixAuth.getReferralSummary) {
+			if (statsWrap) statsWrap.hidden = true
+			return
+		}
+
+		try {
+			var summary = await IsnixAuth.getReferralSummary()
+			if (summary && summary.missing) {
+				if (statsWrap) statsWrap.hidden = true
+				hint.hidden = false
+				hint.textContent =
+					'Рефералка скоро заработает полностью — админ выполнит SQL на сервере.'
+				return
+			}
+			if (summary && summary.ok && statsWrap && countsEl) {
+				statsWrap.hidden = false
+				var q = summary.qualified || 0
+				var p = summary.pending || 0
+				var r = summary.rewarded || 0
+				countsEl.textContent =
+					'Одобрено друзей: ' +
+					q +
+					(p ? ' · на рассмотрении: ' + p : '') +
+					(r ? ' · награда выдана: ' + r : '')
+			}
+		} catch (_e) {
+			if (statsWrap) statsWrap.hidden = true
 		}
 	}
 
@@ -1399,6 +1485,9 @@
 		if (app.age) bits.push('возраст: ' + escapeHtml(String(app.age)))
 		if (app.read_rules) bits.push('правила OK')
 		if (app.downloaded_modpack) bits.push('сборка OK')
+		if (app.referred_by_nick) {
+			bits.push('пригласил: ' + escapeHtml(app.referred_by_nick))
+		}
 		if (app.referral_source) {
 			bits.push('откуда: ' + escapeHtml(app.referral_source))
 		}
@@ -3194,6 +3283,7 @@
 		}
 
 		try {
+			applyReferralFromUrl()
 			bindNotificationsUi(null)
 
 			var booted = bootstrapFromLocalSession()

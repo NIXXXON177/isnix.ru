@@ -20,7 +20,7 @@
 		/>
 		<link rel="stylesheet" href="assets/css/main.css?v=2" />
 		<link rel="stylesheet" href="assets/css/components.css?v=4" />
-		<link rel="stylesheet" href="assets/css/auth.css?v=22" />
+		<link rel="stylesheet" href="assets/css/auth.css?v=23" />
 		<link rel="stylesheet" href="assets/css/site-header.css" />
 	</head>
 	<body class="account-page" data-page="account">
@@ -404,6 +404,44 @@
 
 					<div id="playerSections" class="account-sections">
 					<div class="account-cards-grid">
+					<section class="auth-panel account-card profile-referral" id="referral">
+						<h2 class="auth-panel__title">Пригласи друга</h2>
+						<div class="account-card__body">
+							<p class="auth-hint profile-referral-lead">
+								Друг указывает твой ник в заявке на вайтлист. После одобрения тебе
+								придёт уведомление.
+							</p>
+							<div id="profileReferralStats" class="profile-referral-stats" hidden>
+								<p class="profile-referral-stats__line" id="profileReferralCounts">
+									—
+								</p>
+							</div>
+							<div id="profileReferralLinkWrap" class="profile-referral-link" hidden>
+								<label class="auth-field__label" for="profileReferralLink"
+									>Твоя ссылка</label
+								>
+								<div class="profile-referral-link__row">
+									<input
+										id="profileReferralLink"
+										type="text"
+										readonly
+										class="profile-referral-link__input"
+									/>
+									<button
+										type="button"
+										id="profileReferralCopyBtn"
+										class="auth-submit auth-submit--ghost profile-referral-copy"
+									>
+										Копировать
+									</button>
+								</div>
+							</div>
+							<p id="profileReferralHint" class="auth-hint profile-referral-hint">
+								Укажи ник Minecraft в профиле — появится персональная ссылка.
+							</p>
+						</div>
+					</section>
+
 					<section class="auth-panel account-card profile-reputation" id="profile-reputation">
 						<h2 class="auth-panel__title">Социальный рейтинг</h2>
 						<div class="account-card__body">
@@ -528,7 +566,7 @@
 						<h2 class="auth-panel__title">Заявка в вайтлист</h2>
 					<p class="auth-muted auth-whitelist-lead">
 						Заявка только на сайте: возраст от 12 лет, ник, подтверждение правил и
-						сборки, немного о себе. Откуда узнал о сервере — по желанию.
+						сборки, немного о себе. Можно указать, кто пригласил (ник на сервере).
 					</p>
 					<p id="whitelistStateNote" class="auth-hint" hidden></p>
 					<form id="whitelistForm" class="auth-form">
@@ -583,12 +621,24 @@
 							</label>
 						</fieldset>
 						<div class="auth-field">
+							<label for="appReferredBy">Кто пригласил (ник Minecraft)</label>
+							<input
+								id="appReferredBy"
+								type="text"
+								maxlength="16"
+								autocomplete="off"
+								spellcheck="false"
+								placeholder="Ник друга, уже играющего на сервере"
+							/>
+							<p class="auth-hint">Необязательно. Друг получит отметку после твоего одобрения.</p>
+						</div>
+						<div class="auth-field">
 							<label for="appReferral">Откуда узнали о сервере</label>
 							<input
 								id="appReferral"
 								type="text"
 								maxlength="200"
-								placeholder="Друзья, YouTube, мониторинг… (необязательно)"
+								placeholder="YouTube, ВК, мониторинг… (необязательно)"
 							/>
 						</div>
 						<div class="auth-field">
@@ -786,6 +836,17 @@
 						</label>
 					</fieldset>
 					<div class="auth-field">
+						<label for="modalAppReferredBy">Кто пригласил (ник Minecraft)</label>
+						<input
+							id="modalAppReferredBy"
+							type="text"
+							maxlength="16"
+							autocomplete="off"
+							spellcheck="false"
+							placeholder="Необязательно"
+						/>
+					</div>
+					<div class="auth-field">
 						<label for="modalAppReferral">Откуда узнали</label>
 						<input id="modalAppReferral" type="text" maxlength="200" />
 					</div>
@@ -875,12 +936,12 @@
 		<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 		<script src="assets/js/server-status.js?v=6"></script>
 		<script src="assets/js/site-toast.js?v=1"></script>
-		<script src="assets/js/auth.js?v=38"></script>
+		<script src="assets/js/auth.js?v=39"></script>
 		<script src="assets/js/site-presence.js?v=4" defer></script>
 		<script src="assets/js/site-header.js?v=5" defer></script>
 		<script src="assets/js/site-push-prompt.js?v=2" defer></script>
 		<script src="assets/js/support-tickets.js?v=8" defer></script>
 		<script src="assets/js/icons.js?v=1"></script>
-		<script src="assets/js/account.js?v=55"></script>
+		<script src="assets/js/account.js?v=56"></script>
 	</body>
 </html>
