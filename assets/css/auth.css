@@ -634,6 +634,11 @@
 	text-align: center;
 }
 
+/* Выше шапки (z-index ~1203) и body > * { z-index: 1 } */
+.auth-notifications-modal.bold-modal {
+	z-index: 13050;
+}
+
 .auth-notifications-modal .bold-modal__panel {
 	display: flex;
 	flex-direction: column;
@@ -653,6 +658,22 @@
 		rgba(10, 15, 10, 0.98) 45%,
 		rgba(10, 12, 10, 1)
 	);
+	/* Без «залипшего» opacity:0 у панели в Firefox */
+	opacity: 1;
+	transform: none;
+}
+
+.auth-notifications-modal.is-open {
+	display: flex;
+	opacity: 1;
+	pointer-events: auto;
+}
+
+.auth-notifications-modal.is-open .bold-modal__panel,
+.auth-notifications-modal.is-open .auth-notifications__dialog {
+	opacity: 1;
+	transform: none;
+	visibility: visible;
 }
 
 .auth-notifications__head {

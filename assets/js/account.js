@@ -2016,12 +2016,26 @@
 	function openNotificationsModal() {
 		var root = document.getElementById('notificationsModalRoot')
 		if (!root) return
+		if (root.parentNode !== document.body) {
+			document.body.appendChild(root)
+		}
 		paintNotificationsList(cachedNotifications)
+		root.classList.remove('is-open')
 		root.classList.add('is-open')
 		root.setAttribute('aria-hidden', 'false')
 		document.body.style.overflow = 'hidden'
 		var btn = document.getElementById('notificationsBtn')
 		if (btn) btn.setAttribute('aria-expanded', 'true')
+		var panel = document.getElementById('notificationsPanel')
+		if (panel) {
+			window.requestAnimationFrame(function () {
+				try {
+					panel.focus({ preventScroll: true })
+				} catch (_focusErr) {
+					/* ignore */
+				}
+			})
+		}
 	}
 
 	function closeNotificationsModal() {
@@ -2034,6 +2048,12 @@
 		if (btn) btn.setAttribute('aria-expanded', 'false')
 	}
 
+	function resolveNotificationsUserId(fallbackUserId) {
+		if (fallbackUserId) return fallbackUserId
+		if (currentProfile && currentProfile.id) return currentProfile.id
+		return null
+	}
+
 	function bindNotificationsUi(userId) {
 		if (notificationsUiBound) return
 		var btn = document.getElementById('notificationsBtn')
@@ -2044,6 +2064,7 @@
 		if (!btn) return
 		notificationsUiBound = true
 		btn.addEventListener('click', function (e) {
+			e.preventDefault()
 			e.stopPropagation()
 			var root = document.getElementById('notificationsModalRoot')
 			if (root && root.classList.contains('is-open')) {
@@ -2051,12 +2072,17 @@
 				return
 			}
 			openNotificationsModal()
+			var uid = resolveNotificationsUserId(userId)
+			var refresh = function (withBrowser) {
+				if (!uid) return Promise.resolve()
+				return refreshNotifications(uid, withBrowser)
+			}
 			requestBrowserNotificationPermission()
 				.then(function () {
-					return refreshNotifications(userId, true)
+					return refresh(true)
 				})
 				.catch(function () {
-					return refreshNotifications(userId, false)
+					return refresh(false)
 				})
 		})
 		if (closeBtn) {
@@ -2067,6 +2093,8 @@
 		}
 		if (markAll) {
 			markAll.addEventListener('click', async function () {
+				var uid = resolveNotificationsUserId(userId)
+				if (!uid) return
 				var ids = []
 				for (var i = 0; i < cachedNotifications.length; i++) {
 					if (!cachedNotifications[i].read_at) {
@@ -2076,7 +2104,7 @@
 				if (!ids.length) return
 				try {
 					await IsnixAuth.markNotificationsRead(ids)
-					await refreshNotifications(userId, false)
+					await refreshNotifications(uid, false)
 				} catch (err) {
 					showMsg(IsnixAuth.formatAuthError(err), false)
 				}
@@ -2084,13 +2112,14 @@
 		}
 		if (listEl) {
 			listEl.addEventListener('click', async function (e) {
+				var uid = resolveNotificationsUserId(userId)
 				var item = e.target.closest('[data-notification-id]')
 				if (!item) return
 				var id = item.getAttribute('data-notification-id')
 				var href = item.getAttribute('data-notification-href')
 				try {
 					await IsnixAuth.markNotificationsRead([id])
-					await refreshNotifications(userId, false)
+					if (uid) await refreshNotifications(uid, false)
 				} catch (_err) {
 					/* ignore */
 				}
@@ -3165,6 +3194,8 @@
 		}
 
 		try {
+			bindNotificationsUi(null)
+
 			var booted = bootstrapFromLocalSession()
 			if (!booted) showGuest()
 
