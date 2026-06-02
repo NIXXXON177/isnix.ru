@@ -78,7 +78,7 @@
 				window.IsnixAuth &&
 				IsnixAuth.getProfileDiskCache &&
 				IsnixAuth.getProfileDiskCache(userId))
-		return !!(p && (p.minecraft_nick || p.display_name || p.email))
+		return !!(p && (p.minecraft_nick || p.display_name || p.login || p.email))
 	}
 
 	function showProfileLoadError(err, userId) {
@@ -160,9 +160,9 @@
 		box.hidden = false
 	}
 
-	function syncPasswordFormUsername(email) {
+	function syncPasswordFormUsername(username) {
 		var el = document.getElementById('passwordFormUsername')
-		if (el) el.value = email || ''
+		if (el) el.value = username || ''
 	}
 
 	function setAccountPageMode(loggedIn) {
@@ -1717,7 +1717,10 @@
 			list.innerHTML = profiles
 				.map(function (p) {
 					var nick = p.minecraft_nick || '—'
-					var email = p.email || '—'
+					var login =
+						p.login ||
+						(p.email ? String(p.email).split('@')[0] : '') ||
+						'—'
 					var role = IsnixAuth.isAdminProfile(p)
 						? '<span class="auth-status auth-status--bad">админ</span>'
 						: '<span class="auth-status auth-status--pending">игрок</span>'
@@ -1730,7 +1733,7 @@
 					var siteTag = sitePresenceAdminTag(p)
 					var meta =
 						'<p class="auth-muted">' +
-						escapeHtml(email) +
+						escapeHtml(login) +
 						' · ' +
 						formatDate(p.created_at) +
 						'</p>'
@@ -2187,7 +2190,7 @@
 			(user && user.email ? String(user.email).split('@')[0] : '')
 		if (emailEl) emailEl.textContent = login || '—'
 		// Для менеджеров паролей нужен autocomplete="username"
-		syncPasswordFormUsername((user && user.email) || '')
+		syncPasswordFormUsername(login || '')
 		updateProfileAvatars(profile && profile.minecraft_nick ? profile.minecraft_nick : '')
 	}
 
@@ -2248,9 +2251,7 @@
 		var meta =
 						'<p class="auth-muted">' +
 						formatDate(app.created_at) +
-						(app.applicant_email
-							? ' · ' + escapeHtml(app.applicant_email)
-							: '') +
+						'' +
 						(app.call_name
 							? '<br>Обращение: ' + escapeHtml(app.call_name)
 							: '') +
@@ -2914,10 +2915,7 @@
 						showMsg('Аккаунт создан', true)
 						await loadDashboard(data.session)
 					} else {
-						showMsg(
-							'Письмо отправлено на почту — подтверди регистрацию и войди',
-							true,
-						)
+							showMsg('Аккаунт создан. Теперь войди по логину и паролю.', true)
 						switchTab('login')
 					}
 				} catch (err) {
@@ -2967,7 +2965,7 @@
 					})
 					currentProfile = {
 						id: session.user.id,
-						email: session.user.email,
+						email: currentProfile && currentProfile.email ? currentProfile.email : null,
 						login: currentProfile && currentProfile.login ? currentProfile.login : null,
 						minecraft_nick: nick || null,
 						display_name: callName,

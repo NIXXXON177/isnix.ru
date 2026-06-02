@@ -84,8 +84,6 @@
 		if (nick) return nick
 		var display = (ticket.reporter_display_name || '').trim()
 		if (display) return display
-		var email = (ticket.reporter_email || '').trim()
-		if (email) return email.split('@')[0]
 		if (ticket.user_id) {
 			return 'ID ' + String(ticket.user_id).slice(0, 8) + '…'
 		}
@@ -317,14 +315,7 @@
 			meta +=
 				'<p class="auth-muted support-ticket-reporter">Игрок: <strong>' +
 				escapeHtml(reporter) +
-				'</strong>'
-			if (t.reporter_email && t.reporter_minecraft_nick) {
-				meta +=
-					' <span class="auth-muted">(' + escapeHtml(t.reporter_email) + ')</span>'
-			} else if (t.reporter_email && !t.reporter_minecraft_nick) {
-				meta += ' <span class="auth-muted">(' + escapeHtml(t.reporter_email) + ')</span>'
-			}
-			meta += '</p>'
+				'</strong></p>'
 		}
 		if (t.offender_nick) {
 			meta += '<p class="auth-muted">Нарушитель: <strong>' + escapeHtml(t.offender_nick) + '</strong></p>'

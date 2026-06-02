@@ -24,7 +24,7 @@
 	function loginToTechEmail(login) {
 		var l = normalizeLogin(login)
 		if (!LOGIN_RE.test(l)) return null
-		// Email обязателен для Supabase Auth, но реальную почту не собираем.
+		// Supabase Auth требует поле email, но мы используем технический идентификатор.
 		return l + '@isnix.invalid'
 	}
 
@@ -911,10 +911,10 @@
 		'id, minecraft_nick, call_name, age, reason, status, admin_note, created_at'
 	var APP_SELECT_WITH_REPLY_FALLBACK = APP_SELECT_FALLBACK + ', applicant_reply'
 	var APP_ADMIN_SELECT_BASE =
-		'id, user_id, minecraft_nick, call_name, age, reason, read_rules, downloaded_modpack, referral_source, status, admin_note, applicant_email, created_at'
+		'id, user_id, minecraft_nick, call_name, age, reason, read_rules, downloaded_modpack, referral_source, status, admin_note, created_at'
 	var APP_ADMIN_SELECT_WITH_REPLY = APP_ADMIN_SELECT_BASE + ', applicant_reply'
 	var APP_ADMIN_SELECT_FALLBACK =
-		'id, user_id, minecraft_nick, call_name, age, reason, status, admin_note, applicant_email, created_at'
+		'id, user_id, minecraft_nick, call_name, age, reason, status, admin_note, created_at'
 	var APP_ADMIN_SELECT_WITH_REPLY_FALLBACK =
 		APP_ADMIN_SELECT_FALLBACK + ', applicant_reply'
 
@@ -1288,7 +1288,7 @@
 			var p = map[t.user_id] || {}
 			return Object.assign({}, t, {
 				reporter_minecraft_nick: p.minecraft_nick || null,
-				reporter_email: p.email || null,
+				reporter_email: null,
 				reporter_display_name: p.display_name || null,
 			})
 		})
