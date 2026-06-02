@@ -1716,11 +1716,11 @@
 			}
 			list.innerHTML = profiles
 				.map(function (p) {
-					var nick = p.minecraft_nick || '—'
 					var login =
 						p.login ||
 						(p.email ? String(p.email).split('@')[0] : '') ||
 						'—'
+					var nick = p.minecraft_nick || ''
 					var role = IsnixAuth.isAdminProfile(p)
 						? '<span class="auth-status auth-status--bad">админ</span>'
 						: '<span class="auth-status auth-status--pending">игрок</span>'
@@ -1731,25 +1731,19 @@
 							? '<span class="auth-status auth-status--ok">MC</span>'
 							: ''
 					var siteTag = sitePresenceAdminTag(p)
-					var meta =
-						'<p class="auth-muted">' +
-						escapeHtml(login) +
-						' · ' +
-						formatDate(p.created_at) +
-						'</p>'
+					var metaParts = [escapeHtml(formatDate(p.created_at))]
+					if (nick) metaParts.unshift('MC: ' + escapeHtml(nick))
+					var meta = '<p class="auth-muted">' + metaParts.join(' · ') + '</p>'
 					var tags =
 						'<div class="auth-player-tags">' +
 						role +
 						mcOnline +
 						siteTag +
 						'</div>'
-					if (p.minecraft_nick && IsnixAuth.MC_NICK_RE.test(p.minecraft_nick)) {
-						return renderPlayerRow(p.minecraft_nick, meta + tags)
-					}
 					return (
 						'<article class="auth-app-card">' +
 						'<strong>' +
-						escapeHtml(nick) +
+						escapeHtml(login) +
 						'</strong> ' +
 						tags +
 						meta +
