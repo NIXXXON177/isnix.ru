@@ -97,7 +97,7 @@ lp user <ник> meta clear prefix
 lp user <ник> meta setprefix 50 "&4&l[DEMON] &r"
 ```
 
-Примеры префиксов: `&c&l[YouTube]`, `&5[Twitch]`, `&6&l[Легенда]`, `&c[ПВП]`
+Примеры префиксов: `&c&l[YouTube]`, `&5[Twitch]`, `&6&l[Легенда]`, `&c&l[ПВП]`
 
 Полная лестница: [luckperms-prefix-priorities.md](luckperms-prefix-priorities.md)
 

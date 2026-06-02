@@ -1,0 +1,15 @@
+# [ПВП] и [YouTube] — жирные префиксы (LuckPerms)
+# В консоли Play2GO. После выдачи: lp sync
+
+# Шаблон для нового игрока:
+# lp user <ник> meta setprefix 50 "&c&l[ПВП] &r"
+# lp user <ник> meta setprefix 50 "&c&l[YouTube] &r"
+
+# Уже с префиксом [ПВП] — обновить на жирный:
+lp user redan997 meta setprefix 50 "&c&l[ПВП] &r"
+lp user pvp_kamar meta setprefix 50 "&c&l[ПВП] &r"
+
+# [YouTube] — если без &l, обновить:
+lp user kimshanin121112 meta setprefix 50 "&c&l[YouTube] &r"
+
+lp sync

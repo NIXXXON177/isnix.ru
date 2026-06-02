@@ -62,7 +62,7 @@ lp user NikenER999 meta clear prefix
 
 ```text
 lp user 432b5fac-dc4e-32c5-b74b-d2e8e72f0aa7 parent set default
-lp user 432b5fac-dc4e-32c5-b74b-d2e8e72f0aa7 meta setprefix 50 "&c[ПВП] &r"
+lp user 432b5fac-dc4e-32c5-b74b-d2e8e72f0aa7 meta setprefix 50 "&c&l[ПВП] &r"
 
 lp user ff34b72e-7e58-3625-aeb0-984a8bde0bfd parent set default
 lp user ff34b72e-7e58-3625-aeb0-984a8bde0bfd meta setprefix 50 "&6&l[Легенда] &r"
@@ -94,7 +94,7 @@ lp user Void meta setprefix 50 "&b[Механик] &r"
 
 lp user redan997 parent set default
 lp user redan997 meta clear prefix
-lp user redan997 meta setprefix 50 "&c[ПВП] &r"
+lp user redan997 meta setprefix 50 "&c&l[ПВП] &r"
 
 lp user Y8shikage parent set default
 lp user Y8shikage meta clear prefix
@@ -160,7 +160,7 @@ lp user SK_Joker info
 | [DEMON] | `"&4&l[DEMON] &r"` |
 | **[YouTube]** | `"&c&l[YouTube] &r"` — красный, жирный |
 | **[Twitch]** | `"&5&l[Twitch] &r"` — фиолетовый, жирный |
-| [ПВП] | `"&c[ПВП] &r"` |
+| **[ПВП]** | `"&c&l[ПВП] &r"` — красный, жирный |
 | [Механик] | `"&b[Механик] &r"` |
 | **[Мл. Админ]** (farmila52) | `"&c&l[Мл. Админ] &r"` — красный, жирный **только** префикс; `priority 250` |
 

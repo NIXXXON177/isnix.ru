@@ -39,7 +39,7 @@ lp user <ник> parent set default
 lp user <ник> meta clear prefix
 lp user <ник> meta setprefix 50 "&4&l[DEMON] &r"
 
-Примеры:  &c&l[YouTube]   &5[Twitch]   &6&l[Легенда]   &c[ПВП]
+Примеры:  &c&l[YouTube]   &5[Twitch]   &6&l[Легенда]   &c&l[ПВП]
 
 --- Права RTP для всех ---
 
