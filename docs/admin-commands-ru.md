@@ -35,10 +35,11 @@
 
 | Email | Ник (профиль) |
 |-------|----------------|
-| kupryuhinsemen@gmail.com | afktapochek |
 | kudrasovn024@gmail.com | ISTHISNIXXXON |
 | 1511vasilisa@gmail.com | VaSSiLIISa |
 | nikenerdx@gmail.com | NikenER999 |
+
+Снят с админки (июнь 2026): **afktapochek** / альт **ChicagoX** — см. [revoke-afktapochek-chicagox-ru.md](revoke-afktapochek-chicagox-ru.md).
 
 Права в Supabase: `docs/supabase-grant-admins.sql`
 
@@ -55,12 +56,10 @@ lp sync
 ### LuckPerms — админы на сервере
 
 ```text
-lp user afktapochek parent set admin
 lp user ISTHISNIXXXON parent set admin
 lp user NikenER999 parent set admin
 lp user daydonik parent set admin
 
-lp user afktapochek meta clear prefix
 lp user ISTHISNIXXXON meta clear prefix
 lp user NikenER999 meta clear prefix
 lp user daydonik meta clear prefix
@@ -69,7 +68,6 @@ lp user daydonik meta clear prefix
 OP (если нужно):
 
 ```text
-op afktapochek
 op ISTHISNIXXXON
 op NikenER999
 op daydonik

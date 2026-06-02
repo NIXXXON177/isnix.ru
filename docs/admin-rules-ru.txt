@@ -80,7 +80,7 @@ GitHub → Actions → «Add player to whitelist (manual)» → ввести н�
 
 --- АДМИНЫ САЙТА (email) ---
 
-kupryuhinsemen@gmail.com   → afktapochek
+(снят) kupryuhinsemen@gmail.com → afktapochek — см. docs/revoke-afktapochek-chicagox-ru.md
 kudrasovn024@gmail.com     → ISTHISNIXXXON
 1511vasilisa@gmail.com     → VaSSiLIISa
 nikenerdx@gmail.com        → NikenER999
