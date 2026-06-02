@@ -89,3 +89,4 @@ wrangler deploy
 | api.isnix.ru открывает сайт Pages | DNS `api` должен идти на **Worker**, не на GitHub Pages |
 | CORS всё ещё | В `src/index.js` есть `ALLOWED_ORIGINS` — добавь свой origin при необходимости |
 | 403 от Supabase | Ключ `SUPABASE_ANON_KEY` в GitHub Secrets, не service_role |
+| `WebSocket CONNECTION_REFUSED` на `/realtime/` | Обнови Worker из **`src/index.js`** (нужен прокси WebSocket) → **Save and Deploy** |

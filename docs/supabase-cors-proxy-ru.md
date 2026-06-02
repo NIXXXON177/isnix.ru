@@ -217,7 +217,10 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
 | **Redirect URLs** | `https://isnix.ru/**` |
 | Ссылки в письмах подтверждения | Ведут на **isnix.ru**, не на `api.isnix.ru` |
 
-Прокси — только для **REST + Auth API** (`/auth/v1`, `/rest/v1`, `/realtime/v1`).
+Прокси: **REST + Auth** (`/auth/v1`, `/rest/v1`) и **Realtime WebSocket** (`/realtime/v1/websocket`).
+
+> Worker в `cloudflare-worker/src/index.js` должен проксировать **Upgrade: websocket**.  
+> Без этого в консоли Firefox: `NS_ERROR_WEBSOCKET_CONNECTION_REFUSED` на `wss://api.isnix.ru/realtime/...` — уведомления всё равно подтягиваются **опросом** раз в ~20 с, но спам в консоли исчезнет после **Deploy** обновлённого Worker.
 
 ### Деплой isnix.ru с другим URL
 
