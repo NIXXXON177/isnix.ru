@@ -22,12 +22,12 @@ cd isnix-player-stats
 .\gradlew.bat build
 ```
 
-Jar: `isnix-player-stats/build/libs/isnix-player-stats-1.0.1.jar`
+Jar: `isnix-player-stats/build/libs/isnix-player-stats-1.0.2.jar`
 
 ## 3. Установка на Play2GO
 
-1. В **`mods`** должен быть **только один** jar этого мода — **`isnix-player-stats-1.0.1.jar`**.  
-   Удали старый **`isnix-player-stats-1.0.0.jar`** (два файла с одним `id` ломают запуск Fabric).
+1. В **`mods`** должен быть **только один** jar этого мода — **`isnix-player-stats-1.0.2.jar`**.  
+   Удали старые **`isnix-player-stats-1.0.0.jar`** / **`1.0.1.jar`** (два файла с одним `id` ломают запуск Fabric).
 2. Перезапусти сервер.
 3. Открой **`config/isnix-player-stats.json`** (создаётся при первом запуске):
 
