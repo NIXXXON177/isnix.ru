@@ -1749,6 +1749,32 @@
 	margin: 0;
 }
 
+.auth-referral-admin {
+	margin: 0.75rem 0;
+	padding: 0.65rem 0.75rem;
+	border-radius: var(--radius-sm);
+	border: 1px solid rgba(74, 222, 128, 0.25);
+	background: rgba(22, 101, 52, 0.12);
+}
+
+.auth-referral-admin--warn {
+	border-color: rgba(251, 191, 36, 0.35);
+	background: rgba(120, 80, 10, 0.15);
+}
+
+.auth-referral-admin--ok {
+	border-color: rgba(74, 222, 128, 0.45);
+}
+
+.auth-referral-admin__nick {
+	margin: 0 0 0.35rem;
+	font-size: 0.82rem;
+}
+
+.auth-admin-referral-reward {
+	margin-top: 0.45rem;
+}
+
 .profile-reputation-score__meta {
 	margin: 0;
 	font-size: 0.88rem;

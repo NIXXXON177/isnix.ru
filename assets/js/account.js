@@ -2354,6 +2354,66 @@
 		}
 	}
 
+	function renderAdminReferralBlock(app) {
+		if (!app.referred_by_nick) return ''
+		var ref = app._referral
+		var nickLine =
+			'<p class="auth-referral-admin__nick">Пригласил: <strong>' +
+			escapeHtml(app.referred_by_nick) +
+			'</strong></p>'
+		if (!ref) {
+			return (
+				'<div class="auth-referral-admin auth-referral-admin--warn">' +
+				nickLine +
+				'<p class="auth-hint">Запись реферала не создана (ник не найден на сайте или SQL не выполнен).</p>' +
+				'</div>'
+			)
+		}
+		if (ref.status === 'rejected') {
+			return (
+				'<div class="auth-referral-admin auth-referral-admin--warn">' +
+				nickLine +
+				'<p class="auth-hint">' +
+				escapeHtml(ref.admin_note || 'Реферал отклонён') +
+				'</p></div>'
+			)
+		}
+		if (ref.status === 'rewarded') {
+			return (
+				'<div class="auth-referral-admin auth-referral-admin--ok">' +
+				nickLine +
+				'<p class="auth-hint auth-hint--ok">Награда пригласившему отмечена как выданная.</p>' +
+				'</div>'
+			)
+		}
+		if (ref.status === 'qualified' || (ref.status === 'pending' && app.status === 'approved')) {
+			return (
+				'<div class="auth-referral-admin">' +
+				nickLine +
+				'<p class="auth-hint">После выдачи префикса или лайка /rep — нажми кнопку ниже.</p>' +
+				'<button type="button" class="auth-submit auth-submit--ghost auth-admin-referral-reward" data-app-id="' +
+				escapeHtml(app.id) +
+				'" data-referral-id="' +
+				escapeHtml(ref.id) +
+				'">Награда выдана</button>' +
+				'</div>'
+			)
+		}
+		if (ref.status === 'pending') {
+			return (
+				'<div class="auth-referral-admin">' +
+				nickLine +
+				'<p class="auth-hint">Реферал засчитается пригласившему после одобрения заявки.</p>' +
+				'</div>'
+			)
+		}
+		return (
+			'<div class="auth-referral-admin">' +
+			nickLine +
+			'</div>'
+		)
+	}
+
 	function renderAdminApplicationCard(app) {
 		var onWl = isOnWhitelist(app.minecraft_nick)
 		var wlHint = onWl
@@ -2439,6 +2499,7 @@
 						'</div>' +
 						meta +
 						warns +
+						renderAdminReferralBlock(app) +
 						'<p class="auth-app-reason">' +
 						escapeHtml(app.reason) +
 						'</p>' +
@@ -2474,6 +2535,21 @@
 					'<p class="auth-muted">Нет заявок в этом разделе.</p>'
 				return
 			}
+			var refMap = {}
+			if (IsnixAuth.getReferralsForApplications) {
+				try {
+					refMap = await IsnixAuth.getReferralsForApplications(
+						apps.map(function (a) {
+							return a.id
+						}),
+					)
+				} catch (_refErr) {
+					refMap = {}
+				}
+			}
+			apps.forEach(function (a) {
+				a._referral = refMap[a.id] || null
+			})
 			var html = apps.map(renderAdminApplicationCard).join('')
 			html += renderListPagination(
 				'admin-apps',
@@ -2503,6 +2579,7 @@
 			var msgBtn = e.target.closest('.auth-admin-message')
 			var okBtn = e.target.closest('.auth-admin-approve')
 			var noBtn = e.target.closest('.auth-admin-reject')
+			var refRewardBtn = e.target.closest('.auth-admin-referral-reward')
 			if (copyBtn) {
 				e.preventDefault()
 				var nick = copyBtn.getAttribute('data-copy-nick') || ''
@@ -2533,8 +2610,32 @@
 			} else if (noBtn) {
 				e.preventDefault()
 				handleModerate(noBtn.dataset.id, 'rejected', noBtn)
+			} else if (refRewardBtn) {
+				e.preventDefault()
+				handleReferralReward(refRewardBtn.dataset.appId, refRewardBtn)
 			}
 		})
+	}
+
+	async function handleReferralReward(applicationId, btn) {
+		if (!applicationId || !window.IsnixAuth) return
+		if (
+			!confirm(
+				'Отметить, что награда пригласившему выдана (префикс, реп и т.д.)?',
+			)
+		) {
+			return
+		}
+		setAdminActionLoading(btn, true)
+		try {
+			await IsnixAuth.markReferralRewardedByApplication(applicationId)
+			showMsg('Реферал: награда отмечена как выданная', true)
+			await renderAdminApplications()
+		} catch (err) {
+			showMsg(IsnixAuth.formatAuthError(err), false)
+		} finally {
+			setAdminActionLoading(btn, false)
+		}
 	}
 
 	function bindApplicantReplyForms(list) {

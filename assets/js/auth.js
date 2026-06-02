@@ -1164,6 +1164,40 @@
 		if (res.error) throw res.error
 	}
 
+	async function getReferralsForApplications(applicationIds) {
+		var sb = getClient()
+		var map = {}
+		if (!sb || !applicationIds || !applicationIds.length) return map
+		var res = await sb
+			.from('referrals')
+			.select('id, application_id, referrer_nick, referred_nick, status, rewarded_at')
+			.in('application_id', applicationIds)
+		if (res.error) {
+			if (isMissingReferralSystem(res.error)) return map
+			throw res.error
+		}
+		;(res.data || []).forEach(function (row) {
+			if (row && row.application_id) map[row.application_id] = row
+		})
+		return map
+	}
+
+	async function markReferralRewardedByApplication(applicationId) {
+		var sb = getClient()
+		if (!sb) throw new Error('Нет подключения')
+		var res = await sb.rpc('admin_mark_referral_rewarded_by_application', {
+			p_application_id: applicationId,
+		})
+		if (res.error) {
+			if (isMissingReferralSystem(res.error)) {
+				throw new Error(
+					'Рефералка не настроена — выполни docs/supabase-referral-admin-reward.sql в Supabase',
+				)
+			}
+			throw res.error
+		}
+	}
+
 	async function getReferralSummary() {
 		var sb = getClient()
 		if (!sb) {
@@ -2193,6 +2227,8 @@
 		uploadSupportEvidenceFiles: uploadSupportEvidenceFiles,
 		submitApplication: submitApplication,
 		getReferralSummary: getReferralSummary,
+		getReferralsForApplications: getReferralsForApplications,
+		markReferralRewardedByApplication: markReferralRewardedByApplication,
 		validateWhitelistApplicationData: validateWhitelistApplicationData,
 		getNotifications: getNotifications,
 		markNotificationsRead: markNotificationsRead,
