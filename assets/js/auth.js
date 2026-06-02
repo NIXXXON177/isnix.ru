@@ -28,6 +28,16 @@
 		return l + '@isnix.invalid'
 	}
 
+	/** Вход: логин → login@isnix.invalid; старые аккаунты — полный email в поле «Логин». */
+	function resolveAuthEmail(input) {
+		var v = String(input || '').trim()
+		if (!v) return null
+		if (v.indexOf('@') !== -1) {
+			return v.toLowerCase()
+		}
+		return loginToTechEmail(v)
+	}
+
 	function getConfig() {
 		var c = global.ISNIX_AUTH || {}
 		return {
@@ -662,7 +672,7 @@
 	async function signIn(login, password) {
 		var sb = getClient()
 		if (!sb) throw new Error('Аккаунты на сайте ещё не подключены')
-		var email = loginToTechEmail(login)
+		var email = resolveAuthEmail(login)
 		if (!email) {
 			throw new Error('Логин: 3–24 символа, латиница, цифры и _')
 		}

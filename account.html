@@ -212,11 +212,15 @@
 									id="loginLogin"
 									type="text"
 									autocomplete="username"
-									maxlength="24"
+									maxlength="64"
 									spellcheck="false"
 									placeholder="killerficha"
 									required
 								/>
+								<p class="auth-hint auth-hint--warn" id="loginLegacyHint" hidden>
+									Старый аккаунт? Один раз введи прежний email целиком (с @), затем
+									можно только логин.
+								</p>
 							</div>
 							<div class="auth-field">
 								<label for="loginPassword">Пароль</label>
@@ -870,12 +874,12 @@
 		<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 		<script src="assets/js/server-status.js?v=6"></script>
 		<script src="assets/js/site-toast.js?v=1"></script>
-		<script src="assets/js/auth.js?v=37"></script>
+		<script src="assets/js/auth.js?v=38"></script>
 		<script src="assets/js/site-presence.js?v=4" defer></script>
 		<script src="assets/js/site-header.js?v=5" defer></script>
 		<script src="assets/js/site-push-prompt.js?v=2" defer></script>
 		<script src="assets/js/support-tickets.js?v=8" defer></script>
 		<script src="assets/js/icons.js?v=1"></script>
-		<script src="assets/js/account.js?v=53"></script>
+		<script src="assets/js/account.js?v=54"></script>
 	</body>
 </html>

@@ -2861,6 +2861,14 @@
 
 		ensureAdminListDelegation()
 
+		var loginLoginInput = document.getElementById('loginLogin')
+		var loginLegacyHint = document.getElementById('loginLegacyHint')
+		if (loginLoginInput && loginLegacyHint) {
+			loginLoginInput.addEventListener('input', function () {
+				loginLegacyHint.hidden = loginLoginInput.value.indexOf('@') === -1
+			})
+		}
+
 		var loginForm = document.getElementById('loginForm')
 		if (loginForm) {
 			loginForm.addEventListener('submit', async function (e) {
