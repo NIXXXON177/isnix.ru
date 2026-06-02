@@ -738,9 +738,14 @@
 	}
 
 	function profileFromSession(session) {
+		var email = session && session.user ? session.user.email || '' : ''
+		var login = null
+		var m = String(email).match(/^([a-z0-9_]{3,24})@isnix\.invalid$/i)
+		if (m) login = m[1].toLowerCase()
 		return {
 			id: session.user.id,
 			email: session.user.email || null,
+			login: login,
 			minecraft_nick: null,
 			display_name: null,
 			role: 'player',
@@ -2176,8 +2181,13 @@
 		setAccountMode(resolveInitialAccountMode(), { skipStore: true })
 		updatePlayerApplicationSections(profile)
 		var emailEl = document.getElementById('dashEmail')
-		if (emailEl) emailEl.textContent = user.email || '—'
-		syncPasswordFormUsername(user.email || '')
+		var login =
+			(profile && profile.login) ||
+			(profile && profile.email ? String(profile.email).split('@')[0] : '') ||
+			(user && user.email ? String(user.email).split('@')[0] : '')
+		if (emailEl) emailEl.textContent = login || '—'
+		// Для менеджеров паролей нужен autocomplete="username"
+		syncPasswordFormUsername((user && user.email) || '')
 		updateProfileAvatars(profile && profile.minecraft_nick ? profile.minecraft_nick : '')
 	}
 
@@ -2711,6 +2721,12 @@
 
 					if (profile && session.user.email) {
 						profile.email = profile.email || session.user.email
+						if (!profile.login) {
+							var m = String(session.user.email).match(
+								/^([a-z0-9_]{3,24})@isnix\.invalid$/i,
+							)
+							if (m) profile.login = m[1].toLowerCase()
+						}
 					} else if (!profile) {
 						profile = profileFromSession(session)
 					}
@@ -2858,7 +2874,7 @@
 				showMsg('', true)
 				try {
 					var loginData = await IsnixAuth.signIn(
-						document.getElementById('loginEmail').value.trim(),
+						document.getElementById('loginLogin').value.trim(),
 						document.getElementById('loginPassword').value,
 					)
 					showMsg('Вы вошли в аккаунт', true)
@@ -2891,7 +2907,7 @@
 				showMsg('', true)
 				try {
 					var data = await IsnixAuth.signUp(
-						document.getElementById('regEmail').value.trim(),
+						document.getElementById('regLogin').value.trim(),
 						p1,
 					)
 					if (data.session) {
@@ -2952,6 +2968,7 @@
 					currentProfile = {
 						id: session.user.id,
 						email: session.user.email,
+						login: currentProfile && currentProfile.login ? currentProfile.login : null,
 						minecraft_nick: nick || null,
 						display_name: callName,
 						role: currentProfile ? currentProfile.role : 'player',

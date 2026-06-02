@@ -2,6 +2,7 @@
 	'use strict'
 
 	var MC_NICK_RE = /^[a-zA-Z0-9_]{3,16}$/
+	var LOGIN_RE = /^[a-zA-Z0-9_]{3,24}$/
 	var client = null
 	var sessionInflight = null
 	var profileInflight = {}
@@ -13,13 +14,19 @@
 	var SUPABASE_BACKOFF_MS = 300000
 	var supabaseBackoffUntil = 0
 
-	/** Только эти email могут быть админами сайта (дублирует проверку в Supabase) */
-	var SITE_ADMIN_EMAILS = [
-		'kupryuhinsemen@gmail.com',
-		'kudrasovn024@gmail.com',
-		'1511vasilisa@gmail.com',
-		'nikenerdx@gmail.com',
-	]
+	function normalizeLogin(login) {
+		return String(login || '')
+			.trim()
+			.replace(/\s+/g, '')
+			.toLowerCase()
+	}
+
+	function loginToTechEmail(login) {
+		var l = normalizeLogin(login)
+		if (!LOGIN_RE.test(l)) return null
+		// Email обязателен для Supabase Auth, но реальную почту не собираем.
+		return l + '@isnix.invalid'
+	}
 
 	function getConfig() {
 		var c = global.ISNIX_AUTH || {}
@@ -632,9 +639,13 @@
 		}
 	}
 
-	async function signUp(email, password) {
+	async function signUp(login, password) {
 		var sb = getClient()
 		if (!sb) throw new Error('Аккаунты на сайте ещё не подключены')
+		var email = loginToTechEmail(login)
+		if (!email) {
+			throw new Error('Логин: 3–24 символа, латиница, цифры и _')
+		}
 		var redirectTo =
 			global.location.origin +
 			global.location.pathname.replace(/[^/]+$/, '') +
@@ -648,9 +659,13 @@
 		return res.data
 	}
 
-	async function signIn(email, password) {
+	async function signIn(login, password) {
 		var sb = getClient()
 		if (!sb) throw new Error('Аккаунты на сайте ещё не подключены')
+		var email = loginToTechEmail(login)
+		if (!email) {
+			throw new Error('Логин: 3–24 символа, латиница, цифры и _')
+		}
 		var res = await sb.auth.signInWithPassword({ email: email, password: password })
 		if (res.error) throw res.error
 		return res.data
@@ -732,7 +747,7 @@
 	}
 
 	async function queryProfile(sb, userId, withSitePresence, withPrefixMeta) {
-		var fields = 'minecraft_nick, display_name, email, role, created_at'
+		var fields = 'login, minecraft_nick, display_name, email, role, created_at'
 		if (withSitePresence) {
 			fields += ', site_last_seen_at, site_device'
 		}
@@ -861,9 +876,7 @@
 	}
 
 	function isAdminProfile(profile) {
-		if (!profile || profile.role !== 'admin') return false
-		var email = (profile.email || '').trim().toLowerCase()
-		return SITE_ADMIN_EMAILS.indexOf(email) !== -1
+		return !!(profile && profile.role === 'admin')
 	}
 
 	async function isCurrentUserAdmin() {
@@ -877,6 +890,9 @@
 		var sb = getClient()
 		if (!sb) throw new Error('Нет подключения')
 		var payload = {}
+		if (fields.login !== undefined) {
+			payload.login = fields.login || null
+		}
 		if (fields.minecraft_nick !== undefined) {
 			payload.minecraft_nick = fields.minecraft_nick || null
 		}
@@ -1261,7 +1277,7 @@
 		if (!ids.length) return tickets
 		var res = await sb
 			.from('profiles')
-			.select('id, minecraft_nick, email, display_name')
+			.select('id, login, minecraft_nick, email, display_name')
 			.in('id', ids)
 		if (res.error) return tickets
 		var map = {}
@@ -1710,9 +1726,9 @@
 		var sb = getClient()
 		if (!sb) return []
 		var fieldsWithSite =
-			'id, email, minecraft_nick, display_name, role, created_at, site_last_seen_at, site_device'
+			'id, login, email, minecraft_nick, display_name, role, created_at, site_last_seen_at, site_device'
 		var fieldsBase =
-			'id, email, minecraft_nick, display_name, role, created_at'
+			'id, login, email, minecraft_nick, display_name, role, created_at'
 		var res = await sb
 			.from('profiles')
 			.select(fieldsWithSite)
@@ -1950,14 +1966,17 @@
 		}
 		if (logoutBtn) logoutBtn.hidden = false
 
-		var email =
-			(profile && profile.email) || session.user.email || '—'
+		var label =
+			(profile && profile.login) ||
+			(profile && profile.email) ||
+			session.user.email ||
+			'—'
 		var nick =
 			profile && profile.minecraft_nick
 				? String(profile.minecraft_nick).trim()
 				: ''
 
-		if (emailEl) emailEl.textContent = email
+		if (emailEl) emailEl.textContent = label
 		if (nickEl) {
 			nickEl.textContent = nick || 'Профиль'
 		}
@@ -1978,7 +1997,7 @@
 				avatarImg.hidden = true
 				avatarImg.removeAttribute('src')
 				avatarFb.hidden = false
-				avatarFb.textContent = (email.charAt(0) || '?').toUpperCase()
+				avatarFb.textContent = (label.charAt(0) || '?').toUpperCase()
 			}
 		}
 	}

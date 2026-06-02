@@ -207,11 +207,14 @@
 					<div id="authTab-login" class="auth-tab-panel" role="tabpanel">
 						<form id="loginForm" class="auth-form">
 							<div class="auth-field">
-								<label for="loginEmail">Email</label>
+								<label for="loginLogin">Логин</label>
 								<input
-									id="loginEmail"
-									type="email"
-									autocomplete="email"
+									id="loginLogin"
+									type="text"
+									autocomplete="username"
+									maxlength="24"
+									spellcheck="false"
+									placeholder="killerficha"
 									required
 								/>
 							</div>
@@ -231,13 +234,20 @@
 					<div id="authTab-register" class="auth-tab-panel" role="tabpanel" hidden>
 						<form id="registerForm" class="auth-form">
 							<div class="auth-field">
-								<label for="regEmail">Email</label>
+								<label for="regLogin">Логин</label>
 								<input
-									id="regEmail"
-									type="email"
-									autocomplete="email"
+									id="regLogin"
+									type="text"
+									autocomplete="username"
+									maxlength="24"
+									spellcheck="false"
+									placeholder="killerficha"
 									required
 								/>
+								<p class="auth-hint">
+									Логин: 3–24 символа, латиница, цифры и <code>_</code>. Почту не
+									просим.
+								</p>
 							</div>
 							<div class="auth-field">
 								<label for="regPassword">Пароль</label>
