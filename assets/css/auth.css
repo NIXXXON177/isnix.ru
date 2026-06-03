@@ -1368,9 +1368,20 @@
 }
 
 @media (min-width: 700px) {
-	.account-card.auth-panel {
+	.account-card.auth-panel:not(.profile-reputation):not(.profile-referral) {
 		aspect-ratio: 1 / 1;
 	}
+}
+
+/* Рейтинг и рефералка — контент выше квадрата, иначе кнопка «Дизлайк» обрезается */
+.account-card.profile-reputation,
+.account-card.profile-referral {
+	overflow: visible;
+}
+
+.account-card.profile-reputation .account-card__body,
+.account-card.profile-referral .account-card__body {
+	overflow-y: visible;
 }
 
 .account-card .auth-panel__title {
@@ -1805,15 +1816,17 @@
 
 .profile-reputation-actions {
 	display: flex;
-	flex-wrap: wrap;
-	gap: 0.5rem;
+	flex-direction: column;
+	gap: 0.45rem;
 	margin-top: 0.25rem;
 }
 
 .profile-reputation-like,
 .profile-reputation-dislike {
-	flex: 1 1 8rem;
+	flex: 0 0 auto;
+	width: 100%;
 	margin-top: 0;
+	min-height: 2.5rem;
 }
 
 .profile-reputation-dislike {

@@ -68,11 +68,13 @@
 	}
 
 	function repMetaHtml(likes, dislikes) {
-		var parts = [icon('thumb-up', 'icon--inline') + esc(String(likes))]
-		if (dislikes > 0) {
-			parts.push(icon('thumb-down', 'icon--inline') + esc(String(dislikes)))
-		}
-		return parts.join(' · ')
+		return (
+			icon('thumb-up', 'icon--inline') +
+			esc(String(likes)) +
+			' · ' +
+			icon('thumb-down', 'icon--inline') +
+			esc(String(dislikes || 0))
+		)
 	}
 
 	global.isnixIcon = icon
