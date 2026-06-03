@@ -1752,6 +1752,9 @@
 	border: 1px solid var(--border);
 	background: rgba(0, 0, 0, 0.35);
 	color: var(--text-soft);
+	cursor: text;
+	user-select: all;
+	-webkit-user-select: all;
 }
 
 .profile-referral-copy {

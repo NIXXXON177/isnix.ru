@@ -1218,12 +1218,36 @@
 			copyBtn.dataset.bound = '1'
 			copyBtn.addEventListener('click', function () {
 				var url = linkInput ? linkInput.value : ''
-				copyTextToClipboard(url).then(function (ok) {
-					showMsg(
-						ok ? 'Ссылка скопирована — отправь другу' : 'Не удалось скопировать',
-						ok,
-					)
-				})
+				copyTextToClipboard(url, { inputEl: linkInput })
+					.then(function () {
+						showMsg('Ссылка скопирована — отправь другу', true)
+						var prev = copyBtn.textContent
+						copyBtn.textContent = 'Скопировано'
+						setTimeout(function () {
+							copyBtn.textContent = prev
+						}, 2000)
+					})
+					.catch(function () {
+						if (linkInput) {
+							linkInput.focus()
+							linkInput.select()
+						}
+						showMsg(
+							'Не удалось скопировать автоматически — выдели ссылку и нажми Ctrl+C',
+							false,
+						)
+					})
+			})
+		}
+		if (linkInput && !linkInput.dataset.boundSelect) {
+			linkInput.dataset.boundSelect = '1'
+			linkInput.addEventListener('click', function () {
+				linkInput.select()
+				try {
+					linkInput.setSelectionRange(0, linkInput.value.length)
+				} catch (_selErr) {
+					/* ignore */
+				}
 			})
 		}
 
@@ -1257,28 +1281,66 @@
 		}
 	}
 
-	function copyTextToClipboard(text) {
+	function copyTextToClipboard(text, opts) {
 		var value = String(text || '').trim()
 		if (!value) return Promise.reject(new Error('Пусто'))
-		if (navigator.clipboard && navigator.clipboard.writeText) {
-			return navigator.clipboard.writeText(value)
+		opts = opts || {}
+
+		function tryExecCommand(inputEl) {
+			return new Promise(function (resolve, reject) {
+				var ta = null
+				try {
+					if (inputEl && typeof inputEl.select === 'function') {
+						inputEl.focus()
+						inputEl.select()
+						try {
+							inputEl.setSelectionRange(0, value.length)
+						} catch (_rangeErr) {
+							/* ignore */
+						}
+					} else {
+						ta = document.createElement('textarea')
+						ta.value = value
+						ta.setAttribute('readonly', 'readonly')
+						ta.style.position = 'fixed'
+						ta.style.top = '0'
+						ta.style.left = '0'
+						ta.style.width = '2em'
+						ta.style.height = '2em'
+						ta.style.opacity = '0'
+						document.body.appendChild(ta)
+						ta.focus()
+						ta.select()
+					}
+					if (document.execCommand('copy')) resolve()
+					else reject(new Error('copy failed'))
+				} catch (err) {
+					reject(err)
+				} finally {
+					if (ta && ta.parentNode) ta.parentNode.removeChild(ta)
+				}
+			})
 		}
-		return new Promise(function (resolve, reject) {
-			var ta = document.createElement('textarea')
-			ta.value = value
-			ta.setAttribute('readonly', '')
-			ta.style.position = 'fixed'
-			ta.style.left = '-9999px'
-			document.body.appendChild(ta)
-			ta.select()
-			try {
-				document.execCommand('copy') ? resolve() : reject(new Error('copy failed'))
-			} catch (err) {
-				reject(err)
-			} finally {
-				document.body.removeChild(ta)
+
+		function tryClipboardApi() {
+			if (navigator.clipboard && navigator.clipboard.writeText) {
+				return navigator.clipboard.writeText(value)
 			}
-		})
+			return Promise.reject(new Error('no clipboard api'))
+		}
+
+		var chain =
+			window.IsnixCompat && IsnixCompat.copyText
+				? IsnixCompat.copyText(value)
+				: tryClipboardApi()
+
+		return chain
+			.catch(function () {
+				return tryExecCommand(opts.inputEl)
+			})
+			.catch(function () {
+				return tryExecCommand(null)
+			})
 	}
 
 	function applicationAdminWarnings(app) {
