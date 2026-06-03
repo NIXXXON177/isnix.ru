@@ -22,6 +22,7 @@
 	var nickWhitelistAbort = null
 	var nickDebounceTimer = null
 	var MC_NICK_RE = /^[a-zA-Z0-9_]{3,16}$/
+	var shopAuthNickLocked = false
 	/** Относительный путь с isnix.ru или полный URL прокси (см. подсказку под полем ника). Прямая ссылка на панель хостинга из браузера не работает. */
 	var WHITELIST_JSON_URL = 'whitelist.json'
 	var whitelistPlayers = null
@@ -59,6 +60,133 @@
 		var v = getNick()
 		if (!v || !MC_NICK_RE.test(v) || nickApprovedKey === null) return false
 		return v.toLowerCase() === nickApprovedKey
+	}
+
+	function setShopNickInputValue(nick, fromAccount) {
+		var v = (nick || '').trim()
+		var playerNickEl = document.getElementById('playerNick')
+		var customNickEl = document.getElementById('customNick')
+		if (playerNickEl) playerNickEl.value = v
+		if (customNickEl) customNickEl.value = v
+		if (!v) {
+			updateCustomPreview()
+			return
+		}
+		if (fromAccount) {
+			fetchWhitelistCheck(v)
+			return
+		}
+		if (playerNickEl) {
+			playerNickEl.dispatchEvent(new Event('input', { bubbles: true }))
+		}
+	}
+
+	function unlockShopNickFromAccount() {
+		shopAuthNickLocked = false
+		var playerNickEl = document.getElementById('playerNick')
+		var label = document.getElementById('shopNickLabel')
+		var hint = document.getElementById('shopNickAuthHint')
+		if (playerNickEl) {
+			playerNickEl.readOnly = false
+			playerNickEl.classList.remove('shop-nick-input--from-account')
+		}
+		if (label) label.textContent = 'Твой ник в Minecraft'
+		if (hint) hint.hidden = true
+		updateShopHowStepNick(false)
+		if (playerNickEl) playerNickEl.focus()
+	}
+
+	function updateShopHowStepNick(fromAccount) {
+		var el = document.getElementById('shopHowStepNick')
+		if (!el) return
+		if (fromAccount) {
+			el.innerHTML =
+				'Ты вошёл в кабинет — <strong class="text-strong">ник подставлен</strong> и проверен по вайтлисту. Можно сразу нажимать «Купить».'
+		} else {
+			el.innerHTML =
+				'Введи <strong class="text-strong">ник</strong> из вайтлиста — статус должен стать зелёным, затем ник попадёт в комментарий к донату. Вошёл в кабинет — ник подставится сам.'
+		}
+	}
+
+	function setShopNickAuthHint(profileNick, canUnlock) {
+		var hint = document.getElementById('shopNickAuthHint')
+		if (!hint) return
+		if (!profileNick) {
+			hint.hidden = false
+			hint.innerHTML =
+				'В <a href="account.html">кабинете</a> укажи ник Minecraft — он появится здесь автоматически.'
+			return
+		}
+		hint.hidden = false
+		var html =
+			'Покупаешь как <strong>' +
+			profileNick.replace(/&/g, '&amp;').replace(/</g, '&lt;') +
+			'</strong>.'
+		if (canUnlock) {
+			html +=
+				' <button type="button" class="shop-nick-unlock" id="shopNickUnlock">Другой ник</button>'
+		} else {
+			html += ' <a href="account.html">Изменить в профиле</a>.'
+		}
+		hint.innerHTML = html
+		var unlockBtn = document.getElementById('shopNickUnlock')
+		if (unlockBtn) {
+			unlockBtn.addEventListener('click', unlockShopNickFromAccount)
+		}
+	}
+
+	function applyShopNickFromProfile(profile) {
+		var label = document.getElementById('shopNickLabel')
+		var playerNickEl = document.getElementById('playerNick')
+		var nick =
+			profile && profile.minecraft_nick ? String(profile.minecraft_nick).trim() : ''
+		if (!nick || !MC_NICK_RE.test(nick)) {
+			if (label) label.textContent = 'Твой ник в Minecraft'
+			setShopNickAuthHint('', false)
+			updateShopHowStepNick(false)
+			return
+		}
+		shopAuthNickLocked = true
+		if (label) label.textContent = 'Ник из кабинета'
+		if (playerNickEl) {
+			playerNickEl.readOnly = true
+			playerNickEl.classList.add('shop-nick-input--from-account')
+		}
+		setShopNickAuthHint(nick, true)
+		updateShopHowStepNick(true)
+		setShopNickInputValue(nick, true)
+	}
+
+	function requireNickForPurchase() {
+		var nick = getNick()
+		if (nick) return nick
+		var playerNickEl = document.getElementById('playerNick')
+		if (shopAuthNickLocked && playerNickEl && playerNickEl.value.trim()) {
+			return playerNickEl.value.trim()
+		}
+		if (window.IsnixAuth && IsnixAuth.isReady && IsnixAuth.isReady()) {
+			showToast('Укажи ник Minecraft в кабинете isnix.ru', false)
+			window.open('account.html', '_blank', 'noopener')
+		} else {
+			showToast('Сначала введи ник в Minecraft!', false)
+			if (playerNickEl) playerNickEl.focus()
+		}
+		return null
+	}
+
+	async function initShopFromAuth() {
+		if (!window.IsnixAuth || !IsnixAuth.isReady || !IsnixAuth.isReady()) return
+		try {
+			var session = await IsnixAuth.getSession()
+			if (!session || !session.user) {
+				shopAuthNickLocked = false
+				return
+			}
+			var profile = await IsnixAuth.getProfile(session.user.id)
+			applyShopNickFromProfile(profile)
+		} catch (_e) {
+			/* ignore */
+		}
 	}
 
 	function fetchWhitelistCheck(v) {
@@ -159,15 +287,12 @@
 	}
 
 	function openDonation(btn) {
-		const nick = getNick()
-		if (!nick) {
-			showToast('Сначала введи ник в Minecraft!', false)
-			document.getElementById('playerNick').focus()
-			return
-		}
+		const nick = requireNickForPurchase()
+		if (!nick) return
 		if (!isNickVerifiedForPurchase()) {
 			showToast('Ник должен быть в вайтлисте (зелёный статус)', false)
-			document.getElementById('playerNick').focus()
+			var el = document.getElementById('playerNick')
+			if (el && !el.readOnly) el.focus()
 			return
 		}
 		const card = btn.closest('.shop-card')
@@ -177,15 +302,12 @@
 	}
 
 	function openCreatorPrefix(btn) {
-		const nick = getNick()
-		if (!nick) {
-			showToast('Сначала введи ник в Minecraft!', false)
-			document.getElementById('playerNick').focus()
-			return
-		}
+		const nick = requireNickForPurchase()
+		if (!nick) return
 		if (!isNickVerifiedForPurchase()) {
 			showToast('Ник должен быть в вайтлисте (зелёный статус)', false)
-			document.getElementById('playerNick').focus()
+			var el = document.getElementById('playerNick')
+			if (el && !el.readOnly) el.focus()
 			return
 		}
 		const card = btn.closest('.shop-card')
@@ -310,18 +432,18 @@
 	})()
 
 	function openCustomDonation() {
-		const nick = (document.getElementById('customNick').value || '').trim()
+		var nick = (document.getElementById('customNick').value || '').trim()
 		const prefix = (
 			document.getElementById('customPrefix').value || ''
 		).trim()
 		if (!nick) {
-			showToast('Введи ник!', false)
-			document.getElementById('customNick').focus()
-			return
+			nick = requireNickForPurchase() || ''
 		}
+		if (!nick) return
 		if (!isNickVerifiedForPurchase()) {
 			showToast('Сначала проверь ник по вайтлисту', false)
-			document.getElementById('playerNick').focus()
+			var el = document.getElementById('playerNick')
+			if (el && !el.readOnly) el.focus()
 			return
 		}
 		if (!prefix) {
@@ -341,6 +463,7 @@
 	var playerNickEl = document.getElementById('playerNick')
 	if (playerNickEl) {
 		playerNickEl.addEventListener('input', function () {
+			if (this.readOnly) return
 			var v = this.value.trim()
 			document.getElementById('customNick').value = v
 			clearTimeout(nickDebounceTimer)
@@ -371,6 +494,20 @@
 			nickDebounceTimer = setTimeout(function () {
 				fetchWhitelistCheck(v)
 			}, 520)
+		})
+	}
+
+	initShopFromAuth()
+	if (window.IsnixAuth && IsnixAuth.onAuthStateChange) {
+		IsnixAuth.onAuthStateChange(function (session) {
+			if (session && session.user) {
+				initShopFromAuth()
+			} else {
+				shopAuthNickLocked = false
+				var hint = document.getElementById('shopNickAuthHint')
+				if (hint) hint.hidden = true
+				updateShopHowStepNick(false)
+			}
 		})
 	}
 

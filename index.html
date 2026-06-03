@@ -519,18 +519,19 @@
 			</div>
 
 			<!-- Ник игрока -->
-			<div class="shop-nick-bar">
-				<div>
-					<label for="playerNick">Твой ник в Minecraft</label>
+			<div class="shop-nick-bar" id="shopNickBar">
+				<div class="shop-nick-bar__field">
+					<label for="playerNick" id="shopNickLabel">Твой ник в Minecraft</label>
 					<input
 						id="playerNick"
 						class="shop-nick-input"
 						type="text"
 						maxlength="16"
 						placeholder="Например: Steve123"
-						autocomplete="off"
+						autocomplete="username"
 						spellcheck="false"
 					/>
+					<p id="shopNickAuthHint" class="shop-nick-auth-hint" hidden></p>
 				</div>
 				<div>
 					<label>Статус</label>
@@ -544,10 +545,10 @@
 			<div class="shop-how">
 				<div class="shop-step-item">
 					<span class="s-num">01</span
-					><span class="s-txt"
+					><span class="s-txt" id="shopHowStepNick"
 						>Введи <strong class="text-strong">ник</strong> из вайтлиста —
 						статус должен стать зелёным, затем ник попадёт в комментарий к
-						донату</span
+						донату. Вошёл в кабинет — ник подставится сам.</span
 					>
 				</div>
 				<div class="shop-step-item">
@@ -2073,4 +2074,4 @@
 		<script src="assets/js/site-header.js?v=5" defer></script>
 		<script src="assets/js/site-push-prompt.js?v=2" defer></script>
 		<script src="assets/js/icons.js?v=1"></script>
-		<script src="assets/js/site.js?v=9" defer></script>
+		<script src="assets/js/site.js?v=10" defer></script>

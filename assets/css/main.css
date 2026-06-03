@@ -1060,6 +1060,41 @@
 			.shop-nick-input::placeholder {
 				color: var(--muted);
 			}
+			.shop-nick-input--from-account {
+				border-color: rgba(74, 222, 128, 0.35);
+				color: var(--green);
+			}
+			.shop-nick-input--from-account:read-only {
+				cursor: default;
+				opacity: 0.95;
+			}
+			.shop-nick-auth-hint {
+				margin: 0.45rem 0 0;
+				font-size: 0.72rem;
+				line-height: 1.45;
+				color: var(--muted);
+			}
+			.shop-nick-auth-hint strong {
+				color: var(--green);
+			}
+			.shop-nick-auth-hint a {
+				color: var(--green);
+			}
+			.shop-nick-unlock {
+				margin: 0;
+				padding: 0;
+				border: none;
+				background: none;
+				font: inherit;
+				font-size: inherit;
+				color: var(--green);
+				text-decoration: underline;
+				text-underline-offset: 2px;
+				cursor: pointer;
+			}
+			.shop-nick-unlock:hover {
+				color: #86efac;
+			}
 			.nick-status {
 				font-size: 0.72rem;
 				padding: 0.7rem 1.2rem;
