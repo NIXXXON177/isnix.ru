@@ -334,10 +334,11 @@
 }
 
 .rules-page .rules-doc h3 {
-	font-size: 0.95rem;
-	color: var(--text);
-	margin: 1.25rem 0 0.5rem;
-	font-weight: 700;
+	font-size: 0.92rem;
+	color: var(--text-soft);
+	margin: 1.5rem 0 0.75rem;
+	font-weight: 600;
+	letter-spacing: 0.02em;
 }
 
 .rules-page .rules-doc p,
@@ -345,6 +346,18 @@
 	font-size: 0.9rem;
 	color: var(--muted);
 	line-height: 1.65;
+}
+
+.rules-page .rules-doc p strong,
+.rules-page .rules-doc li strong {
+	color: var(--text-soft);
+	font-weight: 600;
+}
+
+.rules-page .rules-doc p > strong:first-child,
+.rules-page .rules-doc li > strong:first-child {
+	color: var(--green);
+	font-weight: 700;
 }
 
 .rules-page .rules-doc a,
