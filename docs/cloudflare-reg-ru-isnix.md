@@ -75,6 +75,49 @@ GitHub → репозиторий **isnix.ru** → **Settings → Pages** → Cu
 
 Без `mc` + SRV лаунчеры могут не найти порт **20122** на Play2GO.
 
+### Bedrock (Geyser, после установки)
+
+См. **[bedrock-geyser-play2go-ru.md](bedrock-geyser-play2go-ru.md)**. Кратко:
+
+| Тип | Имя | Значение | Прокси |
+|-----|-----|----------|--------|
+| CNAME | `bedrock` | `c11.play2go.cloud` | **DNS only** |
+| SRV | `_minecraft._udp.bedrock` | `0 5 20545 c11.play2go.cloud` | **DNS only** |
+
+Порт **20545** — UDP. Игрокам: **`bedrock.isnix.ru`** (не play2go). Подробно: [dns-bedrock-isnix-ru.md](dns-bedrock-isnix-ru.md).
+
+#### Где править: reg.ru или Cloudflare?
+
+| Где NS домена | Куда добавлять Bedrock |
+|---------------|-------------------------|
+| NS **Cloudflare** (как в шаге 2 ниже) | Только **Cloudflare → DNS** (reg.ru не трогать, кроме делегирования NS) |
+| NS ещё **reg.ru** (миграция не сделана) | **reg.ru → DNS-записи** (см. таблицу ниже) |
+
+**В reg.ru** (если DNS там, не в Cloudflare):
+
+1. **Домены** → **isnix.ru** → **Управление зоной** / **Ресурсные записи**.
+2. **CNAME:** поддомен `bedrock` → `c11.play2go.cloud` (TTL 300–3600).
+3. **SRV** (как для Java `mc`, но **UDP** и порт **20545**):
+
+| Поле reg.ru | Значение |
+|-------------|----------|
+| Имя / поддомен | `_minecraft._udp.bedrock` (или «Сервис» = `_minecraft._udp`, хост = `bedrock` — зависит от формы) |
+| Приоритет | `0` |
+| Вес | `5` |
+| Порт | `20545` |
+| Цель / Target | `c11.play2go.cloud` |
+
+4. Записи **Java** (`mc`, SRV `20122`) **не менять**.
+
+**В Cloudflare** (NS `dell` / `pedro` — как у isnix.ru сейчас): только панель **DNS → Records**, reg.ru не открывать.
+
+1. **CNAME** `bedrock` → `c11.play2go.cloud`, **DNS only**.
+2. **SRV** `_minecraft._udp.bedrock` → priority `0`, weight `5`, port **`20545`**, target `c11.play2go.cloud`, **DNS only** (как `mc`, но UDP и порт 20545).
+
+Пошагово: [dns-bedrock-isnix-ru.md](dns-bedrock-isnix-ru.md).
+
+Проверка (через 5–15 мин): `nslookup bedrock.isnix.ru` → Bedrock-клиент **`bedrock.isnix.ru`** (порт **20545** вручную, если SRV не подхватился).
+
 ### API Supabase (Worker)
 
 После привязки Worker (шаг 4) Cloudflare может создать запись сам. Или вручную:

@@ -212,11 +212,19 @@
 				<div class="hero-ip">
 					<div class="ip-box" id="copyIp" tabindex="0" role="button">
 						<div>
-							<div class="ip-lbl">Java Edition IP</div>
+							<div class="ip-lbl">Java Edition</div>
 							<div class="ip-val">mc.isnix.ru</div>
 						</div>
 						<span class="ip-copy-icon" aria-hidden="true"><svg class="icon" aria-hidden="true" focusable="false"><use href="assets/icons/sprite.svg#clipboard"></use></svg></span>
 						<div class="ip-hint">Нажми чтобы скопировать</div>
+					</div>
+					<div class="ip-box" id="copyBedrockIp" tabindex="0" role="button">
+						<div>
+							<div class="ip-lbl">Bedrock (телефон / консоль)</div>
+							<div class="ip-val">bedrock.isnix.ru</div>
+						</div>
+						<span class="ip-copy-icon" aria-hidden="true"><svg class="icon" aria-hidden="true" focusable="false"><use href="assets/icons/sprite.svg#clipboard"></use></svg></span>
+						<div class="ip-hint">Порт 20545, если не подключится · без Fabric</div>
 					</div>
 					<div class="server-online" aria-live="polite">
 						<div class="server-online-row">
@@ -316,7 +324,7 @@
 						<code>_</code>), совпадает с кабинетом
 					</li>
 					<li>В кабинете отображается <strong class="icon-label"><svg class="icon icon--sm" aria-hidden="true" focusable="false"><use href="assets/icons/sprite.svg#check"></use></svg><span>В вайтлисте</span></strong></li>
-					<li>Адрес сервера: <code>mc.isnix.ru</code></li>
+					<li>Java: <code>mc.isnix.ru</code> · Bedrock: <code>bedrock.isnix.ru</code> (порт <code>20545</code>)</li>
 				</ul>
 				<p class="start-troubleshoot__foot">
 					<a href="support.html">Техподдержка и FAQ →</a>
@@ -1840,7 +1848,7 @@
 							class="site-footer__ip"
 							tabindex="0"
 							role="button"
-							aria-label="Скопировать IP сервера"
+							aria-label="Скопировать Java IP"
 						>
 							<div>
 								<div class="ip-lbl">Java Edition</div>
@@ -1848,8 +1856,20 @@
 							</div>
 							<span class="ip-hint">Нажми, чтобы скопировать</span>
 						</div>
+						<div
+							class="site-footer__ip"
+							tabindex="0"
+							role="button"
+							aria-label="Скопировать Bedrock адрес"
+						>
+							<div>
+								<div class="ip-lbl">Bedrock</div>
+								<div class="ip-val">bedrock.isnix.ru</div>
+							</div>
+							<span class="ip-hint">Порт 20545 при необходимости</span>
+						</div>
 						<p class="site-footer__meta">
-							Fabric 1.21.1 · Vanilla+ · Whitelist
+							Java Fabric 1.21.1 · Bedrock 1.21.x · Whitelist
 						</p>
 					</div>
 
