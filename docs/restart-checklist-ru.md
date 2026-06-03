@@ -2,7 +2,7 @@
 
 ## До Stop
 
-- [ ] Сообщение в ВК/Discord: «Рестарт в 00:00, ~2–3 мин, оптимизация»
+- [ ] Сообщение в ВК/Discord: «Рестарт в 00:00, ~2–3 мин»
 - [ ] Бэкап в Play2GO → **Backups** → Create
 - [ ] В игре (по желанию): `/tab reload`
 
@@ -21,10 +21,12 @@
 ## Проверка в игре (5 мин)
 
 - [ ] Вход (EasyAuth)
+- [ ] DNS: `bedrock.isnix.ru` → CNAME + SRV (см. [dns-bedrock-isnix-ru.md](dns-bedrock-isnix-ru.md))
+- [ ] Bedrock: `bedrock.isnix.ru` (порт 20545 при необходимости), `/login`
 - [ ] TAB: `%luckperms:prefix%` и `%isnix:clan_tag%` в `groups.yml`, `users.yml` пустой (см. `docs/config-samples/`)
 - [ ] OPAC: в логе нет `prometheus isn't registered` — `permissionSystem = "luck_perms"`
 - [ ] `/clantag help` у владельца клана — превью тега
-- [ ] `isnix-server-messages` в `mods/` — тексты вайтлиста и перезапуска (`config/isnix-server-messages.json`)
+- [ ] `isnix-server-messages` в `mods/` — текст перезапуска (`config/isnix-server-messages.json`)
 - [ ] `'` → My player config — только party name, claims name/color
 - [ ] `/sell`, `/trade`
 - [ ] Голосовой чат (Voice Chat)

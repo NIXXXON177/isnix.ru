@@ -1,6 +1,6 @@
 # isnix-server-messages
 
-Серверный Fabric-мод: свои тексты при отказе в **вайтлисте** и при **перезапуске** сервера.
+Серверный Fabric-мод: тексты при отказе в **вайтлисте** и при **перезапуске** (красивое предупреждение).
 
 ## Сборка
 
@@ -9,7 +9,7 @@ cd isnix-server-messages
 ./gradlew build
 ```
 
-Jar: `build/libs/isnix-server-messages-1.0.0.jar` → `mods/` на Play2GO, затем **рестарт**.
+Jar: `build/libs/isnix-server-messages-1.0.1.jar` → `mods/` на Play2GO, затем **рестарт**.
 
 ## Конфиг
 
@@ -18,15 +18,13 @@ Jar: `build/libs/isnix-server-messages-1.0.0.jar` → `mods/` на Play2GO, за
 | Поле | Назначение |
 |------|------------|
 | `whitelist_kick_lines` | Экран при входе без вайтлиста (строки, коды `§`) |
-| `server_restarting_lines` | Экран при рестарте / stop в панели |
+| `server_restarting_lines` | Экран при Stop / перезапуске |
 
-Пример ссылки в тексте: `§f§nisnix.ru/account` (подчёркнутый URL в клиенте).
-
-После правки конфига — **рестарт** (отдельной команды reload нет).
+Текст перезапуска можно править в JSON (коды `§` для цветов). После правки — **рестарт** сервера.
 
 ## Поведение
 
-- Подменяет стандартное `You are not whitelisted on this server!` / ванильный ключ `multiplayer.disconnect.not_whitelisted`.
-- При остановке сервера отключает всех онлайн-игроков с текстом о перезапуске (вместо сухого «Server closed»).
+- Подменяет стандартное сообщение вайтлиста.
+- При остановке сервера отключает онлайн-игроков с текстом из `server_restarting_lines` (вместо «Server closed»).
 
-Работает вместе с **EasyWhitelist** и `white-list=true` в `server.properties`.
+Работает с **EasyWhitelist** и `white-list=true`.

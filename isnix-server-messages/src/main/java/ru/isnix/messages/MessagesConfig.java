@@ -116,9 +116,15 @@ public final class MessagesConfig {
 
 	private static List<String> builtinRestartLines() {
 		return List.of(
+				"§6§lISTHISNIXXXON",
 				"§e§lСервер перезапускается",
+				"",
 				"§7Подождите 1–3 минуты",
-				"§7и подключайтесь снова:",
-				"§amc.isnix.ru");
+				"§7и заходите снова:",
+				"",
+				"§aJava §8— §fmc.isnix.ru",
+				"§aBedrock §8— §fbedrock.isnix.ru",
+				"",
+				"§8Спасибо, что играете с нами!");
 	}
 }

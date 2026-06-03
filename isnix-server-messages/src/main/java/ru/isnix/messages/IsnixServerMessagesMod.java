@@ -2,7 +2,6 @@ package ru.isnix.messages;
 
 import net.fabricmc.api.DedicatedServerModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import org.slf4j.Logger;
@@ -20,6 +19,7 @@ public class IsnixServerMessagesMod implements DedicatedServerModInitializer {
 		ServerLifecycleEvents.SERVER_STARTING.register(MessagesConfig::load);
 
 		ServerLifecycleEvents.SERVER_STOPPING.register(server -> {
+			MessagesConfig.load(server);
 			Text message = MessagesConfig.get().serverRestarting(server);
 			List<ServerPlayerEntity> players = new ArrayList<>(server.getPlayerManager().getPlayerList());
 			for (ServerPlayerEntity player : players) {
