@@ -80,6 +80,7 @@
     { "slug": "modmenu", "required": true },
     { "slug": "rei", "required": true, "note": "рецепты Create/FD (EMI нет на 1.21.11)" },
     { "slug": "advancement-plaques", "required": false },
+    { "slug": "iceberg", "required": false, "note": "зависимость advancement-plaques" },
     { "slug": "xaeros-minimap", "required": true },
     { "slug": "xaeros-world-map", "required": true },
     { "slug": "appleskin", "required": false },

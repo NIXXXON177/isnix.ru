@@ -44,6 +44,7 @@ EXCLUDE_SUBSTR = (
 EXTRA_CLIENT_SLUGS = [
     "rei",  # EMI нет на 1.21.11; REI — просмотр рецептов
     "advancement-plaques",
+    "iceberg",  # зависимость advancement-plaques
     "appleskin",
     "shulkerboxtooltip",
     "libipn",  # обязательная зависимость inventory-profiles-next
