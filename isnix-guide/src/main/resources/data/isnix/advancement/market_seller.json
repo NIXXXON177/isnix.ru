@@ -2,8 +2,8 @@
 	"parent": "isnix:opac_claim",
 	"display": {
 		"icon": { "id": "minecraft:emerald" },
-		"title": { "translate": "advancements.isnix.market_seller.title" },
-		"description": { "translate": "advancements.isnix.market_seller.description" },
+		"title": { "text": "Первая продажа" },
+		"description": { "text": "Выставить лот на рынке: /sell → «Выставить лот»." },
 		"frame": "task",
 		"show_toast": true,
 		"announce_to_chat": true

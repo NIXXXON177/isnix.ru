@@ -2,8 +2,8 @@
 	"parent": "isnix:root",
 	"display": {
 		"icon": { "id": "minecraft:writable_book" },
-		"title": { "translate": "advancements.isnix.welcome.title" },
-		"description": { "translate": "advancements.isnix.welcome.description" },
+		"title": { "text": "Добро пожаловать" },
+		"description": { "text": "Зайти на сервер и получить книгу-путеводитель в инвентарь." },
 		"frame": "task",
 		"show_toast": true,
 		"announce_to_chat": true

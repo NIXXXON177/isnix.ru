@@ -2,8 +2,8 @@
 	"parent": "isnix:welcome",
 	"display": {
 		"icon": { "id": "create:andesite_alloy" },
-		"title": { "translate": "advancements.isnix.create_andesite.title" },
-		"description": { "translate": "advancements.isnix.create_andesite.description" },
+		"title": { "text": "Create: старт" },
+		"description": { "text": "Получить андезитовый сплав — первый шаг в Create. Дальше — ветка Create в достижениях." },
 		"frame": "goal",
 		"show_toast": true,
 		"announce_to_chat": true

@@ -5,7 +5,7 @@
 ## Установка
 
 1. Собрать: `python scripts/build_isnix_mods_12111.py` (или `cd isnix-guide && gradlew.bat build`).
-2. Jar в `mods/` на сервере: **`isnix-guide-1.0.0.jar`**.
+2. Jar в `mods/` на сервере: **`isnix-guide-1.0.4.jar`**.
 3. Пересобрать **`isnix-market`** (хуки на `/sell`) и залить обновлённый jar.
 4. Рестарт сервера.
 
@@ -22,6 +22,12 @@
 | `isnix:market_seller` | Первый лот через `/sell` |
 | `isnix:market_buyer` | Первая покупка на рынке |
 | `isnix:create_andesite` | Андезитовый сплав в инвентаре (Create) |
+
+## Команда
+
+| Команда | Действие |
+|---------|----------|
+| `/guidebook` | Книга-путеводитель (первый вход или повторно) |
 
 Ветка **Create** — отдельно из мода Create-Fly.
 

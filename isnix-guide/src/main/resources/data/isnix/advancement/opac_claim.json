@@ -2,8 +2,8 @@
 	"parent": "isnix:welcome",
 	"display": {
 		"icon": { "id": "minecraft:golden_shovel" },
-		"title": { "translate": "advancements.isnix.opac_claim.title" },
-		"description": { "translate": "advancements.isnix.opac_claim.description" },
+		"title": { "text": "Свой участок" },
+		"description": { "text": "Поставить приват Open Parties and Claims (claim)." },
 		"frame": "task",
 		"show_toast": true,
 		"announce_to_chat": true
