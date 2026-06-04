@@ -8,9 +8,10 @@
 
 | Файл | Тема |
 |------|------|
-| `bedrock-return.txt` | Bedrock + привязка ПК/телефон `/linkaccount` |
-| `short-bedrock-voiceover.txt` | Озвучка Short про Bedrock |
-| `bedrock-announce.txt` | Bedrock — короткая версия |
+| `modded-rebrand-vk.txt` | Анонс: модовый сервер (ВК) |
+| `modded-rebrand-telegram.txt` | То же, Telegram |
+| `modded-rebrand-discord.txt` | То же, Discord |
+| `modded-rebrand-short.txt` | Коротко (статус / сторис) |
 | `referral-discord.txt` | Рефералка |
 | `maintenance-upgrade-vk.txt` | Закрытие на обновление 1.21.11 (ВК) |
 | `maintenance-upgrade-telegram.txt` | То же, Telegram |

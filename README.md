@@ -1,6 +1,6 @@
 # isnix.ru
 
-Официальный сайт сервера ISTHISNIXXXON — ванильный Minecraft-сервер (Fabric 1.21.1, whitelist).
+Официальный сайт сервера ISTHISNIXXXON — модовый Minecraft-сервер (Fabric 1.21.11, Create, whitelist).
 
 - Сборка для игроков: `downloads/ISTHISNIXXXONmods.zip` (~42 МБ, только клиент) — `python scripts/build_client_modpack.py`, см. [docs/client-modpack.md](docs/client-modpack.md)
 - Инструкция: [how-to-play.html](how-to-play.html)

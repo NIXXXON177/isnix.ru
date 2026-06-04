@@ -1,0 +1,18 @@
+⚙️ ISTHISNIXXXON — модовый сервер
+
+Теперь это не «ванильный Vanilla+», а полноценный Fabric 1.21.11 с Create.
+
+Что нового:
+• Create — механизмы, конвейеры, поезда
+• Farmer's Delight, OPAC, голосовой чат
+• Рынок /sell за ресурсы
+
+Как зайти:
+1. Сборка ISTHISNIXXXONmods.zip — https://isnix.ru/how-to-play.html
+2. Java 1.21.11 + Fabric (1.21.1 не подойдёт)
+3. Вайтлист — https://isnix.ru/account.html
+4. IP: mc.isnix.ru
+
+Без pay-to-win. Только ПК.
+
+Путеводитель: https://isnix.ru/guide.html
