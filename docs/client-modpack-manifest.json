@@ -4,8 +4,8 @@
   "loader": "Fabric 0.18.4",
   "java": "21",
   "launcher": "ElyPrismLauncher (recommended)",
-  "version": "3.1.1-client-12111",
-  "built": "2026-06-04T12:00:00Z",
+  "version": "3.0.0-client-12111",
+  "built": "2026-06-04T19:29:07Z",
   "mods_count": 35,
-  "note": "REI, Advancement Plaques + iceberg, libIPN."
+  "note": "Java only. Create-Fly + FD + client UX. Bedrock removed."
 }
