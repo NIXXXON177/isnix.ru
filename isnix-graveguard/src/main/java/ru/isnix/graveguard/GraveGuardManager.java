@@ -8,9 +8,9 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -198,15 +198,18 @@ public final class GraveGuardManager {
 			return;
 		}
 		GraveGuardConfig cfg = GraveGuardConfig.get();
-		Iterator<Map.Entry<UUID, Integer>> it = ELIGIBLE_UNTIL_TICK.entrySet().iterator();
-		while (it.hasNext()) {
-			Map.Entry<UUID, Integer> entry = it.next();
-			if (server.getTicks() >= entry.getValue()) {
-				clearEligibility(entry.getKey());
-				it.remove();
-				continue;
+		int now = server.getTicks();
+
+		ELIGIBLE_UNTIL_TICK.entrySet().removeIf(entry -> {
+			if (now < entry.getValue()) {
+				return false;
 			}
-			ServerPlayerEntity player = server.getPlayerManager().getPlayer(entry.getKey());
+			clearEligibilityAux(entry.getKey());
+			return true;
+		});
+
+		for (UUID playerId : new ArrayList<>(ELIGIBLE_UNTIL_TICK.keySet())) {
+			ServerPlayerEntity player = server.getPlayerManager().getPlayer(playerId);
 			if (player == null) {
 				continue;
 			}
@@ -221,12 +224,16 @@ public final class GraveGuardManager {
 		}
 	}
 
-	public static void clearEligibility(UUID playerId) {
-		ELIGIBLE_UNTIL_TICK.remove(playerId);
+	private static void clearEligibilityAux(UUID playerId) {
 		LAST_DEATH_POS.remove(playerId);
 		LOOT_ZONE_UNTIL_TICK.remove(playerId);
 		PROTECT_UNTIL_TICK.remove(playerId);
 		BLOCK_ALL_DAMAGE.remove(playerId);
+	}
+
+	public static void clearEligibility(UUID playerId) {
+		ELIGIBLE_UNTIL_TICK.remove(playerId);
+		clearEligibilityAux(playerId);
 	}
 
 	public static void onLogout(ServerPlayerEntity player) {
