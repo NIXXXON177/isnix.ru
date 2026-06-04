@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="ru">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+		<title>Путеводитель по серверу — ISTHISNIXXXON</title>
+		<meta
+			name="description"
+			content="Достижения ISTHISNIXXXON, Create, OPAC, рынок /sell, чат и голос. Путеводитель в игре и на сайте."
+		/>
+		<meta name="theme-color" content="#0a0f0a" />
+		<link rel="canonical" href="https://isnix.ru/guide.html" />
+		<link rel="icon" href="favicon.svg" type="image/svg+xml" />
+		<link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Raleway:wght@400;600;700&display=swap"
+			rel="stylesheet"
+		/>
+		<link rel="stylesheet" href="assets/css/main.css?v=2" />
+		<link rel="stylesheet" href="assets/css/components.css?v=4" />
+		<link rel="stylesheet" href="assets/css/how-to-play.css" />
+		<link rel="stylesheet" href="assets/css/site-header.css" />
+	</head>
+	<body class="htp-page" data-page="guide">
+		<div class="site-header" id="siteHeader">
+			<div class="site-header__inner">
+				<header class="site-top" id="siteNav">
+					<a href="index.html" class="nav-logo" id="navLogo">ISTHIS<span>NIXXXON</span></a>
+					<div class="site-top__actions">
+						<button type="button" class="site-top__ip" id="siteCopyIp" title="Скопировать IP">
+							mc.isnix.ru
+						</button>
+						<a href="index.html#join-server" class="nav-btn nav-btn--top" id="navJoinTop">На сервер</a>
+						<button
+							type="button"
+							class="nav-toggle"
+							id="navToggle"
+							aria-expanded="false"
+							aria-controls="navMenu"
+							aria-label="Открыть меню"
+						>
+							<span></span><span></span><span></span>
+						</button>
+					</div>
+				</header>
+				<nav class="nav-drawer" id="navMenu" aria-label="Навигация">
+					<div class="nav-drawer-auth" id="navDrawerAuth">
+						<a href="account.html" class="nav-drawer-auth__login" id="navDrawerLogin">Вход</a>
+						<a href="account.html" class="nav-drawer-auth__user" id="navDrawerUser" hidden>
+							<span class="nav-drawer-auth__avatar-wrap" aria-hidden="true">
+								<img class="nav-drawer-auth__avatar" id="navDrawerAvatar" width="40" height="40" alt="" />
+								<span class="nav-drawer-auth__avatar-fallback" id="navDrawerAvatarFb">?</span>
+							</span>
+							<span class="nav-drawer-auth__meta">
+								<span class="nav-drawer-auth__nick" id="navDrawerNick">—</span>
+								<span class="nav-drawer-auth__email" id="navDrawerEmail">—</span>
+							</span>
+						</a>
+					</div>
+					<ul class="nav-links">
+						<li><a href="index.html#about">О сервере</a></li>
+						<li><a href="index.html#download">Скачать</a></li>
+						<li><a href="how-to-play.html" data-page-link="how-to-play">Как играть</a></li>
+						<li><a href="guide.html" data-page-link="guide">Путеводитель</a></li>
+						<li><a href="rules.html" data-page-link="rules">Правила</a></li>
+						<li><a href="support.html" data-page-link="support">Техподдержка</a></li>
+						<li><a href="account.html" data-page-link="account" id="navAccountBtn">Аккаунт</a></li>
+					</ul>
+					<a href="index.html#join-server" class="nav-btn nav-btn-menu" id="navJoinBtn">На сервер</a>
+					<div class="nav-drawer__footer">
+						<button type="button" class="nav-drawer-auth__logout" id="navDrawerLogout" hidden>Выход</button>
+					</div>
+				</nav>
+			</div>
+		</div>
+		<button type="button" class="nav-backdrop" id="navBackdrop" aria-hidden="true" tabindex="-1"></button>
+
+		<main class="htp-main">
+			<header class="htp-hero">
+				<p class="htp-hero__eyebrow">Путеводитель</p>
+				<h1 class="htp-hero__title">Жизнь на ISTHISNIXXXON</h1>
+				<p class="htp-hero__lead">
+					На сервере есть <strong>книга в инвентаре</strong> и вкладка
+					<strong>ISTHISNIXXXON</strong> в достижениях (Esc). Эта страница — то же самое,
+					но удобнее читать с телефона или ПК вне игры.
+				</p>
+				<div class="htp-hero__actions">
+					<a href="how-to-play.html" class="htp-btn htp-btn--primary">Установка и сборка</a>
+					<a href="rules.html" class="htp-btn htp-btn--ghost">Правила</a>
+				</div>
+			</header>
+
+			<div class="htp-steps">
+				<article class="htp-step">
+					<div class="htp-step__icon" aria-hidden="true">
+						<svg class="icon" aria-hidden="true" focusable="false">
+							<use href="assets/icons/sprite.svg#book"></use>
+						</svg>
+					</div>
+					<div class="htp-step__body">
+						<h2 class="htp-step__title">В игре: книга и достижения</h2>
+						<ul class="htp-step__list">
+							<li>
+								При <strong>первом входе</strong> выдаётся книга
+								<em>Путеводитель ISTHISNIXXXON</em> — открой и листай страницы.
+							</li>
+							<li>
+								Нажми <strong>Esc → Прогресс</strong>: вкладка
+								<strong>ISTHISNIXXXON</strong> — шаги по серверу (участок, рынок,
+								Create-старт).
+							</li>
+							<li>
+								Отдельная большая ветка <strong>Create</strong> — из мода Create-Fly
+								(шестерни, поезда, фабрики).
+							</li>
+						</ul>
+					</div>
+				</article>
+
+				<article class="htp-step">
+					<div class="htp-step__body">
+						<h2 class="htp-step__title">Create и рецепты</h2>
+						<p class="htp-step__text">
+							Полный <strong>Create 6.0.9</strong> (Create-Fly). Старт: андезитовый сплав →
+							вода-колесо → шестерни и механизмы. Farmer's Delight связан с Create (миксер,
+							пила).
+						</p>
+						<ul class="htp-step__list">
+							<li>
+								В клиентской сборке — <strong>REI</strong> (Roughly Enough Items):
+								клавиша <strong>R</strong> для поиска рецептов Create и FD.
+							</li>
+							<li>
+								Аддоны с YouTube под Forge (Crafts &amp; Additions, Diesel и т.п.) на
+								сервер <strong>не ставятся</strong> — другая версия и лоадер.
+							</li>
+						</ul>
+					</div>
+				</article>
+
+				<article class="htp-step">
+					<div class="htp-step__body">
+						<h2 class="htp-step__title">Участок, клан, чат</h2>
+						<ul class="htp-step__list">
+							<li><strong>OPAC</strong> — приваты; поставь claim, чтобы защитить базу.</li>
+							<li><strong>/clantag</strong> — оформление тега клана в TAB (справка в игре).</li>
+							<li>Чат рядом с игроками; глобально — <code>!</code> в начале строки.</li>
+							<li><strong>Simple Voice Chat</strong> — настрой клавишу в управлении.</li>
+						</ul>
+					</div>
+				</article>
+
+				<article class="htp-step">
+					<div class="htp-step__body">
+						<h2 class="htp-step__title">Торговля без монет</h2>
+						<ul class="htp-step__list">
+							<li><code>/trade &lt;ник&gt;</code> — прямой обмен с игроком.</li>
+							<li><code>/sell</code> — рынок; <code>/sell list</code> — выставить лот.</li>
+							<li>Оплата <strong>только ресурсами</strong>, без внутриигровой валюты.</li>
+						</ul>
+						<p class="htp-step__tip">
+							<span class="htp-tip"
+								>Достижения «Первая продажа» и «Первая покупка» выдаются после реальной
+								сделки на рынке.</span
+							>
+						</p>
+					</div>
+				</article>
+
+				<article class="htp-step">
+					<div class="htp-step__body">
+						<h2 class="htp-step__title">Чего нет на клиенте</h2>
+						<p class="htp-step__text">
+							Не ставь свои моды поверх сборки. На сервере, но не у тебя в папке
+							<code>mods</code>: Grim, EasyAuth, FallingTree, isnix-market (команды
+							<code>/sell</code> всё равно работают с сервера).
+						</p>
+					</div>
+				</article>
+			</div>
+
+			<p class="htp-bottom">
+				<a href="how-to-play.html">Как установить сборку</a> ·
+				<a href="support.html">Техподдержка</a> ·
+				<a href="index.html">Главная</a>
+			</p>
+		</main>
+
+		<footer class="site-footer">
+			<div class="site-footer__glow" aria-hidden="true"></div>
+			<div class="site-footer__inner">
+				<div class="site-footer__top">
+					<div class="site-footer__brand">
+						<a href="index.html" class="site-footer__logo" id="footerLogo">ISTHIS<span>NIXXXON</span></a>
+						<p class="site-footer__tagline">Уютный ванильный Minecraft без pay-to-win.</p>
+						<p class="site-footer__meta">Fabric 1.21.11 · Create · mc.isnix.ru</p>
+					</div>
+					<nav class="site-footer__col" aria-label="Разделы">
+						<h3 class="site-footer__heading">Сайт</h3>
+						<ul class="site-footer__links">
+							<li><a href="how-to-play.html">Как играть</a></li>
+							<li><a href="guide.html">Путеводитель</a></li>
+							<li><a href="rules.html">Правила</a></li>
+							<li><a href="support.html">Техподдержка</a></li>
+						</ul>
+					</nav>
+				</div>
+				<div class="site-footer__bottom">
+					<p class="site-footer__copy">© 2026 ISTHISNIXXXON. Не аффилирован с Mojang или Microsoft.</p>
+				</div>
+			</div>
+		</footer>
+
+		<script src="assets/js/browser-compat.js?v=1"></script>
+		<script>
+			window.ISNIX_AUTH = window.ISNIX_AUTH || {
+				enabled: false,
+				supabaseUrl: '',
+				supabaseAnonKey: '',
+			}
+		</script>
+		<script src="assets/js/auth-config.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+		<script src="assets/js/auth.js?v=32"></script>
+		<script src="assets/js/site-presence.js?v=4" defer></script>
+		<script src="assets/js/site-header.js?v=5" defer></script>
+		<script src="assets/js/site.js?v=9" defer></script>
+	</body>
+</html>

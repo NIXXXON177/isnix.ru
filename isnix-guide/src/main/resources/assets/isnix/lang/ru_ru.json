@@ -1,0 +1,14 @@
+{
+	"advancements.isnix.root.title": "ISTHISNIXXXON",
+	"advancements.isnix.root.description": "Путеводитель по серверу — отдельная вкладка в меню достижений (Esc).",
+	"advancements.isnix.welcome.title": "Добро пожаловать",
+	"advancements.isnix.welcome.description": "Зайти на сервер и получить книгу-путеводитель в инвентарь.",
+	"advancements.isnix.opac_claim.title": "Свой участок",
+	"advancements.isnix.opac_claim.description": "Поставить приват Open Parties and Claims (claim).",
+	"advancements.isnix.market_seller.title": "Первая продажа",
+	"advancements.isnix.market_seller.description": "Выставить лот на рынке: /sell → «Выставить лот».",
+	"advancements.isnix.market_buyer.title": "Первая покупка",
+	"advancements.isnix.market_buyer.description": "Купить чужой лот через /sell.",
+	"advancements.isnix.create_andesite.title": "Create: старт",
+	"advancements.isnix.create_andesite.description": "Получить андезитовый сплав — первый шаг в Create. Дальше — ветка Create в достижениях."
+}

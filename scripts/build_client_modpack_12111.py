@@ -42,7 +42,8 @@ EXCLUDE_SUBSTR = (
 
 # Доп. клиентские моды (Modrinth), если нет в server staging
 EXTRA_CLIENT_SLUGS = [
-    "emi",
+    "rei",  # EMI нет на 1.21.11; REI — просмотр рецептов
+    "advancement-plaques",
     "appleskin",
     "shulkerboxtooltip",
     "libipn",  # обязательная зависимость inventory-profiles-next

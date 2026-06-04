@@ -1,0 +1,23 @@
+{
+	"schemaVersion": 1,
+	"id": "isnix_guide",
+	"version": "${version}",
+	"name": "ISNIX Guide",
+	"description": "Путеводитель: достижения ISTHISNIXXXON и книга при первом входе",
+	"authors": ["ISTHISNIXXXON"],
+	"license": "MIT",
+	"environment": "server",
+	"entrypoints": {
+		"server": ["ru.isnix.guide.IsnixGuideMod"]
+	},
+	"depends": {
+		"fabricloader": ">=0.16.0",
+		"minecraft": "~1.21.11",
+		"java": ">=21",
+		"fabric-api": "*"
+	},
+	"suggests": {
+		"openpartiesandclaims": "*",
+		"isnix_market": "*"
+	}
+}

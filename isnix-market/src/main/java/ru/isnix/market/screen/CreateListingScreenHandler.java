@@ -19,6 +19,7 @@ import ru.isnix.market.util.InventoryHelper;
 import ru.isnix.market.trade.MarketRatioGuard;
 import ru.isnix.market.util.ListingAnnouncements;
 import ru.isnix.market.util.ListingMessages;
+import ru.isnix.market.util.MarketGuideHook;
 
 /**
  * Окно «Выставить лот»: товар и цена — из инвентаря игрока (списание только товара при подтверждении).
@@ -293,6 +294,7 @@ public class CreateListingScreenHandler extends GenericContainerScreenHandler {
 		container.setStack(SLOT_PRICE, ItemStack.EMPTY);
 		player.sendMessage(ListingMessages.listed(sale, price, listing.id()), false);
 		ListingAnnouncements.broadcastNewListing(player.getEntityWorld().getServer(), listing);
+		MarketGuideHook.onListingCreated(player);
 		player.closeHandledScreen();
 		MarketScreens.openMarket(player, 0, MarketSession.viewMode(player));
 	}

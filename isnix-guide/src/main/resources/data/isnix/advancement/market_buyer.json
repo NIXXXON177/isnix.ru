@@ -1,0 +1,16 @@
+{
+	"parent": "isnix:welcome",
+	"display": {
+		"icon": { "id": "minecraft:chest" },
+		"title": { "translate": "advancements.isnix.market_buyer.title" },
+		"description": { "translate": "advancements.isnix.market_buyer.description" },
+		"frame": "task",
+		"show_toast": true,
+		"announce_to_chat": true
+	},
+	"criteria": {
+		"grant": {
+			"trigger": "minecraft:impossible"
+		}
+	}
+}

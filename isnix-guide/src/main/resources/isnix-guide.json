@@ -1,0 +1,5 @@
+{
+	"giveBookOnFirstJoin": true,
+	"joinGuideMessage": true,
+	"checkOpacClaimsEveryTicks": 1200
+}

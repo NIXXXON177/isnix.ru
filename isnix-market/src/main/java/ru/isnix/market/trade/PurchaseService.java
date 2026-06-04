@@ -10,6 +10,8 @@ import ru.isnix.market.listing.MarketListing;
 import ru.isnix.market.util.InventoryHelper;
 import ru.isnix.market.util.ListingMessages;
 import ru.isnix.market.util.MarketSounds;
+import ru.isnix.market.util.MarketGuideHook;
+import ru.isnix.market.util.MarketGuideHook;
 
 import java.util.UUID;
 
@@ -104,6 +106,7 @@ public final class PurchaseService {
 					saleGive,
 					pricePay);
 		}
+		MarketGuideHook.onPurchase(buyer);
 		return Result.SUCCESS;
 	}
 

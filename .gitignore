@@ -37,6 +37,8 @@ isnix-lagwatch/build/
 isnix-lagwatch/run/
 isnix-lagwatch/.idea/
 isnix-server-messages/.gradle/
+isnix-guide/.gradle/
+isnix-guide/build/
 isnix-server-messages/build/
 isnix-server-messages/run/
 isnix-server-messages/.idea/
@@ -60,6 +62,11 @@ server-remote/
 build/modpack-fix/
 build/bedrock-staging/
 build/server-modpack-1.21.11/
+build/useful-recipes-fix/
+build/extra-recipe-sample/
+build/peek-create/
+build/fabric-server-install/
+build/fabric-installer.jar
 server-remote/mods-pull/
 
 isnix-player-backup/.gradle/

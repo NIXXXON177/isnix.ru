@@ -1,0 +1,16 @@
+{
+	"parent": "isnix:opac_claim",
+	"display": {
+		"icon": { "id": "minecraft:emerald" },
+		"title": { "translate": "advancements.isnix.market_seller.title" },
+		"description": { "translate": "advancements.isnix.market_seller.description" },
+		"frame": "task",
+		"show_toast": true,
+		"announce_to_chat": true
+	},
+	"criteria": {
+		"grant": {
+			"trigger": "minecraft:impossible"
+		}
+	}
+}

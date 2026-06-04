@@ -1,0 +1,14 @@
+{
+	"advancements.isnix.root.title": "ISTHISNIXXXON",
+	"advancements.isnix.root.description": "Server guide tab in the advancements screen (Esc).",
+	"advancements.isnix.welcome.title": "Welcome",
+	"advancements.isnix.welcome.description": "Join the server and receive the guide book.",
+	"advancements.isnix.opac_claim.title": "Your claim",
+	"advancements.isnix.opac_claim.description": "Place an Open Parties and Claims claim.",
+	"advancements.isnix.market_seller.title": "First listing",
+	"advancements.isnix.market_seller.description": "List an item on the market via /sell.",
+	"advancements.isnix.market_buyer.title": "First purchase",
+	"advancements.isnix.market_buyer.description": "Buy another player's listing via /sell.",
+	"advancements.isnix.create_andesite.title": "Create: first step",
+	"advancements.isnix.create_andesite.description": "Obtain andesite alloy — then follow the Create advancement tree."
+}

@@ -1,0 +1,16 @@
+{
+	"parent": "isnix:root",
+	"display": {
+		"icon": { "id": "minecraft:writable_book" },
+		"title": { "translate": "advancements.isnix.welcome.title" },
+		"description": { "translate": "advancements.isnix.welcome.description" },
+		"frame": "task",
+		"show_toast": true,
+		"announce_to_chat": true
+	},
+	"criteria": {
+		"grant": {
+			"trigger": "minecraft:impossible"
+		}
+	}
+}

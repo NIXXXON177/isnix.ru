@@ -1,0 +1,16 @@
+{
+	"display": {
+		"icon": { "id": "minecraft:grass_block" },
+		"title": { "translate": "advancements.isnix.root.title" },
+		"description": { "translate": "advancements.isnix.root.description" },
+		"background": "minecraft:textures/gui/advancements/backgrounds/adventure.png",
+		"frame": "task",
+		"show_toast": false,
+		"announce_to_chat": false
+	},
+	"criteria": {
+		"joined": {
+			"trigger": "minecraft:tick"
+		}
+	}
+}
