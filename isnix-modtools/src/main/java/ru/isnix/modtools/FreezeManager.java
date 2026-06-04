@@ -5,6 +5,7 @@ import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
 import net.minecraft.network.packet.s2c.play.PositionFlag;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.PlayerInput;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
@@ -96,7 +97,7 @@ public final class FreezeManager {
 	}
 
 	public static void clearMovementInput(ServerPlayerEntity player) {
-		player.updateInput(0.0f, 0.0f, false, false);
+		player.setPlayerInput(PlayerInput.DEFAULT);
 	}
 
 	public static void applyLookFromPacket(ServerPlayerEntity player, PlayerMoveC2SPacket packet) {
@@ -131,7 +132,7 @@ public final class FreezeManager {
 		if (entry == null) {
 			return;
 		}
-		String worldKey = player.getWorld().getRegistryKey().getValue().toString();
+		String worldKey = player.getEntityWorld().getRegistryKey().getValue().toString();
 		if (!worldKey.equals(entry.world)) {
 			return;
 		}
@@ -139,7 +140,7 @@ public final class FreezeManager {
 		player.setVelocity(Vec3d.ZERO);
 		player.fallDistance = 0.0f;
 
-		Vec3d pos = player.getPos();
+		Vec3d pos = player.getEntityPos();
 		double dx = pos.x - entry.x;
 		double dy = pos.y - entry.y;
 		double dz = pos.z - entry.z;
@@ -149,10 +150,7 @@ public final class FreezeManager {
 			float yaw = player.getYaw();
 			float pitch = player.getPitch();
 			runInternalTeleport(() -> {
-				player.setPos(entry.x, entry.y, entry.z);
-				player.prevX = entry.x;
-				player.prevY = entry.y;
-				player.prevZ = entry.z;
+				player.refreshPositionAfterTeleport(entry.x, entry.y, entry.z);
 				player.setYaw(yaw);
 				player.setPitch(pitch);
 			});
@@ -166,7 +164,7 @@ public final class FreezeManager {
 	}
 
 	private static boolean maySendNetworkSync(ServerPlayerEntity player) {
-		long tick = player.getServer().getTicks();
+		long tick = player.getEntityWorld().getServer().getTicks();
 		Long last = LAST_NETWORK_SYNC_TICK.get(player.getUuid());
 		if (last != null && tick - last < NETWORK_SYNC_INTERVAL_TICKS) {
 			return false;
@@ -182,8 +180,7 @@ public final class FreezeManager {
 		}
 		float yaw = player.getYaw();
 		float pitch = player.getPitch();
-		runInternalTeleport(() -> handler.requestTeleport(
-				entry.x, entry.y, entry.z, yaw, pitch, SYNC_POSITION_KEEP_LOOK));
+		runInternalTeleport(() -> handler.requestTeleport(entry.x, entry.y, entry.z, yaw, pitch));
 	}
 
 	public static boolean shouldBlockEntityPositionChange(Entity entity, double x, double y, double z) {

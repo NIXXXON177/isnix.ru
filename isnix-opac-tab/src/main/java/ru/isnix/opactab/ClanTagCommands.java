@@ -80,7 +80,7 @@ public final class ClanTagCommands {
 	}
 
 	private static void refreshAndPreview(ServerCommandSource source, ServerPlayerEntity player) {
-		ClanTagCache.refreshAll(player.getServer());
+		ClanTagCache.refreshAll(player.getEntityWorld().getServer());
 		String legacy = ClanTagFormatter.formatForPlayer(player);
 		source.sendFeedback(
 				() -> Text.literal("В TAB: ").formatted(Formatting.GRAY)
@@ -164,10 +164,10 @@ public final class ClanTagCommands {
 		ClanTagConfig.ClanStyle style = getOrCreate(player.getUuid());
 		style.tagText = trimmed;
 		ClanTagConfig.putStyle(player.getUuid(), style);
-		ClanTagCache.refreshAll(player.getServer());
+		ClanTagCache.refreshAll(player.getEntityWorld().getServer());
 
 		OpacBridge.SetPartyNameResult opac = OpacBridge.setPartyNameForOwner(
-				player.getUuid(), player.getServer(), trimmed);
+				player.getUuid(), player.getEntityWorld().getServer(), trimmed);
 		if (opac.success()) {
 			source.sendFeedback(() -> Text.literal("Тег сохранён (TAB + OPAC Party name)."), false);
 		} else {
@@ -260,7 +260,7 @@ public final class ClanTagCommands {
 		if (player == null) {
 			return 0;
 		}
-		ClanTagCache.refreshAll(player.getServer());
+		ClanTagCache.refreshAll(player.getEntityWorld().getServer());
 		source.sendFeedback(
 				() -> Text.literal("Тег обновлён из Party name OPAC (клавиша ')."),
 				false);

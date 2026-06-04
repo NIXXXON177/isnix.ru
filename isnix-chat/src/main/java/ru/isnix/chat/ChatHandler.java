@@ -1,9 +1,13 @@
 package ru.isnix.chat;
 
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.network.message.SignedMessage;
 import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -48,7 +52,7 @@ public final class ChatHandler {
 			return false;
 		}
 
-		MinecraftServer server = sender.getServer();
+		MinecraftServer server = sender.getEntityWorld().getServer();
 		if (server == null) {
 			return true;
 		}
@@ -71,15 +75,15 @@ public final class ChatHandler {
 
 	private static List<ServerPlayerEntity> nearbyPlayers(ServerPlayerEntity sender, int radius) {
 		double radiusSq = (double) radius * radius;
-		Vec3d origin = sender.getPos();
-		var world = sender.getWorld();
+		Vec3d origin = sender.getEntityPos();
+		var world = sender.getEntityWorld();
 		List<ServerPlayerEntity> out = new ArrayList<>();
 
-		for (ServerPlayerEntity other : sender.getServer().getPlayerManager().getPlayerList()) {
-			if (other.getWorld() != world) {
+		for (ServerPlayerEntity other : sender.getEntityWorld().getServer().getPlayerManager().getPlayerList()) {
+			if (other.getEntityWorld() != world) {
 				continue;
 			}
-			if (origin.squaredDistanceTo(other.getPos()) <= radiusSq) {
+			if (origin.squaredDistanceTo(other.getEntityPos()) <= radiusSq) {
 				out.add(other);
 			}
 		}
@@ -91,11 +95,18 @@ public final class ChatHandler {
 		if (!cfg.globalSound) {
 			return;
 		}
-		player.playSoundToPlayer(
-				SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP,
+		ServerWorld world = player.getEntityWorld();
+		RegistryEntry<SoundEvent> sound = world.getRegistryManager()
+				.getOrThrow(RegistryKeys.SOUND_EVENT)
+				.getEntry(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP);
+		world.playSoundFromEntity(
+				null,
+				player,
+				sound,
 				SoundCategory.PLAYERS,
 				cfg.globalSoundVolume,
-				cfg.globalSoundPitch);
+				cfg.globalSoundPitch,
+				world.getRandom().nextLong());
 	}
 
 	private static Text buildLine(

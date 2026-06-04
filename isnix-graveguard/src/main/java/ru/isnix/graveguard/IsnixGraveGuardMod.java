@@ -19,10 +19,12 @@ public class IsnixGraveGuardMod implements DedicatedServerModInitializer {
 
 		GraveGuardConfig cfg = GraveGuardConfig.get();
 		LOGGER.info(
-				"ISNIX GraveGuard {}: защита {} сек, радиус могилы {} блоков, только от игроков={}",
+				"ISNIX GraveGuard {}: защита {} сек, радиус могилы {}, зона смерти {}, запас {} сек, полный иммунитет у могилы={}",
 				cfg.modVersionLabel(),
 				cfg.protectionSeconds,
 				cfg.nearGraveRadius,
-				cfg.protectFromPlayersOnly);
+				cfg.deathSiteRadius,
+				cfg.lootGraceSeconds,
+				cfg.protectAllDamageInLootZone);
 	}
 }

@@ -67,6 +67,28 @@ remote:
 
 EasyAuth **поддерживает Floodgate** (регистрация `/reg`, вход `/login` для Bedrock-ника).
 
+### Один аккаунт: ПК (Java) и телефон (Bedrock)
+
+Без привязки Java и Bedrock — **два разных персонажа** (разные ники/UUID, отдельные `/reg`, разный инвентарь).
+
+**Решение:** Floodgate **player-link** + команда **`/linkaccount`** ([wiki](https://geysermc.org/wiki/floodgate/linking/)).
+
+**На сервере (админ):** в `config/floodgate/config.yml` секция `player-link` как в [config-samples/floodgate/config.yml](../config-samples/floodgate/config.yml) (`enabled: true`, `enable-global-linking: true`). После правки — рестарт. Скрипт деплоя кладёт образец в `config/floodgate/player-link-snippet.yml` на SFTP.
+
+**Игрокам (кратко):**
+
+1. Сначала играй на **ПК (Java)** — создай персонажа, `/reg`, построй базу (это будет «главный» аккаунт).
+2. Зайди с **Bedrock** (`bedrock.isnix.ru`), тот же вайтлист-ник по смыслу (Bedrock-ник может быть с точкой `.` в логе — см. шаг 5).
+3. На **Java** введи `/linkaccount` → в чат придёт **код**.
+4. На **Bedrock** (тот же мир, онлайн): `/linkaccount <код>`.
+5. После успеха оба входа используют **данные Java** (инвентарь, координаты, EasyAuth). Вещи с Bedrock-«клона» до привязки **не переносятся** — переложи в сундук на Java до `/linkaccount` или отвяжи и перенеси (`/unlinkaccount`, если доступно).
+
+**Важно:** привязка ≠ второй ник в вайтлисте (§9.2). Один человек — лучше **link**, а не два ника в WL без уведомления админам.
+
+**Права (обязательно на Fabric):** в консоли LuckPerms — см. [luckperms-floodgate-linkaccount.md](luckperms-floodgate-linkaccount.md). Без `floodgate.command.linkaccount` игрок видит «Неизвестная или неполная команда».
+
+**Если код не срабатывает:** оба клиента в мире онлайн; на Bedrock код вводится как `/linkaccount 123456` (пробел + цифры); код ~5 мин. Альтернатива: `link.geysermc.org` (Java 25565, Bedrock 19132).
+
 ---
 
 ## Шаг 4. DNS (Cloudflare / reg.ru)

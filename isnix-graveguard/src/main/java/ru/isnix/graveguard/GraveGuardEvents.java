@@ -38,7 +38,11 @@ public final class GraveGuardEvents {
 			if (!GraveEntityDetector.isOwnedBy(serverPlayer, entity)) {
 				return ActionResult.PASS;
 			}
-			GraveGuardManager.grantProtection(serverPlayer, true);
+			GraveGuardManager.extendLootZone(serverPlayer);
+			GraveGuardManager.grantProtection(
+					serverPlayer,
+					true,
+					GraveGuardConfig.get().protectAllDamageInLootZone);
 			return ActionResult.PASS;
 		});
 

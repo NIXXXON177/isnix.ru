@@ -29,7 +29,7 @@ public class IsnixPlayerStatsMod implements DedicatedServerModInitializer {
 			}
 			flushTickCounter = 0;
 			for (var player : server.getPlayerManager().getPlayerList()) {
-				SupabaseStatsService.flushSession(player.getGameProfile().getName());
+				SupabaseStatsService.flushSession(player.getGameProfile().name());
 				SupabaseStatsService.syncPlayerMeta(player);
 			}
 		});
@@ -39,7 +39,7 @@ public class IsnixPlayerStatsMod implements DedicatedServerModInitializer {
 			if (player == null) {
 				return;
 			}
-			SupabaseStatsService.onPlayerJoin(player.getGameProfile().getName());
+			SupabaseStatsService.onPlayerJoin(player.getGameProfile().name());
 			SupabaseStatsService.syncPlayerMeta(player);
 		});
 
@@ -48,7 +48,7 @@ public class IsnixPlayerStatsMod implements DedicatedServerModInitializer {
 			if (player == null) {
 				return;
 			}
-			SupabaseStatsService.onPlayerQuit(player.getGameProfile().getName());
+			SupabaseStatsService.onPlayerQuit(player.getGameProfile().name());
 		});
 
 		if (StatsConfig.get().isReady()) {

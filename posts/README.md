@@ -1,34 +1,30 @@
-# Посты для автопубликации
+# Посты для соцсетей
 
-Один файл → **Discord + Telegram + ВК** + подвал из `docs/social-post-footer.txt`.
+Тексты в `posts/*.txt` — **копируй вручную** в ВК, Telegram и Discord. Подвал в конце поста **не** пиши в файле — допиши из `docs/social-post-footer.txt` при публикации.
 
-## Новый пост
+Автопубликация (`scripts/publish_announcement.py`, GitHub Action) — **не используем**; готовые варианты с разметкой проси в чате у ассистента или собери по образцу ниже.
 
-1. Создайте `posts/мой-пост.txt` (обычный текст, эмодзи Unicode, ссылки `https://`).
-2. Не копируйте подвал вручную — скрипт добавит его сам.
-3. Опубликуйте:
+## Примеры
 
-**GitHub (рекомендуется):**  
-Repository → **Actions** → **Publish announcement** → **Run workflow** → укажите `posts/мой-пост.txt`.
+| Файл | Тема |
+|------|------|
+| `bedrock-return.txt` | Bedrock + привязка ПК/телефон `/linkaccount` |
+| `short-bedrock-voiceover.txt` | Озвучка Short про Bedrock |
+| `bedrock-announce.txt` | Bedrock — короткая версия |
+| `referral-discord.txt` | Рефералка |
+| `maintenance-upgrade-vk.txt` | Закрытие на обновление 1.21.11 (ВК) |
+| `maintenance-upgrade-telegram.txt` | То же, Telegram |
+| `maintenance-upgrade-discord.txt` | То же, Discord |
+| `maintenance-upgrade-short.txt` | Короткая версия (сторис / пин) |
+| `maintenance-reopen-vk.txt` | Открытие после апгрейда (ВК) |
+| `maintenance-reopen-discord.txt` | Открытие (Discord) |
 
-**Локально:**
-```powershell
-copy social-publish.env.example social-publish.env
-# заполните токены
-python scripts/publish_announcement.py posts/мой-пост.txt --dry-run
-python scripts/publish_announcement.py posts/мой-пост.txt
-```
+## Разметка по площадкам
 
-## Секреты GitHub
+| Площадка | Жирный | Команды / IP |
+|----------|--------|----------------|
+| **ВК** | без разметки, ЗАГЛАВНЫЕ или эмодзи | как есть |
+| **Telegram** | обычный текст + полные `https://` ссылки (HTML при вставке **не работает**) | `/reg` как есть; жирный — выделить в редакторе → **Ж** |
+| **Discord** | `**текст**` | `` `/reg` `` |
 
-Settings → Secrets and variables → Actions:
-
-| Secret | Где взять |
-|--------|-----------|
-| `DISCORD_WEBHOOK_URL` | Discord: канал → Настройки → Интеграции → Webhooks |
-| `TELEGRAM_BOT_TOKEN` | @BotFather |
-| `TELEGRAM_CHAT_ID` | `@isthisnixxxon` (бот — админ канала) |
-| `VK_ACCESS_TOKEN` | vk.com/isthisnixxxon → Управление → API → ключ (стена) |
-| `VK_GROUP_ID` | Число из `clubXXXXX` (без `club`) |
-
-Подробно: [docs/social-autopublish-ru.md](../docs/social-autopublish-ru.md).
+Подвал: `docs/social-post-footer.txt` (ВК, Discord). Для **Telegram** — `docs/social-post-footer-telegram.txt` (без HTML, ссылки `https://`).

@@ -7,6 +7,6 @@ public final class AdminAccess {
 	}
 
 	public static boolean canUse(ServerCommandSource source) {
-		return source.hasPermissionLevel(LagWatchConfig.get().opPermissionLevel);
+		return PermissionChecks.sourceAtLeast(source, LagWatchConfig.get().opPermissionLevel);
 	}
 }

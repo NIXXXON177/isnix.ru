@@ -1262,7 +1262,7 @@
 				if (statsWrap) statsWrap.hidden = true
 				hint.hidden = false
 				hint.textContent =
-					'Рефералка скоро заработает полностью — админ выполнит SQL на сервере.'
+					'Счётчик рефералов временно недоступен — админ выполнит SQL в Supabase (docs/referral-system-ru.md). Ссылка для друга работает.'
 				return
 			}
 			if (summary && summary.ok && statsWrap && countsEl) {

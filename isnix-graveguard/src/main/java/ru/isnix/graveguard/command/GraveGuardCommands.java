@@ -30,23 +30,31 @@ public final class GraveGuardCommands {
 										+ (cfg.enabled ? "включён" : "выключен")
 										+ ", защита "
 										+ cfg.protectionSeconds
-										+ " сек, радиус "
+										+ " сек, радиус могилы "
 										+ cfg.nearGraveRadius
-										+ " блоков")
+										+ ", зона смерти "
+										+ cfg.deathSiteRadius
+										+ ", запас после выхода "
+										+ cfg.lootGraceSeconds
+										+ " сек")
 								.formatted(Formatting.GREEN),
 						false);
 
 		ServerPlayerEntity player = ctx.getSource().getPlayer();
 		if (player != null) {
 			int remaining = GraveGuardManager.remainingProtectionSeconds(player);
+			int lootZone = GraveGuardManager.remainingLootZoneSeconds(player);
 			boolean eligible = GraveGuardManager.isEligible(player);
+			boolean inZone = GraveGuardManager.isInLootZone(player);
 			ctx.getSource()
 					.sendFeedback(
 							() -> Text.literal("Твой статус: "
-											+ (eligible ? "после смерти (можно у могилы)" : "обычный")
+											+ (eligible ? "после смерти" : "обычный")
+											+ (inZone ? ", у могилы/места смерти" : "")
 											+ ", защита "
 											+ remaining
-											+ " сек")
+											+ " сек"
+											+ (lootZone > 0 ? ", зона лута ещё " + lootZone + " сек" : ""))
 									.formatted(Formatting.GRAY),
 							false);
 		}

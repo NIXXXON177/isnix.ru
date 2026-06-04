@@ -58,4 +58,11 @@ server-sftp.env
 social-publish.env
 server-remote/
 build/modpack-fix/
+build/bedrock-staging/
+build/server-modpack-1.21.11/
 server-remote/mods-pull/
+
+isnix-player-backup/.gradle/
+isnix-player-backup/build/
+isnix-player-backup/run/
+isnix-player-backup/.idea/

@@ -1,0 +1,19 @@
+✅ ISTHISNIXXXON снова открыт!
+
+Обновление завершено. Можно заходить на mc.isnix.ru.
+
+Перед входом обязательно:
+• Minecraft Java 1.21.11 + Fabric (1.21.1 не подойдёт)
+• Сборка ISTHISNIXXXONmods.zip с https://isnix.ru — свежая, не старая
+• ElyPrismLauncher — импорт ZIP или mods в инстанс
+• Ник в вайтлисте — https://isnix.ru/account
+• После входа: /reg и /login (EasyAuth)
+
+Что нового:
+• Create — шестерни, конвейеры, механизмы
+• Farmer's Delight — кухня и фермы
+• Только Java — с телефона (Bedrock) больше не зайти
+
+Проблемы со входом — https://isnix.ru/how-to-play.html или техподдержка на сайте.
+
+Увидимся в мире!

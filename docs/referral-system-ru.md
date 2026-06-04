@@ -25,11 +25,40 @@
 | Друг одобрен | Уведомление пригласившему автоматически |
 | Награда выдана | В админке → Заявки → **«Награда выдана»** (после SQL `supabase-referral-admin-reward.sql`) |
 
-Рекомендуемые награды: косметический префикс на 14–30 дней, лайк `/rep` — **без** предметов и OP.
+Награда для игроков (в постах и Shorts): префикс **`[Реферал]`** на **14 дней** (таб и чат); по желанию админа — лайк `/rep`. **Без** предметов и OP. Выдача вручную после уведомления (обычно в течение суток).
 
 ## Ошибка `referred_by_nick does not exist`
 
 Колонка ещё не создана в Supabase. Быстрый фикс: **[supabase-referral-column-only.sql](supabase-referral-column-only.sql)**. Для полной рефералки — **[supabase-referral-system.sql](supabase-referral-system.sql)**.
+
+## Ошибка `user_notifications_kind_check` (23514)
+
+В БД уже стоят типы уведомлений **обращений** (`support_*` из `supabase-support-tickets.sql`). Старый скрипт рефералки их не включал.
+
+1. Выполни **[supabase-referral-fix-notification-kinds.sql](supabase-referral-fix-notification-kinds.sql)** → **Run**.
+2. Затем в том же редакторе — **остаток** **[supabase-referral-system.sql](supabase-referral-system.sql)** с **§4** (строка `normalize_mc_nick`) до конца файла. §1–§2 можно пропустить — они уже применились.
+
+Или заново весь обновлённый **supabase-referral-system.sql** целиком (безопасно: `if not exists`).
+
+## Ошибка `get_my_referral_summary` → 404 в консоли
+
+Функция RPC **ещё не создана** в Supabase (или не обновился schema cache PostgREST).
+
+1. [Supabase Dashboard](https://supabase.com/dashboard) → проект **yfrlgeztbaebdapdnefy** → **SQL Editor**.
+2. Вставить и выполнить весь файл **[supabase-referral-system.sql](supabase-referral-system.sql)** → **Run**.
+3. Затем **[supabase-referral-admin-reward.sql](supabase-referral-admin-reward.sql)** (кнопка «Награда выдана» в админке).
+4. **Settings → API** → внизу **Reload schema** (если есть) или подождать 1–2 мин.
+5. Проверка:
+
+```sql
+select public.get_my_referral_summary();
+-- или
+select proname from pg_proc where proname = 'get_my_referral_summary';
+```
+
+6. Обновить **account.html** (Ctrl+F5). Если счётчик не появился — в консоли браузера: `localStorage.removeItem('isnix_referral_rpc_missing')` и перезагрузка.
+
+После SQL в кабинете появится строка «Одобрено друзей: …»; 404 в Network исчезнет.
 
 ## Установка (один раз)
 

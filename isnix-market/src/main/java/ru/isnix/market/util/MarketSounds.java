@@ -1,7 +1,9 @@
 package ru.isnix.market.util;
 
 import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -47,20 +49,30 @@ public final class MarketSounds {
 		if (player == null || soundId == null || soundId.isBlank()) {
 			return;
 		}
-		SoundEvent sound = resolveSound(player, soundId);
-		player.playSoundToPlayer(sound, SoundCategory.PLAYERS, volume, pitch);
+		RegistryEntry<SoundEvent> sound = resolveSound(player, soundId);
+		ServerWorld world = player.getEntityWorld();
+		world.playSoundFromEntity(
+				null,
+				player,
+				sound,
+				SoundCategory.PLAYERS,
+				volume,
+				pitch,
+				world.getRandom().nextLong());
 	}
 
-	private static SoundEvent resolveSound(ServerPlayerEntity player, String idString) {
+	private static RegistryEntry<SoundEvent> resolveSound(ServerPlayerEntity player, String idString) {
 		try {
 			Identifier id = Identifier.of(idString);
-			var registry = player.getRegistryManager().get(RegistryKeys.SOUND_EVENT);
+			var registry = player.getRegistryManager().getOrThrow(RegistryKeys.SOUND_EVENT);
 			SoundEvent sound = registry.get(id);
 			if (sound != null) {
-				return sound;
+				return registry.getEntry(sound);
 			}
 		} catch (Exception ignored) {
 		}
-		return SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP;
+		return player.getRegistryManager()
+				.getOrThrow(RegistryKeys.SOUND_EVENT)
+				.getEntry(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP);
 	}
 }

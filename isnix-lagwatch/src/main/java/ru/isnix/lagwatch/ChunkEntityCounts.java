@@ -5,6 +5,7 @@ import net.minecraft.entity.ItemEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.Box;
+import net.minecraft.world.Heightmap;
 
 public final class ChunkEntityCounts {
 	public final int totalNonPlayer;
@@ -20,13 +21,8 @@ public final class ChunkEntityCounts {
 		int minZ = chunkZ << 4;
 		int maxX = minX + 15;
 		int maxZ = minZ + 15;
-		Box box = new Box(
-				minX,
-				world.getBottomY(),
-				minZ,
-				maxX + 1.0,
-				world.getTopY(),
-				maxZ + 1.0);
+		int topY = world.getTopY(Heightmap.Type.MOTION_BLOCKING, minX, minZ) + 1;
+		Box box = new Box(minX, world.getBottomY(), minZ, maxX + 1.0, topY, maxZ + 1.0);
 
 		int total = 0;
 		int items = 0;

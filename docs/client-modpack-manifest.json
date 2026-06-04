@@ -1,11 +1,11 @@
 {
   "name": "ISTHISNIXXXON Client Modpack",
-  "minecraft": "1.21.1",
-  "loader": "Fabric",
+  "minecraft": "1.21.11",
+  "loader": "Fabric 0.18.1",
   "java": "21",
   "launcher": "ElyPrismLauncher (recommended)",
-  "version": "2.1.0-client",
-  "built": "2026-06-01T21:30:32Z",
-  "mods_count": 33,
-  "note": "Player client only: required parity mods + client UX (Sodium, Xaero, etc.). Server-only (EasyAuth, TAB, trade, FallingTree, isnix-market, admin) excluded."
+  "version": "3.0.0-client-12111",
+  "built": "2026-06-04T10:10:00Z",
+  "mods_count": 31,
+  "note": "Java only. Create-Fly + FD + client UX. Bedrock removed."
 }

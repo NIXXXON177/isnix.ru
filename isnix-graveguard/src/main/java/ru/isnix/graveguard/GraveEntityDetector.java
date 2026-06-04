@@ -37,7 +37,7 @@ public final class GraveEntityDetector {
 
 	public static boolean isNearOwnGrave(ServerPlayerEntity player, double radius) {
 		Box box = player.getBoundingBox().expand(radius);
-		for (Entity entity : player.getServerWorld().getOtherEntities(player, box, GraveEntityDetector::isGraveEntity)) {
+		for (Entity entity : player.getEntityWorld().getOtherEntities(player, box, GraveEntityDetector::isGraveEntity)) {
 			if (isOwnedBy(player, entity)) {
 				return true;
 			}
@@ -90,11 +90,24 @@ public final class GraveEntityDetector {
 		if (deathPos == null) {
 			return false;
 		}
-		Vec3d gravePos = entity.getPos();
+		double radius = Math.max(GraveGuardConfig.get().deathSiteRadius, 12.0);
+		Vec3d gravePos = entity.getEntityPos();
 		double dx = gravePos.x - (deathPos.getX() + 0.5);
 		double dy = gravePos.y - deathPos.getY();
 		double dz = gravePos.z - (deathPos.getZ() + 0.5);
-		return dx * dx + dy * dy + dz * dz <= 12.0 * 12.0;
+		return dx * dx + dy * dy + dz * dz <= radius * radius;
+	}
+
+	/** Игрок в радиусе последней смерти (fallback, если VT не повесил теги на могилу). */
+	public static boolean isPlayerNearDeathSite(ServerPlayerEntity player, double radius) {
+		BlockPos deathPos = GraveGuardManager.getLastDeathPos(player.getUuid());
+		if (deathPos == null) {
+			return false;
+		}
+		double dx = player.getX() - (deathPos.getX() + 0.5);
+		double dy = player.getY() - deathPos.getY();
+		double dz = player.getZ() - (deathPos.getZ() + 0.5);
+		return dx * dx + dy * dy + dz * dz <= radius * radius;
 	}
 
 	private static boolean hasGraveTag(Entity entity) {

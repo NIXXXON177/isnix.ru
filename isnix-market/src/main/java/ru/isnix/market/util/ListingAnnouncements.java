@@ -54,7 +54,7 @@ public final class ListingAnnouncements {
 		return Text.literal("купить")
 				.formatted(Formatting.GREEN, Formatting.BOLD, Formatting.UNDERLINE)
 				.styled(style -> style
-						.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, command))
-						.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, hover)));
+						.withClickEvent(new ClickEvent.RunCommand(command))
+						.withHoverEvent(new HoverEvent.ShowText(hover)));
 	}
 }

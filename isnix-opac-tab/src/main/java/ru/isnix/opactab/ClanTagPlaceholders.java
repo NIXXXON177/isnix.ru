@@ -21,7 +21,7 @@ public final class ClanTagPlaceholders {
 			}
 			ClanTagCache.put(serverPlayer);
 			return PlaceholderResult.value(
-					ClanTagCache.resolve(serverPlayer.getServer(), serverPlayer.getUuid()));
+					ClanTagCache.resolve(serverPlayer.getEntityWorld().getServer(), serverPlayer.getUuid()));
 		});
 	}
 }

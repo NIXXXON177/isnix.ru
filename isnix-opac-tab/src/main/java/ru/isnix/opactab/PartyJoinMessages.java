@@ -36,7 +36,7 @@ public final class PartyJoinMessages {
 		Matcher join = OPAC_JOIN.matcher(plain.trim());
 		if (join.matches()) {
 			String nick = join.group(2);
-			var server = receiver.getServer();
+			var server = receiver.getEntityWorld().getServer();
 			ServerPlayerEntity joined = PlayerDisplayFormat.findByNick(server, nick);
 			if (joined == null) {
 				return message;

@@ -1,0 +1,12 @@
+# config/floodgate/config.yml — player-link для ISTHISNIXXXON
+# Полный файл на сервере содержит key.pem и metrics — мержите только секцию player-link.
+# После floodgate-sqlite-database.jar в mods/: enable-own-linking: true
+
+player-link:
+  enabled: true
+  require-link: false
+  enable-global-linking: true
+  enable-own-linking: true
+  allowed: true
+  link-code-timeout: 300
+  type: sqlite

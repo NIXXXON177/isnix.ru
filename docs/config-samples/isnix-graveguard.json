@@ -1,9 +1,12 @@
 {
 	"enabled": true,
 	"opPermissionLevel": 4,
-	"protectionSeconds": 12,
+	"protectionSeconds": 30,
 	"eligibleMinutesAfterDeath": 10,
-	"nearGraveRadius": 6.0,
+	"nearGraveRadius": 10.0,
+	"deathSiteRadius": 14.0,
+	"lootGraceSeconds": 60,
+	"protectAllDamageInLootZone": true,
 	"protectFromPlayersOnly": true,
 	"notifyPlayer": true,
 	"extraGraveEntityTags": ["graves.grave", "graves.display"]

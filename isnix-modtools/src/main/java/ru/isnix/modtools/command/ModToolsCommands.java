@@ -84,16 +84,16 @@ public final class ModToolsCommands {
 			return 0;
 		}
 		ServerPlayerEntity actor = ctx.getSource().getPlayer();
-		String actorName = actor != null ? actor.getGameProfile().getName() : "Console";
+		String actorName = actor != null ? actor.getGameProfile().name() : "Console";
 		long until = System.currentTimeMillis() + ms;
 		IsnixModToolsMod.storage().setChatMute(
 				target.getUuid(),
-				target.getGameProfile().getName(),
+				target.getGameProfile().name(),
 				until,
 				actorName,
 				reason);
 		broadcastAdmin(ctx.getSource(),
-				"Чат-мут " + target.getGameProfile().getName()
+				"Чат-мут " + target.getGameProfile().name()
 						+ " на " + durationRaw
 						+ (reason.isBlank() ? "" : " («" + reason + "»)"));
 		target.sendMessage(TextColors.parse(
@@ -104,7 +104,7 @@ public final class ModToolsCommands {
 	private static int unmuteChat(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
 		ServerPlayerEntity target = EntityArgumentType.getPlayer(ctx, "player");
 		IsnixModToolsMod.storage().clearChatMute(target.getUuid());
-		broadcastAdmin(ctx.getSource(), "Снят чат-мут с " + target.getGameProfile().getName());
+		broadcastAdmin(ctx.getSource(), "Снят чат-мут с " + target.getGameProfile().name());
 		target.sendMessage(Text.literal("Чат-мут снят.").formatted(Formatting.GREEN), false);
 		return 1;
 	}
@@ -120,18 +120,18 @@ public final class ModToolsCommands {
 		String lpDur = DurationParser.toLuckPermsDuration(durationRaw);
 		LuckPermsCommandBridge.muteVoice(
 				ctx.getSource().getServer(),
-				target.getGameProfile().getName(),
+				target.getGameProfile().name(),
 				lpDur);
 		ServerPlayerEntity actor = ctx.getSource().getPlayer();
-		String actorName = actor != null ? actor.getGameProfile().getName() : "Console";
+		String actorName = actor != null ? actor.getGameProfile().name() : "Console";
 		IsnixModToolsMod.storage().setVoiceMute(
 				target.getUuid(),
-				target.getGameProfile().getName(),
+				target.getGameProfile().name(),
 				System.currentTimeMillis() + ms,
 				actorName,
 				reason);
 		broadcastAdmin(ctx.getSource(),
-				"Мут микрофона " + target.getGameProfile().getName() + " на " + durationRaw);
+				"Мут микрофона " + target.getGameProfile().name() + " на " + durationRaw);
 		target.sendMessage(TextColors.parse(
 				"&cВам запрещено говорить в голосовом чате на &f" + durationRaw), false);
 		return 1;
@@ -139,7 +139,7 @@ public final class ModToolsCommands {
 
 	private static int unmuteVoice(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
 		ServerPlayerEntity target = EntityArgumentType.getPlayer(ctx, "player");
-		String name = target.getGameProfile().getName();
+		String name = target.getGameProfile().name();
 		LuckPermsCommandBridge.unmuteVoice(ctx.getSource().getServer(), name);
 		IsnixModToolsMod.storage().clearVoiceMute(target.getUuid());
 		IsnixModToolsMod.storage().clearVoiceMuteByName(name);
@@ -157,7 +157,7 @@ public final class ModToolsCommands {
 		}
 		IsnixModToolsMod.storage().freeze(target, actorName(ctx), reason);
 		FreezeManager.snapToAnchor(target);
-		broadcastAdmin(ctx.getSource(), "Заморожен " + target.getGameProfile().getName());
+		broadcastAdmin(ctx.getSource(), "Заморожен " + target.getGameProfile().name());
 		target.sendMessage(TextColors.parse(ModToolsConfig.get().frozenMessage), false);
 		return 1;
 	}
@@ -169,14 +169,14 @@ public final class ModToolsCommands {
 			return 0;
 		}
 		IsnixModToolsMod.storage().unfreeze(target.getUuid());
-		broadcastAdmin(ctx.getSource(), "Разморожен " + target.getGameProfile().getName());
+		broadcastAdmin(ctx.getSource(), "Разморожен " + target.getGameProfile().name());
 		target.sendMessage(Text.literal("Заморозка снята.").formatted(Formatting.GREEN), false);
 		return 1;
 	}
 
 	private static String actorName(CommandContext<ServerCommandSource> ctx) {
 		ServerPlayerEntity actor = ctx.getSource().getPlayer();
-		return actor != null ? actor.getGameProfile().getName() : "Console";
+		return actor != null ? actor.getGameProfile().name() : "Console";
 	}
 
 	private static void broadcastAdmin(ServerCommandSource source, String line) {

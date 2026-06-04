@@ -40,7 +40,7 @@ public final class SupabaseStatsService {
 		if (!config.isReady()) {
 			return;
 		}
-		final String nick = player.getGameProfile().getName().trim();
+		final String nick = player.getGameProfile().name().trim();
 		if (nick.isEmpty()) {
 			return;
 		}

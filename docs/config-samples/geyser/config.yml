@@ -1,0 +1,16 @@
+# config/Geyser-Fabric/config.yml — ISTHISNIXXXON (Play2GO)
+# Деплой: python scripts/deploy_bedrock_geyser.py
+
+bedrock:
+  port: 20545
+  address: 0.0.0.0
+  motd:
+    primary-motd: "ISTHISNIXXXON"
+    secondary-motd: "Вайтлист: isnix.ru · Bedrock"
+
+remote:
+  address: 127.0.0.1
+  port: 20122
+  auth-type: floodgate
+
+# Java Fabric слушает server-port=20122 (не 25565)

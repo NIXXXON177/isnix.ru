@@ -30,9 +30,11 @@ lp group default meta setprefix 10 "&7[Игрок] &r"
 lp group admin meta setprefix 200 "&c&l[Админ] &r"
 lp group admin permission set isthis.boldnick true
 lp group default permission set essentialcommands.randomteleport true
+lp group default permission set essentialcommands.enderchest true
 ```
 
-Команда `/rtp` для всех в `default`: **[luckperms-rtp-default.md](luckperms-rtp-default.md)** (нужен `use_permissions_api=true` в Essential Commands).
+Команда `/rtp` для всех в `default`: **[luckperms-rtp-default.md](luckperms-rtp-default.md)**.  
+Команда `/enderchest`: **[luckperms-enderchest-default.md](luckperms-enderchest-default.md)** (нужен `use_permissions_api=true` в Essential Commands).
 
 ---
 

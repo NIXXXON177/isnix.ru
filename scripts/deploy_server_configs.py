@@ -18,12 +18,22 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 SAMPLES = ROOT / "docs" / "config-samples"
 REMOTE_TAB = ROOT / "server-remote" / "config" / "tab"
+SAMPLES_TAB = SAMPLES / "tab"
 SFTP = ROOT / "scripts" / "play2go_sftp.py"
 
-# TAB: используем подготовленные server-remote (после pull + правок) или samples
+
+def tab_config(name: str) -> Path:
+    """server-remote после pull, иначе эталон из docs/config-samples/tab/."""
+    remote = REMOTE_TAB / name
+    if remote.is_file():
+        return remote
+    return SAMPLES_TAB / name
+
+
+# TAB: server-remote (после pull) или samples
 DEPLOYS: list[tuple[Path, str, str]] = [
-    (REMOTE_TAB / "groups.yml", "config/tab/groups.yml", "tab"),
-    (REMOTE_TAB / "users.yml", "config/tab/users.yml", "tab"),
+    (tab_config("groups.yml"), "config/tab/groups.yml", "tab"),
+    (tab_config("users.yml"), "config/tab/users.yml", "tab"),
     (SAMPLES / "isnix-chat.json", "config/isnix-chat.json", "isnix"),
     (SAMPLES / "isnix-server-messages.json", "config/isnix-server-messages.json", "isnix"),
     (SAMPLES / "isnix-market.json", "config/isnix-market/isnix-market.json", "isnix"),

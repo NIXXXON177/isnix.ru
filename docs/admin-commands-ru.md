@@ -173,6 +173,19 @@ lp sync
 | `/graveguard status` | Статус мода |
 | `/graveguard reload` | Перечитать `config/isnix-graveguard.json` |
 
+## 4.2. Бэкап инвентаря (мод isnix-player-backup)
+
+Автоснимки вещей игроков (JSON на диске). Подробно: [player-backup-ru.md](player-backup-ru.md)
+
+| Команда | Назначение |
+|---------|------------|
+| `/playerbackup status` | Статус, интервал, число снимков |
+| `/playerbackup snapshot [игрок]` | Снимок инвентаря сейчас |
+| `/playerbackup snapshotall` | Снимок всех онлайн |
+| `/playerbackup prune` | Удалить снимки старше `keepDays` |
+
+Только **`/op`** (список операторов сервера) или консоль Play2GO. Группа LuckPerms `admin` **без** `/op` — команды недоступны. Конфиг: `config/isnix-player-backup.json`.
+
 ---
 
 ## 5. Полезные команды модов (Fabric)
@@ -182,18 +195,27 @@ lp sync
 | Команда | Назначение |
 |---------|------------|
 | `/rtp` | Случайный телепорт (право: `essentialcommands.randomteleport`) |
+| `/enderchest` | Открыть эндер-сундук (право: `essentialcommands.enderchest`) |
 | `/warp tp <имя>` | Телепорт на варп (все игроки) |
 | `/warp list` | Список варпов |
 | `/warp set <имя>` | **Только админ** — создать варп |
 | `/warp delete <имя>` | **Только админ** — удалить варп |
 | `/sell` | Рынок isnix-market (если мод стоит) |
+| `/geyser …` | Bedrock-мост (если Geyser установлен) |
+| `/fwhitelist add <ник>` | Вайтлист Bedrock-игрока (Floodgate) |
+
+**Bedrock:** порт **20545** UDP, Java **20122** — [bedrock-geyser-play2go-ru.md](bedrock-geyser-play2go-ru.md).
 
 Права `/rtp` для всех: [luckperms-rtp-default.md](luckperms-rtp-default.md)
+
+Права `/enderchest` для всех: [luckperms-enderchest-default.md](luckperms-enderchest-default.md)
 
 Права варпов (создание только admin): [luckperms-warp-admin.md](luckperms-warp-admin.md)
 
 ```text
 lp group default permission set essentialcommands.randomteleport true
+lp group default permission set essentialcommands.enderchest true
+lp sync
 ```
 
 ---

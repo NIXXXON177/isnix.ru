@@ -7,6 +7,6 @@ public final class AdminAccess {
 	}
 
 	public static boolean canUse(ServerCommandSource source) {
-		return source.hasPermissionLevel(GraveGuardConfig.get().opPermissionLevel);
+		return PermissionChecks.sourceAtLeast(source, GraveGuardConfig.get().opPermissionLevel);
 	}
 }

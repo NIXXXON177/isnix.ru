@@ -1,15 +1,18 @@
 # Сценарии Shorts — ISTHISNIXXXON
 
-Три ролика по 45–60 секунд. Мягкое начало: привет + **Судная ночь** и обновления на сервере. Конец: заявка в вайтлист на сайте.
+Пять роликов по **35–50 секунд** (рефералка и Bedrock — без длинных статичных кадров). Конец каждого: вайтлист только на сайте.
+
+**Монтаж (важно после ролика про /sell):** первые **2 сек** — движение (бег, GUI, скролл сайта). Не сидеть на месте дольше **3 сек**. Смена кадра каждые **2–3 сек**. IP и ссылки — **по центру экрана**, не внизу (кнопки Shorts перекрывают низ).
 
 ### Общее вступление (можно одинаковое во всех трёх)
 
 > Всем привет! На **ISTHISNIXXXON** недавно прошла **Судная ночь** — после неё на сервере и на сайте появилось много нового. Если давно не заходил или только слышал про проект — коротко покажу, …
 
-**IP:** `mc.isnix.ru`  
+**Java:** `mc.isnix.ru` · Fabric 1.21.1  
+**Bedrock:** `bedrock.isnix.ru` · порт **20545** · 1.21.x  
 **Сайт:** https://isnix.ru  
 **Вайтлист:** https://isnix.ru/account.html  
-**Сборка:** https://isnix.ru/how-to-play.html  
+**Как играть (Java + Bedrock):** https://isnix.ru/how-to-play.html  
 
 ---
 
@@ -116,6 +119,82 @@
 
 ---
 
+## Short №5 — Bedrock (телефон / консоль)
+
+Озвучка для телефона: **posts/short-bedrock-voiceover.txt**
+
+**Название:** «Bedrock на ISTHISNIXXXON — зайди с телефона | Minecraft 1.21»
+
+**Длина:** ~50 сек
+
+### Озвучка
+
+> Всем привет! На **ISTHISNIXXXON** снова можно играть **с телефона, планшета и консоли** — это Bedrock, **тот же мир**, что на компьютере.
+>
+> Сборка модов на телефон **не нужна** — только Minecraft Bedrock **1.21**. В «Добавить сервер» пиши: **bedrock.isnix.ru**. Если сам не подключается — порт **20545**.
+>
+> Вайтлист — как у всех, только на **isnix.ru**: регистрация, заявка в кабинете. Ник укажи **как в Xbox или Bedrock**. После одобрения заходи и напиши **/reg**, потом **/login**.
+>
+> Играешь и на **ПК**, и на телефоне? Сначала **mc.isnix.ru**, потом **bedrock.isnix.ru**. На ПК: **/linkaccount** — код в чат. На телефоне: **/linkaccount 123456** (свой код). Не работает — **link.geysermc.org** (Java 25565, Bedrock 19132).
+>
+> Хочешь к нам — **isnix.ru**, заявка в кабинете. В ВК и Telegram заявки не берём. **Java:** mc.isnix.ru · **Bedrock:** bedrock.isnix.ru. Увидимся!
+
+### Кадры
+
+| Сек | Кадр |
+|-----|------|
+| 0–3 | Бег / обзор мира (движение с первой секунды) |
+| 3–10 | Экран телефона: «Добавить сервер» → `bedrock.isnix.ru` |
+| 10–16 | Подключение, вход в мир (чат `/reg` `/login` крупно) |
+| 16–22 | isnix.ru → account.html — заявка, ник |
+| 22–30 | ПК: `mc.isnix.ru` → чат `/linkaccount` → код |
+| 30–38 | Телефон: `/linkaccount` + код (или схема «ПК → телефон» текстом) |
+| 38–50 | Финал **по центру:** `bedrock.isnix.ru` · `mc.isnix.ru` · `isnix.ru/account.html` |
+
+### Текст на экране (по ходу)
+
+`Bedrock · без сборки` → `bedrock.isnix.ru : 20545` → `вайтлист isnix.ru` → `/linkaccount` → финал
+
+### Концовка (проще, чем в старых Shorts)
+
+> Заявка на **isnix.ru**. **ПК:** mc.isnix.ru · **телефон:** bedrock.isnix.ru
+
+**На экране (5 сек, по центру):**  
+`isnix.ru/account.html` · `bedrock.isnix.ru` · `mc.isnix.ru`
+
+### Описание под YouTube
+
+```
+Bedrock снова на ISTHISNIXXXON — телефон, планшет, Xbox, Switch.
+
+• Сервер: bedrock.isnix.ru (порт 20545)
+• Версия Bedrock 1.21.x, сборка Fabric не нужна
+• Вайтлист: https://isnix.ru/account.html
+• После входа: /reg и /login
+• Один персонаж ПК + телефон: /linkaccount
+
+Java: mc.isnix.ru · 1.21.1 Fabric
+Подробно: https://isnix.ru/how-to-play.html
+
+#minecraft #bedrock #ISTHISNIXXXON #minecraftсервер #shorts
+```
+
+### Теги (через запятую)
+
+minecraft, minecraft bedrock, bedrock edition, minecraft 1.21, ISTHISNIXXXON, isnix, isnix.ru, bedrock.isnix.ru, mc.isnix.ru, minecraft сервер, майнкрафт с телефона, minecraft mobile, minecraft pe, minecraft xbox, minecraft switch, geyser, minecraft crossplay, вайтлист minecraft, minecraft russia, minecraft shorts, minecraft гайд, linkaccount, minecraft java and bedrock
+
+---
+
+## Short №4 — Рефералка
+
+Полный съёмочный лист: **[shorts-referral-ru.md](shorts-referral-ru.md)** · озвучка для телефона: **posts/short-referral-voiceover.txt**
+
+**Название:** «Приведи друга — префикс [Реферал] | ISTHISNIXXXON Minecraft 1.21.1»
+
+**Суть:** 0–2 с движение → сайт (ссылка, заявка) → колокольчик → `[Реферал]` 14 дней → финал по центру. Без мема и статики >3 с.
+
+---
+
 ## Описания под видео
 
 **№1**  
@@ -136,8 +215,22 @@ isnix.ru/account.html
 isnix.ru/account.html · isnix.ru/how-to-play.html
 ```
 
+**№4 — рефералка**  
+```
+Приведи друга — префикс [Реферал] на 14 дней. Ссылка в кабинете isnix.ru.
+isnix.ru/account.html · mc.isnix.ru
+```
+
+**№5 — Bedrock**  
+```
+Bedrock: bedrock.isnix.ru · порт 20545 · /reg /login · /linkaccount с ПК.
+isnix.ru/account.html · mc.isnix.ru · isnix.ru/how-to-play.html
+```
+
 ## Порядок публикации
 
 1. Сайт  
 2. /trade  
 3. /sell  
+4. Рефералка (по желанию)  
+5. **Bedrock** (можно сразу после постов в ВК/TG про Bedrock)

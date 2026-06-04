@@ -1,0 +1,21 @@
+{
+	"schemaVersion": 1,
+	"id": "isnix_player_backup",
+	"version": "${version}",
+	"name": "ISNIX Player Backup",
+	"description": "Автоснимки инвентаря игроков для восстановления после сбоев",
+	"authors": ["ISNIX"],
+	"license": "MIT",
+	"environment": "server",
+	"entrypoints": {
+		"server": [
+			"ru.isnix.playerbackup.IsnixPlayerBackupMod"
+		]
+	},
+	"depends": {
+		"fabricloader": ">=0.16.0",
+		"minecraft": "~1.21.1111",
+		"java": ">=21",
+		"fabric-api": "*"
+	}
+}

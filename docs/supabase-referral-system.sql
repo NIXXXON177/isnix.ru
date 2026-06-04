@@ -31,7 +31,7 @@ create index if not exists referrals_referrer_user_id_idx
 create index if not exists referrals_status_idx
 	on public.referrals (status);
 
--- 3. Новый тип уведомления
+-- 3. Новый тип уведомления (все kind из support-tickets + referral)
 alter table public.user_notifications drop constraint if exists user_notifications_kind_check;
 
 alter table public.user_notifications add constraint user_notifications_kind_check
@@ -42,6 +42,10 @@ alter table public.user_notifications add constraint user_notifications_kind_che
 			'whitelist_rejected',
 			'whitelist_admin_message',
 			'admin_new_application',
+			'support_ticket_created',
+			'support_admin_reply',
+			'support_user_reply',
+			'admin_new_support_ticket',
 			'referral_friend_approved'
 		)
 	);

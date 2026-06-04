@@ -14,13 +14,19 @@ public final class GraveGuardConfig {
 
 	public boolean enabled = true;
 	public int opPermissionLevel = 4;
-	/** Иммунитет к урону (сек), обновляется у своей могилы после смерти. */
-	public int protectionSeconds = 12;
-	/** Сколько минут после смерти игрок считается «идущим к могиле». */
+	/** Иммунитет к урону (сек), продлевается в зоне лута. */
+	public int protectionSeconds = 30;
+	/** Сколько минут после смерти действует логика могилы. */
 	public int eligibleMinutesAfterDeath = 10;
-	/** Радиус (блоки) вокруг игрока для поиска своей могилы. */
-	public double nearGraveRadius = 6.0;
-	/** Блокировать только урон от других игроков (мобы/лава проходят). */
+	/** Радиус поиска сущности могилы (блоки). */
+	public double nearGraveRadius = 10.0;
+	/** Радиус вокруг точки смерти, если сущность могилы не найдена. */
+	public double deathSiteRadius = 14.0;
+	/** После выхода из зоны — ещё столько секунд защиты (успеть забрать вещи). */
+	public int lootGraceSeconds = 60;
+	/** В зоне лута блокировать весь урон (мобы, лава), не только PvP. */
+	public boolean protectAllDamageInLootZone = true;
+	/** Блокировать только урон от игроков вне полной зоны лута. */
 	public boolean protectFromPlayersOnly = true;
 	/** Сообщение в action bar при активации защиты. */
 	public boolean notifyPlayer = true;

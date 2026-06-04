@@ -3,7 +3,8 @@
 ## До Stop
 
 - [ ] Сообщение в ВК/Discord: «Рестарт в 00:00, ~2–3 мин»
-- [ ] Бэкап в Play2GO → **Backups** → Create
+- [ ] Бэкап в Play2GO → **Backups** → Create (или автобэкап по расписанию)
+- [ ] Локально (раз в сутки): `python scripts/backup_player_data.py` — см. [player-backup-ru.md](player-backup-ru.md)
 - [ ] В игре (по желанию): `/tab reload`
 
 ## Stop → Start

@@ -292,7 +292,7 @@ public class CreateListingScreenHandler extends GenericContainerScreenHandler {
 		container.setStack(SLOT_SALE, ItemStack.EMPTY);
 		container.setStack(SLOT_PRICE, ItemStack.EMPTY);
 		player.sendMessage(ListingMessages.listed(sale, price, listing.id()), false);
-		ListingAnnouncements.broadcastNewListing(player.getServer(), listing);
+		ListingAnnouncements.broadcastNewListing(player.getEntityWorld().getServer(), listing);
 		player.closeHandledScreen();
 		MarketScreens.openMarket(player, 0, MarketSession.viewMode(player));
 	}

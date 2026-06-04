@@ -11,7 +11,7 @@ public final class AdminAccess {
 	 * Консоль, OP (уровень 4) или группа LuckPerms {@code admin}.
 	 */
 	public static boolean canUseModTools(ServerCommandSource source) {
-		if (source.hasPermissionLevel(ModToolsConfig.get().opPermissionLevel)) {
+		if (PermissionChecks.sourceAtLeast(source, ModToolsConfig.get().opPermissionLevel)) {
 			return true;
 		}
 		if (source.getEntity() instanceof ServerPlayerEntity player) {

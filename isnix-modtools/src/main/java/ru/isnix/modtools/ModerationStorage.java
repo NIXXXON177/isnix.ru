@@ -204,10 +204,10 @@ public final class ModerationStorage {
 		entry.z = player.getZ();
 		entry.yaw = player.getYaw();
 		entry.pitch = player.getPitch();
-		entry.world = player.getWorld().getRegistryKey().getValue().toString();
+		entry.world = player.getEntityWorld().getRegistryKey().getValue().toString();
 		entry.actor = actor;
 		entry.reason = reason == null ? "" : reason;
-		entry.playerName = player.getGameProfile().getName();
+		entry.playerName = player.getGameProfile().name();
 		frozen.put(player.getUuid().toString(), entry);
 		player.setVelocity(0, 0, 0);
 		save();

@@ -82,7 +82,7 @@ public final class PurchaseService {
 		}
 
 		InventoryHelper.giveOrDrop(buyer, saleGive);
-		paySeller(buyer.getServer(), listing, saleGive, pricePay);
+		paySeller(buyer.getEntityWorld().getServer(), listing, saleGive, pricePay);
 		MarketSounds.playPurchase(buyer);
 
 		buyer.sendMessage(

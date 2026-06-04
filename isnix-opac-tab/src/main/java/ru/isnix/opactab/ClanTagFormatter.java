@@ -36,7 +36,7 @@ public final class ClanTagFormatter {
 		if (player == null) {
 			return "";
 		}
-		return formatForMemberUuid(player.getServer(), player.getUuid());
+		return formatForMemberUuid(player.getEntityWorld().getServer(), player.getUuid());
 	}
 
 	/** Тег по UUID участника — работает и для оффлайн игроков в TAB после рестарта. */

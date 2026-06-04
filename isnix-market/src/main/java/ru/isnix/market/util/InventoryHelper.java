@@ -19,7 +19,7 @@ public final class InventoryHelper {
 			return 0;
 		}
 		int total = 0;
-		for (ItemStack stack : player.getInventory().main) {
+		for (ItemStack stack : player.getInventory().getMainStacks()) {
 			if (ItemStack.areItemsAndComponentsEqual(stack, template)) {
 				total += stack.getCount();
 			}
@@ -32,7 +32,7 @@ public final class InventoryHelper {
 		if (!hasItems(player, template)) {
 			return false;
 		}
-		DefaultedList<ItemStack> main = player.getInventory().main;
+		DefaultedList<ItemStack> main = player.getInventory().getMainStacks();
 		for (int i = 0; i < main.size() && needed > 0; i++) {
 			ItemStack stack = main.get(i);
 			if (stack.isEmpty() || !ItemStack.areItemsAndComponentsEqual(stack, template)) {

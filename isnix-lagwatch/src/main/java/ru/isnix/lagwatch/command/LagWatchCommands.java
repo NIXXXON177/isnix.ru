@@ -81,7 +81,7 @@ public final class LagWatchCommands {
 			return 0;
 		}
 
-		ServerWorld world = player.getServerWorld();
+		ServerWorld world = player.getEntityWorld();
 		int centerX = player.getBlockX() >> 4;
 		int centerZ = player.getBlockZ() >> 4;
 

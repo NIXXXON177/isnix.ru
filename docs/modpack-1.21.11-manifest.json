@@ -1,0 +1,123 @@
+{
+  "name": "ISTHISNIXXXON 1.21.11",
+  "minecraft": "1.21.11",
+  "fabric_loader": "0.18.1",
+  "java": 21,
+  "java_only": true,
+  "notes": "Bedrock/Geyser сняты. Create = create-fly 6.0.9 + аддоны Fabric 1.21.11. isnix-* из репозитория.",
+
+  "create_stack": {
+    "core": {
+      "slug": "create-fly",
+      "version_hint": "1.21.11-6.0.9-5",
+      "server_jar_suffix": "-server.jar",
+      "client_jar": "create-fly-1.21.11-6.0.9-5.jar",
+      "server_jar": "create-fly-1.21.11-6.0.9-5-server.jar",
+      "note": "Полный Create: шестерни, конвейеры, поезда, карьеры. На сервер — *-server.jar, у игроков — обычный jar."
+    },
+    "integration": [
+      { "slug": "farmers-delight-refabricated", "note": "Встроенная интеграция с Create Fly (миксер, пила)" },
+      { "slug": "more-delight", "note": "Рецепты FD + Create" }
+    ],
+    "addons_modrinth": [
+      { "slug": "create-handy-recipes", "required": true },
+      { "slug": "create-useful-recipes", "required": true },
+      { "slug": "create-extra-recipes-kuma", "required": true },
+      { "slug": "create-nerfad", "required": false, "note": "Баланс/упрощение Create — по желанию" }
+    ],
+    "not_available_fabric_12111": [
+      "Create: Steam 'n' Rails (нет под 1.21.11 Fabric)",
+      "Create: Designed Decor (NeoForge)",
+      "Create Crafts & Additions (Forge/старые версии)",
+      "Create: New Foods (пока только 1.21.10 — можно протестировать позже)"
+    ]
+  },
+
+  "modrinth_server": [
+    { "slug": "fabric-api", "required": true },
+    { "slug": "fabric-language-kotlin", "required": true },
+    { "slug": "create-fly", "required": true, "server_variant": true },
+    { "slug": "create-handy-recipes", "required": true },
+    { "slug": "create-useful-recipes", "required": true },
+    { "slug": "create-extra-recipes-kuma", "required": true },
+    { "slug": "farmers-delight-refabricated", "required": true },
+    { "slug": "more-delight", "required": true },
+    { "slug": "simple-voice-chat", "required": true },
+    { "slug": "open-parties-and-claims", "required": true },
+    { "slug": "styled-chat", "required": true },
+    { "slug": "essential-commands", "required": true },
+    { "slug": "luckperms", "required": true },
+    { "slug": "easyauth", "required": true },
+    { "slug": "grimac", "required": true },
+    { "slug": "servercore", "required": true },
+    { "slug": "lithium", "required": true },
+    { "slug": "spark", "required": true },
+    { "slug": "krypton", "required": true },
+    { "slug": "placeholder-api", "required": true },
+    { "slug": "tab-was-taken", "required": true, "version_hint": "5.5.0" },
+    { "slug": "architectury-api", "required": true },
+    { "slug": "cloth-config", "required": true },
+    { "slug": "forge-config-api-port", "required": true },
+    { "slug": "collective", "required": true },
+    { "slug": "jamlib", "required": true },
+    { "slug": "fastrtp", "required": true },
+    { "slug": "fallingtree", "required": true },
+    { "slug": "chunky", "required": true },
+    { "slug": "ledger", "required": true },
+    { "slug": "fsit", "required": true },
+    { "slug": "vanish", "required": true },
+    { "slug": "worldedit", "required": true },
+    { "slug": "xaeros-map-server-utils", "required": true },
+    { "slug": "invview", "required": false },
+    { "slug": "easywhitelist", "required": false }
+  ],
+
+  "modrinth_client_extra": [
+    { "slug": "sodium", "required": true },
+    { "slug": "iris", "required": true },
+    { "slug": "jade", "required": true },
+    { "slug": "modmenu", "required": true },
+    { "slug": "xaeros-minimap", "required": true },
+    { "slug": "xaeros-world-map", "required": true },
+    { "slug": "appleskin", "required": false },
+    { "slug": "shulkerboxtooltip", "required": false },
+    { "slug": "inventory-profiles-next", "required": false },
+    { "slug": "mouse-tweaks", "required": false },
+    { "slug": "immediatelyfast", "required": false },
+    { "slug": "ferritecore", "required": false },
+    { "slug": "modernfix", "required": false }
+  ],
+
+  "isnix_modules": [
+    "isnix-server-messages",
+    "isnix-chat",
+    "isnix-market",
+    "isnix-modtools",
+    "isnix-graveguard",
+    "isnix-player-backup",
+    "isnix-opac-tab",
+    "isnix-player-stats",
+    "isnix-reputation",
+    "isnix-lagwatch"
+  ],
+
+  "remove_jars_glob": [
+    "geyser*",
+    "Floodgate*",
+    "floodgate*",
+    "*1.21.1*.jar",
+    "antixray*",
+    "trade*",
+    "ItemFrament*",
+    "doubledoors*",
+    "rightclickharvest*",
+    "Female-Gender*"
+  ],
+
+  "skipped_no_12111": [
+    "supplementaries (пока только 1.21.1 — добавим позже)",
+    "trade (нет сборки 1.21.11)",
+    "female-gender-mod",
+    "классические Create-аддоны с YouTube (SnR, Deco) — другой лоадер/версия"
+  ]
+}

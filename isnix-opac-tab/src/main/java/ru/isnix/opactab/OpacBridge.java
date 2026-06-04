@@ -121,7 +121,7 @@ public final class OpacBridge {
 		if (player == null) {
 			return null;
 		}
-		return getPartyOwnerIdForMember(player.getUuid(), player.getServer());
+		return getPartyOwnerIdForMember(player.getUuid(), player.getEntityWorld().getServer());
 	}
 
 	public static UUID getPartyOwnerIdForMember(UUID memberUuid, MinecraftServer server) {
@@ -144,7 +144,7 @@ public final class OpacBridge {
 		if (player == null) {
 			return null;
 		}
-		return getPartyForMemberUuid(player.getUuid(), player.getServer());
+		return getPartyForMemberUuid(player.getUuid(), player.getEntityWorld().getServer());
 	}
 
 	private static Object getPartyForMemberUuid(UUID memberUuid, MinecraftServer server) {
@@ -167,7 +167,7 @@ public final class OpacBridge {
 		}
 		UUID ownerId = getPartyOwnerId(player);
 		if (ownerId != null) {
-			String configured = getPartyNameForOwner(ownerId, player.getServer());
+			String configured = getPartyNameForOwner(ownerId, player.getEntityWorld().getServer());
 			if (configured != null && !configured.isEmpty()) {
 				return configured;
 			}

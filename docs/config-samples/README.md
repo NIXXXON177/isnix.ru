@@ -1,5 +1,13 @@
 # Эталонные конфиги сервера ISNIX (Play2GO)
 
+## Bedrock (Geyser)
+
+| Файл | Куда на сервере |
+|------|-----------------|
+| [geyser/config.yml](geyser/config.yml) | `config/Geyser-Fabric/config.yml` |
+
+Полная установка: [bedrock-geyser-play2go-ru.md](../bedrock-geyser-play2go-ru.md).
+
 Скопируйте на сервер через SFTP или `python scripts/deploy_server_configs.py` (нужен `server-sftp.env`).
 
 | Файл в репозитории | Путь на сервере | Когда применять |

@@ -296,7 +296,8 @@ def http_form(url: str, fields: dict) -> dict:
 
 
 def publish_discord(text: str, webhook: str, footer: str, dry_run: bool) -> None:
-    validate_discord_webhook(webhook)
+    if not dry_run:
+        validate_discord_webhook(webhook)
     body, foot = split_body_and_footer(text, footer)
     embeds = build_discord_embeds(body, foot or footer)
     print(f"[discord] embed × {len(embeds)}, {len(text)} символов")

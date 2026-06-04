@@ -4,6 +4,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import ru.isnix.market.IsnixMarketMod;
+import ru.isnix.market.PermissionChecks;
 import ru.isnix.market.listing.MarketListing;
 import ru.isnix.market.util.InventoryHelper;
 import ru.isnix.market.util.ListingMessages;
@@ -24,7 +25,7 @@ public final class ListingCancelService {
 	}
 
 	public static boolean cancel(ServerPlayerEntity player, MarketListing listing) {
-		if (!listing.sellerUuid().equals(player.getUuid()) && !player.hasPermissionLevel(2)) {
+		if (!listing.sellerUuid().equals(player.getUuid()) && !PermissionChecks.playerAtLeast(player, 2)) {
 			player.sendMessage(Text.literal("Это не ваш лот.").formatted(Formatting.RED), false);
 			return false;
 		}

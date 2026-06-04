@@ -167,10 +167,14 @@
 	}
 
 	function isMissingReferralSystem(err) {
+		if (!err) return false
+		if (Number(err.status) === 404 || err.code === 'PGRST202') return true
 		var msg = errorText(err)
 		return (
-			/referrals|get_my_referral_summary|referred_by_nick/i.test(msg) &&
-			/does not exist|42703|PGRST204|42P01|PGRST202/i.test(msg)
+			/referrals|get_my_referral_summary|referred_by_nick|admin_mark_referral/i.test(msg) &&
+			/does not exist|42703|PGRST204|42P01|PGRST202|schema cache|not find the function|404|Could not find/i.test(
+				msg,
+			)
 		)
 	}
 
@@ -193,6 +197,7 @@
 	}
 
 	var APPS_SCHEMA_CACHE_KEY = 'isnix_wl_apps_schema_v2'
+	var REFERRAL_MISSING_KEY = 'isnix_referral_rpc_missing'
 	var SESSION_TIMEOUT_MS = 22000
 	var sessionBackgroundRefresh = null
 
@@ -1266,12 +1271,29 @@
 		if (!sb) {
 			return { ok: false, pending: 0, qualified: 0, rewarded: 0, total: 0 }
 		}
+		try {
+			if (localStorage.getItem(REFERRAL_MISSING_KEY) === '1') {
+				return { ok: false, missing: true }
+			}
+		} catch (_ls) {
+			/* ignore */
+		}
 		var res = await sb.rpc('get_my_referral_summary')
 		if (res.error) {
 			if (isMissingReferralSystem(res.error)) {
+				try {
+					localStorage.setItem(REFERRAL_MISSING_KEY, '1')
+				} catch (_ls2) {
+					/* ignore */
+				}
 				return { ok: false, missing: true }
 			}
 			throw res.error
+		}
+		try {
+			localStorage.removeItem(REFERRAL_MISSING_KEY)
+		} catch (_ls3) {
+			/* ignore */
 		}
 		return res.data || { ok: false }
 	}

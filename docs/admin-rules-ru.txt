@@ -41,9 +41,11 @@ lp user <ник> meta setprefix 50 "&4&l[DEMON] &r"
 
 Примеры:  &c&l[YouTube]   &5[Twitch]   &6&l[Легенда]   &c&l[ПВП]
 
---- Права RTP для всех ---
+--- Права Essential Commands для всех (default) ---
 
 lp group default permission set essentialcommands.randomteleport true
+lp group default permission set essentialcommands.enderchest true
+lp sync
 
 --- TAB / чат ---
 

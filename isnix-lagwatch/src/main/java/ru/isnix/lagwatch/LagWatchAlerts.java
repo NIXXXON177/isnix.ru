@@ -53,7 +53,7 @@ public final class LagWatchAlerts {
 		Text chat = Text.literal(message).formatted(Formatting.GOLD, Formatting.BOLD);
 		int level = LagWatchConfig.get().opPermissionLevel;
 		for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
-			if (player.hasPermissionLevel(level)) {
+			if (PermissionChecks.playerAtLeast(player, level)) {
 				player.sendMessage(chat, false);
 			}
 		}

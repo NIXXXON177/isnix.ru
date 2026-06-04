@@ -416,6 +416,13 @@
 			.hero-ip {
 				margin-top: 2rem;
 				animation: fadeUp 0.8s ease 0.4s both;
+				display: flex;
+				flex-wrap: wrap;
+				gap: 1rem;
+				align-items: flex-start;
+			}
+			.hero-ip .server-online {
+				flex: 1 1 100%;
 			}
 			.ip-box {
 				display: inline-flex;

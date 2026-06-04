@@ -1,5 +1,6 @@
 package ru.isnix.modtools;
 
+import net.minecraft.command.permission.LeveledPermissionPredicate;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
 
@@ -29,9 +30,9 @@ public final class LuckPermsCommandBridge {
 
 	private static void run(MinecraftServer server, String command) {
 		ServerCommandSource source = server.getCommandSource()
-				.withLevel(4)
+				.withPermissions(LeveledPermissionPredicate.OWNERS)
 				.withSilent();
-		String cmd = command.startsWith("/") ? command : "/" + command;
-		server.getCommandManager().executeWithPrefix(source, cmd);
+		String cmd = command.startsWith("/") ? command.substring(1) : command;
+		server.getCommandManager().parseAndExecute(source, cmd);
 	}
 }

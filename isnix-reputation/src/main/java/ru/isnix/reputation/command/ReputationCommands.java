@@ -10,6 +10,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import ru.isnix.reputation.PermissionChecks;
 import ru.isnix.reputation.ReputationCache;
 import ru.isnix.reputation.ReputationConfig;
 import ru.isnix.reputation.ReputationScore;
@@ -45,7 +46,7 @@ public final class ReputationCommands {
 						.executes(ctx -> info(ctx, StringArgumentType.getString(ctx, "player"))))));
 
 		dispatcher.register(root.then(CommandManager.literal("reload")
-				.requires(source -> source.hasPermissionLevel(ReputationConfig.get().opPermissionLevel))
+				.requires(source -> PermissionChecks.sourceAtLeast(source, ReputationConfig.get().opPermissionLevel))
 				.executes(ReputationCommands::reload)));
 	}
 
@@ -66,14 +67,14 @@ public final class ReputationCommands {
 			return 0;
 		}
 		String target = StringArgumentType.getString(ctx, "player");
-		if (target.equalsIgnoreCase(voter.getGameProfile().getName())) {
+		if (target.equalsIgnoreCase(voter.getGameProfile().name())) {
 			voter.sendMessage(ReputationText.parse(ReputationConfig.get().voteErrorSelf), false);
 			return 0;
 		}
 
 		voter.sendMessage(Text.literal("Отправляем оценку…").formatted(Formatting.GRAY), false);
-		SupabaseReputationService.voteAsync(voter.getGameProfile().getName(), target, voteValue)
-				.thenAccept(result -> voter.getServer().execute(() -> handleVoteResult(voter, target, voteValue, result)));
+		SupabaseReputationService.voteAsync(voter.getGameProfile().name(), target, voteValue)
+				.thenAccept(result -> voter.getEntityWorld().getServer().execute(() -> handleVoteResult(voter, target, voteValue, result)));
 		return 1;
 	}
 
@@ -89,7 +90,7 @@ public final class ReputationCommands {
 				ReputationText.parse(cfg.applyPlaceholders(template, result.targetNick(), result.score())),
 				false);
 
-		ServerPlayerEntity target = voter.getServer().getPlayerManager().getPlayer(targetNick);
+		ServerPlayerEntity target = voter.getEntityWorld().getServer().getPlayerManager().getPlayer(targetNick);
 		if (target != null) {
 			ReputationCache.put(target, result.score());
 		}
@@ -109,7 +110,7 @@ public final class ReputationCommands {
 				source.sendError(Text.literal("Укажите ник: /rep info <игрок>").formatted(Formatting.RED));
 				return 0;
 			}
-			nick = self.getGameProfile().getName();
+			nick = self.getGameProfile().name();
 		}
 
 		final String queryNick = nick;

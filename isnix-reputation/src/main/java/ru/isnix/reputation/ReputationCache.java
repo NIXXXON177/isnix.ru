@@ -46,7 +46,7 @@ public final class ReputationCache {
 
 	public static void put(ServerPlayerEntity player, ReputationScore score) {
 		BY_UUID.put(player.getUuid(), score);
-		NICK_TO_UUID.put(player.getGameProfile().getName().toLowerCase(Locale.ROOT), player.getUuid());
+		NICK_TO_UUID.put(player.getGameProfile().name().toLowerCase(Locale.ROOT), player.getUuid());
 	}
 
 	public static String formatted(ServerPlayerEntity player) {
@@ -55,14 +55,14 @@ public final class ReputationCache {
 		if (score.isEmpty()) {
 			return cfg.placeholderEmpty;
 		}
-		return cfg.applyPlaceholders(cfg.placeholderFormat, player.getGameProfile().getName(), score);
+		return cfg.applyPlaceholders(cfg.placeholderFormat, player.getGameProfile().name(), score);
 	}
 
 	public static void refreshAsync(ServerPlayerEntity player) {
 		if (!ReputationConfig.get().isReady()) {
 			return;
 		}
-		final String nick = player.getGameProfile().getName();
+		final String nick = player.getGameProfile().name();
 		final UUID uuid = player.getUuid();
 		EXECUTOR.execute(() -> {
 			ReputationScore score = SupabaseReputationService.fetchReputation(nick);
@@ -81,12 +81,12 @@ public final class ReputationCache {
 		}
 		List<String> nicks = new ArrayList<>();
 		for (ServerPlayerEntity player : players) {
-			nicks.add(player.getGameProfile().getName());
+			nicks.add(player.getGameProfile().name());
 		}
 		EXECUTOR.execute(() -> {
 			Map<String, ReputationScore> batch = SupabaseReputationService.fetchReputations(nicks);
 			for (ServerPlayerEntity player : players) {
-				String nick = player.getGameProfile().getName();
+				String nick = player.getGameProfile().name();
 				ReputationScore score = batch.getOrDefault(nick.toLowerCase(Locale.ROOT), ReputationScore.ZERO);
 				put(player, score);
 			}
