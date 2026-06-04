@@ -37,6 +37,7 @@ EXCLUDE_SUBSTR = (
     "easywhitelist",
     "essential_commands",
     "placeholder-api",
+    "tab v",  # TAB — только сервер
 )
 
 # Доп. клиентские моды (Modrinth), если нет в server staging
@@ -44,6 +45,7 @@ EXTRA_CLIENT_SLUGS = [
     "emi",
     "appleskin",
     "shulkerboxtooltip",
+    "libipn",  # обязательная зависимость inventory-profiles-next
     "inventory-profiles-next",
     "mouse-tweaks",
     "immediatelyfast",
@@ -222,7 +224,7 @@ def main() -> None:
     doc = {
         "name": "ISTHISNIXXXON Client Modpack",
         "minecraft": "1.21.11",
-        "loader": "Fabric 0.18.1",
+        "loader": "Fabric 0.18.4",
         "java": "21",
         "launcher": "ElyPrismLauncher (recommended)",
         "version": "3.0.0-client-12111",
