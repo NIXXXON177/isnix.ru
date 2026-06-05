@@ -12,6 +12,7 @@ import java.util.List;
 
 public final class GuideBook {
 	private static final Formatting BODY = Formatting.BLACK;
+	private static final Formatting TITLE = Formatting.DARK_GREEN;
 
 	private GuideBook() {
 	}
@@ -20,13 +21,13 @@ public final class GuideBook {
 		ItemStack stack = new ItemStack(Items.WRITTEN_BOOK);
 		stack.set(
 				DataComponentTypes.CUSTOM_NAME,
-				Text.literal("Путеводитель ISTHISNIXXXON")
-						.styled(s -> s.withItalic(false).withBold(true).withColor(BODY))
+				Text.literal("Путеводитель")
+						.styled(s -> s.withItalic(false).withBold(true).withColor(TITLE))
 		);
 		stack.set(
 				DataComponentTypes.WRITTEN_BOOK_CONTENT,
 				new WrittenBookContentComponent(
-						RawFilteredPair.of("Путеводитель ISTHISNIXXXON"),
+						RawFilteredPair.of("Путеводитель"),
 						"ISTHISNIXXXON",
 						1,
 						pages(),

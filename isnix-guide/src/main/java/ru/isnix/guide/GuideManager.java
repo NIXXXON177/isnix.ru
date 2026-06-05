@@ -125,7 +125,7 @@ public final class GuideManager {
 		}
 		player.sendMessage(
 				Text.literal("В инвентарь добавлен ")
-						.append(Text.literal("Путеводитель ISTHISNIXXXON").formatted(Formatting.GOLD))
+						.append(Text.literal("Путеводитель").formatted(Formatting.GREEN, Formatting.BOLD))
 						.append(Text.literal(" — открой и читай. Полная версия: ")
 								.formatted(Formatting.GRAY))
 						.append(webLink()),
@@ -136,7 +136,7 @@ public final class GuideManager {
 	private static Text joinHint() {
 		return Text.literal("Подсказки по серверу: книга в инвентаре, вкладка ")
 				.formatted(Formatting.GRAY)
-				.append(Text.literal("ISTHISNIXXXON").formatted(Formatting.GOLD))
+				.append(Text.literal("Путеводитель").formatted(Formatting.GREEN, Formatting.BOLD))
 				.append(Text.literal(" в достижениях (Esc). Сайт: ").formatted(Formatting.GRAY))
 				.append(webLink());
 	}
