@@ -49,6 +49,7 @@
     { "slug": "farmers-delight-refabricated", "required": true },
     { "slug": "more-delight", "required": true },
     { "slug": "floras-delight", "required": true, "note": "FD: сыр, пицца, фрукты. Клиент+сервер. Staged — ZIP на сайте позже" },
+    { "slug": "carry-on", "required": true, "note": "Поднять и нести сундуки, мобов, блоки — стройка станций. Staged" },
     { "slug": "simple-voice-chat", "required": true },
     { "slug": "open-parties-and-claims", "required": true },
     { "slug": "styled-chat", "required": true },
