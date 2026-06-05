@@ -23,7 +23,7 @@ public final class LagWatchConfig {
 	/** Предметы на земле в чанке. */
 	public int itemEntityCountThreshold = 120;
 	public boolean logToConsole = true;
-	public boolean alertAdminsInChat = true;
+	public boolean alertAdminsInChat = false;
 
 	public static LagWatchConfig get() {
 		return INSTANCE;

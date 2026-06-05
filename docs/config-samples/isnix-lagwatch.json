@@ -2,10 +2,10 @@
 	"enabled": true,
 	"opPermissionLevel": 4,
 	"sampleIntervalTicks": 20,
-	"alertCooldownSeconds": 60,
-	"blockUpdatesPerSecondThreshold": 400,
+	"alertCooldownSeconds": 120,
+	"blockUpdatesPerSecondThreshold": 800,
 	"entityCountThreshold": 250,
 	"itemEntityCountThreshold": 120,
 	"logToConsole": true,
-	"alertAdminsInChat": true
+	"alertAdminsInChat": false
 }
