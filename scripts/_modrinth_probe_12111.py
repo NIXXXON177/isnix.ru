@@ -6,6 +6,7 @@ SLUGS = [
     "create-fly",
     "farmers-delight-refabricated",
     "more-delight",
+    "floras-delight",
     "lithium",
     "simple-voice-chat",
     "open-parties-and-claims",

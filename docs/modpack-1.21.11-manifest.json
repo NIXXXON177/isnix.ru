@@ -4,7 +4,12 @@
   "fabric_loader": "0.18.4",
   "java": 21,
   "java_only": true,
-  "notes": "Bedrock/Geyser сняты. Create = create-fly 6.0.9 + аддоны Fabric 1.21.11. isnix-* из репозитория.",
+  "notes": "Bedrock/Geyser сняты. Create = create-fly 6.0.9 + аддоны Fabric 1.21.11. isnix-* из репозитория. Политика модов: docs/modpack-policy-ru.md",
+
+  "modpack_policy": {
+    "no_alcohol": true,
+    "staged_rollout": "Новые моды сначала на сервер + тест; ZIP на сайте и анонс — пакетом на промежуточном этапе"
+  },
 
   "create_stack": {
     "core": {
@@ -17,7 +22,8 @@
     },
     "integration": [
       { "slug": "farmers-delight-refabricated", "note": "Встроенная интеграция с Create Fly (миксер, пила)" },
-      { "slug": "more-delight", "note": "Рецепты FD + Create" }
+      { "slug": "more-delight", "note": "Рецепты FD + Create" },
+      { "slug": "floras-delight", "note": "Сыр, пицца, фрукты — без алкоголя (тест, staged)" }
     ],
     "addons_modrinth": [
       { "slug": "create-handy-recipes", "required": true },
@@ -42,6 +48,7 @@
     { "slug": "create-extra-recipes-kuma", "required": true },
     { "slug": "farmers-delight-refabricated", "required": true },
     { "slug": "more-delight", "required": true },
+    { "slug": "floras-delight", "required": true, "note": "FD: сыр, пицца, фрукты. Клиент+сервер. Staged — ZIP на сайте позже" },
     { "slug": "simple-voice-chat", "required": true },
     { "slug": "open-parties-and-claims", "required": true },
     { "slug": "styled-chat", "required": true },
@@ -126,5 +133,12 @@
     "trade (нет сборки 1.21.11)",
     "female-gender-mod",
     "классические Create-аддоны с YouTube (SnR, Deco) — другой лоадер/версия"
+  ],
+
+  "blocked_no_alcohol": [
+    { "slug": "brewin-and-chewin", "reason": "пиво, вино, крепкий алкоголь, эффект Tipsy" },
+    { "slug": "brewin-compat-delight", "reason": "Cocktails Delight — коктейли и крепкий алкоголь" },
+    { "slug": "brewery", "reason": "Let's Do Brewery" },
+    { "slug": "kaleidoscope-tavern", "reason": "Tavern / бар" }
   ]
 }
