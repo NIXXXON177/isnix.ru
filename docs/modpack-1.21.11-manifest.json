@@ -51,6 +51,8 @@
     { "slug": "floras-delight", "required": true, "note": "FD: сыр, пицца, фрукты. Клиент+сервер. Staged — ZIP на сайте позже" },
     { "slug": "resourceful-lib", "required": true, "note": "Зависимость Friends & Foes" },
     { "slug": "friends-and-foes", "required": true, "note": "Мобы из голосований: меднеголем, краб, Glare и др. Staged" },
+    { "slug": "puzzles-lib", "required": true, "note": "Зависимость Visual Workbench (Fuzs)" },
+    { "slug": "visual-workbench", "required": true, "note": "Предметы в верстаке видны и остаются внутри. Staged" },
     { "slug": "simple-voice-chat", "required": true },
     { "slug": "open-parties-and-claims", "required": true },
     { "slug": "styled-chat", "required": true },

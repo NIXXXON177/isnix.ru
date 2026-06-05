@@ -9,6 +9,8 @@ SLUGS = [
     "floras-delight",
     "resourceful-lib",
     "friends-and-foes",
+    "puzzles-lib",
+    "visual-workbench",
     "lithium",
     "simple-voice-chat",
     "open-parties-and-claims",

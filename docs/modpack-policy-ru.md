@@ -32,6 +32,7 @@
 |-----|--------|
 | Flora's Delight | на сервере, тест; ZIP на сайте — позже |
 | Friends & Foes | на сервере, тест; ZIP на сайте — позже |
+| Visual Workbench | на сервере, тест; ZIP на сайте — позже |
 | Brewin' and Chewin' | **запрещён** (алкоголь) |
 | Carry On | снят (не зашло) |
 | Supplementaries | ждём 1.21.11 |
