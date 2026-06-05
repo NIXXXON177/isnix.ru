@@ -20,7 +20,7 @@
 		/>
 		<link rel="stylesheet" href="assets/css/main.css?v=2" />
 		<link rel="stylesheet" href="assets/css/components.css?v=4" />
-		<link rel="stylesheet" href="assets/css/how-to-play.css" />
+		<link rel="stylesheet" href="assets/css/how-to-play.css?v=2" />
 		<link rel="stylesheet" href="assets/css/site-header.css" />
 	</head>
 	<body class="htp-page" data-page="how-to-play">
@@ -202,20 +202,25 @@
 							архив <strong>ISTHISNIXXXONmods.zip</strong> — клиентские моды для
 							игры на сервере.
 						</p>
-						<ul class="htp-step__list">
-							<li>
-								<strong>Вариант А (проще):</strong> в ElyPrismLauncher нажми
-								«Добавить» → «Импортировать из ZIP» и выбери скачанный архив.
-								Лаунчер создаст инстанс с нужной версией и модами.
-							</li>
-							<li>
-								<strong>Вариант Б:</strong> создай инстанс вручную — Minecraft
-								<strong>1.21.11</strong>, загрузчик <strong>Fabric</strong>.
-								Распакуй ZIP: все <code>.jar</code> из папки <code>mods</code> внутри
-								архива скопируй в папку <code>mods</code> инстанса (правый клик →
-								«Открыть папку модов»).
-							</li>
-						</ul>
+						<div class="htp-variants">
+							<div class="htp-variant htp-variant--primary">
+								<span class="htp-variant__label">Вариант А · проще</span>
+								<p>
+									В ElyPrismLauncher нажми <strong>«Добавить»</strong> →
+									<strong>«Импортировать из ZIP»</strong> и выбери скачанный архив.
+									Лаунчер создаст инстанс с нужной версией и модами.
+								</p>
+							</div>
+							<div class="htp-variant">
+								<span class="htp-variant__label htp-variant__label--alt">Вариант Б · вручную</span>
+								<p>
+									Создай инстанс: Minecraft <strong>1.21.11</strong>, загрузчик
+									<strong>Fabric</strong>. Распакуй ZIP и скопируй все
+									<code>.jar</code> из папки <code>mods</code> архива в папку
+									<code>mods</code> инстанса (правый клик → «Открыть папку модов»).
+								</p>
+							</div>
+						</div>
 						<p class="htp-step__tip">
 							<span class="htp-tip"><svg class="icon icon--sm" aria-hidden="true" focusable="false"><use href="assets/icons/sprite.svg#bulb"></use></svg><span>Путь к папке инстанса: правый клик по инстансу в
 							лаунчере → «Папка инстанса» / «Открыть папку модов».</span></span>
@@ -241,12 +246,27 @@
 								<strong>«Играть»</strong>.
 							</li>
 							<li>
-								<strong>REI</strong> (список предметов справа): строка
-								<strong>«Поиск…»</strong> внизу — фильтр по названию;
-								<code>@create</code>, <code>@farmersdelight</code> — только предметы мода.
-								<strong>Ctrl+O</strong> — скрыть/показать панель. Шестерёнка у поиска →
-								настройки размера и режима. <strong>Ctrl+клик</strong> по предмету — скрыть
-								из списка (удобно убрать лишнее).
+								<strong>REI</strong> — список предметов справа (клавиша <span class="htp-kbd">R</span>):
+								<div class="htp-rei">
+									<p class="htp-rei__title">Быстрые подсказки</p>
+									<div class="htp-rei__grid">
+										<p class="htp-rei__item">
+											<strong>Поиск</strong> — строка «Поиск…» внизу панели
+										</p>
+										<p class="htp-rei__item">
+											<strong>Фильтр мода</strong> — <code>@create</code>,
+											<code>@farmersdelight</code>
+										</p>
+										<p class="htp-rei__item">
+											<strong>Панель</strong> — <span class="htp-kbd">Ctrl+O</span>
+											скрыть / показать
+										</p>
+										<p class="htp-rei__item">
+											<strong>Скрыть предмет</strong> —
+											<span class="htp-kbd">Ctrl+клик</span> по иконке
+										</p>
+									</div>
+								</div>
 							</li>
 							<li>
 								Добавить мод отдельно: в ElyPrismLauncher открой инстанс →

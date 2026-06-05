@@ -33,6 +33,13 @@ public final class MessagesConfig {
 	@SerializedName("server_restarting_lines")
 	public List<String> serverRestartingLines;
 
+	/** Завершить JVM после stop — иначе Play2GO/Pterodactyl «Restart» зависает на Stopping. */
+	@SerializedName("force_jvm_exit_on_stop")
+	public boolean forceJvmExitOnStop = true;
+
+	@SerializedName("force_jvm_exit_delay_ms")
+	public int forceJvmExitDelayMs = 1500;
+
 	public static MessagesConfig get() {
 		return instance;
 	}
@@ -121,8 +128,7 @@ public final class MessagesConfig {
 				"",
 				"§7Подождите 1–3 минуты и заходите снова:",
 				"",
-				"§aJava §8— §fmc.isnix.ru",
-				"§aBedrock §8— §fbedrock.isnix.ru",
+				"§aСервер §8— §fmc.isnix.ru",
 				"",
 				"§8Спасибо, что играете с нами!");
 	}

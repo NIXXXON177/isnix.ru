@@ -102,6 +102,22 @@ public final class GuideManager {
 		}
 	}
 
+	public static void giveBookOnRequest(ServerPlayerEntity player) {
+		giveBook(player);
+		if (storage != null) {
+			GuideProgressStorage.PlayerProgress progress = storage.of(player.getUuid());
+			progress.bookGiven = true;
+			if (!progress.welcomeAdvancement && AdvancementHelper.grant(player, "welcome")) {
+				progress.welcomeAdvancement = true;
+			}
+			storage.save();
+		}
+	}
+
+	public static Text playerOnly() {
+		return Text.literal("Команда только для игрока в мире.").formatted(Formatting.RED);
+	}
+
 	private static void giveBook(ServerPlayerEntity player) {
 		var book = GuideBook.create();
 		if (!player.getInventory().insertStack(book)) {

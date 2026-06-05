@@ -11,6 +11,8 @@ import net.minecraft.util.Formatting;
 import java.util.List;
 
 public final class GuideBook {
+	private static final Formatting BODY = Formatting.BLACK;
+
 	private GuideBook() {
 	}
 
@@ -18,7 +20,8 @@ public final class GuideBook {
 		ItemStack stack = new ItemStack(Items.WRITTEN_BOOK);
 		stack.set(
 				DataComponentTypes.CUSTOM_NAME,
-				Text.literal("Путеводитель ISTHISNIXXXON").styled(s -> s.withItalic(false).withColor(Formatting.GOLD))
+				Text.literal("Путеводитель ISTHISNIXXXON")
+						.styled(s -> s.withItalic(false).withBold(true).withColor(BODY))
 		);
 		stack.set(
 				DataComponentTypes.WRITTEN_BOOK_CONTENT,
@@ -36,76 +39,84 @@ public final class GuideBook {
 	private static List<RawFilteredPair<Text>> pages() {
 		return List.of(
 				page("""
-						§6§lISTHISNIXXXON§r
+						ISTHISNIXXXON
 
-						§7Уютный ванильный сервер с §fCreate§7, без доната и без монет.
+						Сервер с Create.
+						Без доната.
 
-						§eJava §f1.21.11§e, Fabric
-						§eIP: §fmc.isnix.ru
+						1.21.11 Fabric
+						mc.isnix.ru
 
-						§8Полная версия: isnix.ru/guide.html
+						isnix.ru/guide.html
 						"""),
 				page("""
-						§6§lСборка§r
+						СБОРКА
 
-						§7Скачай §fISTHISNIXXXONmods.zip§7 с сайта и импортируй в ElyPrismLauncher.
+						Скачай ZIP на isnix.ru
+						Импорт в ElyPrismLauncher.
 
-						§7Свои моды не добавляй — только сборка сервера.
-
-						§eРецепты Create:§r REI (клавиша §fR§r), плюс ветка §fCreate§r в достижениях (Esc).
+						Свои моды не ставь.
 						"""),
 				page("""
-						§6§lЧат и голос§r
+						REI (рецепты)
 
-						§7Локальный чат — рядом с игроками.
+						Поиск внизу экрана.
 
-						§7Глобально — §f!§7 в начале строки (см. правила).
-
-						§7Голос: §fSimple Voice Chat§7 — настрой клавишу в управлении.
+						@create — мод Create
+						Ctrl+O — скрыть список
+						R — рецепт предмета
 						"""),
 				page("""
-						§6§lУчасток (OPAC)§r
+						ЧАТ
 
-						§7Open Parties and Claims — приваты и кланы.
+						Рядом — локальный чат.
+						! в начале — всем.
 
-						§7Поставь §fclaim§7, чтобы защитить базу.
-
-						§7Тег клана в TAB: §f/clantag§7 (см. справку мода).
+						Голос: Voice Chat,
+						клавиша в Управлении.
 						"""),
 				page("""
-						§6§lТорговля§r
+						OPAC (приват)
 
-						§f/trade <ник>§7 — обмен с игроком.
-
-						§f/sell§7 — рынок лотов.
-						§f/sell list§7 — выставить товар, цена §7только ресурсами§7.
-
-						§7Покупка и продажа — через GUI рынка.
+						Клавиша ' — меню.
+						claim — защита базы.
+						/clantag — тег клана
 						"""),
 				page("""
-						§6§lCreate§r
+						ТОРГОВЛЯ
 
-						§7На сервере полный §fCreate Fly§7: шестерни, конвейеры, поезда.
-
-						§7Старт: андезитовый сплав → вода-колесо → механизмы.
-
-						§7Кухня §fFarmer's Delight§7 связана с Create (миксер, пила).
-
-						§8Аддоны с Forge (CCA, Diesel) здесь не стоят.
+						/trade ник — обмен
+						/sell — рынок
+						/sell list — лот
+						Цена — ресурсами.
 						"""),
 				page("""
-						§6§lДостижения§r
+						CREATE
 
-						§7Вкладка §fISTHISNIXXXON§7 в меню достижений (Esc) — шаги по серверу.
+						Шестерни, конвейеры,
+						поезда.
 
-						§7Ветка §fCreate§7 — отдельно, из мода Create.
+						Старт: андезит +
+						вода-колесо.
 
-						§7Сайт: аккаунт, вайтлист, поддержка — §fisnix.ru§7
+						Farmer's Delight.
+						"""),
+				page("""
+						ЕЩЁ
+
+						/guidebook — книга
+						Esc — Прогресс —
+						ISTHISNIXXXON
+
+						Вайтлист:
+						isnix.ru/account
 						""")
 		);
 	}
 
 	private static RawFilteredPair<Text> page(String raw) {
-		return RawFilteredPair.of(Text.literal(raw.stripTrailing()));
+		return RawFilteredPair.of(
+				Text.literal(raw.stripTrailing()).styled(s -> s.withColor(BODY).withItalic(false))
+		);
 	}
 }

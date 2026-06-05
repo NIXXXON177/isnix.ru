@@ -30,6 +30,29 @@ public class IsnixServerMessagesMod implements DedicatedServerModInitializer {
 			}
 		});
 
+		ServerLifecycleEvents.SERVER_STOPPED.register(server -> {
+			MessagesConfig cfg = MessagesConfig.get();
+			if (!cfg.forceJvmExitOnStop) {
+				return;
+			}
+			int delay = Math.max(0, cfg.forceJvmExitDelayMs);
+			LOGGER.info(
+					"Play2GO: завершение JVM через {} мс (force_jvm_exit_on_stop). Иначе Restart зависает.",
+					delay);
+			Thread exitThread = new Thread(() -> {
+				if (delay > 0) {
+					try {
+						Thread.sleep(delay);
+					} catch (InterruptedException ignored) {
+						Thread.currentThread().interrupt();
+					}
+				}
+				System.exit(0);
+			}, "isnix-server-messages-jvm-exit");
+			exitThread.setDaemon(false);
+			exitThread.start();
+		});
+
 		LOGGER.info("ISNIX Server Messages: вайтлист и перезапуск — config/isnix-server-messages.json");
 	}
 }

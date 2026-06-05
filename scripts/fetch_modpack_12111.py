@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import json
+import subprocess
+import sys
 import urllib.request
 from pathlib import Path
 
@@ -90,6 +92,14 @@ def main() -> None:
     (OUT / "MODPACK_INDEX.json").write_text(
         json.dumps(index, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
     )
+    useful = OUT / "create_useful_recipes_1.21.11_0.0.1.jar"
+    if useful.is_file():
+        print("\nПатч create_useful_recipes (Create Fly 1.21.11)...")
+        subprocess.run(
+            [sys.executable, str(ROOT / "scripts" / "patch_create_useful_recipes.py")],
+            cwd=ROOT,
+            check=False,
+        )
     print(f"\nГотово: {ok} ok, {fail} fail -> {OUT}")
 
 

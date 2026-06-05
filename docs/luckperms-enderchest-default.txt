@@ -1,0 +1,8 @@
+# Консоль сервера — /enderchest для всех (группа default)
+
+lp group default permission set essentialcommands.enderchest true
+lp sync
+
+# Проверка для игрока:
+# lp user <ник> permission check essentialcommands.enderchest
+# lp user <ник> parent set default

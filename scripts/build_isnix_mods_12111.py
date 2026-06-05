@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import re
 import shutil
 import subprocess
 import sys
@@ -17,7 +18,7 @@ org.gradle.parallel=true
 
 minecraft_version=1.21.11
 yarn_mappings=1.21.11+build.3
-loader_version=0.18.1
+loader_version=0.18.4
 loom_version=1.14.10
 
 fabric_version=0.141.4+1.21.11
@@ -60,9 +61,13 @@ def patch_mod(mod_dir: Path) -> None:
         wrapper.write_text(WRAPPER_PROPS, encoding="utf-8")
 
     for fj in mod_dir.rglob("fabric.mod.json"):
+        if "build" in fj.parts:
+            continue
         text = fj.read_text(encoding="utf-8")
-        if "~1.21.1" in text:
-            fj.write_text(text.replace("~1.21.1", "~1.21.11"), encoding="utf-8")
+        new = text.replace("~1.21.1111", "~1.21.11")
+        new = re.sub(r'"minecraft":\s*"~1\.21\.1"', '"minecraft": "~1.21.11"', new)
+        if new != text:
+            fj.write_text(new, encoding="utf-8")
 
 
 def build_mod(mod_dir: Path) -> Path | None:

@@ -190,19 +190,39 @@
 	gap: 0.85rem;
 }
 
-.htp-step__list li {
-	display: flex;
-	gap: 0.75rem;
+.htp-step__list > li {
+	position: relative;
+	padding-left: 1.35rem;
 	font-size: 0.9rem;
-	line-height: 1.6;
+	line-height: 1.65;
 	color: var(--text-soft);
 }
 
-.htp-step__list li::before {
-	content: '●';
-	flex-shrink: 0;
-	margin-top: 0.2rem;
-	color: rgba(74, 222, 128, 0.85);
+.htp-step__list > li::before {
+	content: '';
+	position: absolute;
+	left: 0;
+	top: 0.55em;
+	width: 0.42rem;
+	height: 0.42rem;
+	border-radius: 50%;
+	background: rgba(74, 222, 128, 0.9);
+	box-shadow: 0 0 8px rgba(74, 222, 128, 0.45);
+}
+
+.htp-step__list > li strong {
+	color: #fff;
+	font-weight: 600;
+}
+
+.htp-step__list > li a {
+	color: var(--green);
+	text-decoration: underline;
+	text-underline-offset: 2px;
+}
+
+.htp-step__list > li a:hover {
+	color: #86efac;
 }
 
 .htp-step__tip {
@@ -216,18 +236,138 @@
 	color: var(--muted);
 }
 
+.htp-step__tip .htp-tip {
+	display: flex;
+	align-items: flex-start;
+	gap: 0.5rem;
+}
+
 .htp-step__tip em {
 	font-style: normal;
 	color: rgba(134, 239, 172, 0.9);
 }
 
 .htp-step code {
-	padding: 0.15rem 0.45rem;
+	display: inline;
+	padding: 0.12rem 0.4rem;
 	border-radius: 4px;
 	background: rgba(0, 0, 0, 0.45);
+	border: 1px solid rgba(74, 222, 128, 0.15);
 	font-family: ui-monospace, monospace;
 	font-size: 0.78rem;
 	color: rgba(74, 222, 128, 0.95);
+	white-space: nowrap;
+	vertical-align: baseline;
+}
+
+/* Варианты установки (шаг 2) */
+.htp-variants {
+	margin-top: 1.25rem;
+	display: grid;
+	gap: 0.85rem;
+}
+
+@media (min-width: 640px) {
+	.htp-variants {
+		grid-template-columns: 1fr 1fr;
+	}
+}
+
+.htp-variant {
+	padding: 1rem 1.1rem;
+	border-radius: var(--radius-md);
+	border: 1px solid rgba(22, 101, 52, 0.4);
+	background: rgba(0, 0, 0, 0.22);
+}
+
+.htp-variant--primary {
+	border-color: rgba(74, 222, 128, 0.35);
+	background: rgba(6, 78, 59, 0.22);
+}
+
+.htp-variant__label {
+	display: inline-flex;
+	margin-bottom: 0.5rem;
+	padding: 0.2rem 0.55rem;
+	border-radius: 999px;
+	font-size: 0.62rem;
+	font-weight: 700;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+	color: rgba(134, 239, 172, 0.95);
+	background: rgba(74, 222, 128, 0.12);
+	border: 1px solid rgba(74, 222, 128, 0.25);
+}
+
+.htp-variant__label--alt {
+	color: var(--text-soft);
+	background: rgba(255, 255, 255, 0.04);
+	border-color: rgba(255, 255, 255, 0.1);
+}
+
+.htp-variant p {
+	margin: 0;
+	font-size: 0.88rem;
+	line-height: 1.6;
+	color: var(--text-soft);
+}
+
+.htp-variant strong {
+	color: #fff;
+	font-weight: 600;
+}
+
+/* Подсказки REI (шаг 3) */
+.htp-rei {
+	margin-top: 0.35rem;
+	padding: 0.85rem 1rem;
+	border-radius: var(--radius-md);
+	border: 1px solid rgba(22, 101, 52, 0.35);
+	background: rgba(0, 0, 0, 0.2);
+}
+
+.htp-rei__title {
+	margin: 0 0 0.65rem;
+	font-size: 0.72rem;
+	font-weight: 700;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+	color: rgba(74, 222, 128, 0.9);
+}
+
+.htp-rei__grid {
+	display: grid;
+	gap: 0.5rem;
+}
+
+@media (min-width: 520px) {
+	.htp-rei__grid {
+		grid-template-columns: 1fr 1fr;
+	}
+}
+
+.htp-rei__item {
+	margin: 0;
+	font-size: 0.84rem;
+	line-height: 1.55;
+	color: var(--text-soft);
+}
+
+.htp-rei__item strong {
+	color: #fff;
+	font-weight: 600;
+}
+
+.htp-kbd {
+	display: inline-block;
+	padding: 0.1rem 0.4rem;
+	border-radius: 4px;
+	border: 1px solid rgba(255, 255, 255, 0.12);
+	background: rgba(255, 255, 255, 0.06);
+	font-family: ui-monospace, monospace;
+	font-size: 0.76rem;
+	color: #e2e8f0;
+	white-space: nowrap;
 }
 
 .htp-step__ip {

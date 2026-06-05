@@ -19,6 +19,8 @@ Jar: `build/libs/isnix-server-messages-1.0.1.jar` → `mods/` на Play2GO, за
 |------|------------|
 | `whitelist_kick_lines` | Экран при входе без вайтлиста (строки, коды `§`) |
 | `server_restarting_lines` | Экран при Stop / перезапуске |
+| `force_jvm_exit_on_stop` | `true` — завершить Java-процесс после stop (иначе Restart в Play2GO зависает) |
+| `force_jvm_exit_delay_ms` | Пауза перед `System.exit`, мс (по умолчанию 1500) |
 
 Текст перезапуска можно править в JSON (коды `§` для цветов). После правки — **рестарт** сервера.
 

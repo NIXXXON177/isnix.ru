@@ -66,11 +66,14 @@
     { "slug": "chunky", "required": true },
     { "slug": "ledger", "required": true },
     { "slug": "fsit", "required": true },
+    { "slug": "double-doors", "required": true, "note": "Серверный QoL: двойные двери/люки открываются вместе" },
+    { "slug": "rightclickharvest", "required": true, "note": "Серверный QoL: сбор урожая ПКМ + автопосадка семян" },
     { "slug": "vanish", "required": true },
     { "slug": "worldedit", "required": true },
     { "slug": "xaeros-map-server-utils", "required": true },
     { "slug": "invview", "required": false },
-    { "slug": "easywhitelist", "required": false }
+    { "slug": "easywhitelist", "required": false },
+    { "slug": "rei", "required": true, "note": "Синхронизация рецептов Create/FD для клиентов с REI" }
   ],
 
   "modrinth_client_extra": [
@@ -115,8 +118,6 @@
     "antixray*",
     "trade*",
     "ItemFrament*",
-    "doubledoors*",
-    "rightclickharvest*",
     "Female-Gender*"
   ],
 

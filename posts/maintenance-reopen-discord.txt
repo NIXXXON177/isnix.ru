@@ -8,6 +8,6 @@
 • Вайтлист: https://isnix.ru/account.html
 • В игре: ``/reg`` → ``/login``
 
-**Новинки:** Create, Farmer's Delight. **Bedrock снят** — только Java.
+**Новинки:** Create, Farmer's Delight. Только ПК (Java Edition).
 
 Не заходит? → https://isnix.ru/how-to-play.html

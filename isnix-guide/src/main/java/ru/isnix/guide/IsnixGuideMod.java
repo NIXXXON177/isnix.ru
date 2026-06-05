@@ -1,6 +1,7 @@
 package ru.isnix.guide;
 
 import net.fabricmc.api.DedicatedServerModInitializer;
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
@@ -35,6 +36,9 @@ public class IsnixGuideMod implements DedicatedServerModInitializer {
 		ServerTickEvents.END_SERVER_TICK.register(server ->
 				GuideManager.onServerTick(server, GuideConfig.get().checkOpacClaimsEveryTicks));
 
-		LOGGER.info("ISNIX Guide: достижения isnix:* и путеводитель-книга при первом входе");
+		CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) ->
+				GuidebookCommand.register(dispatcher));
+
+		LOGGER.info("ISNIX Guide: достижения isnix:*, /guidebook, книга при первом входе");
 	}
 }

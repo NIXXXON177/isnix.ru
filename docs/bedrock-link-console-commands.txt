@@ -1,0 +1,8 @@
+# Выполнить в консоли Play2GO (один раз), затем рестарт сервера
+
+lp group default permission set floodgate.command.linkaccount true
+lp group default permission set floodgate.command.unlinkaccount true
+lp sync
+
+# Проверка (замени ник):
+# lp user NikName permission check floodgate.command.linkaccount

@@ -12,6 +12,10 @@
 | `modded-rebrand-telegram.txt` | То же, Telegram |
 | `modded-rebrand-discord.txt` | То же, Discord |
 | `modded-rebrand-short.txt` | Коротко (статус / сторис) |
+| `create-railroad-vk.txt` | ЖД Create — магистраль между городами (ВК) |
+| `create-railroad-telegram.txt` | То же, Telegram |
+| `create-railroad-discord.txt` | То же, Discord |
+| `create-railroad-short.txt` | Коротко (сторис / пин) |
 | `referral-discord.txt` | Рефералка |
 | `maintenance-upgrade-vk.txt` | Закрытие на обновление 1.21.11 (ВК) |
 | `maintenance-upgrade-telegram.txt` | То же, Telegram |

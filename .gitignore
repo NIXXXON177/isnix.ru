@@ -59,6 +59,9 @@ isnix-reputation/.idea/
 server-sftp.env
 social-publish.env
 server-remote/
+build/
+META-INF/
+downloads/*.bak
 build/modpack-fix/
 build/bedrock-staging/
 build/server-modpack-1.21.11/

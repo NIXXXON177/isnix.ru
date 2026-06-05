@@ -1,7 +1,7 @@
 package ru.isnix.messages.mixin;
 
-import com.mojang.authlib.GameProfile;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.PlayerConfigEntry;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Final;
@@ -21,11 +21,11 @@ public class PlayerManagerMixin {
 	@Final
 	private MinecraftServer server;
 
-	/** 1.21.1: null = вход разрешён, Text = причина отказа (не Optional). */
+	/** 1.21.11: checkCanJoin(SocketAddress, PlayerConfigEntry). null = вход разрешён. */
 	@Inject(method = "checkCanJoin", at = @At("RETURN"), cancellable = true)
 	private void isnix$customWhitelistKick(
 			SocketAddress address,
-			GameProfile profile,
+			PlayerConfigEntry configEntry,
 			CallbackInfoReturnable<Text> cir) {
 		Text deny = cir.getReturnValue();
 		if (deny == null) {

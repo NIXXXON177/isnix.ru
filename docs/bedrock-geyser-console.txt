@@ -1,0 +1,18 @@
+# Play2GO — консоль после установки Geyser + Floodgate (проверка)
+
+# 1) Убедиться, что Java-порт в server.properties = 20122 (как allocation)
+# 2) mods/: Floodgate-Fabric-*.jar, Geyser-Fabric-*.jar
+# 3) config/Geyser-Fabric/config.yml → bedrock.port 20545, remote.port 20122, auth-type floodgate
+
+# После рестарта — в логе должны быть Geyser + Floodgate без ошибок.
+
+/geyser reload
+
+# Вайтлист Bedrock (после первого входа игрока — ник из консоли):
+# /fwhitelist add .НикИгрока
+
+# Или временно:
+# /whitelist off
+# (игрок зашёл)
+# /fwhitelist add <ник>
+# /whitelist on

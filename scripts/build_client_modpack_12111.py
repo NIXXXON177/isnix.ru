@@ -201,7 +201,7 @@ def build_zip(staging: Path, out: Path) -> list[str]:
     with zipfile.ZipFile(out, "w", compression=zipfile.ZIP_DEFLATED) as zf:
         zf.write(staging / "MODPACK.txt", "MODPACK.txt")
         for name in jars:
-            zf.write(staging / name, name)
+            zf.write(staging / name, f"mods/{name}")
     return jars
 
 

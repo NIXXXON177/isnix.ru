@@ -12,7 +12,7 @@
 Что нового:
 • Create — шестерни, конвейеры, механизмы
 • Farmer's Delight — кухня и фермы
-• Только Java — с телефона (Bedrock) больше не зайти
+• Только ПК — Minecraft Java Edition 1.21.11 + Fabric
 
 Проблемы со входом — https://isnix.ru/how-to-play.html или техподдержка на сайте.
 
