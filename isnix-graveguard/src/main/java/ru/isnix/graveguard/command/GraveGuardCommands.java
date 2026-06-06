@@ -2,6 +2,7 @@ package ru.isnix.graveguard.command;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
+import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -20,6 +21,11 @@ public final class GraveGuardCommands {
 
 		dispatcher.register(root.then(CommandManager.literal("status").executes(GraveGuardCommands::status)));
 		dispatcher.register(root.then(CommandManager.literal("reload").executes(GraveGuardCommands::reload)));
+
+		dispatcher.register(root.then(CommandManager.literal("clear")
+				.executes(GraveGuardCommands::clearSelf)
+				.then(CommandManager.argument("player", EntityArgumentType.player())
+						.executes(GraveGuardCommands::clearOther))));
 	}
 
 	private static int status(CommandContext<ServerCommandSource> ctx) {
@@ -67,6 +73,34 @@ public final class GraveGuardCommands {
 				.sendFeedback(
 						() -> Text.literal("GraveGuard: конфиг перечитан.").formatted(Formatting.GREEN),
 						true);
+		return 1;
+	}
+
+	private static int clearSelf(CommandContext<ServerCommandSource> ctx) {
+		ServerPlayerEntity player = ctx.getSource().getPlayer();
+		if (player == null) {
+			ctx.getSource().sendError(Text.literal("Только для игрока."));
+			return 0;
+		}
+		return clearPlayer(ctx, player);
+	}
+
+	private static int clearOther(CommandContext<ServerCommandSource> ctx) throws com.mojang.brigadier.exceptions.CommandSyntaxException {
+		ServerPlayerEntity target = EntityArgumentType.getPlayer(ctx, "player");
+		return clearPlayer(ctx, target);
+	}
+
+	private static int clearPlayer(CommandContext<ServerCommandSource> ctx, ServerPlayerEntity target) {
+		GraveGuardManager.clearProtection(target.getUuid());
+		GraveGuardManager.clearEligibility(target.getUuid());
+		ctx.getSource()
+				.sendFeedback(
+						() -> Text.literal("GraveGuard: защита снята с " + target.getName().getString())
+								.formatted(Formatting.YELLOW),
+						true);
+		target.sendMessage(
+				Text.literal("Защита могилы снята администратором.").formatted(Formatting.GRAY),
+				true);
 		return 1;
 	}
 }

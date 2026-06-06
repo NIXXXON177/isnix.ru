@@ -38,6 +38,7 @@ DEPLOYS: list[tuple[Path, str, str]] = [
     (SAMPLES / "isnix-server-messages.json", "config/isnix-server-messages.json", "isnix"),
     (SAMPLES / "isnix-market.json", "config/isnix-market/isnix-market.json", "isnix"),
     (SAMPLES / "styled-chat.json", "config/styled-chat.json", "styled"),
+    (SAMPLES / "fast-rtp.json", "config/fast-rtp.json", "rtp"),
 ]
 
 OPAC_REMOTE = ROOT / "server-remote" / "config" / "openpartiesandclaims-server.toml"
@@ -63,7 +64,7 @@ def main() -> None:
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument(
         "--only",
-        choices=("tab", "isnix", "styled", "opac", "all"),
+        choices=("tab", "isnix", "styled", "rtp", "opac", "all"),
         default="all",
     )
     parser.add_argument(

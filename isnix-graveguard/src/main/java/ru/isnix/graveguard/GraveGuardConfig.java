@@ -25,7 +25,7 @@ public final class GraveGuardConfig {
 	/** После выхода из зоны — ещё столько секунд защиты (успеть забрать вещи). */
 	public int lootGraceSeconds = 60;
 	/** В зоне лута блокировать весь урон (мобы, лава), не только PvP. */
-	public boolean protectAllDamageInLootZone = true;
+	public boolean protectAllDamageInLootZone = false;
 	/** Блокировать только урон от игроков вне полной зоны лута. */
 	public boolean protectFromPlayersOnly = true;
 	/** Сообщение в action bar при активации защиты. */

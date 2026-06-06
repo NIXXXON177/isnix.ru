@@ -1,49 +1,51 @@
-# LuckPerms: /rtp для всех игроков (Essential Commands)
+# LuckPerms: /rtp для всех игроков (FastRTP)
 
-На сервере **Fabric 1.21.1** команда `/rtp` (и `/randomteleport`) — из мода **Essential Commands**.
+На сервере **Fabric 1.21.11** команда `/rtp` — из мода **FastRTP** (`config/fast-rtp.json`).
 
-## 1. Включить API прав на сервере
+- `useCurrentWorld: true` — RTP в **текущем** измерении (Обычный мир, Незер, Край).
+- `requirePermission: false` — право LP **не нужно** (все могут `/rtp`).
+- `/rtpback` — возврат на последний RTP.
 
-В `config/EssentialCommands.properties` (или `essentialcommands.json` — смотри актуальный файл мода):
+**Essential Commands:** `enable_rtp=false`, чтобы не дублировать `/rtp` и не блокировать Незер/Край.
 
-```properties
-use_permissions_api=true
+## 1. Конфиг FastRTP
+
+`config/fast-rtp.json` (образец: [fast-rtp.json](config-samples/fast-rtp.json)):
+
+```json
+{
+  "requirePermission": false,
+  "useCurrentWorld": true,
+  "rtpBackEnabled": true,
+  "cooldown": 30
+}
 ```
 
-После правки — перезапуск или reload конфига мода (если есть).
+После правки: `/rtp reload` (OP) или перезапуск сервера.
 
-## 2. Выдать право группе default
+## 2. Essential Commands
 
-В **консоли** сервера (не в чате игрока):
+В `config/EssentialCommands.properties`:
+
+```properties
+enable_rtp=false
+```
+
+Иначе `/rtp` из Essential Commands конфликтует с FastRTP и в Незере/Краю пишет «RTP is not enabled in this world».
+
+## 3. Если нужно право только для VIP
+
+Поставь `requirePermission: true` и выдай:
 
 ```text
-lp group default permission set essentialcommands.randomteleport true
+lp group default permission set fast-rtp.command.root true
 lp sync
 ```
 
-Группа `admin` наследует `default` (`lp group admin parent add default`), поэтому админы тоже получат `/rtp`.
-
-Проверка для игрока:
-
-```text
-lp user <ник> permission check essentialcommands.randomteleport
-```
-
-Если `false` — у игрока нет группы `default`: `lp user <ник> parent set default`.
-
-## 3. Если команда всё равно «нет прав»
-
-```text
-lp verbose on
-```
-
-Игрок вводит `/rtp` — в консоли появится, какой **permission node** не хватает. Подставь его вместо `essentialcommands.randomteleport`, если мод обновился.
-
-Дополнительно (по желанию, из wiki Essential Commands):
+Дополнительно (админ):
 
 | Право | Зачем |
 |-------|--------|
-| `essentialcommands.bypass.teleport_delay` | без задержки перед телепортом |
-| `essentialcommands.bypass.teleport_interrupt_on_move` | не сбрасывать RTP при движении |
-
-Обычным игрокам для базового `/rtp` достаточно только `essentialcommands.randomteleport`.
+| `fast-rtp.command.advanced` | `/rtp player <ник> world …` |
+| `fast-rtp.command.reload` | `/rtp reload` |
+| `fast-rtp.command.back` | `/rtpback` (если `requirePermission: true`) |

@@ -42,7 +42,8 @@ public final class GraveGuardEvents {
 			GraveGuardManager.grantProtection(
 					serverPlayer,
 					true,
-					GraveGuardConfig.get().protectAllDamageInLootZone);
+					GraveGuardConfig.get().protectAllDamageInLootZone
+							&& GraveGuardManager.isInLootZone(serverPlayer));
 			return ActionResult.PASS;
 		});
 

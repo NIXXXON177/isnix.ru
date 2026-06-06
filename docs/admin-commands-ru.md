@@ -194,7 +194,8 @@ lp sync
 
 | Команда | Назначение |
 |---------|------------|
-| `/rtp` | Случайный телепорт (право: `essentialcommands.randomteleport`) |
+| `/rtp` | Случайный телепорт в **текущем** измерении (FastRTP, `requirePermission: false`) |
+| `/rtpback` | Вернуться на последний RTP (FastRTP) |
 | `/enderchest` | Открыть эндер-сундук (право: `essentialcommands.enderchest`) |
 | `/warp tp <имя>` | Телепорт на варп (все игроки) |
 | `/warp list` | Список варпов |
@@ -206,7 +207,7 @@ lp sync
 
 **Bedrock:** порт **20545** UDP, Java **20122** — [bedrock-geyser-play2go-ru.md](bedrock-geyser-play2go-ru.md).
 
-Права `/rtp` для всех: [luckperms-rtp-default.md](luckperms-rtp-default.md)
+Конфиг `/rtp`: [luckperms-rtp-default.md](luckperms-rtp-default.md), `config/fast-rtp.json`
 
 Права `/enderchest` для всех: [luckperms-enderchest-default.md](luckperms-enderchest-default.md)
 

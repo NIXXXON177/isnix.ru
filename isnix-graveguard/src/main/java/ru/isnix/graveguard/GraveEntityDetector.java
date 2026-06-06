@@ -64,9 +64,10 @@ public final class GraveEntityDetector {
 	private static boolean matchesPlayerIdentity(ServerPlayerEntity player, Entity entity) {
 		Text customName = entity.getCustomName();
 		if (customName != null) {
-			String name = customName.getString();
+			String name = customName.getString().trim();
 			String playerName = player.getName().getString();
-			if (!name.isEmpty() && name.contains(playerName)) {
+			if (!name.isEmpty()
+					&& (name.equals(playerName) || name.equalsIgnoreCase(playerName))) {
 				return true;
 			}
 		}

@@ -35,6 +35,7 @@ EXCLUDE_SUBSTR = (
     "xaeros-map-server",
     "invview",
     "easywhitelist",
+    "carryon",
     "essential_commands",
     "placeholder-api",
     "tab v",  # TAB — только сервер

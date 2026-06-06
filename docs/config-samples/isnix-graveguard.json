@@ -6,7 +6,7 @@
 	"nearGraveRadius": 10.0,
 	"deathSiteRadius": 14.0,
 	"lootGraceSeconds": 60,
-	"protectAllDamageInLootZone": true,
+	"protectAllDamageInLootZone": false,
 	"protectFromPlayersOnly": true,
 	"notifyPlayer": true,
 	"extraGraveEntityTags": ["graves.grave", "graves.display"]

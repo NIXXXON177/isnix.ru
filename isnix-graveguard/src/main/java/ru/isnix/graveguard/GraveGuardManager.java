@@ -22,6 +22,7 @@ public final class GraveGuardManager {
 	/** Пока игрок в зоне лута — продлевается; после выхода ещё lootGraceSeconds. */
 	private static final Map<UUID, Integer> LOOT_ZONE_UNTIL_TICK = new HashMap<>();
 	private static final Set<UUID> BLOCK_ALL_DAMAGE = new HashSet<>();
+	private static final Set<UUID> WAS_IN_LOOT_ZONE = new HashSet<>();
 
 	private GraveGuardManager() {
 	}
@@ -37,9 +38,8 @@ public final class GraveGuardManager {
 		int eligibleTicks = GraveGuardConfig.get().eligibleMinutesAfterDeath * 60 * 20;
 		ELIGIBLE_UNTIL_TICK.put(player.getUuid(), server.getTicks() + eligibleTicks);
 		LAST_DEATH_POS.put(player.getUuid(), player.getBlockPos());
-		PROTECT_UNTIL_TICK.remove(player.getUuid());
-		LOOT_ZONE_UNTIL_TICK.remove(player.getUuid());
-		BLOCK_ALL_DAMAGE.remove(player.getUuid());
+		clearProtection(player.getUuid());
+		WAS_IN_LOOT_ZONE.remove(player.getUuid());
 	}
 
 	public static void grantProtection(ServerPlayerEntity player, boolean notify, boolean blockAllDamage) {
@@ -52,14 +52,17 @@ public final class GraveGuardManager {
 		}
 		int until = server.getTicks() + GraveGuardConfig.get().protectionSeconds * 20;
 		Integer previous = PROTECT_UNTIL_TICK.get(player.getUuid());
+		boolean wasProtected = previous != null && previous > server.getTicks();
 		PROTECT_UNTIL_TICK.put(player.getUuid(), until);
 		if (blockAllDamage) {
 			BLOCK_ALL_DAMAGE.add(player.getUuid());
+		} else {
+			BLOCK_ALL_DAMAGE.remove(player.getUuid());
 		}
 
 		if (notify
 				&& GraveGuardConfig.get().notifyPlayer
-				&& (previous == null || previous <= server.getTicks())) {
+				&& !wasProtected) {
 			String detail = blockAllDamage
 					? "без урона (игроки и мобы)"
 					: "без урона от игроков";
@@ -105,17 +108,16 @@ public final class GraveGuardManager {
 			return false;
 		}
 		if (server.getTicks() >= until) {
-			PROTECT_UNTIL_TICK.remove(player.getUuid());
-			BLOCK_ALL_DAMAGE.remove(player.getUuid());
+			clearProtection(player.getUuid());
 			return false;
 		}
 		return true;
 	}
 
+	/** Только рядом с сущностью своей могилы — не «вся зона смерти». */
 	public static boolean isInLootZone(ServerPlayerEntity player) {
 		GraveGuardConfig cfg = GraveGuardConfig.get();
-		return GraveEntityDetector.isNearOwnGrave(player, cfg.nearGraveRadius)
-				|| GraveEntityDetector.isPlayerNearDeathSite(player, cfg.deathSiteRadius);
+		return GraveEntityDetector.isNearOwnGrave(player, cfg.nearGraveRadius);
 	}
 
 	public static void extendLootZone(ServerPlayerEntity player) {
@@ -208,27 +210,43 @@ public final class GraveGuardManager {
 			return true;
 		});
 
+		LOOT_ZONE_UNTIL_TICK.entrySet().removeIf(entry -> now >= entry.getValue());
+
 		for (UUID playerId : new ArrayList<>(ELIGIBLE_UNTIL_TICK.keySet())) {
 			ServerPlayerEntity player = server.getPlayerManager().getPlayer(playerId);
 			if (player == null) {
 				continue;
 			}
+
 			boolean inZone = isInLootZone(player);
+
 			if (inZone) {
 				extendLootZone(player);
-			}
-			if (inZone || isLootZoneActive(player)) {
-				boolean allDamage = cfg.protectAllDamageInLootZone;
-				grantProtection(player, inZone, allDamage);
+				boolean entering = !WAS_IN_LOOT_ZONE.contains(playerId);
+				boolean needsRefresh = !isProtected(player) || remainingProtectionSeconds(player) <= 5;
+				if (entering || needsRefresh) {
+					grantProtection(player, entering, cfg.protectAllDamageInLootZone);
+				}
+				WAS_IN_LOOT_ZONE.add(playerId);
+			} else {
+				WAS_IN_LOOT_ZONE.remove(playerId);
+				if (isProtected(player)) {
+					clearProtection(playerId);
+				}
 			}
 		}
+	}
+
+	public static void clearProtection(UUID playerId) {
+		PROTECT_UNTIL_TICK.remove(playerId);
+		BLOCK_ALL_DAMAGE.remove(playerId);
 	}
 
 	private static void clearEligibilityAux(UUID playerId) {
 		LAST_DEATH_POS.remove(playerId);
 		LOOT_ZONE_UNTIL_TICK.remove(playerId);
-		PROTECT_UNTIL_TICK.remove(playerId);
-		BLOCK_ALL_DAMAGE.remove(playerId);
+		WAS_IN_LOOT_ZONE.remove(playerId);
+		clearProtection(playerId);
 	}
 
 	public static void clearEligibility(UUID playerId) {
@@ -237,7 +255,9 @@ public final class GraveGuardManager {
 	}
 
 	public static void onLogout(ServerPlayerEntity player) {
-		PROTECT_UNTIL_TICK.remove(player.getUuid());
-		BLOCK_ALL_DAMAGE.remove(player.getUuid());
+		UUID id = player.getUuid();
+		clearProtection(id);
+		LOOT_ZONE_UNTIL_TICK.remove(id);
+		WAS_IN_LOOT_ZONE.remove(id);
 	}
 }

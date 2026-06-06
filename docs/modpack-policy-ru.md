@@ -30,9 +30,9 @@
 
 | Мод | Статус |
 |-----|--------|
-| Flora's Delight | на сервере, тест; ZIP на сайте — позже |
-| Friends & Foes | на сервере, тест; ZIP на сайте — позже |
-| Visual Workbench | на сервере, тест; ZIP на сайте — позже |
+| Flora's Delight | в сборке ZIP (июнь 2026) |
+| Friends & Foes | в сборке ZIP (июнь 2026) |
+| Visual Workbench | в сборке ZIP (июнь 2026) |
 | Brewin' and Chewin' | **запрещён** (алкоголь) |
 | Carry On | снят (не зашло) |
 | Supplementaries | ждём 1.21.11 |

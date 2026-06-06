@@ -1,0 +1,12 @@
+📦 Обнови сборку — без этого не зайти на сервер
+
+На сервере новые моды (Flora's Delight, Friends & Foes, Visual Workbench). Старая сборка выдаёт ошибку про fabric-object-builder-api / registry.
+
+Что сделать:
+1. Скачай свежий ISTHISNIXXXONmods.zip → isnix.ru/how-to-play.html (~62 МБ)
+2. Удали старые jar из папки mods инстанса (или создай новый инстанс)
+3. Импортируй ZIP в Prism Launcher / положи jar в mods
+
+Важно: fabric-api-0.141.4+1.21.11.jar и friendsandfoes — обязательны.
+
+mc.isnix.ru · Fabric 1.21.11
