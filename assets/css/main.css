@@ -1167,6 +1167,51 @@
 				line-height: 1.5;
 			}
 
+			.shop-da-format {
+				margin-bottom: 2rem;
+				padding: 1.1rem 1.25rem;
+				background: var(--surface);
+				border: 1px solid var(--border);
+				border-left: 3px solid var(--green-dark);
+				border-radius: var(--radius-md);
+			}
+			.shop-da-format__title {
+				font-size: 0.68rem;
+				font-weight: 700;
+				letter-spacing: 0.12em;
+				text-transform: uppercase;
+				color: var(--green);
+				margin: 0 0 0.65rem;
+			}
+			.shop-da-format__line {
+				font-size: 0.78rem;
+				color: var(--muted);
+				margin: 0 0 0.45rem;
+				line-height: 1.55;
+			}
+			.shop-da-format__line code,
+			.custom-da-example code {
+				display: inline-block;
+				margin-top: 0.25rem;
+				padding: 0.35rem 0.55rem;
+				background: rgba(0, 0, 0, 0.35);
+				border: 1px solid var(--border2);
+				border-radius: var(--radius-sm);
+				font-family: ui-monospace, 'Cascadia Code', monospace;
+				font-size: 0.72rem;
+				color: var(--text);
+				word-break: break-word;
+			}
+			.shop-da-format__hint {
+				font-size: 0.72rem;
+				color: var(--muted);
+				margin: 0.65rem 0 0;
+				opacity: 0.9;
+			}
+			.shop-da-format__hint a {
+				color: var(--green);
+			}
+
 			.shop-catalog {
 				margin-bottom: 0.5rem;
 			}
@@ -1540,8 +1585,29 @@
 				font-size: 0.82rem;
 				color: var(--muted);
 				line-height: 1.5;
-				margin-bottom: 1.5rem;
-				max-width: 500px;
+				margin-bottom: 0.85rem;
+				max-width: 52rem;
+			}
+			.custom-da-example {
+				font-size: 0.78rem;
+				color: var(--muted);
+				margin: 0 0 0.5rem;
+				line-height: 1.55;
+			}
+			.custom-da-colors {
+				font-size: 0.72rem;
+				color: var(--muted);
+				margin: 0 0 1.25rem;
+				opacity: 0.92;
+			}
+			.custom-buy-row {
+				display: flex;
+				flex-wrap: wrap;
+				align-items: center;
+				gap: 0.75rem;
+			}
+			.custom-buy-row .btn-custom-buy {
+				margin-left: 0;
 			}
 			.custom-grid {
 				display: grid;

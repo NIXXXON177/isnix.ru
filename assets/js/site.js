@@ -1,13 +1,4 @@
 	const DA_URL = 'https://www.donationalerts.com/r/isthisnixxxon'
-	const colorMap = {
-		green: '#4ade80',
-		gold: '#fbbf24',
-		aqua: '#67e8f9',
-		red: '#f87171',
-		light_purple: '#c084fc',
-		white: '#ffffff',
-		yellow: '#fef08a',
-	}
 
 	function easeInOutQuint(t) {
 		return t < 0.5
@@ -15,246 +6,89 @@
 			: 1 - Math.pow(-2 * t + 2, 5) / 2
 	}
 
-	function getNick() {
-		return (document.getElementById('playerNick').value || '').trim()
+	function buildDonationUrl(opts) {
+		opts = opts || {}
+		const url = new URL(DA_URL)
+		if (opts.amount) url.searchParams.set('amount', String(opts.amount))
+		let comment = opts.comment
+		if (!comment && opts.kind === 'custom') {
+			comment =
+				'Ник: | Кастомный префикс: | Цвет: (зелёный, золотой, голубой, красный, фиолетовый, белый, жёлтый)'
+		} else if (!comment && opts.kind === 'unban') {
+			comment = 'Ник: | Заявка на разбан'
+		} else if (!comment && opts.prefix) {
+			comment = 'Ник: | Префикс: [' + opts.prefix + ']'
+		}
+		if (comment) url.searchParams.set('comment', comment)
+		return url.toString()
 	}
 
-	var nickWhitelistAbort = null
-	var nickDebounceTimer = null
-	var MC_NICK_RE = /^[a-zA-Z0-9_]{3,16}$/
-	var shopAuthNickLocked = false
-	/** Относительный путь с isnix.ru или полный URL прокси (см. подсказку под полем ника). Прямая ссылка на панель хостинга из браузера не работает. */
-	var WHITELIST_JSON_URL = 'whitelist.json'
-	var whitelistPlayers = null
-	var whitelistFetchedAt = 0
-	var WHITELIST_MS = 120000
-	var nickApprovedKey = null
-
-	function normalizeWhitelistPlayers(j) {
-		var raw
-		if (j && Array.isArray(j.players)) raw = j.players
-		else if (Array.isArray(j)) raw = j
-		else return []
-		var out = []
-		for (var i = 0; i < raw.length; i++) {
-			var e = raw[i]
-			if (typeof e === 'string') out.push(e.trim())
-			else if (e && typeof e.name === 'string') out.push(e.name.trim())
-		}
-		return out.filter(function (s) {
-			return s.length > 0
-		})
+	function openDonation(btn) {
+		const card = btn.closest('.shop-card')
+		if (!card) return
+		const prefix = card.dataset.prefix
+		const amount = card.dataset.amount
+		const kind = prefix === 'Разбан' ? 'unban' : 'prefix'
+		window.open(
+			buildDonationUrl({ prefix, amount, kind }),
+			'_blank',
+			'noopener',
+		)
 	}
 
-	function canonicalNickFromWhitelist(v) {
-		if (!whitelistPlayers || !v) return v
-		var lv = v.toLowerCase()
-		for (var i = 0; i < whitelistPlayers.length; i++) {
-			var p = String(whitelistPlayers[i]).trim()
-			if (p.toLowerCase() === lv) return p
-		}
-		return v
+	function openCustomDonation() {
+		window.open(buildDonationUrl({ amount: '299', kind: 'custom' }), '_blank', 'noopener')
 	}
 
-	function isNickVerifiedForPurchase() {
-		var v = getNick()
-		if (!v || !MC_NICK_RE.test(v) || nickApprovedKey === null) return false
-		return v.toLowerCase() === nickApprovedKey
-	}
-
-	function setShopNickInputValue(nick, fromAccount) {
-		var v = (nick || '').trim()
-		var playerNickEl = document.getElementById('playerNick')
-		var customNickEl = document.getElementById('customNick')
-		if (playerNickEl) playerNickEl.value = v
-		if (customNickEl) customNickEl.value = v
-		if (!v) {
-			updateCustomPreview()
-			return
-		}
-		if (fromAccount) {
-			fetchWhitelistCheck(v)
-			return
-		}
-		if (playerNickEl) {
-			playerNickEl.dispatchEvent(new Event('input', { bubbles: true }))
-		}
-	}
-
-	function unlockShopNickFromAccount() {
-		shopAuthNickLocked = false
-		var playerNickEl = document.getElementById('playerNick')
-		var label = document.getElementById('shopNickLabel')
-		var hint = document.getElementById('shopNickAuthHint')
-		if (playerNickEl) {
-			playerNickEl.readOnly = false
-			playerNickEl.classList.remove('shop-nick-input--from-account')
-		}
-		if (label) label.textContent = 'Твой ник в Minecraft'
-		if (hint) hint.hidden = true
-		updateShopHowStepNick(false)
-		if (playerNickEl) playerNickEl.focus()
-	}
-
-	function updateShopHowStepNick(fromAccount) {
-		var el = document.getElementById('shopHowStepNick')
-		if (!el) return
-		if (fromAccount) {
-			el.innerHTML =
-				'Ты вошёл в кабинет — <strong class="text-strong">ник подставлен</strong> и проверен по вайтлисту. Можно сразу нажимать «Купить».'
-		} else {
-			el.innerHTML =
-				'Введи <strong class="text-strong">ник</strong> из вайтлиста — статус должен стать зелёным, затем ник попадёт в комментарий к донату. Вошёл в кабинет — ник подставится сам.'
-		}
-	}
-
-	function setShopNickAuthHint(profileNick, canUnlock) {
-		var hint = document.getElementById('shopNickAuthHint')
-		if (!hint) return
-		if (!profileNick) {
-			hint.hidden = false
-			hint.innerHTML =
-				'В <a href="account.html">кабинете</a> укажи ник Minecraft — он появится здесь автоматически.'
-			return
-		}
-		hint.hidden = false
-		var html =
-			'Покупаешь как <strong>' +
-			profileNick.replace(/&/g, '&amp;').replace(/</g, '&lt;') +
-			'</strong>.'
-		if (canUnlock) {
-			html +=
-				' <button type="button" class="shop-nick-unlock" id="shopNickUnlock">Другой ник</button>'
-		} else {
-			html += ' <a href="account.html">Изменить в профиле</a>.'
-		}
-		hint.innerHTML = html
-		var unlockBtn = document.getElementById('shopNickUnlock')
-		if (unlockBtn) {
-			unlockBtn.addEventListener('click', unlockShopNickFromAccount)
-		}
-	}
-
-	function applyShopNickFromProfile(profile) {
-		var label = document.getElementById('shopNickLabel')
-		var playerNickEl = document.getElementById('playerNick')
-		var nick =
-			profile && profile.minecraft_nick ? String(profile.minecraft_nick).trim() : ''
-		if (!nick || !MC_NICK_RE.test(nick)) {
-			if (label) label.textContent = 'Твой ник в Minecraft'
-			setShopNickAuthHint('', false)
-			updateShopHowStepNick(false)
-			return
-		}
-		shopAuthNickLocked = true
-		if (label) label.textContent = 'Ник из кабинета'
-		if (playerNickEl) {
-			playerNickEl.readOnly = true
-			playerNickEl.classList.add('shop-nick-input--from-account')
-		}
-		setShopNickAuthHint(nick, true)
-		updateShopHowStepNick(true)
-		setShopNickInputValue(nick, true)
-	}
-
-	function requireNickForPurchase() {
-		var nick = getNick()
-		if (nick) return nick
-		var playerNickEl = document.getElementById('playerNick')
-		if (shopAuthNickLocked && playerNickEl && playerNickEl.value.trim()) {
-			return playerNickEl.value.trim()
-		}
-		if (window.IsnixAuth && IsnixAuth.isReady && IsnixAuth.isReady()) {
-			showToast('Укажи ник Minecraft в кабинете isnix.ru', false)
-			window.open('account.html', '_blank', 'noopener')
-		} else {
-			showToast('Сначала введи ник в Minecraft!', false)
-			if (playerNickEl) playerNickEl.focus()
-		}
-		return null
-	}
-
-	async function initShopFromAuth() {
-		if (!window.IsnixAuth || !IsnixAuth.isReady || !IsnixAuth.isReady()) return
-		try {
-			var session = await IsnixAuth.getSession()
-			if (!session || !session.user) {
-				shopAuthNickLocked = false
-				return
-			}
-			var profile = await IsnixAuth.getProfile(session.user.id)
-			applyShopNickFromProfile(profile)
-		} catch (_e) {
-			/* ignore */
-		}
-	}
-
-	function fetchWhitelistCheck(v) {
-		var st = document.getElementById('nickStatus')
-		if (nickWhitelistAbort) {
-			nickWhitelistAbort.abort()
-			nickWhitelistAbort = null
-		}
-		nickWhitelistAbort = new AbortController()
-		var ac = nickWhitelistAbort
-		nickApprovedKey = null
-		st.textContent = 'Проверяем вайтлист…'
-		st.className = 'nick-status checking'
-		updateCustomPreview()
-
-		function applyCheck(arr) {
-			if (ac.signal.aborted) return
-			var lv = v.toLowerCase()
-			var canon = null
-			for (var i = 0; i < arr.length; i++) {
-				var p = String(arr[i]).trim()
-				if (p.toLowerCase() === lv) {
-					canon = p
-					break
-				}
-			}
-			if (canon) {
-				nickApprovedKey = lv
-				setNickStatus(st, 'В вайтлисте: ' + canon, true)
-				st.className = 'nick-status ok'
-			} else {
-				nickApprovedKey = null
-				setNickStatus(st, 'Нет в вайтлисте', false)
-				st.className = 'nick-status invalid'
-			}
-			updateCustomPreview()
-		}
-
-		var now = Date.now()
-		if (
-			whitelistPlayers !== null &&
-			now - whitelistFetchedAt < WHITELIST_MS
-		) {
-			applyCheck(whitelistPlayers)
-			return
-		}
-
-		fetch(WHITELIST_JSON_URL, { signal: ac.signal, cache: 'no-store' })
-			.then(function (r) {
-				if (!r.ok) throw new Error('wl')
-				return r.json()
+	function openCreatorPrefix(btn) {
+		const card = btn.closest('.shop-card')
+		if (!card) return
+		const prefix = card.dataset.prefix
+		const contentHint =
+			prefix === 'YouTube'
+				? 'Ссылка на канал и видео о сервере'
+				: 'Ссылка на канал и стримы на сервере'
+		const text =
+			'Заявка на префикс [' +
+			prefix +
+			']\nНик: \n' +
+			contentHint +
+			': '
+		var copyFn =
+			window.IsnixCompat && IsnixCompat.copyText
+				? IsnixCompat.copyText(text)
+				: navigator.clipboard && navigator.clipboard.writeText
+					? navigator.clipboard.writeText(text)
+					: null
+		if (copyFn && typeof copyFn.then === 'function') {
+			copyFn.then(function () {
+				showToast(
+					'Шаблон заявки скопирован — укажи ник и ссылку в личном кабинете',
+					true,
+				)
 			})
-			.then(function (j) {
-				var arr = normalizeWhitelistPlayers(j)
-				whitelistPlayers = arr
-				whitelistFetchedAt = Date.now()
-				applyCheck(arr)
-			})
-			.catch(function (e) {
-				if (e.name === 'AbortError') return
-				if (ac.signal.aborted) return
-				nickApprovedKey = null
-				whitelistPlayers = null
-				whitelistFetchedAt = 0
-				setNickStatus(st, 'Нет whitelist.json или ошибка загрузки', 'warn')
-				st.className = 'nick-status empty'
-				updateCustomPreview()
-			})
+		}
+		window.open('account.html#whitelist', '_blank', 'noopener')
+	}
+
+	function closeBoldNickModal() {
+		const root = document.getElementById('boldNickModalRoot')
+		if (!root) return
+		root.classList.remove('is-open')
+		root.setAttribute('aria-hidden', 'true')
+		document.body.style.overflow = ''
+	}
+
+	function submitBoldNickPay() {
+		window.open(
+			buildDonationUrl({
+				amount: '150',
+				comment: 'Ник: | Услуга: Жирный ник',
+			}),
+			'_blank',
+			'noopener',
+		)
+		closeBoldNickModal()
 	}
 
 	function showToast(msg, ok = true) {
@@ -267,272 +101,6 @@
 		t.style.borderColor = ok ? 'var(--green-dark)' : 'rgba(248,113,113,.4)'
 		t.classList.add('show')
 		setTimeout(() => t.classList.remove('show'), 3200)
-	}
-
-	function setNickStatus(el, text, ok) {
-		if (typeof isnixSetStatus === 'function') {
-			isnixSetStatus(el, text, ok)
-			return
-		}
-		if (el) el.textContent = text
-	}
-
-	function buildDonationUrl(prefix, amount) {
-		const nick = canonicalNickFromWhitelist(getNick())
-		const comment = `Ник: ${nick} | Префикс: [${prefix}]`
-		const url = new URL(DA_URL)
-		url.searchParams.set('comment', comment)
-		if (amount) url.searchParams.set('amount', amount)
-		return url.toString()
-	}
-
-	function openDonation(btn) {
-		const nick = requireNickForPurchase()
-		if (!nick) return
-		if (!isNickVerifiedForPurchase()) {
-			showToast('Ник должен быть в вайтлисте (зелёный статус)', false)
-			var el = document.getElementById('playerNick')
-			if (el && !el.readOnly) el.focus()
-			return
-		}
-		const card = btn.closest('.shop-card')
-		const prefix = card.dataset.prefix
-		const amount = card.dataset.amount
-		window.open(buildDonationUrl(prefix, amount), '_blank', 'noopener')
-	}
-
-	function openCreatorPrefix(btn) {
-		const nick = requireNickForPurchase()
-		if (!nick) return
-		if (!isNickVerifiedForPurchase()) {
-			showToast('Ник должен быть в вайтлисте (зелёный статус)', false)
-			var el = document.getElementById('playerNick')
-			if (el && !el.readOnly) el.focus()
-			return
-		}
-		const card = btn.closest('.shop-card')
-		const prefix = card.dataset.prefix
-		const nickCanon = canonicalNickFromWhitelist(nick)
-		const contentHint =
-			prefix === 'YouTube'
-				? 'Ссылка на канал и видео о сервере'
-				: 'Ссылка на канал и стримы на сервере'
-		const text = `Заявка на префикс [${prefix}]\nНик: ${nickCanon}\n${contentHint}: `
-		var copyFn =
-			window.IsnixCompat && IsnixCompat.copyText
-				? IsnixCompat.copyText(text)
-				: navigator.clipboard && navigator.clipboard.writeText
-					? navigator.clipboard.writeText(text)
-					: null
-		if (copyFn && typeof copyFn.then === 'function') {
-			copyFn.then(function () {
-				showToast(
-					'Текст заявки скопирован — вставь его в заявку в личном кабинете',
-					true,
-				)
-			})
-		}
-		window.open('account.html#whitelist', '_blank', 'noopener')
-	}
-
-	function buildBoldNickDonationUrl(nickCanon) {
-		const comment = `Ник: ${nickCanon} | Услуга: Жирный ник`
-		const url = new URL(DA_URL)
-		url.searchParams.set('comment', comment)
-		url.searchParams.set('amount', '150')
-		return url.toString()
-	}
-
-	function openBoldNickModal() {
-		const root = document.getElementById('boldNickModalRoot')
-		const inp = document.getElementById('boldNickModalNick')
-		if (!root || !inp) return
-		inp.value = (document.getElementById('playerNick').value || '').trim()
-		root.classList.add('is-open')
-		root.setAttribute('aria-hidden', 'false')
-		document.body.style.overflow = 'hidden'
-		setTimeout(function () {
-			inp.focus()
-		}, 80)
-	}
-
-	function closeBoldNickModal() {
-		const root = document.getElementById('boldNickModalRoot')
-		if (!root) return
-		root.classList.remove('is-open')
-		root.setAttribute('aria-hidden', 'true')
-		setTimeout(function () {
-			document.body.style.overflow = ''
-		}, 300)
-	}
-
-	function submitBoldNickPay() {
-		const raw = (
-			document.getElementById('boldNickModalNick').value || ''
-		).trim()
-		if (!raw) {
-			showToast('Введите ник в Minecraft!', false)
-			document.getElementById('boldNickModalNick').focus()
-			return
-		}
-		if (!MC_NICK_RE.test(raw)) {
-			showToast('Ник: 3–16 символов, латиница, цифры и _', false)
-			document.getElementById('boldNickModalNick').focus()
-			return
-		}
-		document.getElementById('playerNick').value = raw
-		document.getElementById('customNick').value = raw
-		const lv = raw.toLowerCase()
-		const arr = whitelistPlayers
-		if (arr && arr.length) {
-			let canon = null
-			for (let i = 0; i < arr.length; i++) {
-				const p = String(arr[i]).trim()
-				if (p.toLowerCase() === lv) {
-					canon = p
-					break
-				}
-			}
-			const st = document.getElementById('nickStatus')
-			if (!canon) {
-				nickApprovedKey = null
-				setNickStatus(st, 'Нет в вайтлисте', false)
-				st.className = 'nick-status invalid'
-				updateCustomPreview()
-				showToast('Ник должен быть в вайтлисте (зелёный статус)', false)
-				return
-			}
-			nickApprovedKey = lv
-			setNickStatus(st, 'В вайтлисте: ' + canon, true)
-			st.className = 'nick-status ok'
-			updateCustomPreview()
-			const nickCanon = canonicalNickFromWhitelist(raw)
-			window.open(buildBoldNickDonationUrl(nickCanon), '_blank', 'noopener')
-			closeBoldNickModal()
-			return
-		}
-		nickApprovedKey = null
-		fetchWhitelistCheck(raw)
-		showToast(
-			'⏳ Загружаем вайтлист… Когда статус сверху станет зелёным, нажмите «Перейти к оплате» ещё раз',
-			true,
-		)
-	}
-
-	;(function initBoldNickModal() {
-		const root = document.getElementById('boldNickModalRoot')
-		const backdrop = document.getElementById('boldNickModalBackdrop')
-		if (!root || !backdrop) return
-		backdrop.addEventListener('click', closeBoldNickModal)
-		document.addEventListener('keydown', function (e) {
-			if (e.key !== 'Escape') return
-			if (!root.classList.contains('is-open')) return
-			closeBoldNickModal()
-		})
-	})()
-
-	function openCustomDonation() {
-		var nick = (document.getElementById('customNick').value || '').trim()
-		const prefix = (
-			document.getElementById('customPrefix').value || ''
-		).trim()
-		if (!nick) {
-			nick = requireNickForPurchase() || ''
-		}
-		if (!nick) return
-		if (!isNickVerifiedForPurchase()) {
-			showToast('Сначала проверь ник по вайтлисту', false)
-			var el = document.getElementById('playerNick')
-			if (el && !el.readOnly) el.focus()
-			return
-		}
-		if (!prefix) {
-			showToast('Придумай префикс!', false)
-			document.getElementById('customPrefix').focus()
-			return
-		}
-		const color = document.getElementById('customColor').value
-		const comment = `Ник: ${canonicalNickFromWhitelist(nick)} | Кастомный префикс: [${prefix}] | Цвет: ${color}`
-		const url = new URL(DA_URL)
-		url.searchParams.set('comment', comment)
-		url.searchParams.set('amount', '299')
-		window.open(url.toString(), '_blank', 'noopener')
-	}
-
-	// Sync nick + проверка по whitelist.json (debounced)
-	var playerNickEl = document.getElementById('playerNick')
-	if (playerNickEl) {
-		playerNickEl.addEventListener('input', function () {
-			if (this.readOnly) return
-			var v = this.value.trim()
-			document.getElementById('customNick').value = v
-			clearTimeout(nickDebounceTimer)
-			nickDebounceTimer = null
-			if (nickWhitelistAbort) {
-				nickWhitelistAbort.abort()
-				nickWhitelistAbort = null
-			}
-			var st = document.getElementById('nickStatus')
-			if (!v) {
-				setNickStatus(st, 'Введи ник перед покупкой', 'warn')
-				st.className = 'nick-status empty'
-				nickApprovedKey = null
-				updateCustomPreview()
-				return
-			}
-			if (!MC_NICK_RE.test(v)) {
-				setNickStatus(st, 'Ник: 3–16 символов, латиница, цифры и _', 'warn')
-				st.className = 'nick-status invalid'
-				nickApprovedKey = null
-				updateCustomPreview()
-				return
-			}
-			nickApprovedKey = null
-			st.textContent = 'Проверяем вайтлист…'
-			st.className = 'nick-status checking'
-			updateCustomPreview()
-			nickDebounceTimer = setTimeout(function () {
-				fetchWhitelistCheck(v)
-			}, 520)
-		})
-	}
-
-	initShopFromAuth()
-	if (window.IsnixAuth && IsnixAuth.onAuthStateChange) {
-		IsnixAuth.onAuthStateChange(function (session) {
-			if (session && session.user) {
-				initShopFromAuth()
-			} else {
-				shopAuthNickLocked = false
-				var hint = document.getElementById('shopNickAuthHint')
-				if (hint) hint.hidden = true
-				updateShopHowStepNick(false)
-			}
-		})
-	}
-
-	function syncNick(el) {
-		document.getElementById('playerNick').value = el.value
-		document.getElementById('playerNick').dispatchEvent(new Event('input'))
-	}
-
-	function updateCustomPreview() {
-		const prefix = (
-			document.getElementById('customPrefix').value || ''
-		).trim()
-		const nick =
-			(document.getElementById('customNick').value || '').trim() ||
-			(document.getElementById('playerNick').value || '').trim()
-		const color = document.getElementById('customColor').value
-		const hex = colorMap[color] || '#4ade80'
-		const tag = document.getElementById('customPreviewTag')
-		const name = document.getElementById('customPreviewName')
-		const btn = document.getElementById('customBuyBtn')
-		tag.textContent = prefix ? `[${prefix}]` : '[Префикс]'
-		tag.style.color = hex
-		tag.style.textShadow = `0 0 14px ${hex}`
-		name.textContent = nick || 'Ник'
-		btn.disabled = !prefix || !nick || !isNickVerifiedForPurchase()
 	}
 
 	const navBarEl =

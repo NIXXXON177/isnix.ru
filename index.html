@@ -36,7 +36,7 @@
 			href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Raleway:wght@300;400;600;700&display=swap"
 			rel="stylesheet"
 		/>
-		<link rel="stylesheet" href="assets/css/main.css?v=3" />
+		<link rel="stylesheet" href="assets/css/main.css?v=4" />
 		<link rel="stylesheet" href="assets/css/components.css?v=4" />
 		<link rel="stylesheet" href="assets/css/site-header.css?v=2" />
 		<link rel="stylesheet" href="assets/css/rules.css?v=3" />
@@ -521,45 +521,23 @@
 				</div>
 			</div>
 
-			<!-- Ник игрока -->
-			<div class="shop-nick-bar" id="shopNickBar">
-				<div class="shop-nick-bar__field">
-					<label for="playerNick" id="shopNickLabel">Твой ник в Minecraft</label>
-					<input
-						id="playerNick"
-						class="shop-nick-input"
-						type="text"
-						maxlength="16"
-						placeholder="Например: Steve123"
-						autocomplete="username"
-						spellcheck="false"
-					/>
-					<p id="shopNickAuthHint" class="shop-nick-auth-hint" hidden></p>
-				</div>
-				<div>
-					<label>Статус</label>
-					<div class="nick-status empty" id="nickStatus">
-						<svg class="icon icon--inline" aria-hidden="true" focusable="false"><use href="assets/icons/sprite.svg#alert"></use></svg> Введи ник перед покупкой
-					</div>
-				</div>
-			</div>
-
 			<!-- Как купить -->
 			<div class="shop-how">
 				<div class="shop-step-item">
 					<span class="s-num">01</span
-					><span class="s-txt" id="shopHowStepNick"
-						>Введи <strong class="text-strong">ник</strong> из вайтлиста —
-						статус должен стать зелёным, затем ник попадёт в комментарий к
-						донату. Вошёл в кабинет — ник подставится сам.</span
+					><span class="s-txt"
+						>Выбери префикс и нажми
+						<strong class="text-strong">«Купить»</strong> — откроется
+						DonationAlerts с нужной суммой</span
 					>
 				</div>
 				<div class="shop-step-item">
 					<span class="s-num">02</span
 					><span class="s-txt"
-						>Выбери префикс и нажми
-						<strong class="text-strong">«Купить»</strong> — DonationAlerts
-						откроется с заполненным комментарием</span
+						>На DonationAlerts в
+						<strong class="text-strong">комментарии к донату</strong> укажи свой
+						ник в Minecraft и префикс (для кастомного — ещё цвет). Ник должен
+						быть в вайтлисте сервера</span
 					>
 				</div>
 				<div class="shop-step-item">
@@ -567,10 +545,25 @@
 					><span class="s-txt"
 						>После оплаты префикс выдадим в течение
 						<strong class="text-strong">24 часов</strong>. Не выдали —
-						<a href="support.html#shop" style="color: var(--green)">техподдержка</a>
-						(ник и префикс в кабинете)</span
+						<a href="support.html#shop" style="color: var(--green)">техподдержка</a></span
 					>
 				</div>
+			</div>
+
+			<div class="shop-da-format" role="note">
+				<p class="shop-da-format__title">Формат комментария на DonationAlerts</p>
+				<p class="shop-da-format__line">
+					Готовый префикс:
+					<code>Ник: Steve123 | Префикс: [Строитель]</code>
+				</p>
+				<p class="shop-da-format__line">
+					Кастомный:
+					<code>Ник: Steve123 | Кастомный префикс: [Дракон] | Цвет: золотой</code>
+				</p>
+				<p class="shop-da-format__hint">
+					Для [YouTube] и [Twitch] — бесплатно через
+					<a href="account.html">личный кабинет</a>, не через донат.
+				</p>
 			</div>
 
 			<div class="shop-catalog">
@@ -1108,7 +1101,8 @@
 									>Легендарный</span
 								>
 								<div class="shop-desc-text">
-									Войди в историю сервера. Имя, которое будут помнить всегда.
+									Войди в историю сервера. Самый высокий префикс — выше всех
+									донатных, [Мл. Админ] и даже [Админ] в табе и чате.
 								</div>
 							</div>
 							<div class="shop-card-foot">
@@ -1235,110 +1229,30 @@
 			<div class="custom-box">
 				<div class="custom-title">
 					<svg class="icon icon--sm" aria-hidden="true" focusable="false"><use href="assets/icons/sprite.svg#sparkles"></use></svg> Кастомный префикс
-					<span class="custom-title-badge">Новинка</span>
+					<span class="custom-title-badge">299 ₽</span>
 				</div>
 				<p class="custom-lead">
-					Придумай свой уникальный префикс — любой текст до 16 символов.
-					Администрация проверит и выдаст в течение 24 часов. Мат, оскорбления и
-					никнеймы других игроков запрещены.
+					Любой текст до 16 символов и любой цвет — всё указываешь сам в
+					комментарии к донату на DonationAlerts. Администрация проверит и выдаст
+					в течение 24 часов. Мат, оскорбления и никнеймы других игроков
+					запрещены.
 				</p>
-				<div class="custom-grid">
-					<div class="custom-field">
-						<label for="customNick">Ник в Minecraft</label>
-						<input
-							id="customNick"
-							class="custom-input"
-							type="text"
-							maxlength="16"
-							placeholder="Steve123"
-							autocomplete="off"
-							spellcheck="false"
-							oninput="syncNick(this)"
-						/>
-					</div>
-					<div class="custom-field">
-						<label for="customPrefix"
-							>Твой префикс
-							<small style="color: var(--muted); font-size: 0.65rem"
-								>(макс. 16 символов)</small
-							></label
-						>
-						<input
-							id="customPrefix"
-							class="custom-input"
-							type="text"
-							maxlength="16"
-							placeholder="Например: Дракон или Pro"
-							autocomplete="off"
-							oninput="updateCustomPreview()"
-						/>
-					</div>
-					<div class="custom-field">
-						<label>Цвет (необязательно)</label>
-						<select
-							id="customColor"
-							class="custom-input"
-							onchange="updateCustomPreview()"
-							style="cursor: pointer"
-						>
-							<option value="green">Зелёный (по умолчанию)</option>
-							<option value="gold">Золотой</option>
-							<option value="aqua">Голубой</option>
-							<option value="red">Красный</option>
-							<option value="light_purple">Фиолетовый</option>
-							<option value="white">Белый</option>
-							<option value="yellow">Жёлтый</option>
-						</select>
-					</div>
-					<div>
-						<label
-							style="
-								display: block;
-								font-size: 0.62rem;
-								letter-spacing: 0.18em;
-								text-transform: uppercase;
-								color: var(--muted);
-								margin-bottom: 0.45rem;
-								font-weight: 700;
-							"
-							>Цена</label
-						>
-						<div
-							style="
-								font-family: 'Cinzel', serif;
-								font-size: 1.3rem;
-								font-weight: 900;
-								color: #fff;
-								padding: 0.72rem 0;
-							"
-						>
-							299
-							<span
-								style="
-									font-family: 'Raleway', sans-serif;
-									font-size: 0.7rem;
-									color: var(--muted);
-									font-weight: 400;
-								"
-								>₽</span
-							>
-						</div>
-					</div>
-				</div>
-				<div class="custom-preview-row" id="customPreviewRow">
-					<span class="custom-preview-label">Предпросмотр</span>
-					<span class="custom-preview-tag" id="customPreviewTag"
-						>[Префикс]</span
-					>
-					<span class="custom-preview-sep">·</span>
-					<span class="custom-preview-name" id="customPreviewName">Ник</span>
+				<p class="custom-da-example">
+					Пример комментария:
+					<code>Ник: Steve123 | Кастомный префикс: [Дракон] | Цвет: золотой</code>
+				</p>
+				<p class="custom-da-colors">
+					Цвета: зелёный, золотой, голубой, красный, фиолетовый, белый, жёлтый
+					(или опиши свой).
+				</p>
+				<div class="custom-buy-row">
 					<button
+						type="button"
 						class="btn-custom-buy"
 						id="customBuyBtn"
 						onclick="openCustomDonation()"
-						disabled
 					>
-						Купить за 299 ₽ →
+						Купить на DonationAlerts →
 					</button>
 				</div>
 			</div>
@@ -2081,4 +1995,4 @@
 		<script src="assets/js/site-header.js?v=5" defer></script>
 		<script src="assets/js/site-push-prompt.js?v=2" defer></script>
 		<script src="assets/js/icons.js?v=1"></script>
-		<script src="assets/js/site.js?v=10" defer></script>
+		<script src="assets/js/site.js?v=11" defer></script>
