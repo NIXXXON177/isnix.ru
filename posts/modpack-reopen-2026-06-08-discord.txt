@@ -1,0 +1,18 @@
+## ✅ ISTHISNIXXXON снова открыт
+
+Перезапуск завершён. Заходи: **`mc.isnix.ru`**
+
+**Без новой сборки не зайти** — скачай свежий ZIP:
+https://isnix.ru/how-to-play.html *(~74 МБ, 57 модов)*
+
+**Перед входом**
+• **Java 1.21.11** + **Fabric**, Java 21
+• Удали старые jar из `mods` или новый инстанс
+• Вайтлист: https://isnix.ru/account.html
+• В игре: ``/reg`` → ``/login``
+
+**В обновлении:** Flora's Delight, Friends & Foes, Visual Workbench, Traveler's Backpack (**B**), Comforts, Create Fly + аддоны, Moog's / Towns and Towers / Explorify *(новые чанки)*, Wakes, LambDynamicLights, Cyber Goggles.
+
+**Мир не вайпали.**
+
+Не заходит? → https://isnix.ru/how-to-play.html

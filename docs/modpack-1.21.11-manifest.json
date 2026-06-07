@@ -29,13 +29,18 @@
       { "slug": "create-handy-recipes", "required": true },
       { "slug": "create-useful-recipes", "required": true },
       { "slug": "create-extra-recipes-kuma", "required": true },
+      { "slug": "create-ultimate-resource-automation-unofficial-fix-(create-fly", "required": true, "note": "Ultimate Resource Automation — рецепты фабрик под Create Fly" },
+      { "slug": "create-new-foods", "required": true, "game_version_fallback": "1.21.10", "note": "Create Fly + FD: жидкости, культуры, еда. Staged — jar 1.21.10 на 1.21.11" },
       { "slug": "create-nerfad", "required": false, "note": "Баланс/упрощение Create — по желанию" }
+    ],
+    "client_addons": [
+      { "slug": "create-cyber-goggles", "required": true, "note": "HUD Create: стресс, RPM, фильтры — только клиент" }
     ],
     "not_available_fabric_12111": [
       "Create: Steam 'n' Rails (нет под 1.21.11 Fabric)",
       "Create: Designed Decor (NeoForge)",
       "Create Crafts & Additions (Forge/старые версии)",
-      "Create: New Foods (пока только 1.21.10 — можно протестировать позже)"
+      "Create: Power / электричество (CCA, New Age — другой лоадер/версия)"
     ]
   },
 
@@ -46,6 +51,8 @@
     { "slug": "create-handy-recipes", "required": true },
     { "slug": "create-useful-recipes", "required": true, "note": "После fetch: patch_create_useful_recipes.py" },
     { "slug": "create-extra-recipes-kuma", "required": true },
+    { "slug": "create-ultimate-resource-automation-unofficial-fix-(create-fly", "required": true, "note": "Ultimate Resource Automation для Create Fly. Staged" },
+    { "slug": "create-new-foods", "required": true, "game_version_fallback": "1.21.10", "note": "Create + еда/жидкости. Staged — тест jar 1.21.10" },
     { "slug": "farmers-delight-refabricated", "required": true },
     { "slug": "more-delight", "required": true },
     { "slug": "floras-delight", "required": true, "note": "FD: сыр, пицца, фрукты. Клиент+сервер. Staged — ZIP на сайте позже" },
@@ -53,6 +60,14 @@
     { "slug": "friends-and-foes", "required": true, "note": "Мобы из голосований: меднеголем, краб, Glare и др. Staged" },
     { "slug": "puzzles-lib", "required": true, "note": "Зависимость Visual Workbench (Fuzs)" },
     { "slug": "visual-workbench", "required": true, "note": "Предметы в верстаке видны и остаются внутри. Staged" },
+    { "slug": "travelersbackpack", "required": true, "note": "Рюкзаки: слоты, апгрейды, REI. Staged — тест на сервере" },
+    { "slug": "moogs-structure-lib", "required": true, "note": "Зависимость Moog's Voyager Structures" },
+    { "slug": "moogs-voyager-structures", "required": true, "note": "Голосование ВК: корабли, руины. Staged — только новые чанки" },
+    { "slug": "cristel-lib", "required": true, "note": "Зависимость Towns and Towers" },
+    { "slug": "towns-and-towers", "required": true, "note": "Голосование ВК: деревни и башни. Staged" },
+    { "slug": "explorify", "required": true, "note": "Голосование ВК: доп. структуры. Staged" },
+    { "slug": "comforts", "required": true, "note": "Голосование ВК: спальник и гамак. Staged" },
+    { "slug": "wakes", "required": true, "note": "Голосование ВК: следы на воде. Staged" },
     { "slug": "simple-voice-chat", "required": true },
     { "slug": "open-parties-and-claims", "required": true },
     { "slug": "styled-chat", "required": true },
@@ -92,7 +107,10 @@
     { "slug": "iris", "required": true },
     { "slug": "jade", "required": true },
     { "slug": "modmenu", "required": true },
+    { "slug": "create-cyber-goggles", "required": true, "note": "HUD Create (стресс, RPM) — только клиент" },
+    { "slug": "lambdynamiclights", "required": true, "note": "Голосование ВК: свет от факела в руке — клиент" },
     { "slug": "rei", "required": true, "note": "рецепты Create/FD (EMI нет на 1.21.11)" },
+    { "slug": "travelersbackpack", "required": true, "note": "рюкзаки — клиент+сервер, клавиша B" },
     { "slug": "advancement-plaques", "required": false },
     { "slug": "iceberg", "required": false, "note": "зависимость advancement-plaques" },
     { "slug": "xaeros-minimap", "required": true },

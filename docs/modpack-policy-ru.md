@@ -33,6 +33,17 @@
 | Flora's Delight | в сборке ZIP (июнь 2026) |
 | Friends & Foes | в сборке ZIP (июнь 2026) |
 | Visual Workbench | в сборке ZIP (июнь 2026) |
+| Traveler's Backpack | в сборке ZIP (июнь 2026) — рюкзаки, клавиша B |
+| Create: Ultimate Resource Automation | в сборке ZIP (июнь 2026) |
+| Create: New Foods | в сборке ZIP (июнь 2026) |
+| Create: Cyber Goggles | в сборке ZIP (июнь 2026) — клиент |
+| Moog's Voyager Structures | в сборке ZIP (июнь 2026) |
+| Towns and Towers | в сборке ZIP (июнь 2026) |
+| Explorify | в сборке ZIP (июнь 2026) |
+| Comforts | в сборке ZIP (июнь 2026) |
+| Wakes | в сборке ZIP (июнь 2026) |
+| LambDynamicLights | в сборке ZIP (июнь 2026) — клиент |
+| Map Atlas | **не добавляем** — дублирует Xaero's |
 | Brewin' and Chewin' | **запрещён** (алкоголь) |
 | Carry On | снят (не зашло) |
 | Supplementaries | ждём 1.21.11 |

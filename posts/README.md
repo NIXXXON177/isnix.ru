@@ -23,6 +23,15 @@
 | `maintenance-upgrade-short.txt` | Короткая версия (сторис / пин) |
 | `maintenance-reopen-vk.txt` | Открытие после апгрейда (ВК) |
 | `maintenance-reopen-discord.txt` | Открытие (Discord) |
+| `modpack-update-june-2026-vk.txt` | Обновить клиентскую сборку (ВК) |
+| `modpack-update-june-2026-telegram.txt` | То же, Telegram |
+| `modpack-update-june-2026-discord.txt` | То же, Discord |
+| `modpack-restart-2026-06-08-vk.txt` | Перезапуск 08.06.2026 00:00 + новая сборка (ВК) |
+| `modpack-restart-2026-06-08-telegram.txt` | То же, Telegram |
+| `modpack-restart-2026-06-08-discord.txt` | То же, Discord |
+| `modpack-reopen-2026-06-08-vk.txt` | Сервер открыт после перезапуска (ВК) |
+| `modpack-reopen-2026-06-08-telegram.txt` | То же, Telegram |
+| `modpack-reopen-2026-06-08-discord.txt` | То же, Discord |
 
 ## Разметка по площадкам
 

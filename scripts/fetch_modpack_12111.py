@@ -14,11 +14,12 @@ OUT = ROOT / "build" / "server-modpack-1.21.11"
 GAME = "1.21.11"
 
 
-def fetch_version(slug: str, prefer_server: bool = False) -> dict | None:
+def fetch_version(slug: str, prefer_server: bool = False, game: str | None = None) -> dict | None:
+    game = game or GAME
     url = (
         "https://api.modrinth.com/v2/project/"
         + slug
-        + f"/version?game_versions=%5B%22{GAME}%22%5D&loaders=%5B%22fabric%22%5D"
+        + f"/version?game_versions=%5B%22{game}%22%5D&loaders=%5B%22fabric%22%5D"
     )
     req = urllib.request.Request(url, headers={"User-Agent": "isnix-modpack/1.0"})
     try:
@@ -80,6 +81,10 @@ def main() -> None:
         seen.add(slug)
         print(slug + (" (server jar)" if entry.get("server_variant") else ""))
         info = fetch_version(slug, prefer_server=bool(entry.get("server_variant")))
+        if not info and entry.get("game_version_fallback"):
+            fb = entry["game_version_fallback"]
+            print(f"  fallback {slug} @ {fb}")
+            info = fetch_version(slug, prefer_server=bool(entry.get("server_variant")), game=fb)
         if not info:
             fail += 1
             continue
