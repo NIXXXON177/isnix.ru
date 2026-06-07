@@ -32,6 +32,9 @@
 | `modpack-reopen-2026-06-08-vk.txt` | Сервер открыт после перезапуска (ВК) |
 | `modpack-reopen-2026-06-08-telegram.txt` | То же, Telegram |
 | `modpack-reopen-2026-06-08-discord.txt` | То же, Discord |
+| `modpack-hotfix-2026-06-08-vk.txt` | Хотфикс: убрали Create: New Foods, обновить сборку (ВК) |
+| `modpack-hotfix-2026-06-08-telegram.txt` | То же, Telegram |
+| `modpack-hotfix-2026-06-08-discord.txt` | То же, Discord |
 
 ## Разметка по площадкам
 

@@ -1,0 +1,16 @@
+✅ СЕРВЕР СНОВА РАБОТАЕТ — ОБНОВИТЕ СБОРКУ!
+
+Был сбой: один мод (Create: New Foods) оказался несовместим с Minecraft 1.21.11 и ронял запуск с ошибкой «Incompatible mods found». Мы его убрали — сервер поднят, заходите на mc.isnix.ru.
+
+ВАЖНО: со старой сборкой не зайти и она крашится. Скачайте свежий ISTHISNIXXXONmods.zip:
+https://isnix.ru/how-to-play.html (~84 МБ, 65 модов)
+
+Перед входом:
+• Minecraft Java 1.21.11 + Fabric, Java 21
+• Удалите старые jar из папки mods (или сделайте новый инстанс в Prism Launcher) и распакуйте новую сборку
+• Вайтлист — https://isnix.ru/account.html
+• В игре: /reg и /login
+
+Что изменилось: убрали Create: New Foods (под 1.21.11 версии нет). Остальные моды и весь прогресс на месте — мир не вайпали.
+
+Не заходит? → https://isnix.ru/how-to-play.html
