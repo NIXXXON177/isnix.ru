@@ -3,7 +3,7 @@
 Перезапуск завершён. Заходи: mc.isnix.ru
 
 Без новой сборки не зайти:
-https://isnix.ru/how-to-play.html (~74 МБ, 57 модов)
+https://isnix.ru/how-to-play.html (~85 МБ, 66 модов)
 
 Перед входом:
 • Java 1.21.11 + Fabric, Java 21
@@ -11,7 +11,7 @@ https://isnix.ru/how-to-play.html (~74 МБ, 57 модов)
 • Вайтлист: https://isnix.ru/account.html
 • /reg и /login в игре
 
-В обновлении: Flora's Delight, Friends & Foes, рюкзаки, Comforts, Create-аддоны, новые структуры (Moog's, Towns and Towers, Explorify), Wakes, LambDynamicLights.
+В обновлении: Flora's Delight, Friends & Foes, рюкзаки, Comforts, Create-аддоны, новые структуры, Rechiseled, Macaw's, Wakes, LambDynamicLights.
 
 Мир не вайпали.
 

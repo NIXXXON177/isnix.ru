@@ -3,7 +3,7 @@
 Перезапуск завершён. Заходи: **`mc.isnix.ru`**
 
 **Без новой сборки не зайти** — скачай свежий ZIP:
-https://isnix.ru/how-to-play.html *(~74 МБ, 57 модов)*
+https://isnix.ru/how-to-play.html *(~85 МБ, 66 модов)*
 
 **Перед входом**
 • **Java 1.21.11** + **Fabric**, Java 21
@@ -11,7 +11,7 @@ https://isnix.ru/how-to-play.html *(~74 МБ, 57 модов)*
 • Вайтлист: https://isnix.ru/account.html
 • В игре: ``/reg`` → ``/login``
 
-**В обновлении:** Flora's Delight, Friends & Foes, Visual Workbench, Traveler's Backpack (**B**), Comforts, Create Fly + аддоны, Moog's / Towns and Towers / Explorify *(новые чанки)*, Wakes, LambDynamicLights, Cyber Goggles.
+**В обновлении:** Flora's Delight, Friends & Foes, Visual Workbench, Traveler's Backpack (**B**), Comforts, Create Fly + аддоны, Moog's / Towns and Towers / Explorify *(новые чанки)*, **Rechiseled**, **Connected Glass**, **Macaw's** (мебель, двери, окна, крыши), Wakes, LambDynamicLights, Cyber Goggles.
 
 **Мир не вайпали.**
 

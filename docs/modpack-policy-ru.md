@@ -43,8 +43,9 @@
 | Comforts | в сборке ZIP (июнь 2026) |
 | Wakes | в сборке ZIP (июнь 2026) |
 | LambDynamicLights | в сборке ZIP (июнь 2026) — клиент |
+| Rechiseled + Connected Glass | **тест** (июнь 2026) — варианты блоков, стекло |
+| Macaw's (Furniture, Doors, Windows, Roofs) | **тест** (июнь 2026) — мебель и архитектура |
 | Map Atlas | **не добавляем** — дублирует Xaero's |
 | Brewin' and Chewin' | **запрещён** (алкоголь) |
 | Carry On | снят (не зашло) |
 | Supplementaries | ждём 1.21.11 |
-| Rechiseled | кандидат (декор, ~12 МБ + зависимости) |

@@ -3,7 +3,7 @@
 Перезапуск завершён. Можно заходить на mc.isnix.ru.
 
 Без новой сборки не зайти — скачай свежий ISTHISNIXXXONmods.zip:
-https://isnix.ru/how-to-play.html (~74 МБ, 57 модов)
+https://isnix.ru/how-to-play.html (~85 МБ, 66 модов)
 
 Перед входом:
 • Minecraft Java 1.21.11 + Fabric, Java 21
@@ -16,6 +16,7 @@ https://isnix.ru/how-to-play.html (~74 МБ, 57 модов)
 • Traveler's Backpack (клавиша B), Comforts (спальник/гамак)
 • Create Fly + аддоны, Ultimate Resource Automation, New Foods
 • Moog's Structures, Towns and Towers, Explorify — ищи в новых чанках (/rtp)
+• Rechiseled, Connected Glass, Macaw's (мебель, двери, окна, крыши)
 • Wakes, LambDynamicLights, Cyber Goggles (клиент)
 
 Мир не вайпали — прогресс на месте.
