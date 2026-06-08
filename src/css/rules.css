@@ -386,10 +386,16 @@
 	text-decoration: underline;
 }
 
+.rules-page .rules-doc__table-wrap {
+	margin-top: 1.5rem;
+	overflow-x: auto;
+	-webkit-overflow-scrolling: touch;
+	border-radius: var(--radius-md);
+}
+
 .rules-page .rules-doc__table {
 	width: 100%;
 	font-size: 0.85rem;
-	margin-top: 1.5rem;
 	border-collapse: collapse;
 	border-radius: var(--radius-md);
 	overflow: hidden;

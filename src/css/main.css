@@ -113,6 +113,10 @@
 			}
 			html {
 				scroll-padding-top: calc(var(--nav-h) + 12px);
+				/* Страховка от горизонтального скролла на мобильных
+				   (full-bleed marquee, off-canvas меню). clip не ломает
+				   position: sticky, в отличие от overflow: hidden. */
+				overflow-x: clip;
 			}
 			body.preloader-lock {
 				overflow: hidden;

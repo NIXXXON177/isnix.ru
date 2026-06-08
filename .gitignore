@@ -79,3 +79,6 @@ isnix-player-backup/.idea/
 
 # Node (сборка статики сайта)
 node_modules/
+.shots/
+shot.mjs
+find-overflow.mjs
