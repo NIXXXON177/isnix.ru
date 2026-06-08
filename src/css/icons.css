@@ -1,0 +1,142 @@
+/* Векторные иконки (SVG sprite) */
+.icon {
+	display: inline-block;
+	width: 1.25em;
+	height: 1.25em;
+	vertical-align: -0.2em;
+	flex-shrink: 0;
+	color: inherit;
+}
+
+.icon--sm {
+	width: 1em;
+	height: 1em;
+	vertical-align: -0.15em;
+}
+
+.icon--md {
+	width: 1.5rem;
+	height: 1.5rem;
+}
+
+.icon--lg {
+	width: 1.75rem;
+	height: 1.75rem;
+}
+
+.icon--inline {
+	width: 1.1em;
+	height: 1.1em;
+	vertical-align: -0.18em;
+	margin-right: 0.15em;
+}
+
+.icon--title {
+	width: 1.15em;
+	height: 1.15em;
+	vertical-align: -0.22em;
+	margin-right: 0.35em;
+	color: var(--green, #4ade80);
+}
+
+.icon-label {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.35rem;
+}
+
+.icon-label .icon {
+	margin: 0;
+}
+
+.feat-icon .icon,
+.htp-step__icon .icon,
+.start-step__icon .icon,
+.install-app-card__icon .icon,
+.auth-notifications__icon .icon {
+	width: 1.5rem;
+	height: 1.5rem;
+	color: rgba(74, 222, 128, 0.95);
+}
+
+.ip-copy-icon .icon {
+	width: 1rem;
+	height: 1rem;
+	opacity: 0.85;
+	color: var(--green, #4ade80);
+}
+
+.lnk-icon .icon {
+	width: 1.9rem;
+	height: 1.9rem;
+	color: rgba(74, 222, 128, 0.9);
+}
+
+.info-title .icon,
+.download-card h3 .icon {
+	color: rgba(74, 222, 128, 0.95);
+}
+
+.shop-tab {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.4rem;
+}
+
+.shop-tab .icon {
+	width: 1em;
+	height: 1em;
+	margin: 0;
+	opacity: 0.9;
+}
+
+.special-ribbon .icon,
+.shop-badge .icon {
+	width: 0.95em;
+	height: 0.95em;
+	vertical-align: -0.12em;
+	margin-right: 0.2em;
+}
+
+.profile-reputation-score__value .icon,
+.profile-reputation-score__meta .icon {
+	width: 1em;
+	height: 1em;
+	vertical-align: -0.12em;
+	margin-right: 0.15em;
+}
+
+.profile-reputation-like .icon,
+.profile-reputation-dislike .icon {
+	width: 1em;
+	height: 1em;
+	margin-right: 0.25em;
+}
+
+.status-line {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.35rem;
+}
+
+.status-line .icon--inline {
+	margin-right: 0;
+}
+
+#toast {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.4rem;
+}
+
+.htp-tip {
+	display: inline-flex;
+	align-items: flex-start;
+	gap: 0.35rem;
+	font-style: normal;
+	color: rgba(134, 239, 172, 0.95);
+}
+
+.htp-tip .icon {
+	margin-top: 0.1em;
+}

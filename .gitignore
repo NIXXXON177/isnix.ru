@@ -76,3 +76,6 @@ isnix-player-backup/.gradle/
 isnix-player-backup/build/
 isnix-player-backup/run/
 isnix-player-backup/.idea/
+
+# Node (сборка статики сайта)
+node_modules/

@@ -1,0 +1,13 @@
+{
+	"name": "isnix-site",
+	"version": "1.0.0",
+	"private": true,
+	"type": "module",
+	"description": "Сборка статики сайта isnix.ru — минификация CSS/JS из src/ в assets/",
+	"scripts": {
+		"build": "node build.mjs"
+	},
+	"devDependencies": {
+		"esbuild": "^0.24.0"
+	}
+}
