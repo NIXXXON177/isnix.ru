@@ -1,0 +1,12 @@
+{
+  "_comment": "Намеренные значения для automodpack/automodpack-server.json на сервере. На go-live: дать серверу сгенерировать дефолтный конфиг (активация jar + рестарт), затем выставить эти ключи и перезапустить ещё раз. Главное — syncedFiles: [] (клиентам уходит ТОЛЬКО host-modpack/mods, без серверных модов).",
+  "modpackName": "ISTHISNIXXXON",
+  "modpackHost": true,
+  "generateModpackOnStart": true,
+  "requireAutoModpackOnClient": false,
+  "autoExcludeServerSideMods": true,
+  "syncedFiles": [],
+  "allowEditsInFiles": [],
+  "forceCopyFilesToStandardLocation": [],
+  "nonModpackFilesToDelete": []
+}

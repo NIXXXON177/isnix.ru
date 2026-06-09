@@ -17,6 +17,10 @@ CLIENT_STAGING = ROOT / "build" / "client-modpack-staging"
 OUT_ZIP = ROOT / "downloads" / "ISTHISNIXXXONmods.zip"
 GAME = "1.21.11"
 
+# AutoModpack — ставится игрокам один раз, дальше сам докачивает обновления модов
+# с сервера при заходе. Версия должна совпадать с серверной.
+AUTOMODPACK_JAR = ROOT / "build" / "automodpack" / "automodpack-mc1.21.11-fabric-4.0.5.jar"
+
 # Не ставить игрокам — только сервер
 EXCLUDE_SUBSTR = (
     "easyauth",
@@ -170,10 +174,19 @@ def fetch_client_extras(dest: Path, manifest: dict) -> None:
             have.add(key)
 
 
+def add_automodpack(dest: Path) -> None:
+    if not AUTOMODPACK_JAR.is_file():
+        print(f"  ВНИМАНИЕ: нет {AUTOMODPACK_JAR.name} — авто-обновление не попадёт в сборку")
+        return
+    shutil.copy2(AUTOMODPACK_JAR, dest / AUTOMODPACK_JAR.name)
+    print(f"  + {AUTOMODPACK_JAR.name}")
+
+
 def write_modpack_txt(dest: Path, jars: list[str]) -> None:
     text = "\n".join(
         [
             "ISTHISNIXXXON — клиентская сборка (Fabric 1.21.11)",
+            "AutoModpack: моды обновляются автоматически при заходе на сервер.",
             f"Собрано: {datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')}",
             f"Модов: {len(jars)}",
             "",
@@ -221,6 +234,9 @@ def main() -> None:
     print("\n3) Доп. клиентские моды Modrinth...")
     fetch_client_extras(CLIENT_STAGING, manifest)
 
+    print("\n4) AutoModpack (авто-обновление модов у игроков)...")
+    add_automodpack(CLIENT_STAGING)
+
     jars = build_zip(CLIENT_STAGING, OUT_ZIP)
     mb = OUT_ZIP.stat().st_size / (1024 * 1024)
 
@@ -233,7 +249,7 @@ def main() -> None:
         "version": "3.0.0-client-12111",
         "built": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "mods_count": len(jars),
-        "note": "Java only. Create-Fly + FD + client UX. Bedrock removed.",
+        "note": "Java only. Create-Fly + FD + client UX. Bedrock removed. AutoModpack: моды обновляются автоматически при заходе на сервер.",
     }
     (ROOT / "docs" / "client-modpack-manifest.json").write_text(
         json.dumps(doc, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
