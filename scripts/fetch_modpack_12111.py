@@ -105,6 +105,12 @@ def main() -> None:
             cwd=ROOT,
             check=False,
         )
+    # Modrinth-слаг create-useful-recipes отдаёт usefulrecipes-*.jar, который жёстко
+    # требует Fabric Loader >=0.19.3 и роняет вход игрокам. Рецепты уже есть в
+    # пропатченном create_useful_recipes_*.jar (Loader 0.18.4+) — удаляем дубликат.
+    for stray in OUT.glob("usefulrecipes-*.jar"):
+        print(f"Удаляю дубликат (требует Loader 0.19.3): {stray.name}")
+        stray.unlink()
     print(f"\nГотово: {ok} ok, {fail} fail -> {OUT}")
 
 
