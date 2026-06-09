@@ -61,6 +61,7 @@ EXTRA_CLIENT_SLUGS = [
     "dynamic-fps",
     "sound-physics-remastered",
     "presence-footsteps-fabric",
+    "classic-pipes",  # трубы для перемещения предметов (запрос игроков)
 ]
 
 
@@ -129,7 +130,12 @@ def mod_key(name: str) -> str:
     low = name.lower()
     low = re.sub(r"\+1\.21[^+]*", "", low)
     low = re.sub(r"-1\.21[^-]*", "", low)
-    return low.split("-fabric")[0].split("+")[0][:40]
+    low = low.split("-fabric")[0].split("+")[0]
+    low = re.sub(r"\.jar$", "", low)
+    # срезать хвостовую версию самого мода (напр. -8.25, -v1.2.3),
+    # иначе две версии одного мода не дедуплицируются -> дубликат в сборке
+    low = re.sub(r"[-_]v?\d+(\.\d+)*$", "", low)
+    return low[:40]
 
 
 def copy_server_parity(dest: Path) -> int:
