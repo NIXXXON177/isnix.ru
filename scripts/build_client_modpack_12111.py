@@ -61,7 +61,7 @@ EXTRA_CLIENT_SLUGS = [
     "dynamic-fps",
     "sound-physics-remastered",
     "presence-footsteps-fabric",
-    "classic-pipes",  # трубы для перемещения предметов (запрос игроков)
+    # Classic Pipes убрали — в Create уже есть трубы/воронки/желоба для предметов
 ]
 
 
