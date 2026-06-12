@@ -27,13 +27,13 @@
 		<link rel="icon" href="favicon.svg" type="image/svg+xml" />
 		<link rel="preconnect" href="https://fonts.googleapis.com" />
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-		<link rel="preconnect" href="https://yfrlgeztbaebdapdnefy.supabase.co" crossorigin />
+		<link rel="preconnect" href="https://api.isnix.ru" crossorigin />
 		<link
 			href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Raleway:wght@400;600;700&display=swap"
 			rel="stylesheet"
 		/>
 		<link rel="stylesheet" href="assets/css/main.css?v=3" />
-		<link rel="stylesheet" href="assets/css/components.css?v=5" />
+		<link rel="stylesheet" href="assets/css/components.css?v=6" />
 		<link rel="stylesheet" href="assets/css/auth.css?v=29" />
 		<link rel="stylesheet" href="assets/css/site-header.css" />
 		<script type="application/ld+json">
@@ -222,6 +222,16 @@
 						<li><strong>!</strong> в начале — сообщение всем на сервере</li>
 					</ul>
 				</section>
+
+				<aside class="site-vpn-notice" role="note">
+					<p class="site-vpn-notice__title">Кабинет из России иногда без VPN не открывается</p>
+					<p class="site-vpn-notice__text">
+						Регистрация, вход и заявка в вайтлист идут через
+						<strong>api.isnix.ru</strong>. Если страница «висит» или не грузится —
+						включи <strong>Cloudflare WARP</strong> (приложение 1.1.1.1) или другой VPN.
+						Заход на сервер <strong>mc.isnix.ru</strong> — без VPN.
+					</p>
+				</aside>
 
 				<div id="authMessage" class="auth-message" hidden></div>
 				<div id="authConnectionNotice" class="auth-connection-notice" hidden>
@@ -1027,12 +1037,12 @@
 		<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
 		<script src="assets/js/server-status.js?v=7"></script>
 		<script src="assets/js/site-toast.js?v=2"></script>
-		<script src="assets/js/auth.js?v=42" defer></script>
+		<script src="assets/js/auth.js?v=43" defer></script>
 		<script src="assets/js/site-presence.js?v=5" defer></script>
 		<script src="assets/js/site-header.js?v=6" defer></script>
 		<script src="assets/js/site-push-prompt.js?v=3" defer></script>
 		<script src="assets/js/support-tickets.js?v=9" defer></script>
 		<script src="assets/js/icons.js?v=3"></script>
-		<script src="assets/js/account.js?v=61" defer></script>
+		<script src="assets/js/account.js?v=62" defer></script>
 	</body>
 </html>

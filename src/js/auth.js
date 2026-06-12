@@ -413,18 +413,18 @@
 
 	function networkHelpText() {
 		return (
-			'Сеть обрывает связь с Supabase — это не всегда AdBlock.\n\n' +
-			'Без VPN попробуй по порядку:\n' +
-			'1) Раздай интернет с телефона (точка доступа) и открой isnix.ru с ПК.\n' +
-			'2) DNS в Windows: 1.1.1.1 и 1.0.0.1 (или 8.8.8.8).\n' +
-			'3) Chrome/Edge → Настройки → Безопасность → выключи «Использовать безопасный DNS».\n' +
-			'4) Временно отключи антивирус (Kaspersky, Dr.Web и др. рвут HTTPS).\n' +
-			'5) Другой браузер (Firefox / Edge).\n' +
-			'6) Бесплатно: приложение 1.1.1.1 (Cloudflare WARP) — не «VPN-сервис», часто снимает блокировку провайдера.\n\n' +
+			'Сеть обрывает связь с кабинетом (api.isnix.ru) — это не всегда AdBlock.\n\n' +
+			'Регистрация и вайтлист часто не открываются без VPN или Cloudflare WARP. Игра на mc.isnix.ru — без VPN.\n\n' +
+			'Попробуй по порядку:\n' +
+			'1) Cloudflare WARP (приложение 1.1.1.1) или другой VPN.\n' +
+			'2) Раздай интернет с телефона (точка доступа) и открой isnix.ru с ПК.\n' +
+			'3) DNS в Windows: 1.1.1.1 и 1.0.0.1 (или 8.8.8.8).\n' +
+			'4) Временно отключи блокировщик рекламы и антивирус (Kaspersky, Dr.Web и др.).\n' +
+			'5) Другой браузер (Firefox / Edge).\n\n' +
 			'Проверка: открой в новой вкладке:\n' +
-			(getConfig().supabaseUrl || 'https://ВАШ-ПРОЕКТ.supabase.co') +
+			(getConfig().supabaseUrl || 'https://api.isnix.ru') +
 			'/auth/v1/health\n' +
-			'Должен появиться текст про apikey — если вкладка пустая или «сброс соединения», блокирует провайдер или ПК.'
+			'Должен появиться текст про apikey — если вкладка пустая или «сброс соединения», нужен VPN или WARP.'
 		)
 	}
 
@@ -489,7 +489,7 @@
 		}
 		if (isNetworkError(err)) {
 			return (
-				'Соединение с Supabase сброшено (ERR_CONNECTION_RESET) — часто блокировщик, VPN или фильтр провайдера. Отключи AdBlock для isnix.ru и *.supabase.co, попробуй другую сеть или VPN. Проект Supabase не должен быть на паузе. Инструкция: github.com/NIXXXON177/isnix.ru/blob/main/docs/supabase-cors-troubleshooting.md'
+				'Не удалось подключиться к кабинету (api.isnix.ru). Часто помогает VPN или Cloudflare WARP (приложение 1.1.1.1). Игра на mc.isnix.ru — без VPN. Отключи AdBlock для isnix.ru. Подробнее: github.com/NIXXXON177/isnix.ru/blob/main/docs/supabase-cors-troubleshooting.md'
 			)
 		}
 		if (err.code === 'PGRST301' || /JWT|session/i.test(msg)) {

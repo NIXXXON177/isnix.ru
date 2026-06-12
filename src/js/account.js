@@ -99,7 +99,7 @@
 			if (probe.ok) {
 				showConnectionNotice(
 					base +
-						'\n\nСвязь с Supabase в браузере есть, но профиль не загрузился — обнови страницу или выполни docs/supabase-fix-connection.sql в Supabase.',
+						'\n\nСвязь с api.isnix.ru в браузере есть, но профиль не загрузился — обнови страницу или попробуй позже.',
 				)
 				return
 			}
@@ -119,7 +119,7 @@
 
 	async function runConnectionDiagnostic() {
 		if (!window.IsnixAuth || !IsnixAuth.probeSupabaseReachability) return
-		showConnectionNotice('Проверяем связь с Supabase…')
+		showConnectionNotice('Проверяем связь с кабинетом…')
 		try {
 			var probe = await IsnixAuth.probeSupabaseReachability()
 			if (probe.ok) {
@@ -134,7 +134,7 @@
 				return
 			}
 			showConnectionNotice(
-				'Браузер не достучался до Supabase.\n\n' +
+				'Браузер не достучался до api.isnix.ru (кабинет).\n\n' +
 					(IsnixAuth.networkHelpText ? IsnixAuth.networkHelpText() : ''),
 			)
 		} catch (e) {
@@ -2055,7 +2055,7 @@
 				IsnixAuth.isSupabaseBackoffActive()
 			) {
 				showConnectionNotice(
-					'Сеть обрывает связь с Supabase (ERR_CONNECTION_RESET). Кабинет работает из кэша; отключи блокировщик или смени сеть/VPN. Повтор через несколько минут.',
+					'Сеть обрывает связь с кабинетом (api.isnix.ru). Кабинет работает из кэша; включи VPN или Cloudflare WARP. Игра на mc.isnix.ru — без VPN. Повтор через несколько минут.',
 				)
 			}
 		}
