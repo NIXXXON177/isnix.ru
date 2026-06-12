@@ -794,3 +794,15 @@
 	color: #fff;
 	font-weight: 600;
 }
+
+/* Информер Метрики (плашка посещаемости) — не показываем, даже если включён в кабинете */
+a[href*='metrika.yandex.ru/stat'],
+a[href*='metrika.yandex.ru/informer'],
+img[src*='informer.yandex.ru'],
+img[src*='mc.yandex.ru/informer'],
+.yandex-metrika-informer,
+.ym-informer {
+	display: none !important;
+	visibility: hidden !important;
+	pointer-events: none !important;
+}
