@@ -2,6 +2,7 @@ package ru.isnix.reputation;
 
 import net.fabricmc.api.DedicatedServerModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import org.slf4j.Logger;
@@ -19,6 +20,8 @@ public class IsnixReputationMod implements DedicatedServerModInitializer {
 		ReputationConfig.load();
 
 		ReputationPlaceholders.register();
+
+		ServerLifecycleEvents.SERVER_STARTED.register(TabBridge::register);
 
 		CommandRegistrationCallback.EVENT.register(
 				(dispatcher, registryAccess, environment) -> ReputationCommands.register(dispatcher));

@@ -97,7 +97,18 @@ lp user <ник> meta clear prefix
 lp user <ник> meta setprefix 50 "&4&l[DEMON] &r"
 ```
 
-Примеры префиксов: `&c&l[YouTube]`, `&5[Twitch]`, `&6&l[Легенда]`, `&c&l[ПВП]`
+Примеры префиксов (priority 50): `&c&l[YouTube]`, `&5[Twitch]`, `&4&l[DEMON]`, `&c&l[ПВП]`
+
+### LuckPerms — [Легенда] (priority 300, выше всех префиксов)
+
+```text
+lp user <ник> parent set default
+lp user <ник> meta clear prefix
+lp user <ник> meta setprefix 300 "&6&l[Легенда] &r"
+lp sync
+```
+
+Файл: [luckperms-grant-legenda.txt](luckperms-grant-legenda.txt)
 
 Полная лестница: [luckperms-prefix-priorities.md](luckperms-prefix-priorities.md)
 
@@ -161,6 +172,7 @@ lp sync
 | `/unmutevoice <ник>` | Снять мут микрофона |
 | `/freeze <ник> [причина]` | Заморозка: не ходит, не ТП, команды заблокированы |
 | `/unfreeze <ник>` | Снять заморозку |
+| `/view back <ник>` | Просмотр рюкзака Traveler's Backpack на спине игрока (GUI) |
 
 Команды только у **OP** (`/op`, уровень 4) и группы LuckPerms **`admin`**. Мл. админы без группы `admin` — нет. Настройка: `config/isnix-modtools.json` (`opPermissionLevel`, `luckpermsAdminGroup`).
 
@@ -183,6 +195,7 @@ lp sync
 | `/playerbackup snapshot [игрок]` | Снимок инвентаря сейчас |
 | `/playerbackup snapshotall` | Снимок всех онлайн |
 | `/playerbackup prune` | Удалить снимки старше `keepDays` |
+| **ПКМ по гробу** (ly-graves) | Вещи усопшего → шалкер(ы) в инвентарь, могила исчезает — см. [graveloot-ru.md](graveloot-ru.md) |
 
 Только **`/op`** (список операторов сервера) или консоль Play2GO. Группа LuckPerms `admin` **без** `/op` — команды недоступны. Конфиг: `config/isnix-player-backup.json`.
 

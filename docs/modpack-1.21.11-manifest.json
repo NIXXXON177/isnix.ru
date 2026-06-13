@@ -29,9 +29,7 @@
       { "slug": "create-handy-recipes", "required": true },
       { "slug": "create-useful-recipes", "required": true },
       { "slug": "create-extra-recipes-kuma", "required": true },
-      { "slug": "create-ultimate-resource-automation-unofficial-fix-(create-fly", "required": true, "note": "Ultimate Resource Automation — рецепты фабрик под Create Fly" },
-      { "slug": "create-new-foods", "required": true, "game_version_fallback": "1.21.10", "note": "Create Fly + FD: жидкости, культуры, еда. Staged — jar 1.21.10 на 1.21.11" },
-      { "slug": "create-nerfad", "required": false, "note": "Баланс/упрощение Create — по желанию" }
+      { "slug": "create-nerfad", "required": true, "note": "Баланс Create под survival без pay-to-win" }
     ],
     "client_addons": [
       { "slug": "create-cyber-goggles", "required": true, "note": "HUD Create: стресс, RPM, фильтры — только клиент" }
@@ -51,8 +49,7 @@
     { "slug": "create-handy-recipes", "required": true },
     { "slug": "create-useful-recipes", "required": true, "note": "После fetch: patch_create_useful_recipes.py" },
     { "slug": "create-extra-recipes-kuma", "required": true },
-    { "slug": "create-ultimate-resource-automation-unofficial-fix-(create-fly", "required": true, "note": "Ultimate Resource Automation для Create Fly. Staged" },
-    { "slug": "create-new-foods", "required": true, "game_version_fallback": "1.21.10", "note": "Create + еда/жидкости. Staged — тест jar 1.21.10" },
+    { "slug": "create-nerfad", "required": true, "note": "Баланс Create — сервер+клиент" },
     { "slug": "farmers-delight-refabricated", "required": true },
     { "slug": "more-delight", "required": true },
     { "slug": "floras-delight", "required": true, "note": "FD: сыр, пицца, фрукты. Клиент+сервер. Staged — ZIP на сайте позже" },
@@ -90,7 +87,7 @@
     { "slug": "spark", "required": true },
     { "slug": "krypton", "required": true },
     { "slug": "placeholder-api", "required": true },
-    { "slug": "tab-was-taken", "required": true, "version_hint": "5.5.0" },
+    { "slug": "tab-was-taken", "required": true, "version_hint": "6.0.1" },
     { "slug": "architectury-api", "required": true },
     { "slug": "cloth-config", "required": true },
     { "slug": "forge-config-api-port", "required": true },
@@ -156,11 +153,15 @@
     "antixray*",
     "trade*",
     "ItemFrament*",
-    "Female-Gender*"
+    "Female-Gender*",
+    "*ultimate*factory*",
+    "*ultimate*resource*"
   ],
 
   "skipped_no_12111": [
     "supplementaries (пока только 1.21.1 — добавим позже)",
+    "create-new-foods (jar 1.21.10 — несовместим с MC 1.21.11, убран из сборки)",
+    "create-ultimate-resource-automation (битые рецепты под Create Fly — убран)",
     "trade (нет сборки 1.21.11)",
     "female-gender-mod",
     "классические Create-аддоны с YouTube (SnR, Deco) — другой лоадер/версия"

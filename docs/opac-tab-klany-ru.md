@@ -86,21 +86,24 @@ OPAC **не отдаёт** готовый placeholder в TAB. Мод **`isnix-op
 
 ```yaml
 tabprefix: "%luckperms:prefix%"
-tabsuffix: "%luckperms:suffix% %isnix:clan_tag%"
+tabsuffix: " %isnix:clan_tag% %isnix:rep% %luckperms:suffix%"
 tagprefix: "%luckperms:prefix%"
-tagsuffix: "%luckperms:suffix% %isnix:clan_tag%"
+tagsuffix: " %isnix:clan_tag% %isnix:rep% %luckperms:suffix%"
 ```
 
 В **`config/tab/config.yml`**:
 
 ```yaml
 tablist-name-format:
-  format: "%tabprefix%&f%player%&r%tabsuffix%"
-above-name-format:
-  format: "%tagprefix%%player%&r%tagsuffix%"
+  format: "%tabprefix%&f%player%&f%tabsuffix%"
+
+components:
+  minimessage-support: false   # на Fabric обязательно — иначе nametag белый без цветов
 ```
 
-**Не** дописывайте `&r` к `%luckperms:prefix%` в `groups.yml` — у LP-префиксов уже есть `&r` в конце (`&c&l[Админ] &r`), лишний сброс убивает цвет над головой. Сброс только **после ника** (`&r%tabsuffix%`), не в начале префикса.
+Nametag над головой — **только** `tagprefix` / `tagsuffix` из `groups.yml` (секции `above-name-format` в TAB 5.5 нет).
+
+**Не** дописывайте `&r` к `%luckperms:prefix%` в `groups.yml`. В конце LP-префиксов лучше `&f`, не `&r` — иначе сбрасывается цвет над головой. Сброс только **после ника** (`&f%tabsuffix%`).
 
 В **`config.yml`** должны быть включены форматы с `%tabsuffix%` / `%tagsuffix%` (см. образец).
 

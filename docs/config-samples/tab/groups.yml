@@ -1,11 +1,12 @@
-# config/tab/groups.yml — эталон ISNIX (TAB 5.5 + LuckPerms + isnix-opac-tab)
+# config/tab/groups.yml — эталон ISNIX (TAB 5.5 + LuckPerms + isnix-opac-tab + isnix-reputation)
 # После заливки: /tab reload
 #
 # Только %luckperms:prefix% (с двоеточием). Не %luckperms-prefix%.
 # Не дублируйте группы admin/Player — префиксы из LuckPerms.
+# После ника: %isnix:clan_tag% (клан OPAC) и %isnix:rep% (★ репутация).
 
 _DEFAULT_:
   tabprefix: "%luckperms:prefix%"
   tagprefix: "%luckperms:prefix%"
-  tabsuffix: "%luckperms:suffix% %isnix:clan_tag% %isnix:rep%"
-  tagsuffix: "%luckperms:suffix% %isnix:clan_tag% %isnix:rep%"
+  tabsuffix: " %isnix:clan_tag% %isnix:rep% %luckperms:suffix%"
+  tagsuffix: " %isnix:clan_tag% %isnix:rep% %luckperms:suffix%"

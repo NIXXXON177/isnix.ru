@@ -33,7 +33,7 @@ ROOT = Path(__file__).resolve().parents[1]
 ENV_FILE = ROOT / "server-sftp.env"
 CLIENT_STAGING = ROOT / "build" / "client-modpack-staging"
 AUTOMODPACK_JAR = ROOT / "build" / "automodpack" / "automodpack-mc1.21.11-fabric-4.0.5.jar"
-REMOTE_HOST_MODS = "automodpack/host-modpack/mods"
+REMOTE_HOST_MODS = "automodpack/host-modpack/main/mods"
 REMOTE_MODS = "mods"
 
 

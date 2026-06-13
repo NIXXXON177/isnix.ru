@@ -1,12 +1,32 @@
 {
-  "_comment": "Намеренные значения для automodpack/automodpack-server.json на сервере. На go-live: дать серверу сгенерировать дефолтный конфиг (активация jar + рестарт), затем выставить эти ключи и перезапустить ещё раз. Главное — syncedFiles: [] (клиентам уходит ТОЛЬКО host-modpack/mods, без серверных модов).",
+  "DO_NOT_CHANGE_IT": 2,
   "modpackName": "ISTHISNIXXXON",
   "modpackHost": true,
   "generateModpackOnStart": true,
-  "requireAutoModpackOnClient": false,
-  "autoExcludeServerSideMods": true,
   "syncedFiles": [],
-  "allowEditsInFiles": [],
+  "allowEditsInFiles": [
+    "/options.txt",
+    "/config/**"
+  ],
   "forceCopyFilesToStandardLocation": [],
-  "nonModpackFilesToDelete": []
+  "nonModpackFilesToDelete": {},
+  "autoExcludeServerSideMods": true,
+  "autoExcludeUnnecessaryFiles": true,
+  "requireAutoModpackOnClient": false,
+  "nagUnModdedClients": true,
+  "nagMessage": "Сервер раздаёт моды через AutoModpack — обновления ставятся автоматически.",
+  "nagClickableMessage": "Скачать сборку с AutoModpack",
+  "nagClickableLink": "https://isnix.ru/how-to-play.html",
+  "bindAddress": "",
+  "bindPort": -1,
+  "addressToSend": "",
+  "portToSend": -1,
+  "disableInternalTLS": false,
+  "requireMagicPackets": false,
+  "updateIpsOnEveryStart": false,
+  "bandwidthLimit": 0,
+  "validateSecrets": true,
+  "secretLifetime": 336,
+  "selfUpdater": false,
+  "acceptedLoaders": []
 }

@@ -4,11 +4,27 @@
 tablist-name-format:
   enabled: true
   anti-override: true
-  format: "%tabprefix%&f%player%&r%tabsuffix%"
+  format: "%tabprefix%&f%player%&f%tabsuffix%"
 
-above-name-format:
-  enabled: true
-  format: "%tagprefix%%player%&r%tagsuffix%"
+# Nametag — только scoreboard-teams (tagprefix/tagsuffix в groups.yml).
+# Секции above-name-format в TAB 5.5 нет — не добавляйте.
+
+components:
+  minimessage-support: false
+
+# Обновление клан-тега и репутации в TAB (мс):
+placeholder-refresh-intervals:
+  default-refresh-interval: 500
+  "%isnix:clan_tag%": 1000
+  "%isnix:rep%": 2000
+  "%isnix:rep_score%": 2000
+
+# Секция placeholders (если в основном config.yml её нет — добавьте):
+# placeholders:
+#   locale: ru-RU
+#   date-format: dd.MM.yyyy
+#   time-format: HH:mm:ss
+#   register-tab-expansion: true
 
 # Дубликат для TAB 5.5+ (должен быть выключен, если включён tablist-name-format выше):
 tablist-name-formatting:

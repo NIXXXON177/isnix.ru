@@ -16,6 +16,12 @@ public final class LuckPermsBridge {
 	private static java.lang.reflect.Method getPrefix;
 	private static java.lang.reflect.Method getSuffix;
 
+	// Проверка ноды прав — резолвится лениво (отдельно от meta, чтобы не ломать prefix/suffix).
+	private static boolean permChecked;
+	private static java.lang.reflect.Method getPermissionData;
+	private static java.lang.reflect.Method checkPermission;
+	private static java.lang.reflect.Method tristateAsBoolean;
+
 	private LuckPermsBridge() {
 	}
 
@@ -76,6 +82,47 @@ public final class LuckPermsBridge {
 			return s.isBlank() ? "" : s;
 		} catch (Throwable t) {
 			return "";
+		}
+	}
+
+	private static void ensurePerm() {
+		if (permChecked) {
+			return;
+		}
+		permChecked = true;
+		try {
+			Class<?> cached = Class.forName("net.luckperms.api.cacheddata.CachedDataManager");
+			getPermissionData = cached.getMethod("getPermissionData");
+			Class<?> permData = Class.forName("net.luckperms.api.cacheddata.CachedPermissionData");
+			checkPermission = permData.getMethod("checkPermission", String.class);
+			Class<?> tristate = Class.forName("net.luckperms.api.util.Tristate");
+			tristateAsBoolean = tristate.getMethod("asBoolean");
+		} catch (Throwable ignored) {
+		}
+	}
+
+	/** Есть ли у игрока нода прав LuckPerms (false, если LP недоступен или нода не задана). */
+	public static boolean hasPermission(ServerPlayerEntity player, String node) {
+		if (player == null || node == null || node.isBlank() || !isAvailable()) {
+			return false;
+		}
+		ensurePerm();
+		if (getPermissionData == null) {
+			return false;
+		}
+		try {
+			Object userManager = getUserManager.invoke(api);
+			Object user = getUser.invoke(userManager, player.getUuid());
+			if (user == null) {
+				return false;
+			}
+			Object cached = getCachedData.invoke(user);
+			Object permData = getPermissionData.invoke(cached);
+			Object tri = checkPermission.invoke(permData, node);
+			Object bool = tristateAsBoolean.invoke(tri);
+			return Boolean.TRUE.equals(bool);
+		} catch (Throwable t) {
+			return false;
 		}
 	}
 }

@@ -1,0 +1,19 @@
+{
+	"parent": "isnix:create_andesite",
+	"display": {
+		"icon": { "id": "create:brass_ingot" },
+		"title": { "translate": "advancements.isnix.create_brass.title" },
+		"description": { "translate": "advancements.isnix.create_brass.description" },
+		"frame": "task",
+		"show_toast": true,
+		"announce_to_chat": false
+	},
+	"criteria": {
+		"brass": {
+			"trigger": "minecraft:inventory_changed",
+			"conditions": {
+				"items": [{ "items": "create:brass_ingot" }]
+			}
+		}
+	}
+}

@@ -29,6 +29,14 @@ public final class OpacBridge {
 	private static Class<?> optionSpecClass;
 	private static Object partyNameOption;
 
+	// Полный обход защиты приватов (giveFullPass) — резолвится лениво, отдельно
+	// от основного init, чтобы не ронять весь мост, если API защиты изменится.
+	private static boolean fullPassChecked;
+	private static boolean fullPassAvailable;
+	private static Method getChunkProtection;
+	private static Method giveFullPass;
+	private static Method removeFullPass;
+
 	private OpacBridge() {
 	}
 
@@ -85,6 +93,64 @@ public final class OpacBridge {
 		} catch (Throwable t) {
 			available = false;
 			IsnixOpacTabMod.LOGGER.warn("Open Parties and Claims API недоступен: {}", t.toString());
+		}
+	}
+
+	private static void ensureFullPass() {
+		if (fullPassChecked) {
+			return;
+		}
+		fullPassChecked = true;
+		try {
+			getChunkProtection = apiClass.getMethod("getChunkProtection");
+			Class<?> cpApi = Class.forName(
+					"xaero.pac.common.server.claims.protection.api.IChunkProtectionAPI");
+			giveFullPass = cpApi.getMethod("giveFullPass", UUID.class);
+			removeFullPass = cpApi.getMethod("removeFullPass", UUID.class);
+			fullPassAvailable = true;
+		} catch (Throwable t) {
+			fullPassAvailable = false;
+			IsnixOpacTabMod.LOGGER.warn("OPAC ChunkProtection API недоступен: {}", t.toString());
+		}
+	}
+
+	/** Выдать игроку полный обход защиты приватов (в памяти OPAC, сбрасывается при рестарте). */
+	public static boolean giveFullPass(MinecraftServer server, UUID playerId) {
+		if (!isAvailable() || server == null || playerId == null) {
+			return false;
+		}
+		ensureFullPass();
+		if (!fullPassAvailable) {
+			return false;
+		}
+		try {
+			Object api = apiGet.invoke(null, server);
+			Object cp = getChunkProtection.invoke(api);
+			giveFullPass.invoke(cp, playerId);
+			return true;
+		} catch (Throwable t) {
+			IsnixOpacTabMod.LOGGER.warn("giveFullPass failed for {}: {}", playerId, t.toString());
+			return false;
+		}
+	}
+
+	/** Снять полный обход защиты приватов. */
+	public static boolean removeFullPass(MinecraftServer server, UUID playerId) {
+		if (!isAvailable() || server == null || playerId == null) {
+			return false;
+		}
+		ensureFullPass();
+		if (!fullPassAvailable) {
+			return false;
+		}
+		try {
+			Object api = apiGet.invoke(null, server);
+			Object cp = getChunkProtection.invoke(api);
+			removeFullPass.invoke(cp, playerId);
+			return true;
+		} catch (Throwable t) {
+			IsnixOpacTabMod.LOGGER.warn("removeFullPass failed for {}: {}", playerId, t.toString());
+			return false;
 		}
 	}
 

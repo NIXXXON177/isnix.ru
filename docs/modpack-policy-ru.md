@@ -34,9 +34,9 @@
 | Friends & Foes | в сборке ZIP (июнь 2026) |
 | Visual Workbench | в сборке ZIP (июнь 2026) |
 | Traveler's Backpack | в сборке ZIP (июнь 2026) — рюкзаки, клавиша B |
-| Create: Ultimate Resource Automation | в сборке ZIP (июнь 2026) |
-| Create: New Foods | в сборке ZIP (июнь 2026) |
-| Create: Cyber Goggles | в сборке ZIP (июнь 2026) — клиент |
+| Create: Handy / Useful / Extra Recipes | в сборке ZIP |
+| Create: Nerfad | в сборке ZIP (июнь 2026) — баланс Create |
+| Create: Cyber Goggles | в сборке ZIP — клиент |
 | Moog's Voyager Structures | в сборке ZIP (июнь 2026) |
 | Towns and Towers | в сборке ZIP (июнь 2026) |
 | Explorify | в сборке ZIP (июнь 2026) |

@@ -10,9 +10,10 @@ LuckPerms показывает **один** префикс — с **наибол
 | **10** | все в группе `default` | `[Игрок]` |
 | **50** | донат / особый (meta на игроке) | `[DEMON]`, `[YouTube]`, `[Twitch]`, … |
 | **200** | группа `admin` | `[Админ]` |
-| **250** | личный meta (без группы admin) | `[Мл. Админ]` для farmila52 — [luckperms-farmila52-ml-admin.txt](luckperms-farmila52-ml-admin.txt) |
+| **250** | личный meta (без группы admin) | `[Мл. Админ]` — [luckperms-farmila52-ml-admin.txt](luckperms-farmila52-ml-admin.txt) |
+| **300** | донат «Легенда» (meta на игроке) | `[Легенда]` — [luckperms-grant-legenda.txt](luckperms-grant-legenda.txt) |
 
-Итог: у обычного игрока — `[Игрок]`, у донатера — свой префикс, у админа — `[Админ]` (перекрывает всё).
+Итог: у обычного игрока — `[Игрок]`, у донатера — свой префикс, у админа — `[Админ]` (если нет meta `[Легенда]`). **`[Легенда]` перекрывает все остальные префиксы**, включая `[Админ]` и `[Мл. Админ]` (права админа по-прежнему только от группы `admin`).
 
 ---
 
@@ -67,7 +68,7 @@ lp user 432b5fac-dc4e-32c5-b74b-d2e8e72f0aa7 parent set default
 lp user 432b5fac-dc4e-32c5-b74b-d2e8e72f0aa7 meta setprefix 50 "&c&l[ПВП] &r"
 
 lp user ff34b72e-7e58-3625-aeb0-984a8bde0bfd parent set default
-lp user ff34b72e-7e58-3625-aeb0-984a8bde0bfd meta setprefix 50 "&6&l[Легенда] &r"
+lp user ff34b72e-7e58-3625-aeb0-984a8bde0bfd meta setprefix 300 "&6&l[Легенда] &r"
 ```
 
 Или дождись их входа на сервер и выполни команды по нику.
@@ -100,7 +101,20 @@ lp user redan997 meta setprefix 50 "&c&l[ПВП] &r"
 
 lp user Y8shikage parent set default
 lp user Y8shikage meta clear prefix
-lp user Y8shikage meta setprefix 50 "&6&l[Легенда] &r"
+lp user Y8shikage meta setprefix 300 "&6&l[Легенда] &r"
+```
+
+---
+
+## Шаг 3b — [Легенда] (priority 300, выше всех)
+
+Отдельная tier: **не** priority 50. Полный шаблон — [luckperms-grant-legenda.txt](luckperms-grant-legenda.txt).
+
+```text
+lp user <ник> parent set default
+lp user <ник> meta clear prefix
+lp user <ник> meta setprefix 300 "&6&l[Легенда] &r"
+lp sync
 ```
 
 ---
@@ -153,13 +167,13 @@ lp user SK_Joker info
 
 ---
 
-## Справочник: цвета префиксов (meta priority 50)
+## Справочник: цвета префиксов
 
-| Префикс | Команда `meta setprefix 50` |
-|---------|------------------------------|
-| **[Адвокат]** | `"&6&l[Адвокат] &r"` — оранжевый, жирный |
-| [Легенда] | `"&6&l[Легенда] &r"` |
-| [DEMON] | `"&4&l[DEMON] &r"` |
+| Префикс | Команда |
+|---------|---------|
+| **[Легенда]** | `meta setprefix 300` → `"&6&l[Легенда] &r"` — см. [luckperms-grant-legenda.txt](luckperms-grant-legenda.txt) |
+| **[Адвокат]** | `meta setprefix 50` → `"&6&l[Адвокат] &r"` — оранжевый, жирный |
+| [DEMON] | `meta setprefix 50` → `"&4&l[DEMON] &r"` |
 | **[YouTube]** | `"&c&l[YouTube] &r"` — красный, жирный |
 | **[Twitch]** | `"&5&l[Twitch] &r"` — фиолетовый, жирный |
 | **[ПВП]** | `"&c&l[ПВП] &r"` — красный, жирный |
@@ -186,6 +200,7 @@ lp sync
 | Нет `[Игрок]` | `lp group default meta setprefix 10 ...` |
 | Два `[Админ]` | `meta clear prefix` у админа + убрать `%luckperms:prefix%` из join/chat |
 | Админ видит `[DEMON]` | У админа не должно быть meta prefix 50, только группа `admin` |
-| «Не по порядку» | Проверь **priority**: 10 &lt; 50 &lt; 200, не путай с weight |
+| «Не по порядку» | Проверь **priority**: 10 &lt; 50 &lt; 200 &lt; 250 &lt; **300** ([Легенда]), не путай с weight |
+| [Легенда] не выше других | Должен быть **300**, не 50 — см. [luckperms-grant-legenda.txt](luckperms-grant-legenda.txt) |
 | Два `[Админ]` при **входе** | На сервере старый `styled-chat.json` с `%luckperms:prefix%` в join — залей [styled-chat.json](styled-chat.json) и `/styledchat reload` |
 | **VaSSiLIISa** два `[Админ]` | `lp user VaSSiLIISa info` — если лишний meta: `meta clear prefix`; если не админ: `parent set default` |

@@ -39,7 +39,14 @@ lp user <ник> parent set default
 lp user <ник> meta clear prefix
 lp user <ник> meta setprefix 50 "&4&l[DEMON] &r"
 
-Примеры:  &c&l[YouTube]   &5[Twitch]   &6&l[Легенда]   &c&l[ПВП]
+Примеры:  &c&l[YouTube]   &5[Twitch]   &c&l[ПВП]
+
+--- [Легенда] (priority 300 — выше всех, см. luckperms-grant-legenda.txt) ---
+
+lp user <ник> parent set default
+lp user <ник> meta clear prefix
+lp user <ник> meta setprefix 300 "&6&l[Легенда] &r"
+lp sync
 
 --- Права Essential Commands для всех (default) ---
 

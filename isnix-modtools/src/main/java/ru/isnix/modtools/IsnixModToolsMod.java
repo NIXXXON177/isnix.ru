@@ -8,6 +8,7 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.isnix.modtools.command.ModToolsCommands;
+import ru.isnix.modtools.command.ViewCommands;
 
 import net.minecraft.server.network.ServerPlayerEntity;
 
@@ -34,8 +35,10 @@ public class IsnixModToolsMod implements DedicatedServerModInitializer {
 			}
 		});
 
-		CommandRegistrationCallback.EVENT.register(
-				(dispatcher, registryAccess, environment) -> ModToolsCommands.register(dispatcher));
+		CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
+			ModToolsCommands.register(dispatcher);
+			ViewCommands.register(dispatcher);
+		});
 
 		ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
 			ServerPlayerEntity player = handler.player;
@@ -53,7 +56,8 @@ public class IsnixModToolsMod implements DedicatedServerModInitializer {
 			}
 		});
 
-		LOGGER.info("ISNIX ModTools: /mute, /mutevoice, /freeze (OP {} или LP группа {})",
+		LOGGER.info(
+				"ISNIX ModTools: /mute, /mutevoice, /freeze, /view back (OP {} или LP группа {})",
 				ModToolsConfig.get().opPermissionLevel,
 				ModToolsConfig.get().luckpermsAdminGroup);
 	}

@@ -17,9 +17,14 @@
   "requirePermission": false,
   "useCurrentWorld": true,
   "rtpBackEnabled": true,
-  "cooldown": 30
+  "cooldown": 30,
+  "radius": 50000,
+  "minRadius": 1000
 }
 ```
+
+- `radius: 50000` — не дальше **50 000** блоков от центра границы мира (раньше `-1` = почти без лимита).
+- `minRadius: 1000` — не ближе **1 000** блоков к центру (чтобы не ртпшиться у спавна).
 
 После правки: `/rtp reload` (OP) или перезапуск сервера.
 

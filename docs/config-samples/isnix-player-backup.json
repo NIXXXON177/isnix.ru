@@ -1,0 +1,11 @@
+{
+  "enabled": true,
+  "intervalMinutes": 15,
+  "keepDays": 14,
+  "snapshotOnQuit": true,
+  "includeEnderChest": true,
+  "includePosition": true,
+  "includeExperience": true,
+  "includeContainerContents": true,
+  "includeItemTotals": true
+}

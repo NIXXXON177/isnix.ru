@@ -2,12 +2,16 @@ package ru.isnix.playerbackup;
 
 import net.fabricmc.api.DedicatedServerModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
+import net.minecraft.server.network.ServerPlayerEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.isnix.playerbackup.command.BackupCommands;
+import ru.isnix.playerbackup.grave.GraveBackpackInjector;
+import ru.isnix.playerbackup.grave.GraveLootHandler;
 
 public class IsnixPlayerBackupMod implements DedicatedServerModInitializer {
 	public static final String MOD_ID = "isnix_player_backup";
@@ -34,6 +38,16 @@ public class IsnixPlayerBackupMod implements DedicatedServerModInitializer {
 
 		CommandRegistrationCallback.EVENT.register(
 				(dispatcher, registryAccess, environment) -> BackupCommands.register(dispatcher));
+
+		GraveLootHandler.register();
+		GraveBackpackInjector.register();
+
+		ServerLivingEntityEvents.ALLOW_DEATH.register((entity, damageSource, damageAmount) -> {
+			if (entity instanceof ServerPlayerEntity player && BackupConfig.get().enabled) {
+				PlayerSnapshotService.snapshot(player, SnapshotReason.DEATH);
+			}
+			return true;
+		});
 
 		ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> {
 			if (!BackupConfig.get().enabled || !BackupConfig.get().snapshotOnQuit) {

@@ -61,11 +61,36 @@ public final class GuideBook {
 				page("""
 						REI (рецепты)
 
-						Поиск внизу экрана.
+						@create — только Create
+						@farmersdelight — кухня
 
-						@create — мод Create
-						Ctrl+O — скрыть список
 						R — рецепт предмета
+						Ctrl+O — скрыть панель
+						"""),
+				page("""
+						CREATE — СТАРТ
+
+						1) Андезитовый сплав
+						2) Латунь
+						3) Водяное колесо
+						4) Шестерни
+
+						Esc → Прогресс →
+						ISTHISNIXXXON — цепочка
+						шагов Create.
+						"""),
+				page("""
+						CREATE — СОВЕТЫ
+
+						Cyber Goggles в сборке:
+						надень — видишь RPM,
+						стресс, фильтры.
+
+						Farmer's Delight +
+						Create: миксер, пила.
+
+						Большие фабрики —
+						не у спавна.
 						"""),
 				page("""
 						ЧАТ
@@ -90,17 +115,6 @@ public final class GuideBook {
 						/sell — рынок
 						/sell list — лот
 						Цена — ресурсами.
-						"""),
-				page("""
-						CREATE
-
-						Шестерни, конвейеры,
-						поезда.
-
-						Старт: андезит +
-						вода-колесо.
-
-						Farmer's Delight.
 						"""),
 				page("""
 						ЕЩЁ

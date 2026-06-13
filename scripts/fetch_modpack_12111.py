@@ -111,6 +111,9 @@ def main() -> None:
     for stray in OUT.glob("usefulrecipes-*.jar"):
         print(f"Удаляю дубликат (требует Loader 0.19.3): {stray.name}")
         stray.unlink()
+    for stray in list(OUT.glob("*ultimate*")) + list(OUT.glob("*Ultimate*")):
+        print(f"Удаляю битый Create-аддон: {stray.name}")
+        stray.unlink()
     print(f"\nГотово: {ok} ok, {fail} fail -> {OUT}")
 
 

@@ -21,6 +21,10 @@ public final class BackupConfig {
 	public boolean includeEnderChest = true;
 	public boolean includePosition = true;
 	public boolean includeExperience = true;
+	/** Содержимое шалкеров, bundle и вложенных контейнеров в JSON. */
+	public boolean includeContainerContents = true;
+	/** Сводка item_totals — все предметы с учётом вложенности. */
+	public boolean includeItemTotals = true;
 
 	public static BackupConfig get() {
 		return INSTANCE;

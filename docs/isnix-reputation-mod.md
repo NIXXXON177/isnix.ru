@@ -63,13 +63,16 @@ Jar: `isnix-reputation/build/libs/isnix-reputation-0.1.0-mvp.jar`
 
 ## 4. TAB
 
-В `config/tab/groups.yml` (или `users.yml`) добавь suffix:
+В `config/tab/groups.yml` suffix после ника:
 
 ```yaml
-# пример для default — см. config-samples/tab/reputation.snippet.yml
-tabprefix: "%luckperms:prefix%"
-tabsuffix: " %isnix:rep%"
+tabsuffix: " %isnix:clan_tag% %isnix:rep% %luckperms:suffix%"
+tagsuffix: " %isnix:clan_tag% %isnix:rep% %luckperms:suffix%"
 ```
+
+Мод **0.1.2+** регистрирует `%isnix:rep%` напрямую в TAB API (как `isnix-opac-tab` для клана). Без этого в списке мог остаться сырой `%isnix:rep%`.
+
+В `config/tab/config.yml` — интервалы обновления (см. [config-samples/tab/config.yml](config-samples/tab/config.yml)).
 
 Placeholders:
 

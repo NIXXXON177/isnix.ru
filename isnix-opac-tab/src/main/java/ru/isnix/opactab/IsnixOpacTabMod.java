@@ -23,7 +23,10 @@ public class IsnixOpacTabMod implements DedicatedServerModInitializer {
 
 		ServerLifecycleEvents.SERVER_STOPPING.register(server -> ClanTagConfig.save());
 
-		ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> ClanTagCache.put(handler.player));
+		ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
+			ClanTagCache.put(handler.player);
+			ClaimBypass.apply(handler.player);
+		});
 
 		ServerPlayConnectionEvents.DISCONNECT.register((handler, server) ->
 				ClanTagCache.remove(handler.player.getUuid()));
@@ -33,8 +36,13 @@ public class IsnixOpacTabMod implements DedicatedServerModInitializer {
 			if (ticks == 40L || ticks == 200L) {
 				OpacBridge.retryInitIfNeeded();
 				ClanTagCache.refreshAll(server);
+				ClaimBypass.applyAll(server);
 			} else if (ticks % 20 == 0) {
 				ClanTagCache.refreshAll(server);
+				// раз в 5 сек пересинхронизируем байпас — подхватываем выдачу/снятие ноды на лету
+				if (ticks % 100 == 0) {
+					ClaimBypass.applyAll(server);
+				}
 			}
 		});
 

@@ -10,5 +10,13 @@
 	"advancements.isnix.market_buyer.title": "First purchase",
 	"advancements.isnix.market_buyer.description": "Buy another player's listing via /sell.",
 	"advancements.isnix.create_andesite.title": "Create: first step",
-	"advancements.isnix.create_andesite.description": "Obtain andesite alloy — then follow the Create advancement tree."
+	"advancements.isnix.create_andesite.description": "Craft andesite alloy. REI: @create for recipes.",
+	"advancements.isnix.create_brass.title": "Create: brass",
+	"advancements.isnix.create_brass.description": "Smelt brass — gears and machines start here.",
+	"advancements.isnix.create_water_wheel.title": "Create: power",
+	"advancements.isnix.create_water_wheel.description": "Craft a water wheel — your first rotation source.",
+	"advancements.isnix.create_press.title": "Create: press",
+	"advancements.isnix.create_press.description": "Mechanical press — next step in automation.",
+	"advancements.isnix.create_belt.title": "Create: belt",
+	"advancements.isnix.create_belt.description": "Connect machines with a belt — factory time."
 }

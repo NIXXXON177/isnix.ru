@@ -1,0 +1,19 @@
+{
+	"parent": "isnix:create_water_wheel",
+	"display": {
+		"icon": { "id": "create:mechanical_press" },
+		"title": { "translate": "advancements.isnix.create_press.title" },
+		"description": { "translate": "advancements.isnix.create_press.description" },
+		"frame": "goal",
+		"show_toast": true,
+		"announce_to_chat": true
+	},
+	"criteria": {
+		"press": {
+			"trigger": "minecraft:inventory_changed",
+			"conditions": {
+				"items": [{ "items": "create:mechanical_press" }]
+			}
+		}
+	}
+}

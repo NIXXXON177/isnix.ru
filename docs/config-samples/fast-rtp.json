@@ -5,8 +5,8 @@
   "useStrictTeleportCheck": false,
   "defaultDimension": "minecraft:overworld",
   "dimensionRedirects": {},
-  "radius": -1,
-  "minRadius": 0,
+  "radius": 50000,
+  "minRadius": 1000,
   "safetyCheckRadius": 1,
   "cooldown": 30,
   "blackListedBiomes": [

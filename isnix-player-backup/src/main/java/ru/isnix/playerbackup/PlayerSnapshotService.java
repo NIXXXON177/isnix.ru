@@ -5,10 +5,8 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.ItemStack;
-import net.minecraft.registry.Registries;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
@@ -21,6 +19,7 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
+import java.util.Map;
 import java.util.stream.Stream;
 
 public final class PlayerSnapshotService {
@@ -108,7 +107,27 @@ public final class PlayerSnapshotService {
 			root.add("position", location);
 		}
 
+		if (BackupConfig.get().includeItemTotals) {
+			Map<String, Integer> totals = ItemStackJson.emptyTotals();
+			accumulateTotals(totals, inv.getMainStacks());
+			accumulateTotals(totals, armor);
+			accumulateTotals(totals, offHand);
+			if (BackupConfig.get().includeEnderChest) {
+				for (int i = 0; i < player.getEnderChestInventory().size(); i++) {
+					ItemStack stack = player.getEnderChestInventory().getStack(i);
+					ItemStackJson.addTotals(totals, stack);
+				}
+			}
+			root.add("item_totals", ItemStackJson.totalsToJson(totals));
+		}
+
 		return root;
+	}
+
+	private static void accumulateTotals(Map<String, Integer> totals, DefaultedList<ItemStack> stacks) {
+		for (ItemStack stack : stacks) {
+			ItemStackJson.addTotals(totals, stack);
+		}
 	}
 
 	private static JsonArray slotsToJson(net.minecraft.util.collection.DefaultedList<ItemStack> stacks, String group) {
@@ -138,22 +157,7 @@ public final class PlayerSnapshotService {
 	}
 
 	private static JsonObject stackToJson(ItemStack stack) {
-		JsonObject o = new JsonObject();
-		o.addProperty("id", Registries.ITEM.getId(stack.getItem()).toString());
-		o.addProperty("count", stack.getCount());
-		var customName = stack.get(DataComponentTypes.CUSTOM_NAME);
-		if (customName != null) {
-			o.addProperty("custom_name", customName.getString());
-		}
-		var lore = stack.get(DataComponentTypes.LORE);
-		if (lore != null && !lore.lines().isEmpty()) {
-			JsonArray lines = new JsonArray();
-			for (var line : lore.lines()) {
-				lines.add(line.getString());
-			}
-			o.add("lore", lines);
-		}
-		return o;
+		return ItemStackJson.toJson(stack);
 	}
 
 	public static void pruneOldSnapshots() {

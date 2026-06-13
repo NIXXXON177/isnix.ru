@@ -10,5 +10,13 @@
 	"advancements.isnix.market_buyer.title": "Первая покупка",
 	"advancements.isnix.market_buyer.description": "Купить чужой лот через /sell.",
 	"advancements.isnix.create_andesite.title": "Create: старт",
-	"advancements.isnix.create_andesite.description": "Получить андезитовый сплав — первый шаг в Create. Дальше — ветка Create в достижениях."
+	"advancements.isnix.create_andesite.description": "Сделай андезитовый сплав. REI: @create — рецепты.",
+	"advancements.isnix.create_brass.title": "Create: латунь",
+	"advancements.isnix.create_brass.description": "Плавь латунь — основа для шестерён и механизмов.",
+	"advancements.isnix.create_water_wheel.title": "Create: энергия",
+	"advancements.isnix.create_water_wheel.description": "Скрафти водяное колесо — первый источник вращения.",
+	"advancements.isnix.create_press.title": "Create: пресс",
+	"advancements.isnix.create_press.description": "Механический пресс — следующий шаг автоматизации.",
+	"advancements.isnix.create_belt.title": "Create: конвейер",
+	"advancements.isnix.create_belt.description": "Соедини механизмы лентой — фабрика пошла."
 }

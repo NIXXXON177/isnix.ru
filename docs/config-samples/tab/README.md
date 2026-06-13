@@ -8,7 +8,7 @@
 
 ## Важно
 
-- Placeholder: **`%luckperms:prefix%`** и **`%isnix:clan_tag%`** (с двоеточием).
+- Placeholder: **`%luckperms:prefix%`**, **`%isnix:clan_tag%`** (клан OPAC), **`%isnix:rep%`** (★ репутация).
 - **Не** прописывайте `[Админ]` в `users.yml` — только LuckPerms.
 - Не создавайте группы `admin`/`Player` в `groups.yml` с жёстким префиксом.
 

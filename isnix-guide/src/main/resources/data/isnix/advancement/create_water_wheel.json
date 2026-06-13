@@ -1,0 +1,19 @@
+{
+	"parent": "isnix:create_brass",
+	"display": {
+		"icon": { "id": "create:water_wheel" },
+		"title": { "translate": "advancements.isnix.create_water_wheel.title" },
+		"description": { "translate": "advancements.isnix.create_water_wheel.description" },
+		"frame": "task",
+		"show_toast": true,
+		"announce_to_chat": false
+	},
+	"criteria": {
+		"wheel": {
+			"trigger": "minecraft:inventory_changed",
+			"conditions": {
+				"items": [{ "items": "create:water_wheel" }]
+			}
+		}
+	}
+}

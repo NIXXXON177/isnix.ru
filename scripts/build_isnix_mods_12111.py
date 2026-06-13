@@ -105,7 +105,14 @@ def main() -> None:
     manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
     STAGING.mkdir(parents=True, exist_ok=True)
     failed = []
-    for name in manifest["isnix_modules"]:
+    modules = manifest["isnix_modules"]
+    if len(sys.argv) > 1:
+        want = sys.argv[1].replace("_", "-")
+        modules = [m for m in modules if m == want]
+        if not modules:
+            print(f"Unknown module: {sys.argv[1]}", file=sys.stderr)
+            sys.exit(1)
+    for name in modules:
         mod_dir = ROOT / name
         print(f"=== {name} ===")
         if not mod_dir.is_dir():

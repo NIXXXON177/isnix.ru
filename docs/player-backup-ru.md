@@ -74,6 +74,19 @@
 | `includeEnderChest` | `true` | Эндер-сундук |
 | `includePosition` | `true` | Координаты и измерение |
 | `includeExperience` | `true` | Уровень и XP |
+| `includeContainerContents` | `true` | Содержимое шалкеров и bundle в JSON |
+| `includeItemTotals` | `true` | Поле `item_totals` — сводка всех предметов |
+
+### Просмотр снимка (для расследований)
+
+Скачать и разобрать снимок с сервера:
+
+```bash
+python scripts/inspect_player_backup.py <ник>
+python scripts/inspect_player_backup.py daydonik --filter experience,trim,shulker
+```
+
+Нужен `server-sftp.env`. После обновления мода до **1.0.2+** в JSON видно содержимое шалкеров.
 
 ### Восстановление после сбоя
 

@@ -3,7 +3,7 @@
 	"id": "isnix_modtools",
 	"version": "${version}",
 	"name": "ISNIX ModTools",
-	"description": "Админ-команды: mute, mutevoice, freeze",
+	"description": "Админ-команды: mute, mutevoice, freeze, /view back",
 	"authors": ["ISTHISNIXXXON"],
 	"license": "MIT",
 	"environment": "server",
@@ -22,6 +22,7 @@
 		"fabric-api": "*"
 	},
 	"suggests": {
-		"luckperms": "*"
+		"luckperms": "*",
+		"travelersbackpack": "*"
 	}
 }

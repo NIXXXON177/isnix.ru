@@ -1,0 +1,21 @@
+# [Легенда] — priority 300 (выше всех префиксов, включая [Админ] и [Мл. Админ])
+# Только косметика. Права админа — только группа admin, не префикс.
+# Выполни в консоли сервера:
+
+lp user <ник> parent set default
+lp user <ник> meta clear prefix
+lp user <ник> meta setprefix 300 "&6&l[Легенда] &r"
+lp sync
+lp user <ник> info
+
+# Уже выданные (обновить priority 50 → 300):
+lp user Y8shikage parent set default
+lp user Y8shikage meta clear prefix
+lp user Y8shikage meta setprefix 300 "&6&l[Легенда] &r"
+
+# Если игрок ни разу не заходил — по UUID из whitelist:
+lp user ff34b72e-7e58-3625-aeb0-984a8bde0bfd parent set default
+lp user ff34b72e-7e58-3625-aeb0-984a8bde0bfd meta clear prefix
+lp user ff34b72e-7e58-3625-aeb0-984a8bde0bfd meta setprefix 300 "&6&l[Легенда] &r"
+
+lp sync

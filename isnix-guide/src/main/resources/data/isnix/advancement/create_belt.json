@@ -1,0 +1,19 @@
+{
+	"parent": "isnix:create_press",
+	"display": {
+		"icon": { "id": "create:belt_connector" },
+		"title": { "translate": "advancements.isnix.create_belt.title" },
+		"description": { "translate": "advancements.isnix.create_belt.description" },
+		"frame": "challenge",
+		"show_toast": true,
+		"announce_to_chat": true
+	},
+	"criteria": {
+		"belt": {
+			"trigger": "minecraft:inventory_changed",
+			"conditions": {
+				"items": [{ "items": "create:belt_connector" }]
+			}
+		}
+	}
+}

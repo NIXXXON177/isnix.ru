@@ -267,7 +267,7 @@ public class MarketScreenHandler extends GenericContainerScreenHandler {
 			MarketScreens.openMarket(serverPlayer, page, viewMode);
 			return;
 		}
-		if (serverPlayer.isSneaking() && button == 1 && fresh.sellerUuid().equals(serverPlayer.getUuid())) {
+		if (fresh.sellerUuid().equals(serverPlayer.getUuid()) && isCancelListingClick(serverPlayer, button, actionType)) {
 			if (ListingCancelService.cancel(serverPlayer, fresh)) {
 				serverPlayer.closeHandledScreen();
 				MarketScreens.openMarket(serverPlayer, page, viewMode);
@@ -288,6 +288,24 @@ public class MarketScreenHandler extends GenericContainerScreenHandler {
 
 	private MarketListing listingAtDisplaySlot(int slotIndex) {
 		return slotToListing.get(slotIndex);
+	}
+
+	/**
+	 * Shift+ПКМ в открытом GUI — {@link SlotActionType#QUICK_MOVE}, не {@code isSneaking()}.
+	 * Обычный ПКМ без Shift — только подсказка, не снятие.
+	 */
+	private static boolean isCancelListingClick(
+			ServerPlayerEntity player,
+			int button,
+			SlotActionType actionType
+	) {
+		if (button != 1) {
+			return false;
+		}
+		if (actionType == SlotActionType.QUICK_MOVE) {
+			return true;
+		}
+		return actionType == SlotActionType.PICKUP && player.isSneaking();
 	}
 
 	@Override
