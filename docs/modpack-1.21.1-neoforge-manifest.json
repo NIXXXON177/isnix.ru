@@ -1,0 +1,326 @@
+{
+  "name": "ISTHISNIXXXON NeoForge",
+  "minecraft": "1.21.1",
+  "loader": "neoforge",
+  "java": 21,
+  "pack_version": "4.3.2-sodium-veil-fix",
+  "notes": "Create + Aeronautics + полный стек из идей Lost Souls (RPG, боссы, структуры, декор, еда). MC 1.21.1 NeoForge — не совместим с Lost Souls 1.20.1 Forge.",
+
+  "create_stack": {
+    "core": [
+      { "slug": "create", "required": true },
+      { "slug": "sable", "required": true },
+      { "slug": "create-aeronautics", "required": true, "note": "bundled jar 1.3.0" },
+      { "slug": "itemphysic", "required": true }
+    ],
+    "not_on_neoforge_1211": [
+      "create-fly",
+      "create-nerfad",
+      "create-handy-recipes"
+    ]
+  },
+
+  "modrinth_server_admin": [
+    { "slug": "luckperms", "required": true },
+    { "slug": "spark", "required": true },
+    { "slug": "worldedit", "required": true },
+    { "slug": "open-parties-and-claims", "required": true },
+    { "slug": "simple-voice-chat", "required": true },
+    { "slug": "chunky", "required": true },
+    { "slug": "automodpack", "required": true, "note": "авто-обновление модов у игроков" },
+    { "slug": "tab-was-taken", "required": true },
+    { "slug": "lithium", "required": true, "note": "серверный; клиент Embeddium" },
+    { "slug": "modernfix", "required": true, "note": "сервер + клиент" },
+    { "slug": "item-obliterator", "required": false, "note": "убрать лишние предметы" }
+  ],
+
+  "modrinth_rpg_combat": [
+    { "slug": "better-combat", "required": true },
+    { "slug": "player-animation-library", "required": true },
+    { "slug": "parcool", "required": true, "note": "рывок на Alt + бар энергии (молнии), Lost Souls style" },
+    { "slug": "curios", "required": true },
+    { "slug": "caelus", "required": true },
+    { "slug": "spell-engine", "required": true },
+    { "slug": "spell-power", "required": true },
+    { "slug": "irons-spells-n-spellbooks", "required": true },
+    { "slug": "archers", "required": true, "note": "RPG Series" },
+    { "slug": "paladins-and-priests", "required": true, "note": "RPG Series" },
+    { "slug": "rogues-and-warriors", "required": true, "note": "RPG Series" },
+    { "slug": "wizards", "required": true, "note": "RPG Series" },
+    { "slug": "apothic-attributes", "required": true },
+    { "slug": "placebo", "required": true },
+    { "slug": "artifacts", "required": true },
+    { "slug": "relics-mod", "required": true },
+    { "slug": "skill-tree", "required": true, "note": "Passive Skill Tree порт" },
+    { "slug": "corpse", "required": true },
+    { "slug": "player-revive", "required": true },
+    { "slug": "lootr", "required": true }
+  ],
+
+  "modrinth_bosses_mobs": [
+    { "slug": "geckolib", "required": true },
+    { "slug": "mowzies-mobs", "required": true },
+    { "slug": "lionfish-api", "required": true },
+    { "slug": "l_enders-cataclysm", "required": true },
+    { "slug": "enderman-overhaul", "required": true },
+    { "slug": "naturalist", "required": true },
+    { "slug": "citadel", "required": true }
+  ],
+
+  "modrinth_exploration": [
+    { "slug": "towns-and-towers", "required": true },
+    { "slug": "explorify", "required": true },
+    { "slug": "moogs-voyager-structures", "required": true },
+    { "slug": "idas", "required": true, "note": "Integrated Dungeons and Structures" },
+    { "slug": "dungeons-and-taverns", "required": true },
+    { "slug": "when-dungeons-arise", "required": true },
+    { "slug": "structory", "required": true },
+    { "slug": "yungs-api", "required": true },
+    { "slug": "yungs-better-dungeons", "required": true },
+    { "slug": "yungs-better-mineshafts", "required": true },
+    { "slug": "yungs-better-strongholds", "required": true },
+    { "slug": "yungs-better-desert-temples", "required": true },
+    { "slug": "yungs-better-jungle-temples", "required": true },
+    { "slug": "yungs-better-nether-fortresses", "required": true },
+    { "slug": "yungs-better-ocean-monuments", "required": true },
+    { "slug": "yungs-better-witch-huts", "required": true },
+    { "slug": "yungs-cave-biomes", "required": true },
+    { "slug": "yungs-better-end-island", "required": true },
+    { "slug": "yungs-bridges", "required": true },
+    { "slug": "repurposed-structures-forge", "required": true, "note": "варианты ванильных структур в биомах Terralith" },
+    { "slug": "endrem", "required": true }
+  ],
+
+  "modrinth_atmosphere_decor": [
+    { "slug": "supplementaries", "required": true },
+    { "slug": "amendments", "required": true },
+    { "slug": "moonlight", "required": true },
+    { "slug": "copycats", "required": true },
+    { "slug": "quark", "required": true },
+    { "slug": "zeta", "required": true },
+    { "slug": "another-furniture", "required": true },
+    { "slug": "handcrafted", "required": true },
+    { "slug": "macaws-furniture", "required": true },
+    { "slug": "macaws-doors", "required": false },
+    { "slug": "macaws-windows", "required": false },
+    { "slug": "macaws-roofs", "required": false },
+    { "slug": "rechiseled", "required": true },
+    { "slug": "chipped", "required": true },
+    { "slug": "rechiseled-chipped", "required": true },
+    { "slug": "connected-glass", "required": true },
+    { "slug": "fusion-connected-textures", "required": true },
+    { "slug": "comforts", "required": true },
+    { "slug": "travelersbackpack", "required": true },
+    { "slug": "etched", "required": true },
+    { "slug": "patchouli", "required": true },
+    { "slug": "polymorph", "required": true },
+    { "slug": "balm", "required": true },
+    { "slug": "coroutil", "required": true },
+    { "slug": "iceberg", "required": true },
+    { "slug": "owo-lib", "required": true },
+    { "slug": "data-anchor", "required": true }
+  ],
+
+  "modrinth_food_delight": [
+    { "slug": "farmers-delight", "required": true },
+    { "slug": "more-delight", "required": true },
+    { "slug": "cultural-delights", "required": true },
+    { "slug": "corn-delight", "required": true },
+    { "slug": "enders-delight", "required": true },
+    { "slug": "miners-delight", "required": true },
+    { "slug": "brewin-and-chewin", "required": true },
+    { "slug": "create-central-kitchen", "required": true }
+  ],
+
+  "modrinth_create_addons": [
+    { "slug": "create-dragons-plus", "required": true, "note": "зависимость Central Kitchen / Integrated Farming" },
+    { "slug": "create-deco", "required": true },
+    { "slug": "create-confectionery", "required": true },
+    { "slug": "create-diesel-generators", "required": true },
+    { "slug": "create-new-age", "required": true },
+    { "slug": "create-ore-excavation", "required": true },
+    { "slug": "create-integrated-farming", "required": true },
+    { "slug": "create-structures-overhaul", "required": true, "note": "Create-постройки в мире (Lost Souls style)" }
+  ],
+
+  "modrinth_worldgen": [
+    { "slug": "terrablender", "required": true },
+    { "slug": "lithostitched", "required": true, "note": "Terralith + Tectonic + CTOV" },
+    { "slug": "terralith", "required": true, "note": "горы, равнины, 95+ биомов — ядро Lost Souls landscape" },
+    { "slug": "tectonic", "required": true, "note": "реалистичный рельеф вместе с Terralith" },
+    { "slug": "geophilic", "required": true, "note": "доп. ванильные детали генерации" },
+    { "slug": "ct-overhaul-village", "required": true, "note": "деревни по биомам; совместим с Terralith" }
+  ],
+
+  "modrinth_worldgen_removed": [
+    { "slug": "biomes-o-plenty", "note": "убран: конфликт с Terralith (мелкие биомы)" }
+  ],
+
+  "modrinth_progression": [
+    { "slug": "kubejs", "required": true },
+    { "slug": "rhino", "required": true }
+  ],
+
+  "modrinth_dimensions": [
+    { "slug": "iceandfire-ce", "required": true, "note": "Ice and Fire Community Edition" }
+  ],
+
+  "maven_dependencies": [
+    {
+      "id": "ftb-quests",
+      "repo": "https://maven.ftb.dev/releases",
+      "path": "dev/ftb/mods/ftb-quests-neoforge/2101.1.27/ftb-quests-neoforge-2101.1.27.jar",
+      "version": "2101.1.27",
+      "required": true
+    },
+    {
+      "id": "ftb-library",
+      "repo": "https://maven.ftb.dev/releases",
+      "path": "dev/ftb/mods/ftb-library-neoforge/2101.1.32/ftb-library-neoforge-2101.1.32.jar",
+      "version": "2101.1.32",
+      "required": true
+    },
+    {
+      "id": "ftb-teams",
+      "repo": "https://maven.ftb.dev/releases",
+      "path": "dev/ftb/mods/ftb-teams-neoforge/2101.1.10/ftb-teams-neoforge-2101.1.10.jar",
+      "version": "2101.1.10",
+      "required": true
+    },
+    {
+      "id": "twilight-forest",
+      "repo": "https://maven.tamaized.com/releases",
+      "path": "team-twilight/twilightforest/4.8.3348/twilightforest-4.8.3348-universal.jar",
+      "version": "4.8.3348",
+      "required": true,
+      "note": "официальный TF; maven.tamaized.com"
+    }
+  ],
+
+  "modrinth_libs": [
+    { "slug": "cristel-lib", "required": true },
+    { "slug": "resourceful-lib", "required": true },
+    { "slug": "puzzles-lib", "required": true },
+    { "slug": "architectury-api", "required": true },
+    { "slug": "cloth-config", "required": true },
+    { "slug": "collective", "required": true },
+    { "slug": "double-doors", "required": true },
+    { "slug": "supermartijn642s-core-lib", "required": true },
+    { "slug": "supermartijn642s-config-lib", "required": true },
+    { "slug": "bookshelf-lib", "required": true },
+    { "slug": "azurelib", "required": true },
+    { "slug": "delight-lib", "required": true, "note": "зависимость More Delight" },
+    { "slug": "moogs-structure-lib", "required": true, "note": "зависимость Moog's Voyager" },
+    { "slug": "creativecore", "required": true, "note": "зависимость ItemPhysic" },
+    { "slug": "azurelib-armor", "required": true, "note": "RPG Series" },
+    { "slug": "necronomicon", "required": true, "note": "Item Obliterator" },
+    { "slug": "ranged-weapon-api", "required": true, "note": "Archers" },
+    { "slug": "skills", "required": true, "note": "Puffish Skills → Skill Tree RPG" },
+    { "slug": "runes", "required": true, "note": "Paladins / Wizards" },
+    { "slug": "uranus", "required": true, "note": "Ice and Fire CE" },
+    { "slug": "bundle-api", "required": true, "note": "Archers" },
+    { "slug": "structure-pool-api", "required": true, "note": "Rogues / Wizards" },
+    { "slug": "forgified-fabric-api", "required": true, "note": "Spell Engine" },
+    { "slug": "playeranimator", "required": true, "note": "Better Combat / Irons Spells" },
+    { "slug": "prism-lib", "required": true, "note": "Item Borders / Legendary Tooltips" },
+    { "slug": "accessories", "required": true, "note": "Spell Engine" },
+    { "slug": "irons-lib", "required": true, "note": "Irons Spellbooks" },
+    { "slug": "mmlib", "required": true, "note": "Corn Delight" },
+    { "slug": "resourceful-config", "required": true, "note": "Enderman Overhaul" },
+    { "slug": "athena-ctm", "required": true, "note": "зависимость Chipped" },
+    { "slug": "marieslib", "required": true, "note": "Nourished" },
+    { "slug": "lodestonelib", "required": true, "note": "Miners Delight" },
+    { "slug": "shatterbyte-lib", "required": true, "note": "OctoLib → Relics" },
+    { "slug": "jupiter", "required": true, "note": "Ice and Fire CE" }
+  ],
+
+  "modrinth_qol": [
+    { "slug": "fallingtree", "required": true },
+    { "slug": "sleep-tight", "required": true },
+    { "slug": "treechop", "required": true },
+    { "slug": "pehkui", "required": true },
+    { "slug": "nourished", "required": true, "note": "аналог Diet из Lost Souls" }
+  ],
+
+  "modrinth_lost_souls_expansion": [
+    { "slug": "critters-and-companions", "required": true, "note": "питомцы" },
+    { "slug": "ribbits", "required": true },
+    { "slug": "lets-do-vinery", "required": true, "note": "виноделие; нужен do-api (CurseForge)" },
+    { "slug": "lets-do-herbalbrews", "required": true },
+    { "slug": "integrated-api", "required": true },
+    { "slug": "integrated-stronghold", "required": true },
+    { "slug": "blueprint", "required": true },
+    { "slug": "caverns-and-chasms", "required": true },
+    { "slug": "guard-villagers", "required": true },
+    { "slug": "sophisticated-core", "required": true },
+    { "slug": "sophisticated-backpacks", "required": true, "note": "рюкзаки + Traveler's Backpack" }
+  ],
+
+  "curseforge_dependencies": [
+    {
+      "id": "do-api",
+      "curseSlug": "do-api",
+      "fileId": 5730908,
+      "filename": "letsdo-API-neoforge-1.3.0.jar",
+      "version": "1.3.0"
+    }
+  ],
+
+  "modrinth_client_extra": [
+    { "slug": "jei", "required": true },
+    { "slug": "sodium", "required": true, "note": "Veil (в Sable) несовместим с Embeddium; Sodium 0.8.12+" },
+    { "slug": "xaeros-minimap", "required": true },
+    { "slug": "xaeros-world-map", "required": true },
+    { "slug": "jade", "required": true },
+    { "slug": "appleskin", "required": true },
+    { "slug": "controlling", "required": true },
+    { "slug": "clumps", "required": true },
+    { "slug": "searchables", "required": true },
+    { "slug": "entity-model-features", "required": true },
+    { "slug": "entitytexturefeatures", "required": true, "note": "Fresh Animations — глаза мобов (ETF)" },
+    { "slug": "default-options", "required": true, "note": "авто-включение ресурспаков из defaultoptions/" },
+    { "slug": "sound-physics-remastered", "required": true },
+    { "slug": "immediatelyfast", "required": true },
+    { "slug": "not-enough-animations", "required": true },
+    { "slug": "entityculling", "required": true },
+    { "slug": "sodium-options-api", "required": true },
+    { "slug": "sodium-dynamic-lights", "required": true },
+    { "slug": "obsidianui", "required": true, "note": "тёмный инвентарь Lost Souls style" },
+    { "slug": "legendary-tooltips", "required": true },
+    { "slug": "item-borders", "required": true },
+    { "slug": "pick-up-notifier", "required": true }
+  ],
+
+  "deferred_no_neoforge_1211": [
+    { "slug": "diet", "note": "нет NeoForge 1.21.1; альтернатива Nourished" },
+    { "slug": "origins", "note": "ядро Lost Souls; нет портa" },
+    { "slug": "apugli", "note": "нет NeoForge 1.21.1" },
+    { "slug": "grimac", "note": "античит — отдельно" },
+    { "slug": "ledger", "note": "логи — отдельно" },
+    { "slug": "friends-and-foes" },
+    { "slug": "fast-rtp" },
+    { "slug": "styled-chat" },
+    { "slug": "essential-commands" },
+    { "slug": "placeholder-api" },
+    { "slug": "wakes" },
+    { "slug": "right-click-harvest" },
+    { "slug": "fsit" },
+    { "slug": "vanish-mod" },
+    { "slug": "create-enchantment-industry", "note": "alpha preview" }
+  ],
+
+  "isnix_modules_port_later": [
+    "isnix-server-messages",
+    "isnix-market",
+    "isnix-modtools",
+    "isnix-opac-tab",
+    "isnix-chat",
+    "isnix-graveguard",
+    "isnix-player-backup",
+    "isnix-lagwatch",
+    "isnix-player-stats",
+    "isnix-reputation"
+  ],
+
+  "world_warning": "Terralith + Tectonic + Create Structures Overhaul — только для НОВОГО мира. Старый world/ не подхватит генерацию. Преген Chunky после создания. Biomes O' Plenty убран (конфликт с Terralith)."
+}
