@@ -1,6 +1,6 @@
 # isnix.ru
 
-Официальный сайт сервера ISTHISNIXXXON — модовый Minecraft-сервер (NeoForge 1.21.1, Create, Lost Souls-стек, whitelist).
+Официальный сайт сервера ISTHISNIXXXON — модовый Minecraft-сервер (NeoForge 1.21.1, Create, whitelist).
 
 - Сборка для игроков: `downloads/ISTHISNIXXXONmods.zip` (~480 МБ) — `node scripts/build_client_modpack_neoforge.mjs`, см. [docs/client-modpack.md](docs/client-modpack.md)
 - Манифест модпака: [docs/modpack-1.21.1-neoforge-manifest.json](docs/modpack-1.21.1-neoforge-manifest.json)

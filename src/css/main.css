@@ -1058,6 +1058,9 @@
 				text-decoration: none;
 				border: 1px solid var(--green-dark);
 				border-radius: var(--radius-sm);
+				cursor: pointer;
+				position: relative;
+				z-index: 2;
 				transition:
 					background 0.2s,
 					color 0.2s,

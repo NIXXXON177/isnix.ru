@@ -4,7 +4,7 @@
 
 **IP:** `mc.isnix.ru` · **Сайт:** https://isnix.ru · **Вайтлист:** https://isnix.ru/account.html
 
-> С **июня 2026** сервер — **NeoForge 1.21.1** (Create, Sable, Lost Souls-стек). Нужна **сборка с сайта**. План: хаб на спавне + порталы в модовое и «спокойное» выживание — см. [server-worlds-ru.md](server-worlds-ru.md).
+> С **июня 2026** сервер — **NeoForge 1.21.1** (Create, Sable, RPG-моды). Нужна **сборка с сайта**. План: хаб на спавне + порталы в модовое и «спокойное» выживание — см. [server-worlds-ru.md](server-worlds-ru.md).
 
 ---
 
@@ -25,7 +25,7 @@
 
 ```
 🎮 ISTHISNIXXXON — модовый Minecraft без pay-to-win
-⚙️ Java 1.21.1 · NeoForge · Create · Lost Souls-стек
+⚙️ Java 1.21.1 · NeoForge · Create · RPG
 🔒 Вайтлист на isnix.ru
 🌍 IP: mc.isnix.ru
 📦 Сборка обязательна — isnix.ru
