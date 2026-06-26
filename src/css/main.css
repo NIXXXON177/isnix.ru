@@ -1027,6 +1027,116 @@
 				);
 				box-shadow: var(--shadow-gold-glow);
 			}
+			.download-soon {
+				grid-column: 1 / -1;
+				position: relative;
+				overflow: hidden;
+				min-height: 14rem;
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				justify-content: center;
+				gap: 0.85rem;
+				padding: 2.5rem 1.5rem;
+				text-align: center;
+				background: linear-gradient(
+					145deg,
+					rgba(18, 22, 18, 0.96) 0%,
+					rgba(28, 32, 24, 0.98) 55%,
+					rgba(18, 22, 18, 0.96) 100%
+				);
+				border: 1px solid var(--border2);
+				border-radius: var(--radius-md);
+				box-shadow: var(--shadow-gold-glow);
+			}
+			.download-soon__glow {
+				position: absolute;
+				inset: -40%;
+				background: radial-gradient(
+					circle at 50% 50%,
+					rgba(201, 162, 39, 0.16) 0%,
+					transparent 62%
+				);
+				animation: downloadSoonGlow 4s ease-in-out infinite;
+				pointer-events: none;
+			}
+			.download-soon__title {
+				position: relative;
+				z-index: 1;
+				margin: 0;
+			}
+			.download-soon__text {
+				display: inline-block;
+				font-family: 'Cinzel', serif;
+				font-size: clamp(1.35rem, 4vw, 2rem);
+				font-weight: 700;
+				letter-spacing: 0.04em;
+				text-transform: uppercase;
+				background: linear-gradient(
+					110deg,
+					#8a7340 0%,
+					#f3e2a0 22%,
+					#fff8dc 50%,
+					#f3e2a0 78%,
+					#8a7340 100%
+				);
+				background-size: 220% auto;
+				-webkit-background-clip: text;
+				background-clip: text;
+				color: transparent;
+				animation: downloadSoonShimmer 3.2s linear infinite;
+			}
+			.download-soon__hint {
+				position: relative;
+				z-index: 1;
+				margin: 0;
+				font-size: 0.78rem;
+				color: var(--muted);
+				letter-spacing: 0.08em;
+				text-transform: uppercase;
+				animation: downloadSoonHint 2.8s ease-in-out infinite;
+			}
+			@keyframes downloadSoonShimmer {
+				0% {
+					background-position: 0% center;
+				}
+				100% {
+					background-position: 220% center;
+				}
+			}
+			@keyframes downloadSoonGlow {
+				0%,
+				100% {
+					opacity: 0.55;
+					transform: scale(1);
+				}
+				50% {
+					opacity: 1;
+					transform: scale(1.06);
+				}
+			}
+			@keyframes downloadSoonHint {
+				0%,
+				100% {
+					opacity: 0.72;
+				}
+				50% {
+					opacity: 1;
+				}
+			}
+			@media (prefers-reduced-motion: reduce) {
+				.download-soon__text,
+				.download-soon__glow,
+				.download-soon__hint {
+					animation: none;
+				}
+				.download-soon__text {
+					color: var(--gold);
+					background: none;
+					-webkit-background-clip: unset;
+					background-clip: unset;
+				}
+			}
 			.download-card h3 {
 				font-family: 'Cinzel', serif;
 				font-size: 1rem;
