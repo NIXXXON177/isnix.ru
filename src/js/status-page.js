@@ -62,7 +62,7 @@
 				minute: '2-digit',
 			})
 			updatedEl.textContent =
-				(stale ? 'Кэш · ' : 'Обновлено ') + t + ' · Fabric 1.21.11'
+				(stale ? 'Кэш · ' : 'Обновлено ') + t + ' · NeoForge 1.21.1'
 		}
 	}
 

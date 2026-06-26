@@ -4,7 +4,7 @@
 
 **IP:** `mc.isnix.ru` · **Сайт:** https://isnix.ru · **Вайтлист:** https://isnix.ru/account.html
 
-> С **2026 года** сервер — **модовый Fabric 1.21.11** (Create, Farmer's Delight и др.). Не «ванильный» — нужна **сборка с сайта**.
+> С **июня 2026** сервер — **NeoForge 1.21.1** (Create, Sable, Lost Souls-стек). Нужна **сборка с сайта**. План: хаб на спавне + порталы в модовое и «спокойное» выживание — см. [server-worlds-ru.md](server-worlds-ru.md).
 
 ---
 
@@ -15,7 +15,7 @@
 | **ВК** | Название сообщества | `ISTHISNIXXXON — модовый Minecraft-сервер` |
 | **Telegram** | Название канала | `ISTHISNIXXXON · Create · Fabric` |
 | **Discord** | Название сервера | `ISTHISNIXXXON` |
-| **Discord** | Custom Status | `mc.isnix.ru · Fabric 1.21.11 · Create` |
+| **Discord** | Custom Status | `mc.isnix.ru · NeoForge 1.21.1 · Create` |
 
 Подробнее: [social-profiles-ru.md](social-profiles-ru.md)
 
@@ -25,7 +25,7 @@
 
 ```
 🎮 ISTHISNIXXXON — модовый Minecraft без pay-to-win
-⚙️ Java 1.21.11 · Fabric · Create · Farmer's Delight
+⚙️ Java 1.21.1 · NeoForge · Create · Lost Souls-стек
 🔒 Вайтлист на isnix.ru
 🌍 IP: mc.isnix.ru
 📦 Сборка обязательна — isnix.ru

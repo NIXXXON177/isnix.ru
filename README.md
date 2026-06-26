@@ -1,8 +1,10 @@
 # isnix.ru
 
-Официальный сайт сервера ISTHISNIXXXON — модовый Minecraft-сервер (Fabric 1.21.11, Create, whitelist).
+Официальный сайт сервера ISTHISNIXXXON — модовый Minecraft-сервер (NeoForge 1.21.1, Create, Lost Souls-стек, whitelist).
 
-- Сборка для игроков: `downloads/ISTHISNIXXXONmods.zip` (~42 МБ, только клиент) — `python scripts/build_client_modpack.py`, см. [docs/client-modpack.md](docs/client-modpack.md)
+- Сборка для игроков: `downloads/ISTHISNIXXXONmods.zip` (~480 МБ) — `node scripts/build_client_modpack_neoforge.mjs`, см. [docs/client-modpack.md](docs/client-modpack.md)
+- Манифест модпака: [docs/modpack-1.21.1-neoforge-manifest.json](docs/modpack-1.21.1-neoforge-manifest.json)
+- Схема миров (хаб / модовое / vanilla+): [docs/server-worlds-ru.md](docs/server-worlds-ru.md)
 - Инструкция: [how-to-play.html](how-to-play.html)
 - Аккаунт и заявка в вайтлист: [account.html](account.html) — нужен [Supabase](docs/supabase-auth-setup.md)
 - Жирный ник только админам (сервер): [docs/bold-nick-server.md](docs/bold-nick-server.md)
