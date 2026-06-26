@@ -1,8 +1,17 @@
 /* ============================================================
    Update splash — заставка "Сайт обновляется"
-   Накладывается поверх существующего #pagePreloader.
-   Самодостаточный файл, чтобы не трогать минифицированный main.css.
    ============================================================ */
+
+body.site-maintenance {
+	overflow: hidden;
+	touch-action: none;
+}
+
+body.site-maintenance .page-preloader {
+	position: fixed;
+	opacity: 1;
+	visibility: visible;
+}
 
 /* Затемнённый «звёздно-зелёный» фон + лёгкая виньетка */
 .page-preloader {
@@ -123,6 +132,14 @@
 .page-preloader-hint {
 	color: var(--text-soft);
 	opacity: .8;
+}
+
+body.site-maintenance .page-preloader-hint {
+	font-size: 0.68rem;
+	font-weight: 700;
+	letter-spacing: 0.16em;
+	text-transform: uppercase;
+	opacity: 1;
 }
 
 /* ---- Keyframes ---- */
