@@ -3,7 +3,7 @@
   "minecraft": "1.21.1",
   "loader": "neoforge",
   "java": 21,
-  "pack_version": "4.3.2-sodium-veil-fix",
+  "pack_version": "4.3.5",
   "notes": "Create + Aeronautics + полный стек из идей Lost Souls (RPG, боссы, структуры, декор, еда). MC 1.21.1 NeoForge — не совместим с Lost Souls 1.20.1 Forge.",
 
   "create_stack": {
@@ -27,10 +27,12 @@
     { "slug": "open-parties-and-claims", "required": true },
     { "slug": "simple-voice-chat", "required": true },
     { "slug": "chunky", "required": true },
+    { "slug": "multiworld", "required": true, "note": "хаб + modded + vanilla миры, порталы" },
     { "slug": "automodpack", "required": true, "note": "авто-обновление модов у игроков" },
     { "slug": "tab-was-taken", "required": true },
     { "slug": "lithium", "required": true, "note": "серверный; клиент Embeddium" },
     { "slug": "modernfix", "required": true, "note": "сервер + клиент" },
+    { "slug": "ferritecore", "required": true, "note": "меньше RAM; рекомендует ModernFix" },
     { "slug": "item-obliterator", "required": false, "note": "убрать лишние предметы" }
   ],
 
@@ -283,7 +285,7 @@
     { "slug": "immediatelyfast", "required": true },
     { "slug": "not-enough-animations", "required": true },
     { "slug": "entityculling", "required": true },
-    { "slug": "sodium-options-api", "required": true },
+    { "slug": "reeses-sodium-options", "required": true, "note": "UI настроек Sodium; несовместим с sodium-options-api" },
     { "slug": "sodium-dynamic-lights", "required": true },
     { "slug": "obsidianui", "required": true, "note": "тёмный инвентарь Lost Souls style" },
     { "slug": "legendary-tooltips", "required": true },
