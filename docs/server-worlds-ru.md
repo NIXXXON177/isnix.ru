@@ -35,20 +35,22 @@
 
 ## Технически на NeoForge 1.21.1
 
-1. **Сейчас:** один мир выживания + зона спавна (хаб в том же `world/` или отдельный участок).
-2. **Следующий шаг:** второй мир (`world_modded/`, `world_hub/`) — мультимир через мод/плагин уровня NeoForge (Multiverse-порт, кастомные порталы, `/execute in` + datapack).
-3. **Порталы на хабе:** физические врата (обсidian + мод Immersive Portals / Warp-зоны OPAC / Essential Commands warp у портала).
-4. **Инвентарь:** общий или раздельный — решить до открытия второго мира (Multiverse-Inventories или отдельные инвентари по миру).
+Развёрнуто **Multiworld** + `config/multiworld.yml` + KubeJS-инициализация.  
+`server.properties`: `level-name=hub`, flat, spawn-protection=32.
+
+После **рестарта** сервера: папка `hub/`, миры `modded` и `vanilla`, платформа и порталы на спавне.  
+Старый `world/` остаётся на SFTP как резервная копия.
+
+Подробнее: [hub-worlds-setup-ru.md](hub-worlds-setup-ru.md)
 
 ## Что не делать на одном инстансе
 
 - Обещать «ваниллу без модов» в том же процессе, что Create — технически невозможно.
 - Держать Create-фабрики у спавна — TPS и визуальный шум.
 
-## Для сайта и анонсов
+## Позже
 
-- **Сейчас играем:** модовое выживание NeoForge 1.21.1, спавн — общая точка входа.
-- **В разработке:** хаб с двумя порталами (модовое / спокойное).
-- **Позже (если будет второй тариф):** Velocity + Paper (ванилла) + NeoForge (моды).
+- Velocity + Paper (чистая ванилла) + NeoForge (моды) — при втором тарифе.
+- Декор хаба (WorldEdit-схема, NPC Supplementaries).
 
-См. также [modpack-1.21.1-neoforge-manifest.json](modpack-1.21.1-neoforge-manifest.json).
+См. [modpack-1.21.1-neoforge-manifest.json](modpack-1.21.1-neoforge-manifest.json).
