@@ -132,11 +132,11 @@
 				</header>
 				<nav class="nav-drawer" id="navMenu" aria-label="Навигация по сайту">
 					<div class="nav-drawer-auth" id="navDrawerAuth">
-						<a href="account.html" class="nav-drawer-auth__login" id="navDrawerLogin"
+						<a href="whitelist.html" class="nav-drawer-auth__login" id="navDrawerLogin"
 							>Вход</a
 						>
 						<a
-							href="account.html"
+							href="whitelist.html"
 							class="nav-drawer-auth__user"
 							id="navDrawerUser"
 							hidden
@@ -181,8 +181,8 @@
 							<a href="appeals.html" data-page-link="appeals">Обращения</a>
 						</li>
 						<li class="nav-links__account">
-							<a href="account.html" data-page-link="account" id="navAccountBtn"
-								>Аккаунт</a
+							<a href="whitelist.html" data-page-link="whitelist" id="navAccountBtn"
+								>Вайтлист</a
 							>
 						</li>
 						<li><a href="index.html#links" data-nav="links">Контакты</a></li>
@@ -225,16 +225,16 @@
 
 			<div id="appealsGuest" class="auth-card appeals-guest">
 				<p class="auth-lead">
-					Чтобы отправить обращение или прочитать ответ админа, войди в аккаунт на сайте.
-					После входа ты вернёшься на эту страницу.
+					Обращения на сайте доступны только администраторам после входа. Игрокам —
+					<a href="support.html">FAQ</a>, ВК или Telegram (ссылки на главной).
+					Заявка на сервер — на
+					<a href="whitelist.html">странице вайтлиста</a>.
 				</p>
 				<div class="appeals-guest__actions">
-					<a
-						href="account.html"
-						class="auth-submit"
-						id="appealsLoginBtn"
-						>Войти или зарегистрироваться</a
+					<a href="whitelist.html" class="auth-submit auth-submit--ghost"
+						>Заявка в вайтлист</a
 					>
+					<a href="admin.html" class="auth-submit" id="appealsLoginBtn">Вход для админов</a>
 					<a href="support.html" class="auth-submit auth-submit--ghost">FAQ техподдержки</a>
 				</div>
 			</div>
@@ -243,7 +243,7 @@
 				<p class="auth-muted auth-whitelist-lead">
 					Приложи фото или видео (файлы ниже) и/или ссылку на запись (Replay Mod, NVIDIA App,
 					OBS). <a href="rules.html#rules-players">Правила §9.1</a>.
-					<a href="account.html">Аккаунт</a> ·
+					<a href="whitelist.html">Заявка в вайтлист</a> ·
 					<a href="support.html">Справка</a>
 				</p>
 				<p id="supportSetupNotice" class="auth-hint" hidden></p>
@@ -358,15 +358,15 @@
 					<button type="submit" class="auth-submit">Отправить обращение</button>
 				</form>
 				<p class="auth-muted appeals-admin-hint" id="appealsAdminHint" hidden>
-					Администратор: ответы игрокам — в
-					<a href="account.html#admin-support">кабинете → Обращения</a>.
+					Администратор: другие разделы — на
+					<a href="admin.html">admin.html</a>.
 				</p>
 			</div>
 
 			<p class="htp-bottom">
 				<a href="index.html">На главную</a> ·
 				<a href="support.html">Техподдержка</a> ·
-				<a href="account.html">Аккаунт</a>
+				<a href="whitelist.html">Заявка в вайтлист</a>
 			</p>
 		</main>
 

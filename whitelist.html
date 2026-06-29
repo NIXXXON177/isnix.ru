@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="ru">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+		<title>Заявка в вайтлист — ISTHISNIXXXON</title>
+		<meta
+			name="description"
+			content="Подай заявку в вайтлист Minecraft-сервера ISTHISNIXXXON — укажи свой ник."
+		/>
+		<meta name="theme-color" content="#0a0f0a" />
+		<link rel="canonical" href="https://isnix.ru/whitelist.html" />
+		<meta property="og:type" content="website" />
+		<meta property="og:url" content="https://isnix.ru/whitelist.html" />
+		<meta property="og:title" content="Заявка в вайтлист — ISTHISNIXXXON" />
+		<meta property="og:description" content="Укажи ник Minecraft — администрация рассмотрит заявку." />
+		<meta property="og:locale" content="ru_RU" />
+		<meta property="og:image" content="https://isnix.ru/assets/images/og-cover.png" />
+		<link rel="icon" href="favicon.svg" type="image/svg+xml" />
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link rel="preconnect" href="https://api.isnix.ru" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Raleway:wght@300;400;600;700&display=swap"
+			rel="stylesheet"
+		/>
+		<link rel="stylesheet" href="assets/css/main.css?v=3" />
+		<link rel="stylesheet" href="assets/css/components.css?v=7" />
+		<link rel="stylesheet" href="assets/css/auth.css?v=29" />
+		<link rel="stylesheet" href="assets/css/site-header.css" />
+	</head>
+	<body class="account-page" data-page="whitelist">
+		<div class="site-header" id="siteHeader">
+			<div class="site-header__inner">
+				<header class="site-top" id="siteNav">
+					<a href="index.html" class="nav-logo" id="navLogo">ISTHIS<span>NIXXXON</span></a>
+					<div class="site-top__actions">
+						<button type="button" class="site-top__ip" id="siteCopyIp" title="Скопировать IP">
+							mc.isnix.ru
+						</button>
+						<a href="index.html" class="nav-btn nav-btn--top">На главную</a>
+						<button
+							type="button"
+							class="nav-toggle"
+							id="navToggle"
+							aria-expanded="false"
+							aria-controls="navMenu"
+							aria-label="Открыть меню"
+						>
+							<span></span><span></span><span></span>
+						</button>
+					</div>
+				</header>
+				<nav class="nav-drawer" id="navMenu" aria-label="Навигация">
+					<ul class="nav-links">
+						<li><a href="index.html">Главная</a></li>
+						<li>
+							<a href="whitelist.html" data-page-link="whitelist" id="navAccountBtn"
+								>Вайтлист</a
+							>
+						</li>
+						<li><a href="rules.html">Правила</a></li>
+						<li><a href="how-to-play.html">Как играть</a></li>
+					</ul>
+				</nav>
+			</div>
+		</div>
+		<button type="button" class="nav-backdrop" id="navBackdrop" aria-hidden="true" tabindex="-1"></button>
+
+		<main class="auth-page">
+			<div class="auth-wrap">
+				<section class="account-hero">
+					<p class="account-hero__eyebrow">Whitelist</p>
+					<h1 class="account-hero__title">Заявка на сервер</h1>
+					<p class="account-hero__lead">
+						Укажи свой ник в Minecraft — администрация рассмотрит заявку. Регистрация на
+						сайте не нужна.
+					</p>
+				</section>
+
+				<aside class="site-vpn-notice" role="note">
+					<p class="site-vpn-notice__title">Форма иногда не открывается без VPN</p>
+					<p class="site-vpn-notice__text">
+						Отправка идёт через <strong>api.isnix.ru</strong>. Если не грузится — включи
+						Cloudflare WARP. Игра на <strong>mc.isnix.ru</strong> — без VPN.
+					</p>
+				</aside>
+
+				<div id="whitelistMessage" class="auth-message" hidden></div>
+
+				<div id="whitelistSetupNotice" class="auth-card auth-setup" hidden>
+					<p class="auth-lead">
+						Форма заявок ещё не подключена. Администратору: настрой Supabase и выполни
+						<code>docs/supabase-public-whitelist.sql</code>.
+					</p>
+				</div>
+
+				<div id="whitelistSuccess" class="auth-card" hidden>
+					<h2 class="auth-panel__title">Заявка отправлена</h2>
+					<p class="auth-lead">
+						Ник <strong id="whitelistSuccessNick">—</strong> передан администрации. Обычно
+						отвечаем в течение часа — после одобрения можно заходить на
+						<strong>mc.isnix.ru</strong>.
+					</p>
+					<p class="auth-muted">
+						Повторно отправлять тот же ник не нужно, пока заявка на рассмотрении.
+					</p>
+				</div>
+
+				<form id="publicWhitelistForm" class="auth-card auth-form">
+					<div class="auth-field">
+						<label for="publicNick">Ник в Minecraft *</label>
+						<input
+							id="publicNick"
+							type="text"
+							maxlength="16"
+							required
+							autocomplete="off"
+							spellcheck="false"
+							placeholder="Steve123"
+						/>
+						<p id="publicNickHint" class="auth-hint"></p>
+					</div>
+					<p class="auth-muted auth-whitelist-lead">
+						3–16 символов: латиница, цифры и подчёркивание. Один ник — одна активная
+						заявка.
+					</p>
+					<button type="submit" class="auth-submit">Отправить заявку</button>
+				</form>
+			</div>
+		</main>
+
+		<script src="assets/js/metrika-config.js"></script>
+		<script src="assets/js/yandex-metrika.js?v=1"></script>
+		<script src="assets/js/browser-compat.js?v=2"></script>
+		<script>
+			window.ISNIX_AUTH = window.ISNIX_AUTH || {
+				enabled: false,
+				supabaseUrl: '',
+				supabaseAnonKey: '',
+			}
+		</script>
+		<script src="assets/js/auth-config.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+		<script src="assets/js/site-toast.js?v=2"></script>
+		<script src="assets/js/auth.js?v=44" defer></script>
+		<script src="assets/js/site-header.js?v=6" defer></script>
+		<script src="assets/js/whitelist-page.js?v=1" defer></script>
+	</body>
+</html>

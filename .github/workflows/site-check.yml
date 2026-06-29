@@ -6,7 +6,10 @@ on:
     branches: [main]
     paths:
       - 'index.html'
+      - 'index-full.html'
       - 'how-to-play.html'
+      - 'whitelist.html'
+      - 'admin.html'
       - 'account.html'
       - 'status.html'
       - 'support.html'
@@ -28,6 +31,9 @@ jobs:
       - name: Required files exist
         run: |
           test -f index.html
+          test -f index-full.html
+          test -f whitelist.html
+          test -f admin.html
           test -f account.html
           test -f status.html
           test -f how-to-play.html
@@ -44,7 +50,10 @@ jobs:
           test -f assets/js/site.js
           test -f assets/js/site-header.js
           test -f assets/js/auth.js
-          test -f assets/js/account.js
+          test -f assets/js/maintenance-splash.js
+          test -f assets/css/update-splash.css
+          test -f assets/js/whitelist-page.js
+          test -f assets/js/admin-page.js
           test -f assets/js/server-status.js
           test -f assets/js/status-page.js
           test -f assets/js/auth-config.js
@@ -52,12 +61,22 @@ jobs:
           test -f whitelist.json
           test -f downloads/ISTHISNIXXXONmods.zip
 
-      - name: index.html links assets (no inline mega-styles)
+      - name: Homepage and asset links
         run: |
-          grep -q 'assets/css/main.css' index.html
-          grep -q 'assets/js/site.js' index.html
-          grep -q 'assets/js/site-header.js' index.html
-          grep -q 'assets/js/shop-slider.js' index.html
-          grep -q 'browser-compat.js' account.html
-          grep -q 'browser-compat.js' index.html
+          # Публичная главная — заставка обновления (не полный сайт)
+          grep -q 'assets/css/update-splash.css' index.html
+          grep -q 'assets/js/maintenance-splash.js' index.html
+          grep -q 'whitelist.html' index.html
+          grep -q 'site-maintenance' index.html
           ! grep -q 'cdn.tailwindcss.com' index.html
+
+          # Полная главная сохранена для восстановления
+          grep -q 'assets/css/main.css' index-full.html
+          grep -q 'assets/js/site.js' index-full.html
+          grep -q 'assets/js/site-header.js' index-full.html
+          grep -q 'assets/js/shop-slider.js' index-full.html
+          ! grep -q 'cdn.tailwindcss.com' index-full.html
+
+          # Форма вайтлиста
+          grep -q 'browser-compat.js' whitelist.html
+          grep -q 'whitelist-page.js' whitelist.html

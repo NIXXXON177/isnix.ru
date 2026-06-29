@@ -504,6 +504,15 @@
 		if (/application_not_found_or_not_pending/i.test(msg)) {
 			return 'Заявка уже обработана или не найдена — обнови страницу.'
 		}
+		if (/invalid_nick/i.test(msg)) {
+			return 'Ник: 3–16 символов, латиница, цифры и _'
+		}
+		if (/already_pending/i.test(msg)) {
+			return 'Заявка с этим ником уже на рассмотрении — подожди ответа администрации.'
+		}
+		if (/submit_public_whitelist_application|PGRST202.*submit_public/i.test(msg)) {
+			return 'Публичные заявки ещё не включены. В Supabase SQL Editor выполни docs/supabase-public-whitelist.sql'
+		}
 		if (/no_admin_message_yet/i.test(msg)) {
 			return 'Сначала дождись вопроса от администрации.'
 		}
@@ -1138,6 +1147,20 @@
 			})
 		}
 		if (res.error) throw res.error
+	}
+
+	async function submitPublicApplication(minecraftNick) {
+		var sb = getClient()
+		if (!sb) throw new Error('Нет подключения')
+		var nick = (minecraftNick || '').trim()
+		if (!MC_NICK_RE.test(nick)) {
+			throw new Error('Ник: 3–16 символов, латиница, цифры и _')
+		}
+		var res = await sb.rpc('submit_public_whitelist_application', {
+			p_minecraft_nick: nick,
+		})
+		if (res.error) throw res.error
+		return res.data
 	}
 
 	async function getAdminApplications(filter, opts) {
@@ -2102,14 +2125,17 @@
 		if (!loginEl && !userEl) return
 
 		var loggedIn = isReady() && session && session.user
+		var admin = loggedIn && isAdminProfile(profile)
 		if (authWrap) {
-			authWrap.classList.toggle('nav-drawer-auth--user', !!loggedIn)
-			authWrap.classList.toggle('nav-drawer-auth--guest', !loggedIn)
+			authWrap.classList.toggle('nav-drawer-auth--user', !!admin)
+			authWrap.classList.toggle('nav-drawer-auth--guest', !admin)
 		}
-		if (!loggedIn) {
+		if (!loggedIn || !admin) {
 			if (loginEl) {
 				loginEl.hidden = false
 				loginEl.style.display = ''
+				loginEl.textContent = admin ? 'Админ' : 'Заявка в вайтлист'
+				loginEl.setAttribute('href', admin ? 'admin.html' : 'whitelist.html')
 			}
 			if (userEl) {
 				userEl.hidden = true
@@ -2147,7 +2173,7 @@
 		if (userEl) {
 			var admin = isAdminProfile(profile)
 			userEl.classList.toggle('nav-drawer-auth__user--admin', admin)
-			userEl.href = admin ? 'account.html#admin' : 'account.html'
+			userEl.href = admin ? 'admin.html' : 'whitelist.html'
 		}
 
 		if (avatarImg && avatarFb) {
@@ -2168,22 +2194,23 @@
 	function updateNavAccountLink(session, profile) {
 		var el = document.getElementById('navAccountBtn')
 		if (!el) return
-		if (!isReady()) {
-			el.textContent = 'Аккаунт'
-			el.setAttribute('href', 'account.html')
-			el.classList.remove('nav-btn--admin')
+		var loginEl = document.getElementById('navDrawerLogin')
+		if (session && session.user && isAdminProfile(profile)) {
+			el.textContent = 'Админ'
+			el.setAttribute('href', 'admin.html')
+			el.classList.add('nav-btn--admin')
+			if (loginEl) {
+				loginEl.textContent = 'Админ'
+				loginEl.setAttribute('href', 'admin.html')
+			}
 			return
 		}
-		if (session && session.user) {
-			el.textContent = isAdminProfile(profile) ? 'Админ' : 'Кабинет'
-			el.setAttribute('href', isAdminProfile(profile)
-				? 'account.html#admin'
-				: 'account.html')
-			el.classList.toggle('nav-btn--admin', isAdminProfile(profile))
-		} else {
-			el.textContent = 'Вход'
-			el.setAttribute('href', 'account.html')
-			el.classList.remove('nav-btn--admin')
+		el.textContent = 'Вайтлист'
+		el.setAttribute('href', 'whitelist.html')
+		el.classList.remove('nav-btn--admin')
+		if (loginEl) {
+			loginEl.textContent = 'Заявка в вайтлист'
+			loginEl.setAttribute('href', 'whitelist.html')
 		}
 	}
 
@@ -2311,6 +2338,7 @@
 		getSupportAttachments: getSupportAttachments,
 		uploadSupportEvidenceFiles: uploadSupportEvidenceFiles,
 		submitApplication: submitApplication,
+		submitPublicApplication: submitPublicApplication,
 		getReferralSummary: getReferralSummary,
 		getReferralsForApplications: getReferralsForApplications,
 		markReferralRewardedByApplication: markReferralRewardedByApplication,

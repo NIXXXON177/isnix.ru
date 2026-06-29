@@ -2450,3 +2450,16 @@
 .isnix-toast__close:hover {
 	color: #fff;
 }
+
+.auth-admin-panel__head {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 1rem;
+	flex-wrap: wrap;
+	margin-bottom: 0.75rem;
+}
+
+.auth-admin-panel__head .auth-panel__title {
+	margin: 0;
+}

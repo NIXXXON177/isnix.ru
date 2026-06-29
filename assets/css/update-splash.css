@@ -179,3 +179,20 @@ body.site-maintenance .page-preloader-hint {
 		background-position: 0 center;
 	}
 }
+
+.update-whitelist-link {
+	margin-top: 0.5rem;
+	animation: splashFadeUp .7s ease .2s both;
+}
+
+.update-whitelist-link a {
+	color: var(--green);
+	font-size: 0.88rem;
+	font-weight: 600;
+	text-decoration: underline;
+	text-underline-offset: 0.2em;
+}
+
+.update-whitelist-link a:hover {
+	color: #86efac;
+}

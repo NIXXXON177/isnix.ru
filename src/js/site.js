@@ -68,7 +68,7 @@
 				)
 			})
 		}
-		window.open('account.html#whitelist', '_blank', 'noopener')
+		window.open('whitelist.html', '_blank', 'noopener')
 	}
 
 	function closeBoldNickModal() {

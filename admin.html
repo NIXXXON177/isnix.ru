@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="ru">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+		<title>Админ — заявки в вайтлист — ISTHISNIXXXON</title>
+		<meta name="robots" content="noindex, nofollow" />
+		<meta name="theme-color" content="#0a0f0a" />
+		<link rel="icon" href="favicon.svg" type="image/svg+xml" />
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link rel="preconnect" href="https://api.isnix.ru" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Raleway:wght@300;400;600;700&display=swap"
+			rel="stylesheet"
+		/>
+		<link rel="stylesheet" href="assets/css/main.css?v=3" />
+		<link rel="stylesheet" href="assets/css/components.css?v=7" />
+		<link rel="stylesheet" href="assets/css/auth.css?v=29" />
+	</head>
+	<body class="account-page account-page--admin" data-page="admin">
+		<main class="auth-page">
+			<div class="auth-wrap auth-wrap--wide">
+				<section class="account-hero">
+					<p class="account-hero__eyebrow">Администрация</p>
+					<h1 class="account-hero__title">Заявки в вайтлист</h1>
+					<p class="account-hero__lead">
+						Вход только для администраторов. Игроки подают заявки на
+						<a href="whitelist.html">whitelist.html</a>.
+					</p>
+				</section>
+
+				<div id="adminMessage" class="auth-message" hidden></div>
+
+				<div id="adminSetupNotice" class="auth-card auth-setup" hidden>
+					<p class="auth-lead">
+						Supabase не подключён. Настрой <code>assets/js/auth-config.js</code> и секреты
+						GitHub Pages.
+					</p>
+				</div>
+
+				<div id="adminLoginPanel" class="auth-card">
+					<h2 class="auth-panel__title">Вход администратора</h2>
+					<form id="adminLoginForm" class="auth-form">
+						<div class="auth-field">
+							<label for="adminLogin">Логин</label>
+							<input
+								id="adminLogin"
+								type="text"
+								autocomplete="username"
+								maxlength="64"
+								required
+							/>
+						</div>
+						<div class="auth-field">
+							<label for="adminPassword">Пароль</label>
+							<input
+								id="adminPassword"
+								type="password"
+								autocomplete="current-password"
+								required
+							/>
+						</div>
+						<button type="submit" class="auth-submit">Войти</button>
+					</form>
+				</div>
+
+				<div id="adminPanel" class="auth-card" hidden>
+					<div class="auth-admin-panel">
+						<div class="auth-admin-panel__head">
+							<h2 class="auth-panel__title">Заявки игроков</h2>
+							<button
+								type="button"
+								id="adminLogoutBtn"
+								class="auth-submit auth-submit--ghost"
+							>
+								Выйти
+							</button>
+						</div>
+						<p class="auth-muted auth-admin-lead">
+							После «Одобрить» ник автоматически попадает на сервер (обычно до 5 минут).
+						</p>
+						<div class="auth-admin-tabs" role="tablist">
+							<button
+								type="button"
+								class="auth-admin-tab auth-admin-tab--sub active"
+								data-admin-filter="pending"
+							>
+								Ожидают
+							</button>
+							<button
+								type="button"
+								class="auth-admin-tab auth-admin-tab--sub"
+								data-admin-filter="all"
+							>
+								Все
+							</button>
+						</div>
+						<div id="adminApplicationsList"></div>
+					</div>
+				</div>
+			</div>
+		</main>
+
+		<script src="assets/js/browser-compat.js?v=2"></script>
+		<script>
+			window.ISNIX_AUTH = window.ISNIX_AUTH || {
+				enabled: false,
+				supabaseUrl: '',
+				supabaseAnonKey: '',
+			}
+		</script>
+		<script src="assets/js/auth-config.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+		<script src="assets/js/site-toast.js?v=2"></script>
+		<script src="assets/js/auth.js?v=44" defer></script>
+		<script src="assets/js/admin-page.js?v=1" defer></script>
+	</body>
+</html>
